@@ -1,4 +1,4 @@
-AC_INIT([java-atk-wrapper], [1.0], [ke.wang@sun.com])
+AC_INIT([java-atk-wrapper])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
