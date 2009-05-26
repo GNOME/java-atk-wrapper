@@ -1,0 +1,58 @@
+/*
+ * Java ATK Wrapper for GNOME
+ * Copyright 2009 Sun Microsystems Inc.
+ *
+ * This file is part of Java ATK Wrapper.
+
+ * Java ATK Wrapper is free software: you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * Java ATK Wrapper is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Java ATK Wrapper.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef _JAW_IMPL_H_
+#define _JAW_IMPL_H_
+
+#include "jawobject.h"
+
+G_BEGIN_DECLS
+
+#define JAW_TYPE_IMPL(tf)		(jaw_impl_get_type (tf))
+#define JAW_IMPL(tf, obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), JAW_TYPE_IMPL(tf), JawImpl))
+#define JAW_IMPL_CLASS(tf, klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), JAW_TYPE_IMPL(tf), JawImplClass))
+#define JAW_IS_IMPL(tf, obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), JAW_TYPE_IMPL(tf)))
+#define JAW_IS_IMPL_CLASS(tf, klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), JAW_TYPE_IMPL(tf)))
+#define JAW_IMPL_GET_CLASS(tf, obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), JAW_TYPE_IMPL(tf), JawImplClass))
+
+typedef struct _JawImpl			JawImpl;
+typedef struct _JawImplClass		JawImplClass;
+
+struct _JawImpl
+{
+	JawObject parent;
+
+	GHashTable *ifaceTable;
+};
+
+void jaw_impl_init_mutex();
+JawImpl* jaw_impl_get_instance(JNIEnv*, jobject);
+JawImpl* jaw_impl_find_instance(JNIEnv*, jobject);
+GType jaw_impl_get_type (guint);
+
+struct _JawImplClass
+{
+	JawObjectClass parent_class;
+};
+
+G_END_DECLS
+
+#endif
+

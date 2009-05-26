@@ -1,0 +1,552 @@
+/*
+ * Java ATK Wrapper for GNOME
+ * Copyright 2009 Sun Microsystems Inc.
+ *
+ * This file is part of Java ATK Wrapper.
+
+ * Java ATK Wrapper is free software: you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * Java ATK Wrapper is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Java ATK Wrapper.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.GNOME.Accessibility;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.*;
+import java.io.*;
+import javax.accessibility.*;
+
+public class AtkWrapper {
+	static {
+		// Set laf to Cross platform laf because GTK laf will be the default one in some
+		// environment, but GTK laf will not work well with gtk_main() started.
+		try {
+			String lafClassName = javax.swing.UIManager.getCrossPlatformLookAndFeelClassName();
+			if (lafClassName.contains("GTKLookAndFeel")) {
+				javax.swing.UIManager.setLookAndFeel(
+					javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
+			}
+		} catch (Exception e) { }
+
+		System.loadLibrary("atk-wrapper");
+		AtkWrapper.initNativeLibrary();
+	}
+
+	final WindowAdapter winAdapter = new WindowAdapter() {
+		public void windowActivated(WindowEvent e) {
+			Object o = e.getSource();
+			if ( o instanceof javax.accessibility.Accessible ) {
+				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+				AtkWrapper.windowActivate(ac);
+			}
+		}
+
+		public void windowDeactivated(WindowEvent e) {
+			Object o = e.getSource();
+			if ( o instanceof javax.accessibility.Accessible ) {
+				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+				AtkWrapper.windowDeactivate(ac);
+			}
+		}
+
+		public void windowStateChanged(WindowEvent e) {
+			Object o = e.getSource();
+			if ( o instanceof javax.accessibility.Accessible ) {
+				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+				AtkWrapper.windowStateChange(ac);
+
+				if( (e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH ) {
+					AtkWrapper.windowMaximize(ac);
+				}
+			}
+		}
+
+		public void windowDeiconified(WindowEvent e) {
+			Object o = e.getSource();
+			if ( o instanceof javax.accessibility.Accessible ) {
+				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+				AtkWrapper.windowRestore(ac);
+			}
+		}
+
+		public void windowIconified(WindowEvent e) {
+			Object o = e.getSource();
+			if ( o instanceof javax.accessibility.Accessible ) {
+				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+				AtkWrapper.windowMinimize(ac);
+			}
+		}
+
+		public void windowOpened(WindowEvent e) {
+			Object o = e.getSource();
+			if ( o instanceof javax.accessibility.Accessible ) {
+				boolean isToplevel = false;
+				if (o instanceof java.awt.Window ||
+					o instanceof java.awt.Frame ||
+					o instanceof java.awt.Dialog) {
+					isToplevel = true;
+				}
+
+				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+				AtkWrapper.windowOpen(ac, isToplevel);
+			}
+		}
+
+		public void windowClosed(WindowEvent e) {
+			Object o = e.getSource();
+			if ( o instanceof javax.accessibility.Accessible ) {
+				boolean isToplevel = false;
+				if (o instanceof java.awt.Window ||
+					o instanceof java.awt.Frame ||
+					o instanceof java.awt.Dialog) {
+					isToplevel = true;
+				}
+
+				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+				AtkWrapper.windowClose(ac, isToplevel);
+			}
+		}
+
+		public void windowClosing(WindowEvent e) {
+		}
+
+		public void windowGainedFocus(WindowEvent e) {
+		}
+
+		public void windowLostFocus(WindowEvent e) {
+		}
+	};
+
+	final AWTEventListener globalListener = new AWTEventListener() {
+		public void eventDispatched(AWTEvent e) {
+			if( e instanceof WindowEvent ) {
+				switch( e.getID() ) {
+				case WindowEvent.WINDOW_OPENED:
+					Window win = ((WindowEvent)e).getWindow();
+					win.addWindowListener(winAdapter);
+					win.addWindowStateListener(winAdapter);
+					win.addWindowFocusListener(winAdapter);
+					break;
+				case WindowEvent.WINDOW_LOST_FOCUS:
+					AtkWrapper.dispatchFocusEvent(null);
+					break;
+				default:
+					break;
+				}
+			} else if(e instanceof ContainerEvent ) {
+				switch( e.getID() ) {
+					case ContainerEvent.COMPONENT_ADDED:
+					{
+						java.awt.Component c = ((ContainerEvent)e).getChild();
+						if (c instanceof javax.accessibility.Accessible) {
+							AccessibleContext ac = ((javax.accessibility.Accessible)c).getAccessibleContext();
+							AtkWrapper.componentAdded(ac);
+						}
+						break;
+					}
+				default:
+					break;
+				}
+			} else if( e instanceof FocusEvent ) {
+				switch( e.getID() ) {
+				case FocusEvent.FOCUS_GAINED:
+					AtkWrapper.dispatchFocusEvent(e.getSource());
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	};
+
+	static AccessibleContext oldSourceContext = null;
+	static AccessibleContext savedSourceContext= null;
+	static AccessibleContext oldPaneContext = null;
+	static void dispatchFocusEvent(Object eventSource) {
+		if (eventSource == null) {
+			oldSourceContext = null;
+			return;
+		}
+
+		AccessibleContext ctx;
+
+		try {
+			if (eventSource instanceof AccessibleContext) {
+				ctx = (AccessibleContext)eventSource;
+			} else if (eventSource instanceof javax.accessibility.Accessible) {
+				ctx = ((javax.accessibility.Accessible)eventSource).getAccessibleContext();
+			} else {
+				return;
+			}
+
+			if (ctx == oldSourceContext) {
+				return;
+			}
+
+			if (oldSourceContext != null) {
+				AccessibleRole role = oldSourceContext.getAccessibleRole();
+				if (role == AccessibleRole.MENU ||
+						role == AccessibleRole.MENU_ITEM) {
+					String jrootpane = "javax.swing.JRootPane$AccessibleJRootPane";
+					String name = ctx.getClass().getName();
+
+					if (jrootpane.compareTo(name) == 0) {
+						oldPaneContext = ctx;
+						return;
+					}
+				}
+
+				savedSourceContext = ctx;
+			} else if (oldPaneContext == ctx) {
+				ctx = savedSourceContext;
+			} else {
+				savedSourceContext = ctx;
+			}
+
+			oldSourceContext = ctx;
+			AccessibleRole role = ctx.getAccessibleRole();
+			if (role == AccessibleRole.PAGE_TAB_LIST) {
+				AccessibleSelection accSelection = ctx.getAccessibleSelection();
+
+				if (accSelection != null &&
+						accSelection.getAccessibleSelectionCount() > 0) {
+					Object child = accSelection.getAccessibleSelection(0);
+					if (child instanceof AccessibleContext) {
+						ctx = (AccessibleContext)child;
+					} else if (child instanceof javax.accessibility.Accessible) {
+						ctx = ((javax.accessibility.Accessible)
+								child).getAccessibleContext();
+					} else {
+						return;
+					}
+				}
+			}
+
+			focusNotify(ctx);
+		} catch (Exception e) {}
+	}
+
+	final Toolkit toolkit = Toolkit.getDefaultToolkit();
+
+	static PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+		public void propertyChange( PropertyChangeEvent e ) {
+			Object o = e.getSource();
+			AccessibleContext ac;
+			if (o instanceof AccessibleContext) {
+				ac = (AccessibleContext)o;
+			} else if (o instanceof javax.accessibility.Accessible) {
+				ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+			} else {
+				return;
+			}
+
+			Object oldValue = e.getOldValue();
+			Object newValue = e.getNewValue();
+			String propertyName = e.getPropertyName();
+			if( propertyName.equals(AccessibleContext.ACCESSIBLE_CARET_PROPERTY) ) {
+				Object[] args = new Object[1];
+				args[0] = newValue;
+
+				emitSignal(ac, AtkSignal.TEXT_CARET_MOVED, args);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TEXT_PROPERTY) ) {
+				if (newValue == null) {
+					return;
+				}
+
+				if (newValue instanceof Integer) {
+					Object[] args = new Object[1];
+					args[0] = newValue;
+
+					emitSignal(ac, AtkSignal.TEXT_PROPERTY_CHANGED, args);
+
+				}
+				/*
+				if (oldValue == null && newValue != null) { //insertion event
+					if (!(newValue instanceof AccessibleTextSequence)) {
+						return;
+					}
+
+					AccessibleTextSequence newSeq = (AccessibleTextSequence)newValue;
+					Object[] args = new Object[2];
+					args[0] = new Integer(newSeq.startIndex);
+					args[1] = new Integer(newSeq.endIndex - newSeq.startIndex);
+
+					emitSignal(ac, AtkSignal.TEXT_PROPERTY_CHANGED_INSERT, args);
+
+				} else if (oldValue != null && newValue == null) { //deletion event
+					if (!(oldValue instanceof AccessibleTextSequence)) {
+						return;
+					}
+
+					AccessibleTextSequence oldSeq = (AccessibleTextSequence)oldValue;
+					Object[] args = new Object[2];
+					args[0] = new Integer(oldSeq.startIndex);
+					args[1] = new Integer(oldSeq.endIndex - oldSeq.startIndex);
+
+					emitSignal(ac, AtkSignal.TEXT_PROPERTY_CHANGED_DELETE, args);
+
+				} else if (oldValue != null && newValue != null) { //replacement event
+					//It seems ATK does not support "replace" currently
+					return;
+				}*/
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_CHILD_PROPERTY) ) {
+				if (oldValue == null && newValue != null) { //child added
+					AccessibleContext child_ac;
+					if (newValue instanceof javax.accessibility.Accessible) {
+						child_ac = ((javax.accessibility.Accessible)newValue).getAccessibleContext();
+					} else {
+						return;
+					}
+
+					Object[] args = new Object[2];
+					args[0] = new Integer(child_ac.getAccessibleIndexInParent());
+					args[1] = child_ac;
+
+					emitSignal(ac, AtkSignal.OBJECT_CHILDREN_CHANGED_ADD, args);
+
+				} else if (oldValue != null && newValue == null) { //child removed
+					AccessibleContext child_ac;
+					if (oldValue instanceof javax.accessibility.Accessible) {
+						child_ac = ((javax.accessibility.Accessible)oldValue).getAccessibleContext();
+					} else {
+						return;
+					}
+
+					Object[] args = new Object[2];
+					args[0] = new Integer(child_ac.getAccessibleIndexInParent());
+					args[1] = child_ac;
+
+					emitSignal(ac, AtkSignal.OBJECT_CHILDREN_CHANGED_REMOVE, args);
+
+				}
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_ACTIVE_DESCENDANT_PROPERTY) ) {
+				AccessibleContext child_ac;
+				if (newValue instanceof javax.accessibility.Accessible) {
+					child_ac = ((javax.accessibility.Accessible)newValue).getAccessibleContext();
+				} else {
+					return;
+				}
+
+				Object[] args = new Object[1];
+				args[0] = child_ac;
+
+				emitSignal(ac, AtkSignal.OBJECT_ACTIVE_DESCENDANT_CHANGED, args);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_SELECTION_PROPERTY) ) {
+				boolean isTextEvent = false;
+				AccessibleRole role = ac.getAccessibleRole();
+				if ((role == AccessibleRole.TEXT)
+						|| role.toDisplayString(java.util.Locale.US).equalsIgnoreCase("paragraph")) {
+					isTextEvent = true;
+				} else if (role == AccessibleRole.MENU_BAR) {
+					dispatchFocusEvent(o);
+				} else if (role == AccessibleRole.PAGE_TAB_LIST) {
+					AccessibleSelection selection = ac.getAccessibleSelection();
+					if (selection != null &&
+							selection.getAccessibleSelectionCount() > 0) {
+						java.lang.Object child = selection.getAccessibleSelection(0);
+						dispatchFocusEvent(child);
+					}
+				}
+
+				if (!isTextEvent) {
+					emitSignal(ac, AtkSignal.OBJECT_SELECTION_CHANGED, null);
+				}
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_VISIBLE_DATA_PROPERTY) ) {
+				emitSignal(ac, AtkSignal.OBJECT_VISIBLE_DATA_CHANGED, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_ACTION_PROPERTY) ) {
+				Object[] args = new Object[2];
+				args[0] = oldValue;
+				args[1] = newValue;
+
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_ACTIONS, args);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_VALUE_PROPERTY) ) {
+				if (oldValue instanceof Number &&
+					newValue instanceof Number) {
+					Object[] args = new Object[2];
+					args[0] = new Double(((Number)oldValue).doubleValue());
+					args[1] = new Double(((Number)newValue).doubleValue());
+
+					emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_VALUE, args);
+				}
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_DESCRIPTION_PROPERTY) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_DESCRIPTION, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_NAME_PROPERTY) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_NAME, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_HYPERTEXT_OFFSET) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_HYPERTEXT_OFFSET, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TABLE_MODEL_CHANGED) ) {
+				emitSignal(ac, AtkSignal.TABLE_MODEL_CHANGED, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TABLE_CAPTION_CHANGED) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_TABLE_CAPTION, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TABLE_SUMMARY_CHANGED) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_TABLE_SUMMARY, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TABLE_COLUMN_HEADER_CHANGED) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_TABLE_COLUMN_HEADER, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TABLE_COLUMN_DESCRIPTION_CHANGED) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_TABLE_COLUMN_DESCRIPTION, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TABLE_ROW_HEADER_CHANGED) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_TABLE_ROW_HEADER, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_TABLE_ROW_DESCRIPTION_CHANGED) ) {
+				emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_TABLE_ROW_DESCRIPTION, null);
+
+			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_STATE_PROPERTY) ) {
+				javax.accessibility.Accessible parent = ac.getAccessibleParent();
+				javax.accessibility.AccessibleRole role = ac.getAccessibleRole();
+				javax.accessibility.AccessibleRole parent_role = null;
+				if (parent != null) {
+					parent_role = parent.getAccessibleContext().getAccessibleRole();
+				}
+
+				if (newValue == javax.accessibility.AccessibleState.ARMED) {
+					if (role != null) {
+						if (role == javax.accessibility.AccessibleRole.MENU_ITEM ||
+							role == javax.accessibility.AccessibleRole.MENU) {
+							dispatchFocusEvent(o);
+						} else if (parent_role != null &&
+							(parent_role == javax.accessibility.AccessibleRole.MENU &&
+							 (role == javax.accessibility.AccessibleRole.CHECK_BOX ||
+							  role == javax.accessibility.AccessibleRole.RADIO_BUTTON))) {
+							dispatchFocusEvent(o);
+						}
+					}
+				} else if (newValue == javax.accessibility.AccessibleState.SELECTED &&
+						o instanceof AccessibleContext &&
+						role == javax.accessibility.AccessibleRole.MENU) {
+					dispatchFocusEvent(o);
+				} else if (newValue == javax.accessibility.AccessibleState.FOCUSED) {
+					dispatchFocusEvent(o);
+				}
+
+				AccessibleState state;
+				boolean value;
+				if (newValue != null) {
+					state = (AccessibleState)newValue;
+					value = true;
+				} else {
+					state = (AccessibleState)oldValue;
+					value = false;
+				}
+
+				if (state == AccessibleState.COLLAPSED) {
+					state = AccessibleState.EXPANDED;
+					value = false;
+				}
+
+				objectStateChange(ac, state, value);
+			}
+		}
+	};
+
+	public static void registerPropertyChangeListener(AccessibleContext ac) {
+		if (ac != null) {
+			ac.addPropertyChangeListener(propertyChangeListener);
+		}
+	}
+
+	public native static void dispatchEvent(java.lang.Object eventSource, String eventName);
+	public native static void initNativeLibrary();
+
+	public native static void focusNotify(javax.accessibility.AccessibleContext ac);
+
+	public native static void windowOpen(javax.accessibility.AccessibleContext ac, boolean isToplevel);
+	public native static void windowClose(javax.accessibility.AccessibleContext ac, boolean isToplevel);
+	public native static void windowMinimize(javax.accessibility.AccessibleContext ac);
+	public native static void windowMaximize(javax.accessibility.AccessibleContext ac);
+	public native static void windowRestore(javax.accessibility.AccessibleContext ac);
+	public native static void windowActivate(javax.accessibility.AccessibleContext ac);
+	public native static void windowDeactivate(javax.accessibility.AccessibleContext ac);
+	public native static void windowStateChange(javax.accessibility.AccessibleContext ac);
+
+	public native static void emitSignal(javax.accessibility.AccessibleContext ac, int id, Object[] args);
+
+	public native static void objectStateChange(javax.accessibility.AccessibleContext ac, java.lang.Object state, boolean value);
+
+	public native static void componentAdded(javax.accessibility.AccessibleContext ac);
+
+	public native static boolean dispatchKeyEvent(AtkKeyEvent e);
+
+	public static void printLog(String str) {
+		System.out.println( str );
+	}
+
+	public AtkWrapper(){
+		/*try{
+			Process p = Runtime.getRuntime().exec("gconftool-2 -g /desktop/gnome/interface/accessibility");
+			BufferedReader b = new BufferedReader(
+					new InputStreamReader(p.getInputStream()));
+			String result = b.readLine();
+			if(result == null || !result.equals("true")){
+				return;
+			}
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}*/
+
+		toolkit.addAWTEventListener(
+			       globalListener,
+			       AWTEvent.WINDOW_EVENT_MASK | AWTEvent.FOCUS_EVENT_MASK |
+			       AWTEvent.CONTAINER_EVENT_MASK);
+
+		toolkit.getSystemEventQueue().push(
+				new EventQueue() {
+					boolean previousPressConsumed = false;
+
+					public void dispatchEvent (AWTEvent e) {
+						if (e instanceof KeyEvent) {
+							if (e.getID() == KeyEvent.KEY_PRESSED) {
+								boolean isComsumed =
+									AtkWrapper.dispatchKeyEvent( new AtkKeyEvent((KeyEvent)e) );
+								if (isComsumed) {
+									previousPressConsumed = true;
+									return;
+								}
+							} else if (e.getID() == KeyEvent.KEY_TYPED) {
+								if (previousPressConsumed) {
+									return;
+								}
+							} else if (e.getID() == KeyEvent.KEY_RELEASED) {
+								boolean isConsumed = 
+									AtkWrapper.dispatchKeyEvent( new AtkKeyEvent((KeyEvent)e) );
+								
+								previousPressConsumed = false;
+								if (isConsumed) {
+									return;
+								}
+							}
+						}
+						
+						super.dispatchEvent(e);
+					}
+				}
+			);
+	}
+
+	public static void main(String args[]){
+		new AtkWrapper();
+	}
+}

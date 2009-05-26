@@ -1,0 +1,16 @@
+Java ATK Wrapper is a implementation of ATK by using JNI technic.
+It converts Java Swing events into ATK events, and sends these events to
+ATK-Bridge.
+
+JAW is part of the Bonobo deprecation project. By talking to ATK-Bridge, it
+keeps itself from being affected by the change of underlying communication
+mechanism.
+
+JAW consists of two major parts:
+
+wrapper:  the Java library that listens to Swing events, and adapting JAAPI
+          to fit the interfaces of ATK
+
+jni:      the C library that converts Swing events into GSignals and talks
+          to ATK-Bridge
+

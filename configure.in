@@ -1,0 +1,128 @@
+AC_INIT([java-atk-wrapper], [1.0], [ke.wang@sun.com])
+AC_CONFIG_AUX_DIR([build-aux])
+
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+
+# jni
+
+AC_CONFIG_HEADERS([config.h])
+
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_ISC_POSIX
+
+AM_PROG_LIBTOOL
+
+m4_define([req_ver_atk], [1.17.0])
+m4_define([req_ver_gtk], [2.10.0])
+
+PKG_CHECK_MODULES(JAW, [
+	atk             >= req_ver_atk
+	gtk+-2.0        >= req_ver_gtk
+	gthread-2.0
+	gmodule-2.0
+])
+
+# java wrapper
+
+JAVA_REQUIRED=1.5
+JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
+
+AC_ARG_WITH(java_home, [  --with-java-home=PATH  	Use the jdk at PATH])
+
+if test "x$with_java_home" != "x" ; then
+   JAVA_HOME=$with_java_home
+   AC_CHECK_FILE("$JAVA_HOME/bin/java", JAVA="$JAVA_HOME/bin/java",
+		 AC_MSG_ERROR([$JAVA_ERROR_MESSAGE]))
+else
+   AC_MSG_ERROR(["Please provide Java home with --with-java-home argument."])
+fi
+
+AC_CHECK_PROG(JAVA, java, java, no)
+if test "x$JAVA" = xno; then
+  AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+fi
+
+AC_SUBST(JAVA_HOME)
+AC_SUBST(JAVA)
+
+CHECK_JNI
+
+AC_MSG_CHECKING([JDK version])
+jversion=`$JAVA -version 2>&1 | head -n1 | cut -f2 -d'"' | cut -f1 -d_`
+AC_MSG_RESULT($jversion)
+j_major_version=0`echo $jversion | cut -f1 -d.`
+j_minor_version=0`echo $jversion | cut -f2 -d.`
+j_micro_version=0`echo $jversion | cut -f3 -d.`
+min_major_version=0`echo $JAVA_REQUIRED | cut -f1 -d.`
+min_minor_version=0`echo $JAVA_REQUIRED | cut -f2 -d.`
+min_micro_version=0`echo $JAVA_REQUIRED | cut -f3 -d.`
+if test $j_major_version -lt $min_major_version; then
+  AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+elif test $j_major_version = $min_major_version; then
+  if test $j_minor_version -lt $min_minor_version; then
+    AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+  elif test $j_minor_version = $min_minor_version; then
+    if test $j_micro_version -lt $min_micro_version; then
+      AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+    fi
+  fi
+fi    
+
+if test "x$JAVA_HOME" != "x" ; then
+  AC_CHECK_FILE("$JAVA_HOME/bin/javac", JAVAC="$JAVA_HOME/bin/javac",
+	AC_MSG_ERROR([$JAVA_ERROR_MESSAGE]))
+else
+  AC_CHECK_PROG(JAVAC, javac, javac, no)
+  if test "x$JAVAC" = xno; then
+    AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+  fi
+fi
+AC_SUBST(JAVAC)
+
+dnl AC_MSG_CHECKING([for Java Accessibility Utilities])
+
+if test "x$JAVA_HOME" != "x" ; then
+
+dnl  AC_CHECK_FILE("$JAVA_HOME/jre/lib/ext/jaccess.jar", 
+dnl	JACCESS=yes,
+dnl	AC_MSG_ERROR([$JACCESS_ERROR_MESSAGE]))
+
+  JAVA_PROPERTIES_HOME="$JAVA_HOME/jre/lib"
+else
+  JAVAC_EXE=`which $JAVAC`	
+  JACCESS=`dirname $JAVAC_EXE`
+  JAVA_PROPERTIES_HOME="$JACCESS/../jre/lib"
+  AC_MSG_RESULT([JRE_HOME appears to be $JACCESS/jre])
+
+dnl  AC_CHECK_FILE("$JACCESS/../jre/lib/ext/jaccess.jar", JACCESS=yes,
+dnl                 AC_MSG_ERROR([$JACCESS_ERROR_MESSAGE]))
+
+fi
+
+dnl AC_SUBST(JACCESS)
+
+if test "x$JAVA_HOME" != "x" ; then
+  AC_CHECK_FILE("$JAVA_HOME/bin/jar", JAR="$JAVA_HOME/bin/jar",
+	AC_MSG_ERROR([$JAVA_ERROR_MESSAGE]))
+else
+  AC_CHECK_PROG(JAR, jar, jar, no)
+  if test "x$JAR" = xno; then
+    AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+  fi
+fi
+AC_SUBST(JAR)
+
+AC_SUBST(JAVA_PROPERTIES_HOME)
+
+AC_SUBST(EXTRA_JARFILES)
+
+AC_OUTPUT([
+Makefile
+jni/Makefile
+jni/src/Makefile
+wrapper/Makefile
+wrapper/org/Makefile
+wrapper/org/GNOME/Makefile
+wrapper/org/GNOME/Accessibility/Makefile
+])
