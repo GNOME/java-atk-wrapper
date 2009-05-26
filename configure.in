@@ -1,5 +1,4 @@
 AC_INIT([java-atk-wrapper], [1.0], [ke.wang@sun.com])
-AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
