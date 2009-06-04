@@ -27,7 +27,11 @@ PKG_CHECK_MODULES(JAW, [
 JAVA_REQUIRED=1.5
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
-AC_ARG_WITH(java_home, [  --with-java-home=PATH  	Use the jdk at PATH])
+AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
+
+AC_ARG_WITH([java_home],
+	    [AS_HELP_STRING([--with-java-home=PATH],
+			    [Use the jdk at PATH])])
 
 if test "x$with_java_home" != "x" ; then
    JAVA_HOME=$with_java_home
