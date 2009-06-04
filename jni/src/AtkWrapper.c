@@ -970,36 +970,3 @@ JNIEXPORT jboolean JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEv
 	return key_consumed;
 }
 
-JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchEvent(
-		JNIEnv *jniEnv, jclass jClass, jobject jObject, jstring jString) {
-	jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv, "javax/accessibility/AccessibleContext");
-	jclass classAccessible = (*jniEnv)->FindClass(jniEnv, "javax/accessibility/Accessible");
-	jobject ac;
-
-	if( (*jniEnv)->IsInstanceOf(jniEnv, jObject, classAccessibleContext) ) {
-		ac = jObject;
-	} else if( (*jniEnv)->IsInstanceOf(jniEnv, jObject, classAccessible) ) {
-		jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAccessible, "getAccessibleContext", "()Ljavax/accessibility/AccessibleContext;");
-		ac = (*jniEnv)->CallObjectMethod(jniEnv, jObject, jmid);
-
-		if( ac != NULL ) {
-			printf("Got AccessibleContext\n");
-			if( (*jniEnv)->IsInstanceOf(jniEnv, ac, classAccessibleContext) )
-				printf("AccessibleContext type check right\n");
-		}
-	} else {
-		return;
-	}
-
-	const char *str = (*jniEnv)->GetStringUTFChars(jniEnv, jString, NULL);
-	printf("%s\n", str);
-	(*jniEnv)->ReleaseStringUTFChars(jniEnv, jString, str);
-
-	guint ret = jaw_util_get_tflag_from_jobj(jniEnv, jObject);
-	printf("jaw_util_get_tflag_from_jobj() return %d\n", ret);
-
-	/*JawImpl* impl = jaw_impl_ref_instance (ac);
-	const gchar* strName = atk_object_get_name( ATK_OBJECT(impl) );
-	printf("get_name: %s\n", strName);*/
-}
-

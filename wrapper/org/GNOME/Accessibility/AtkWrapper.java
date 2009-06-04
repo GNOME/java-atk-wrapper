@@ -467,7 +467,6 @@ public class AtkWrapper {
 		}
 	}
 
-	public native static void dispatchEvent(java.lang.Object eventSource, String eventName);
 	public native static void initNativeLibrary();
 
 	public native static void focusNotify(javax.accessibility.AccessibleContext ac);

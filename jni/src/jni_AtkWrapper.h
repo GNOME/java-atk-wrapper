@@ -28,14 +28,6 @@ extern "C" {
 #endif
 /*
  * Class:     org_GNOME_Accessibility_AtkWrapper
- * Method:    dispatchEvent
- * Signature: (Ljava/lang/Object;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchEvent
-  (JNIEnv *, jclass, jobject, jstring);
-
-/*
- * Class:     org_GNOME_Accessibility_AtkWrapper
  * Method:    initNativeLibrary
  * Signature: ()V
  */
