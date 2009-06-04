@@ -9,7 +9,7 @@ run ./autogen.sh in the java-atk-wrapper directory (this directory),
 Example:
 	./autogen.sh --prefix=/opt/gnome-2.0
 
-You must also include a --with-java-home argument:
+You can also include a --with-java-home argument:
 
 	./autogen.sh --prefix=/opt/gnome-2.0 --with-java-home=/usr/java/j2sdk1.4.0
 

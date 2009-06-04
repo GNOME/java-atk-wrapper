@@ -34,12 +34,10 @@ if test "x$with_java_home" != "x" ; then
    AC_CHECK_FILE("$JAVA_HOME/bin/java", JAVA="$JAVA_HOME/bin/java",
 		 AC_MSG_ERROR([$JAVA_ERROR_MESSAGE]))
 else
-   AC_MSG_ERROR(["Please provide Java home with --with-java-home argument."])
-fi
-
-AC_CHECK_PROG(JAVA, java, java, no)
-if test "x$JAVA" = xno; then
-  AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+   AC_CHECK_PROG(JAVA, java, java, no)
+   if test "x$JAVA" = xno; then
+     AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
+   fi
 fi
 
 AC_SUBST(JAVA_HOME)
