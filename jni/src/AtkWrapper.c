@@ -51,14 +51,16 @@ gpointer jni_main_loop(gpointer data) {
 		return NULL;
 	}
 
-	typedef void (*DL_INIT)(void);
-	DL_INIT dl_init;
-	if (!g_module_symbol( module, "gnome_accessibility_module_init", (gpointer*)&dl_init)) {
+	GVoidFunc dl_init;
+	GVoidFunc dl_shutdown;
+	if (!g_module_symbol( module, "gnome_accessibility_module_init", (gpointer*)&dl_init)
+			|| !g_module_symbol( module, "gnome_accessibility_module_shutdown", (gpointer*)&dl_shutdown)) {
 		g_module_close(module);
 		return NULL;
 	}
 
 	(*dl_init)();
+	g_atexit( dl_shutdown );
 
 	gdk_threads_enter();
 	gtk_main();
@@ -512,7 +514,7 @@ signal_emit_handler (gpointer p)
 		free_callback_para(para);
 		return FALSE;
 	}
-	
+
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
 
 	switch (para->signal_id) {
@@ -634,36 +636,17 @@ signal_emit_handler (gpointer p)
 		}
 		case Sig_Object_Property_Change_Accessible_Value:
 		{
-			gdouble oldValue = get_double_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-			gdouble newValue = get_double_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
-			AtkPropertyValues values = { NULL };
-			g_value_init(&values.old_value, G_TYPE_DOUBLE);
-			g_value_set_double(&values.old_value, oldValue);
-			g_value_init(&values.new_value, G_TYPE_DOUBLE);
-			g_value_set_double(&values.new_value, newValue);
-			values.property_name = "accessible-value";
-
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-value",
-					&values);
+			g_object_notify(G_OBJECT(atk_obj), "accessible-value");
 			break;
 		}
 		case Sig_Object_Property_Change_Accessible_Description:
 		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-description",
-					NULL);
+			g_object_notify(G_OBJECT(atk_obj), "accessible-description");
 			break;
 		}
 		case Sig_Object_Property_Change_Accessible_Name:
 		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-name",
-					NULL);
+			g_object_notify(G_OBJECT(atk_obj), "accessible-name");
 			break;
 		}
 		case Sig_Object_Property_Change_Accessible_Hypertext_Offset:

@@ -17,4 +17,4 @@ $(JARFILES) :
 all-local : $(DATA) $(JARFILES)
 
 clean-local:
-	rm $(JARFILES)
+	rm -f $(JARFILES)

@@ -1,3 +1,15 @@
+Java ATK Wrapper version 0.27.2
+===============================
+Important changes:
+	* Use g_object_notify instead of g_signal_emit when
+          there is property changes, so as to fix the crash
+          bug.
+
+	* Register gnome_accessibility_module_shutdown as a
+          _atexit function after invocation of
+          gnome_accessibility_module_init, so as to fix the
+          bug that Java apps crash when exit.
+
 Java ATK Wrapper version 0.27.1
 ================================
 Initial release.
