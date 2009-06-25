@@ -27,19 +27,25 @@ import javax.accessibility.*;
 
 public class AtkWrapper {
 	static {
-		// Set laf to Cross platform laf because GTK laf will be the default one in some
-		// environment, but GTK laf will not work well with gtk_main() started.
 		try {
-			String lafClassName = (String)System.getProperty("swing.defaultlaf");
-			if (lafClassName != null
-					&& lafClassName.contains("GTKLookAndFeel")) {
-				javax.swing.UIManager.setLookAndFeel(
-						javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
+			Process p = Runtime.getRuntime().exec ("gconftool-2 -g /desktop/gnome/interface/accessibility");
+			BufferedReader b = new BufferedReader (
+					new InputStreamReader (p.getInputStream ()));
+			String result = b.readLine();
+			if ("true".equals(result)) {
+				// Set laf to Cross platform laf because GTK laf will be the default one in some
+				// environment, but GTK laf will not work well with gtk_main() started.
+				String lafClassName = (String)System.getProperty("swing.defaultlaf");
+				if (lafClassName != null
+						&& lafClassName.contains("GTKLookAndFeel")) {
+					javax.swing.UIManager.setLookAndFeel(
+							javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
+				}
+
+				System.loadLibrary("atk-wrapper");
+				AtkWrapper.initNativeLibrary();
 			}
 		} catch (Exception e) { }
-
-		System.loadLibrary("atk-wrapper");
-		AtkWrapper.initNativeLibrary();
 	}
 
 	final WindowAdapter winAdapter = new WindowAdapter() {
