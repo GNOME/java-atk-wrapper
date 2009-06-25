@@ -205,6 +205,8 @@ window_open_handler (gpointer p)
 	if (is_toplevel) {
 		gint n = jaw_toplevel_add_window(JAW_TOPLEVEL(atk_get_root()), atk_obj);
 		
+		g_object_notify(G_OBJECT(atk_get_root()), "accessible-name");
+		
 		g_signal_emit_by_name(ATK_OBJECT(atk_get_root()),
 				"children-changed::add", n, atk_obj, NULL);
 		g_signal_emit(atk_obj, g_signal_lookup("window_create", JAW_TYPE_OBJECT), 0);
@@ -254,6 +256,8 @@ window_close_handler (gpointer p)
 
 	if (is_toplevel) {
 		gint n = jaw_toplevel_remove_window(JAW_TOPLEVEL(atk_get_root()), atk_obj);
+		
+		g_object_notify(G_OBJECT(atk_get_root()), "accessible-name");
 
 		g_signal_emit_by_name(ATK_OBJECT(atk_get_root()),
 				"children-changed::remove", n, atk_obj, NULL);

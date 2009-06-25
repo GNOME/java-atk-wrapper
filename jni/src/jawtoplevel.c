@@ -85,13 +85,23 @@ jaw_toplevel_object_finalize (GObject *obj)
 static G_CONST_RETURN gchar*
 jaw_toplevel_get_name (AtkObject *obj)
 {
-	return "Jaw test app";
+	for(gint i = 0; i < atk_object_get_n_accessible_children(obj); i++) {
+		AtkObject* child = atk_object_ref_accessible_child(obj, i);
+		const gchar* name = atk_object_get_name(child);
+		if (name && strlen(name) > 0) {
+			g_object_unref(G_OBJECT(child));
+			return name;
+		}
+		g_object_unref(G_OBJECT(child));
+	}
+
+	return "Java Application";
 }
 
 static G_CONST_RETURN gchar*
 jaw_toplevel_get_description (AtkObject *obj)
 {
-	return "For jaw test purpose";
+	return "Accessible Java application";
 }
 
 static gint
