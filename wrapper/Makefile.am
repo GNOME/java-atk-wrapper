@@ -11,7 +11,7 @@ propertiesdir = $(prefix)/share/jar
 properties_DATA = accessibility.properties
 
 $(JARFILES) : $(DEP_CLASSES)
-	$(JAR) cf $(JARFILES) org/GNOME/Accessibility/*.class
+	$(JAR) cf $(JARFILES) $(DEP_CLASSES)
 
 all-local : $(DATA) $(JARFILES)
 

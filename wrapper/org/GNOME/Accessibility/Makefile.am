@@ -6,7 +6,7 @@ EXTRA_DIST=$(JAVA_SRC)
 
 all-local: $(BUILD_CLASSES)
 
-%.class : $(srcdir)/%.java
+%.class : %.java
 	CLASSPATH=$(top_srcdir)/wrapper $(JAVAC) -d $(top_builddir)/wrapper $<
 
 clean-local:
