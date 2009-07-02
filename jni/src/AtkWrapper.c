@@ -46,7 +46,7 @@ gpointer jni_main_loop(gpointer data) {
 	}
 
 	GModule *module;
-	module = g_module_open("/usr/lib/gtk-2.0/modules/libatk-bridge.so", G_MODULE_BIND_LAZY);
+	module = g_module_open(ATK_BRIDGE_LIB_NAME, G_MODULE_BIND_LAZY);
 	if (!module) {
 		return NULL;
 	}

@@ -33,6 +33,9 @@ PKG_CHECK_MODULES(JAW, [
 	gmodule-2.0
 ])
 
+ATK_BRIDGE_LIB_NAME="`pkg-config --variable=libdir gtk+-2.0`/gtk-2.0/modules/libatk-bridge.so"
+AC_SUBST(ATK_BRIDGE_LIB_NAME)
+
 # java wrapper
 
 JAVA_REQUIRED=1.5

@@ -24,7 +24,8 @@ noinst_HEADERS = jni_AtkWrapper.h \
 		  jawutil.h
 
 libatk_wrapper_la_CPPFLAGS = $(JNI_INCLUDES)\
-			     $(JAW_CFLAGS)
+			     $(JAW_CFLAGS)\
+			     -DATK_BRIDGE_LIB_NAME=\"$(ATK_BRIDGE_LIB_NAME)\"
 
 libatk_wrapper_la_LDFLAGS = -version-info $(LIB_ATK_WRAPPER_LT_VERSION)
 
