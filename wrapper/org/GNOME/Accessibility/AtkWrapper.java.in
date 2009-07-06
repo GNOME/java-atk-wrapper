@@ -28,11 +28,19 @@ import javax.accessibility.*;
 public class AtkWrapper {
 	static {
 		try {
-			Process p = Runtime.getRuntime().exec ("gconftool-2 -g /desktop/gnome/interface/accessibility");
+			Process p = Runtime.getRuntime().exec("@XPROP@ -root");
 			BufferedReader b = new BufferedReader (
 					new InputStreamReader (p.getInputStream ()));
-			String result = b.readLine();
-			if ("true".equals(result)) {
+			String result;
+			boolean found = false;
+			while ((result = b.readLine()) != null) {
+				if (result.indexOf ("AT_SPI_IOR") >= 0) {
+					found = true;
+					break;
+				}
+			}
+			
+			if (found) {
 				// Set laf to Cross platform laf because GTK laf will be the default one in some
 				// environment, but GTK laf will not work well with gtk_main() started.
 				String lafClassName = (String)System.getProperty("swing.defaultlaf");

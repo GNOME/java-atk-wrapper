@@ -24,7 +24,6 @@ AC_ISC_POSIX
 AM_PROG_LIBTOOL
 
 m4_define([req_ver_atk], [1.17.0])
-m4_define([req_ver_gtk], [2.10.0])
 
 PKG_CHECK_MODULES(JAW, [
 	atk             >= req_ver_atk
@@ -120,6 +119,11 @@ AC_SUBST(JAR)
 AC_SUBST(JAVA_PROPERTIES_HOME)
 
 AC_SUBST(EXTRA_JARFILES)
+
+AC_PATH_PROG(XPROP,xprop,no)
+if test x$XPROP = xno; then
+  AC_MSG_ERROR([No xprop found])
+fi
 
 AC_OUTPUT([
 Makefile
