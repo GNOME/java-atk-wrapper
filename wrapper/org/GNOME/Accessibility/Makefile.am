@@ -2,7 +2,7 @@ JAVA_SRC=$(wildcard $(srcdir)/*.java)
 CLASSES=$(patsubst %.java,%.class,$(JAVA_SRC))
 BUILD_CLASSES=$(patsubst $(srcdir)%,$(builddir)%,$(CLASSES)) $(builddir)/AtkWrapper.class
 
-EXTRA_DIST=$(JAVA_SRC)
+EXTRA_DIST=$(JAVA_SRC) AtkWrapper.java.in
 
 all-local: $(BUILD_CLASSES)
 
