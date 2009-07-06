@@ -1,3 +1,14 @@
+Java ATK Wrapper version 0.27.3
+===============================
+Important changes:
+	* Fixed several problems in build system.
+	* Resolved conflict with GTK look and feel.
+	* Added code to check whether accessibility technology is switched on
+	* Added code to get more accurate application name
+	* Added code to determine whether to load 32 or 64-bit version of atk-bridge
+	* Added functionality to auto-detect JAVA_HOME
+	* Removed dependency on gtk+-2.0
+
 Java ATK Wrapper version 0.27.2
 ===============================
 Important changes:

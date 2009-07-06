@@ -15,4 +15,5 @@ AtkWrapper.java : AtkWrapper.java.in
 
 clean-local:
 	$(RM) *.class
+	$(RM) AtkWrapper.java
 
