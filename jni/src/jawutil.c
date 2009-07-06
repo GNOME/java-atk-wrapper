@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <gtk/gtk.h>
+#include <glib.h>
 #include "jawutil.h"
 #include "jawtoplevel.h"
 #include "jawobject.h"
@@ -904,13 +904,11 @@ jaw_misc_init (JawMisc *misc)
 
 static void jaw_misc_threads_enter (AtkMisc *misc)
 {
-	gdk_threads_enter();
-	//GDK_THREADS_ENTER ();
+	//gdk_threads_enter();
 }
 
 static void jaw_misc_threads_leave (AtkMisc *misc)
 {
-	gdk_threads_leave();
-	//GDK_THREADS_LEAVE ();
+	//gdk_threads_leave();
 }
 

@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <gtk/gtk.h>
+#include <glib.h>
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"

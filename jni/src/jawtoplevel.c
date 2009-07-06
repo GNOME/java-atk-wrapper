@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <gtk/gtk.h>
+#include <glib.h>
 #include "jawtoplevel.h"
 
 static void		jaw_toplevel_class_init		(JawToplevelClass	*klass);

@@ -18,7 +18,7 @@
  */
 
 #include <atk/atk.h>
-#include <gtk/gtk.h>
+#include <glib.h>
 #include "jawimpl.h"
 #include "jawutil.h"
 #include "jawhyperlink.h"

@@ -28,7 +28,7 @@ m4_define([req_ver_gtk], [2.10.0])
 
 PKG_CHECK_MODULES(JAW, [
 	atk             >= req_ver_atk
-	gtk+-2.0        >= req_ver_gtk
+	glib-2.0
 	gthread-2.0
 	gmodule-2.0
 ])

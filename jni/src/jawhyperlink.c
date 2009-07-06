@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <gtk/gtk.h>
+#include <glib.h>
 #include "jawhyperlink.h"
 #include "jawutil.h"
 #include "jawimpl.h"
