@@ -85,7 +85,8 @@ jaw_toplevel_object_finalize (GObject *obj)
 static G_CONST_RETURN gchar*
 jaw_toplevel_get_name (AtkObject *obj)
 {
-	for(gint i = 0; i < atk_object_get_n_accessible_children(obj); i++) {
+	gint i;
+	for(i = 0; i < atk_object_get_n_accessible_children(obj); i++) {
 		AtkObject* child = atk_object_ref_accessible_child(obj, i);
 		const gchar* name = atk_object_get_name(child);
 		if (name && strlen(name) > 0) {

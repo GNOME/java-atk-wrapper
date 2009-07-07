@@ -325,7 +325,8 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
 	jobjectArray jstate_arr = (*jniEnv)->CallObjectMethod( jniEnv, jstate_set, jmid );
 
 	jsize jarr_size = (*jniEnv)->GetArrayLength(jniEnv, jstate_arr);
-	for (jsize i = 0; i < jarr_size; i++) {
+	jsize i;
+	for (i = 0; i < jarr_size; i++) {
 		jobject jstate = (*jniEnv)->GetObjectArrayElement( jniEnv, jstate_arr, i );
 		AtkStateType state_type = jaw_util_get_atk_state_type_from_java_state( jniEnv, jstate );
 		atk_state_set_add_state( state_set, state_type );

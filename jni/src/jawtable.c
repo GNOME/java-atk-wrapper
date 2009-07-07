@@ -407,7 +407,8 @@ jaw_table_get_selected_columns (AtkTable *table, gint **selected)
 	jint *jcolumns = (*jniEnv)->GetIntArrayElements(jniEnv, jcolumnArray, NULL);
 	gint *columns = g_new(gint, length);
 
-	for (gint i = 0; i < length; i++) {
+	gint i;
+	for (i = 0; i < length; i++) {
 		columns[i] = (gint)jcolumns[i];
 	}
 
@@ -436,7 +437,8 @@ jaw_table_get_selected_rows (AtkTable *table, gint **selected)
 	jint *jrows = (*jniEnv)->GetIntArrayElements(jniEnv, jrowArray, NULL);
 	gint *rows = g_new(gint, length);
 
-	for (gint i = 0; i < length; i++) {
+	gint i;
+	for (i = 0; i < length; i++) {
 		rows[i] = (gint)jrows[i];
 	}
 

@@ -649,7 +649,8 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
 	jobjectArray jrel_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel_set, jmid);
 	jsize jarr_size = (*jniEnv)->GetArrayLength(jniEnv, jrel_arr);
 
-	for (jsize i = 0; i < jarr_size; i++) {
+	jsize i;
+	for (i = 0; i < jarr_size; i++) {
 		jobject jrel = (*jniEnv)->GetObjectArrayElement(jniEnv, jrel_arr, i);
 		jclass classAccessibleRelation = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/AccessibleRelation" );
 		jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessibleRelation, "getKey", "()Ljava/lang/String;" );
@@ -661,7 +662,8 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
 		jobjectArray jtarget_arr = (*jniEnv)->CallObjectMethod( jniEnv, jrel, jmid );
 		jsize jtarget_size = (*jniEnv)->GetArrayLength(jniEnv, jtarget_arr);
 
-		for (jsize j = 0; j < jtarget_size; j++) {
+		jsize j;
+		for (j = 0; j < jtarget_size; j++) {
 			jobject jtarget = (*jniEnv)->GetObjectArrayElement(jniEnv, jtarget_arr, j);
 			jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
 			if ((*jniEnv)->IsInstanceOf(jniEnv, jtarget, classAccessible)) {
