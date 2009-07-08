@@ -11,7 +11,7 @@ propertiesdir = $(JAVA_HOME)/jre/lib
 properties_DATA = accessibility.properties
 
 $(JARFILES) : $(DEP_CLASSES)
-	$(JAR) cf $(JARFILES) $(DEP_CLASSES)
+	$(JAR) cf $(JARFILES) org/GNOME/Accessibility/*.class
 
 all-local : $(DATA) $(JARFILES)
 

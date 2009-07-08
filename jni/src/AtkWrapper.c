@@ -68,10 +68,8 @@ gpointer jni_main_loop(gpointer data) {
 	(*dl_init)();
 	g_atexit( dl_shutdown );
 
-	//gdk_threads_enter();
 	GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
 	g_main_loop_run( main_loop );
-	//gdk_threads_leave();
 
 	return NULL;
 }
@@ -86,7 +84,6 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 	
 	if (!g_thread_supported()) {
 		g_thread_init(NULL);
-		//gdk_threads_init();
 	}
 
 	jaw_impl_init_mutex();

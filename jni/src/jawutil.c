@@ -904,11 +904,9 @@ jaw_misc_init (JawMisc *misc)
 
 static void jaw_misc_threads_enter (AtkMisc *misc)
 {
-	//gdk_threads_enter();
 }
 
 static void jaw_misc_threads_leave (AtkMisc *misc)
 {
-	//gdk_threads_leave();
 }
 
