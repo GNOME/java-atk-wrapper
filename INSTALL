@@ -4,8 +4,8 @@ Directions for installing the Java ATK Wrapper for GNOME
 (2) If you obtained java-atk-wrapper from GNOME Git repository:
 
 run ./autogen.sh in the java-atk-wrapper directory (this directory),
-specify JAVA_HOME where JDK resides and optionally specifying the
-"prefix" into which your GNOME 2 installation resides (e.g. /opt/gnome-2.0).
+optionally specify JAVA_HOME where JDK resides and the "prefix" into
+which your GNOME 2 installation resides (e.g. /opt/gnome-2.0).
 Example:
 	./autogen.sh --prefix=/opt/gnome-2.0 JAVA_HOME=/usr/java
 

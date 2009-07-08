@@ -43,7 +43,7 @@ JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-acces
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
 
 if test -z "$JAVA_HOME"; then
-  AC_MSG_ERROR([JAVA_HOME not found])
+  JAVA_PATH=${PATH}
 else
   JAVA_PATH=${JAVA_HOME}:${JAVA_HOME}/jre/bin:${JAVA_HOME}/bin:${JAVA_HOME}/../bin:${PATH}
 fi
