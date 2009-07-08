@@ -1,17 +1,18 @@
 SUBDIRS=org
 JARFILES=java-atk-wrapper.jar
-DEP_CLASSES=$(wildcard org/GNOME/Accessibility/*.class)
+ALL_CLASSES=org/GNOME/Accessibility/*.class
+DEP_CLASSES=$(wildcard $(ALL_CLASSES))
 
-java_atk_wrapperdir = $(JAVA_HOME)/jre/lib/ext
+java_atk_wrapperdir = $(prefix)/share/jar
 java_atk_wrapper_DATA = $(JARFILES)
 
 EXTRA_DIST = $(properties_DATA)
 
-propertiesdir = $(JAVA_HOME)/jre/lib
+propertiesdir = $(prefix)/share/jar
 properties_DATA = accessibility.properties
 
 $(JARFILES) : $(DEP_CLASSES)
-	$(JAR) cf $(JARFILES) org/GNOME/Accessibility/*.class
+	$(JAR) cf $(JARFILES) $(ALL_CLASSES)
 
 all-local : $(DATA) $(JARFILES)
 
