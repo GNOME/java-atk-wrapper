@@ -16,8 +16,7 @@ libatk_wrapper_la_SOURCES = AtkWrapper.c \
 			    jawvalue.c \
 			    jawtable.c
 
-noinst_HEADERS = jni_AtkWrapper.h \
-		  jawimpl.h \
+noinst_HEADERS = jawimpl.h \
 		  jawobject.h \
 		  jawhyperlink.h \
 		  jawtoplevel.h \
