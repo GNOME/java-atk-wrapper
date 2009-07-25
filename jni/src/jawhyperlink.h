@@ -25,7 +25,7 @@
 
 G_BEGIN_DECLS
 
-#define JAW_TYPE_HYPERLINK		(jaw_object_get_type ())
+#define JAW_TYPE_HYPERLINK		(jaw_hyperlink_get_type ())
 #define JAW_HYPERLINK(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), JAW_TYPE_HYPERLINK, JawHyperlink))
 #define JAW_HYPERLINK_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), JAW_TYPE_HYPERLINK, JawHyperlinkClass))
 #define JAW_IS_HYPERLINK(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), JAW_TYPE_HYPERLINK))

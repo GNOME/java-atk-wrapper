@@ -114,7 +114,7 @@ jaw_hypertext_get_n_links (AtkHypertext *hypertext)
 	
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jclass classAtkHypertext = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkHypertext");
-	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkHypertext, "get_link", "()I");
+	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkHypertext, "get_n_links", "()I");
 	
 	return (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_hypertext, jmid);
 }
