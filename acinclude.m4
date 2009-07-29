@@ -9,7 +9,7 @@ case $host in
     if test $gcj_compile = "yes"; then
       JNI_INCLUDES=
     else
-      JNI_INCLUDES="-I$JAVA_HOME/include -I$JAVA_HOME/include/win32"
+      JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/win32"
     fi
     platform_win32="yes"
     PLATFORM_CFLAGS="-mms-bitfields"
@@ -21,7 +21,7 @@ case $host in
     if test $gcj_compile = "yes"; then
       JNI_INCLUDES=
     else
-      JNI_INCLUDES="-I$JAVA_HOME/include -I$JAVA_HOME/include/win32"
+      JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/win32"
     fi
     platform_win32="yes"
     PLATFORM_CFLAGS=
@@ -33,7 +33,7 @@ case $host in
     if test $gcj_compile = "yes"; then
       JNI_INCLUDES=
     else
-      JNI_INCLUDES="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
+      JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/linux"
     fi
     PLATFORM_CFLAGS=
     PLATFORM_LDFLAGS=
@@ -44,7 +44,7 @@ case $host in
     if test $gcj_compile = "yes"; then
       JNI_INCLUDES=
     else
-      JNI_INCLUDES="-I$JAVA_HOME/include -I$JAVA_HOME/include/solaris"
+      JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/solaris"
     fi
     PLATFORM_CFLAGS=
     PLATFORM_LDFLAGS=
@@ -55,7 +55,7 @@ case $host in
     if test $gcj_compile = "yes"; then
       JNI_INCLUDES=
     else
-      JNI_INCLUDES="-I$JAVA_HOME/include -I$JAVA_HOME/include/$host_os"
+      JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/$host_os"
     fi
     PLATFORM_CFLAGS=
     PLATFORM_LDFLAGS=

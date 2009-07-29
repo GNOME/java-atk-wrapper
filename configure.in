@@ -41,6 +41,7 @@ JAVA_REQUIRED=1.5
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
+AC_ARG_VAR([JDK_HOME],[JDK installation path])
 
 if test -z "$JAVA_HOME"; then
   JAVA_PATH=${PATH}
@@ -71,6 +72,25 @@ if test -z "$JAR"; then
   AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
 fi
 AC_SUBST(JAR)
+
+AC_ARG_WITH([jdk_auto_detect],
+	    [AS_HELP_STRING([--with-jdk-auto-detect],
+			    [Auto-detection of jdk location])],
+	    [],
+	    [with_jdk_auto_detect=yes])
+
+if test "x$with_jdk_auto_detect" = "xyes"; then
+	CUR_DIR=`pwd`
+	SRC_DIR=`dirname $0`
+	SRC_DIR=`cd $SRC_DIR;pwd;cd $CUR_DIR`
+	$JAVAC $SRC_DIR/JavaInfo.java
+	JDK_HOME="`CLASSPATH=$SRC_DIR $JAVA JavaInfo`"
+else
+	if test -z "$JDK_HOME"; then
+		AC_MSG_ERROR("You should specify JDK_HOME")
+	fi
+fi
+AC_SUBST(JDK_HOME)
 
 CHECK_JNI
 
