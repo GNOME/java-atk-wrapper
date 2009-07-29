@@ -1,3 +1,9 @@
+Java ATK Wrapper version 0.27.5
+===============================
+Important changes:
+	* Fixed bug 588879 - JVM crash when selecting text demo of SwingSet
+	* Added functionality of JDK_HOME auto-detection
+
 Java ATK Wrapper version 0.27.4
 ===============================
 Important changes:
