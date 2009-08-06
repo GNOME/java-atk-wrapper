@@ -1,3 +1,9 @@
+Java ATK Wrapper version 0.27.6
+===============================
+Important changes:
+	* Changed the method to resolve conflict with GTK Look And Feel.
+	  Now JAW can work with GTK l&f enabled.
+
 Java ATK Wrapper version 0.27.5
 ===============================
 Important changes:
