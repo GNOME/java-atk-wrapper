@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <glib.h>
 #include <gmodule.h>
+#include <gdk/gdk.h>
+#include <X11/Xlib.h>
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
@@ -34,9 +36,19 @@
 #define GDK_MOD1_MASK (1 << 3)
 #define GDK_META_MASK (1 << 28)
 
+typedef struct _DummyDispatch DummyDispatch;
+
+struct _DummyDispatch
+{
+	GSourceFunc func;
+	gpointer data;
+	GDestroyNotify destroy;
+};
+
 GMutex *key_dispatch_mutex = NULL;
 GCond *key_dispatch_cond = NULL;
 static gint key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
+static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve) {
 	globalJvm = javaVM;
@@ -46,7 +58,37 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve) {
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *javaVM, void *reserve) {
 }
 
-gpointer jni_main_loop(gpointer data) {
+static gboolean
+jaw_dummy_idle_func (gpointer p)
+{
+	return FALSE;
+}
+
+static gboolean
+jaw_idle_dispatch (GSource    *source, 
+		GSourceFunc callback,
+		gpointer    user_data)
+{
+	static GSourceFunc gdk_dispatch_func = NULL;
+
+	if (gdk_dispatch_func == NULL
+			&& user_data != NULL
+			&& ((DummyDispatch*)user_data)->func == jaw_dummy_idle_func) {
+		gdk_dispatch_func = callback;
+
+		return FALSE;
+	}
+
+	if (gdk_dispatch_func == callback) {
+		return FALSE;
+	}
+
+	return origin_g_idle_dispatch(source, callback, user_data);
+}
+
+static gboolean
+jaw_load_atk_bridge (gpointer p)
+{
 	if (!g_module_supported()) {
 		return NULL;
 	}
@@ -65,24 +107,36 @@ gpointer jni_main_loop(gpointer data) {
 		return NULL;
 	}
 
-	(*dl_init)();
+	(dl_init)();
 	g_atexit( dl_shutdown );
 
-	GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
-	g_main_loop_run( main_loop );
+	return FALSE;
+}
+
+gpointer jni_main_loop(gpointer data) {
+	g_main_loop_run( (GMainLoop*)data );
 
 	return NULL;
 }
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv, jclass jClass) {
 	g_type_init();
+
+	// Hook up g_idle_dispatch
+	origin_g_idle_dispatch = g_idle_funcs.dispatch;
+	g_idle_funcs.dispatch = jaw_idle_dispatch;
+	
+	// Java app with GTK Look And Feel will load gail
+	// Set NO_GAIL to "1" to prevent gail from executing
+	g_setenv("NO_GAIL", "1", TRUE);
 	
 	g_type_class_unref(g_type_class_ref(JAW_TYPE_UTIL));
 	g_type_class_unref(g_type_class_ref(JAW_TYPE_MISC));
-	/* Force to invoke base initialization function of each ATK interfaces */
+	// Force to invoke base initialization function of each ATK interfaces
 	g_type_class_unref(g_type_class_ref(ATK_TYPE_NO_OP_OBJECT));
-	
+
 	if (!g_thread_supported()) {
+		XInitThreads();
 		g_thread_init(NULL);
 	}
 
@@ -91,8 +145,15 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 	key_dispatch_mutex = g_mutex_new();
 	key_dispatch_cond = g_cond_new();
 
-	GThread *main_loop = g_thread_create( jni_main_loop,
-			(gpointer)globalJvm, FALSE, NULL);
+	GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
+	
+	// Dummy idle function for jaw_idle_dispatch to get
+	// the address of gdk_threads_dispatch
+	gdk_threads_add_idle(jaw_dummy_idle_func, NULL);
+	g_idle_add(jaw_load_atk_bridge, NULL);
+
+	GThread *main_loop_thread = g_thread_create( jni_main_loop,
+			(gpointer)main_loop, FALSE, NULL);
 }
 
 typedef enum _SigalType {
@@ -193,7 +254,7 @@ window_open_handler (gpointer p)
 	JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
 
-	if (!strcmp(atk_role_get_name(atk_object_get_role(atk_obj)), "redundant object")) {
+	if (!g_strcmp0(atk_role_get_name(atk_object_get_role(atk_obj)), "redundant object")) {
 		free_callback_para(para);
 		return FALSE;
 	}
@@ -245,7 +306,7 @@ window_close_handler (gpointer p)
 
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
 
-	if (!strcmp(atk_role_get_name(atk_object_get_role(atk_obj)), "redundant object")) {
+	if (!g_strcmp0(atk_role_get_name(atk_object_get_role(atk_obj)), "redundant object")) {
 		free_callback_para(para);
 		return FALSE;
 	}

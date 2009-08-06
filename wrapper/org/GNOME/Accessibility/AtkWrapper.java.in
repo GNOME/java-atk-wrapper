@@ -41,15 +41,6 @@ public class AtkWrapper {
 			}
 			
 			if (found) {
-				// Set laf to Cross platform laf because GTK laf will be the default one in some
-				// environment, but GTK laf will not work well with gtk_main() started.
-				String lafClassName = (String)System.getProperty("swing.defaultlaf");
-				if (lafClassName != null
-						&& lafClassName.contains("GTKLookAndFeel")) {
-					javax.swing.UIManager.setLookAndFeel(
-							javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
-				}
-
 				System.loadLibrary("atk-wrapper");
 				AtkWrapper.initNativeLibrary();
 			}
