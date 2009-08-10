@@ -26,21 +26,22 @@ import java.io.*;
 import javax.accessibility.*;
 
 public class AtkWrapper {
+	static boolean accessibilityEnabled = false;
 	static {
 		try {
 			Process p = Runtime.getRuntime().exec("@XPROP@ -root");
 			BufferedReader b = new BufferedReader (
 					new InputStreamReader (p.getInputStream ()));
 			String result;
-			boolean found = false;
+			accessibilityEnabled = false;
 			while ((result = b.readLine()) != null) {
 				if (result.indexOf ("AT_SPI_IOR") >= 0) {
-					found = true;
+					accessibilityEnabled = true;
 					break;
 				}
 			}
 			
-			if (found) {
+			if (accessibilityEnabled) {
 				System.loadLibrary("atk-wrapper");
 				AtkWrapper.initNativeLibrary();
 			}
@@ -499,17 +500,8 @@ public class AtkWrapper {
 	}
 
 	public AtkWrapper(){
-		/*try{
-			Process p = Runtime.getRuntime().exec("gconftool-2 -g /desktop/gnome/interface/accessibility");
-			BufferedReader b = new BufferedReader(
-					new InputStreamReader(p.getInputStream()));
-			String result = b.readLine();
-			if(result == null || !result.equals("true")){
-				return;
-			}
-		} catch( Exception e ) {
-			e.printStackTrace();
-		}*/
+		if (!accessibilityEnabled)
+			return;
 
 		toolkit.addAWTEventListener(
 			       globalListener,
