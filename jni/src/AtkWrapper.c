@@ -523,7 +523,7 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowStateChange
 	jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
 	CallbackPara *para = alloc_callback_para(global_ac);
 
-	g_idle_add(window_state_change_handler, para);
+	//g_idle_add(window_state_change_handler, para);
 }
 
 static gchar
