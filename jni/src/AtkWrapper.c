@@ -271,7 +271,7 @@ window_open_handler (gpointer p)
 		
 		g_signal_emit_by_name(ATK_OBJECT(atk_get_root()),
 				"children-changed::add", n, atk_obj, NULL);
-		g_signal_emit(atk_obj, g_signal_lookup("window_create", JAW_TYPE_OBJECT), 0);
+		g_signal_emit(atk_obj, g_signal_lookup("create", JAW_TYPE_OBJECT), 0);
 	}
 
 	free_callback_para(para);
@@ -323,7 +323,7 @@ window_close_handler (gpointer p)
 
 		g_signal_emit_by_name(ATK_OBJECT(atk_get_root()),
 				"children-changed::remove", n, atk_obj, NULL);
-		g_signal_emit(atk_obj, g_signal_lookup("window_destroy", JAW_TYPE_OBJECT), 0);
+		g_signal_emit(atk_obj, g_signal_lookup("destroy", JAW_TYPE_OBJECT), 0);
 	}
 
 	free_callback_para(para);
@@ -356,7 +356,7 @@ window_minimize_handler (gpointer p)
 	}
 
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-	g_signal_emit(atk_obj, g_signal_lookup("window_minimize", JAW_TYPE_OBJECT), 0);
+	g_signal_emit(atk_obj, g_signal_lookup("minimize", JAW_TYPE_OBJECT), 0);
 
 	free_callback_para(para);
 
@@ -386,7 +386,7 @@ window_maximize_handler (gpointer p)
 	}
 
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-	g_signal_emit(atk_obj, g_signal_lookup("window_maximize", JAW_TYPE_OBJECT), 0);
+	g_signal_emit(atk_obj, g_signal_lookup("maximize", JAW_TYPE_OBJECT), 0);
 
 	free_callback_para(para);
 
@@ -417,7 +417,7 @@ window_restore_handler (gpointer p)
 	}
 
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-	g_signal_emit(atk_obj, g_signal_lookup("window_restore", JAW_TYPE_OBJECT), 0);
+	g_signal_emit(atk_obj, g_signal_lookup("restore", JAW_TYPE_OBJECT), 0);
 
 	free_callback_para(para);
 
@@ -448,7 +448,7 @@ window_activate_handler (gpointer p)
 	}
 
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-	g_signal_emit(atk_obj, g_signal_lookup("window_activate", JAW_TYPE_OBJECT), 0);
+	g_signal_emit(atk_obj, g_signal_lookup("activate", JAW_TYPE_OBJECT), 0);
 
 	free_callback_para(para);
 
@@ -479,7 +479,7 @@ window_deactivate_handler (gpointer p)
 	}
 
 	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-	g_signal_emit(atk_obj, g_signal_lookup("window_deactivate", JAW_TYPE_OBJECT), 0);
+	g_signal_emit(atk_obj, g_signal_lookup("deactivate", JAW_TYPE_OBJECT), 0);
 
 	free_callback_para(para);
 

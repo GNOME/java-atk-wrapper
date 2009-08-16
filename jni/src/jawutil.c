@@ -136,9 +136,7 @@ jaw_util_add_global_event_listener (GSignalEmissionHook listener,
 
 	if (split_string) {
 		if (!strcmp ("window", split_string[0])) {
-			gchar* signal_name = g_strconcat("window_", split_string[1], NULL);
-			rc = add_listener (listener, "JawObject", signal_name, event_type);
-			g_free(signal_name);
+			rc = add_listener (listener, "JawObject", split_string[1], event_type);
 		} else {
 			rc = add_listener (listener, split_string[1], split_string[2], event_type);
 		}

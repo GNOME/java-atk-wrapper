@@ -85,7 +85,7 @@ jaw_object_class_init (JawObjectClass *klass)
 	klass->get_interface_data = NULL;
 
 	jaw_window_signals [ACTIVATE] =
-		g_signal_new ("window_activate",
+		g_signal_new ("activate",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -93,7 +93,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [CREATE] =
-		g_signal_new ("window_create",
+		g_signal_new ("create",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -101,7 +101,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [DEACTIVATE] =
-		g_signal_new ("window_deactivate",
+		g_signal_new ("deactivate",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -109,7 +109,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [DESTROY] =
-		g_signal_new ("window_destroy",
+		g_signal_new ("destroy",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -117,7 +117,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [MAXIMIZE] =
-		g_signal_new ("window_maximize",
+		g_signal_new ("maximize",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -125,7 +125,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [MINIMIZE] =
-		g_signal_new ("window_minimize",
+		g_signal_new ("minimize",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -133,7 +133,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [MOVE] =
-		g_signal_new ("window_move",
+		g_signal_new ("move",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -141,7 +141,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [RESIZE] =
-		g_signal_new ("window_resize",
+		g_signal_new ("resize",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
@@ -149,7 +149,7 @@ jaw_object_class_init (JawObjectClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 	jaw_window_signals [RESTORE] =
-		g_signal_new ("window_restore",
+		g_signal_new ("restore",
 			G_TYPE_FROM_CLASS (klass),
 			G_SIGNAL_RUN_LAST,
 			0, /* default signal handler */
