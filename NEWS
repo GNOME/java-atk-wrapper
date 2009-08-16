@@ -1,3 +1,9 @@
+Java ATK Wrapper version 0.27.7
+===============================
+Important changes:
+	* Fixed d.o.o bug 10506 - java webstart applications don't run
+	* Fixed bug that window events are not emitted(bug 591665,591670)
+
 Java ATK Wrapper version 0.27.6
 ===============================
 Important changes:
