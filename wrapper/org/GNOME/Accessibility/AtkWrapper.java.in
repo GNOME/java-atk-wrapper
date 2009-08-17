@@ -371,7 +371,7 @@ public class AtkWrapper {
 				}
 
 			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_VISIBLE_DATA_PROPERTY) ) {
-				emitSignal(ac, AtkSignal.OBJECT_VISIBLE_DATA_CHANGED, null);
+				//emitSignal(ac, AtkSignal.OBJECT_VISIBLE_DATA_CHANGED, null);
 
 			}else if( propertyName.equals(AccessibleContext.ACCESSIBLE_ACTION_PROPERTY) ) {
 				Object[] args = new Object[2];
