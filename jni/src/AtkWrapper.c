@@ -86,6 +86,11 @@ jaw_idle_dispatch (GSource    *source,
 	return origin_g_idle_dispatch(source, callback, user_data);
 }
 
+static void jaw_exit_func ()
+{
+	_exit(0);
+}
+
 static gboolean
 jaw_load_atk_bridge (gpointer p)
 {
@@ -100,15 +105,13 @@ jaw_load_atk_bridge (gpointer p)
 	}
 
 	GVoidFunc dl_init;
-	GVoidFunc dl_shutdown;
-	if (!g_module_symbol( module, "gnome_accessibility_module_init", (gpointer*)&dl_init)
-			|| !g_module_symbol( module, "gnome_accessibility_module_shutdown", (gpointer*)&dl_shutdown)) {
+	if (!g_module_symbol( module, "gnome_accessibility_module_init", (gpointer*)&dl_init)) {
 		g_module_close(module);
 		return NULL;
 	}
 
 	(dl_init)();
-	g_atexit( dl_shutdown );
+	g_atexit( jaw_exit_func );
 
 	return FALSE;
 }
