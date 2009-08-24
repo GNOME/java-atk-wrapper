@@ -661,7 +661,7 @@ signal_emit_handler (gpointer p)
 		case Sig_Object_Active_Descendant_Changed:
 		{
 			jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0);
-			JawImpl *child_impl = jaw_impl_find_instance(jniEnv, child_ac);
+			JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
 			if (!child_impl) {
 				break;
 			}
