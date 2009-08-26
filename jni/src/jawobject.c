@@ -224,6 +224,17 @@ jaw_object_get_name (AtkObject *atk_obj)
 	JawObject *jaw_obj = JAW_OBJECT(atk_obj);
 	jobject ac = jaw_obj->acc_context;
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+	if (atk_object_get_role(atk_obj) == ATK_ROLE_COMBO_BOX
+			&& atk_object_get_n_accessible_children(atk_obj) == 1) {
+		AtkSelection *selection = ATK_SELECTION(atk_obj);
+		if (selection != NULL) {
+			AtkObject *child = atk_selection_ref_selection(selection, 0);
+			if (child != NULL) {
+				return atk_object_get_name(child);
+			}
+		}
+	}
 	
 	jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/AccessibleContext" );
 	jmethodID jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessibleContext, "getAccessibleName", "()Ljava/lang/String;" );

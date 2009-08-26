@@ -223,7 +223,7 @@ focus_notify_handler (gpointer p)
 	jobject global_ac = para->global_ac;
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+	JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 	
 	if (jaw_impl == NULL) {
 		free_callback_para(para);
@@ -505,7 +505,7 @@ window_state_change_handler (gpointer p)
 	jobject global_ac = para->global_ac;
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+	JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 	
 	if (jaw_impl == NULL) {
 		free_callback_para(para);
@@ -833,7 +833,7 @@ object_state_change_handler (gpointer p)
 	jobject global_ac = para->global_ac;
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+	JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 	
 	if (jaw_impl == NULL) {
 		free_callback_para(para);
