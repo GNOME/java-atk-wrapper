@@ -1,3 +1,13 @@
+Java ATK Wrapper version 0.27.8
+===============================
+Important changes:
+	* Fixed 592987 - Java Combobox is not accessible
+	* Fixed 593130 - JTree is not accessible to at-tools
+	* Fixed 593258 - Table cell accessing issue
+	* Fixed 593131 - Java application hangs when exiting from exit menuitem with orca running
+	* Fixed 593250 - Alt+F4 sometime leads to application hang
+	* Fixed 593261 - Slider bar can not be controled by gok
+
 Java ATK Wrapper version 0.27.7
 ===============================
 Important changes:
