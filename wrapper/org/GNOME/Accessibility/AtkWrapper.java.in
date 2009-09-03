@@ -160,6 +160,15 @@ public class AtkWrapper {
 						}
 						break;
 					}
+					case ContainerEvent.COMPONENT_REMOVED:
+					{
+						java.awt.Component c = ((ContainerEvent)e).getChild();
+						if (c instanceof javax.accessibility.Accessible) {
+							AccessibleContext ac = ((javax.accessibility.Accessible)c).getAccessibleContext();
+							AtkWrapper.componentRemoved(ac);
+						}
+						break;
+					}
 				default:
 					break;
 				}
@@ -492,6 +501,7 @@ public class AtkWrapper {
 	public native static void objectStateChange(javax.accessibility.AccessibleContext ac, java.lang.Object state, boolean value);
 
 	public native static void componentAdded(javax.accessibility.AccessibleContext ac);
+	public native static void componentRemoved(javax.accessibility.AccessibleContext ac);
 
 	public native static boolean dispatchKeyEvent(AtkKeyEvent e);
 

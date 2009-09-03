@@ -874,6 +874,11 @@ component_added_handler (gpointer p)
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 	
+	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
+	if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP) {
+		atk_object_notify_state_change(atk_obj, ATK_STATE_SHOWING, 1);
+	}
+
 	free_callback_para(para);
 
 	return FALSE;
@@ -885,6 +890,38 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentAdded(
 	CallbackPara *para = alloc_callback_para(global_ac);
 
 	g_idle_add(component_added_handler, para);
+}
+
+static gboolean
+component_removed_handler (gpointer p)
+{
+	CallbackPara *para = (CallbackPara*)p;
+	jobject global_ac = para->global_ac;
+
+	JNIEnv *jniEnv = jaw_util_get_jni_env();
+	JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+
+	if (!jaw_impl) {
+		free_callback_para(para);
+		return FALSE;
+	}
+
+	AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
+	if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP) {
+		atk_object_notify_state_change(atk_obj, ATK_STATE_SHOWING, 0);
+	}
+
+	free_callback_para(para);
+
+	return FALSE;
+}
+
+JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(
+		JNIEnv *jniEnv, jclass jClass, jobject jAccContext) {
+	jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+	CallbackPara *para = alloc_callback_para(global_ac);
+
+	g_idle_add(component_removed_handler, para);
 }
 
 static gboolean
