@@ -115,6 +115,8 @@ jaw_editable_text_insert_text (AtkEditableText *text,
 
 	jstring jstr = (*jniEnv)->NewStringUTF(jniEnv, string);
 	(*jniEnv)->CallVoidMethod(jniEnv, atk_editable_text, jmid, jstr, (jint)*position);
+	*position = *position + length;
+	atk_text_set_caret_offset(ATK_TEXT(jaw_obj), *position);
 }
 
 void
