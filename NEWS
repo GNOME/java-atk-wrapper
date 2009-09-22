@@ -1,3 +1,9 @@
+===============================
+Java ATK Wrapper version 0.28.0
+Important changes:
+	* Fixed bug 591792 - Java application tooltips are not accessible to orca screen reader
+	* Fixed bug 595234 - The caret position will not be changed when input text with gok composer
+
 Java ATK Wrapper version 0.27.8
 ===============================
 Important changes:
