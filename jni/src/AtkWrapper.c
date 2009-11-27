@@ -23,6 +23,7 @@
 #include <gmodule.h>
 #include <gdk/gdk.h>
 #include <X11/Xlib.h>
+#include <gconf/gconf-client.h>
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
@@ -98,12 +99,21 @@ jaw_load_atk_bridge (gpointer p)
 		return NULL;
 	}
 
+	gboolean use_corba = gconf_client_get_bool(
+			gconf_client_get_default(),
+			"/desktop/gnome/interface/at-spi-corba",
+			NULL);
+
 	GModule *module;
-	module = g_module_open(ATK_BRIDGE_LIB_NAME, G_MODULE_BIND_LAZY);
+	if (use_corba)
+		module = g_module_open(ATK_BRIDGE_LIB_NAME_CORBA, G_MODULE_BIND_LAZY);
+	else
+		module = g_module_open(ATK_BRIDGE_LIB_NAME_DBUS, G_MODULE_BIND_LAZY);
+
 	if (!module) {
 		return NULL;
 	}
-
+	
 	GVoidFunc dl_init;
 	if (!g_module_symbol( module, "gnome_accessibility_module_init", (gpointer*)&dl_init)) {
 		g_module_close(module);
@@ -132,7 +142,7 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 	// Java app with GTK Look And Feel will load gail
 	// Set NO_GAIL to "1" to prevent gail from executing
 	g_setenv("NO_GAIL", "1", TRUE);
-	
+
 	g_type_class_unref(g_type_class_ref(JAW_TYPE_UTIL));
 	g_type_class_unref(g_type_class_ref(JAW_TYPE_MISC));
 	// Force to invoke base initialization function of each ATK interfaces
