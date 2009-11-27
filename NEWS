@@ -1,4 +1,9 @@
 ===============================
+Java ATK Wrapper version 0.29.1
+Important changes:
+	* Added support for at-spi2(at-spi d-bus)
+
+===============================
 Java ATK Wrapper version 0.28.0
 Important changes:
 	* Fixed bug 591792 - Java application tooltips are not accessible to orca screen reader
