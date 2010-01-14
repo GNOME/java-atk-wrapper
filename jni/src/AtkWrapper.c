@@ -45,6 +45,9 @@ struct _DummyDispatch
 	GDestroyNotify destroy;
 };
 
+GMutex *atk_bridge_mutex = NULL;
+GCond *atk_bridge_cond = NULL;
+
 GMutex *key_dispatch_mutex = NULL;
 GCond *key_dispatch_cond = NULL;
 static gint key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
@@ -94,6 +97,8 @@ static void jaw_exit_func ()
 static gboolean
 jaw_load_atk_bridge (gpointer p)
 {
+	g_mutex_lock(atk_bridge_mutex);
+
 	if (!g_module_supported()) {
 		return NULL;
 	}
@@ -112,6 +117,9 @@ jaw_load_atk_bridge (gpointer p)
 
 	(dl_init)();
 	g_atexit( jaw_exit_func );
+
+	g_cond_signal(atk_bridge_cond);
+	g_mutex_unlock(atk_bridge_mutex);
 
 	return FALSE;
 }
@@ -145,6 +153,9 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 
 	jaw_impl_init_mutex();
 
+	atk_bridge_mutex = g_mutex_new();
+	atk_bridge_cond = g_cond_new();
+
 	key_dispatch_mutex = g_mutex_new();
 	key_dispatch_cond = g_cond_new();
 
@@ -155,8 +166,16 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 	gdk_threads_add_idle(jaw_dummy_idle_func, NULL);
 	g_idle_add(jaw_load_atk_bridge, NULL);
 
+	// We need to wait for the completion of the loading of ATK Bridge
+	// in order to ensure event listeners in ATK Bridge are properly
+	// registered before any emission of AWT event.
+	g_mutex_lock(atk_bridge_mutex);
+
 	GThread *main_loop_thread = g_thread_create( jni_main_loop,
 			(gpointer)main_loop, FALSE, NULL);
+
+	g_cond_wait(atk_bridge_cond, atk_bridge_mutex);
+	g_mutex_unlock(atk_bridge_mutex);
 }
 
 typedef enum _SigalType {
