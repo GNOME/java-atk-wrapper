@@ -1,4 +1,11 @@
 ===============================
+Java ATK Wrapper version 0.28.1
+Important changes:
+	* Fixed bug 606402 - Attempting to run swing applications with the JAW
+	  installed frequently causes the JRE to report a fatal runtime error
+	* Add JAW_DEBUG - Set environment JAW_DEBUG=1 to get debug messages
+
+===============================
 Java ATK Wrapper version 0.28.0
 Important changes:
 	* Fixed bug 591792 - Java application tooltips are not accessible to orca screen reader
