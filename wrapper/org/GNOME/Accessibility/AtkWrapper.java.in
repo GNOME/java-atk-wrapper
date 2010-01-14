@@ -41,7 +41,9 @@ public class AtkWrapper {
 				}
 			}
 			
-		} catch (Exception e) { }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	final WindowAdapter winAdapter = new WindowAdapter() {
@@ -138,7 +140,9 @@ public class AtkWrapper {
 				try {
 					System.loadLibrary("atk-wrapper");
 					AtkWrapper.initNativeLibrary();
-				} catch (Exception ex) {}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 
 			if( e instanceof WindowEvent ) {

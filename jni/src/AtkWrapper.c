@@ -46,6 +46,8 @@ struct _DummyDispatch
 	GDestroyNotify destroy;
 };
 
+gboolean jaw_debug = FALSE;
+
 GMutex *atk_bridge_mutex = NULL;
 GCond *atk_bridge_cond = NULL;
 
@@ -128,6 +130,10 @@ jaw_load_atk_bridge (gpointer p)
 	(dl_init)();
 	g_atexit( jaw_exit_func );
 
+	if (jaw_debug) {
+		printf("ATK Bridge has been loaded successfully\n");
+	}
+
 	g_cond_signal(atk_bridge_cond);
 	g_mutex_unlock(atk_bridge_mutex);
 
@@ -146,6 +152,11 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 	// Hook up g_idle_dispatch
 	origin_g_idle_dispatch = g_idle_funcs.dispatch;
 	g_idle_funcs.dispatch = jaw_idle_dispatch;
+
+	const gchar* debug_env = g_getenv("JAW_DEBUG");
+	if (g_strcmp0(debug_env, "1") == 0) {
+		jaw_debug = TRUE;
+	}
 	
 	// Java app with GTK Look And Feel will load gail
 	// Set NO_GAIL to "1" to prevent gail from executing
