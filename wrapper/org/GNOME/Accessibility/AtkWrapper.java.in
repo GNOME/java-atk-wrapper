@@ -41,10 +41,6 @@ public class AtkWrapper {
 				}
 			}
 			
-			if (accessibilityEnabled) {
-				System.loadLibrary("atk-wrapper");
-				AtkWrapper.initNativeLibrary();
-			}
 		} catch (Exception e) { }
 	}
 
@@ -134,7 +130,17 @@ public class AtkWrapper {
 	};
 
 	final AWTEventListener globalListener = new AWTEventListener() {
+		private boolean firstEvent = true;
+
 		public void eventDispatched(AWTEvent e) {
+			if (firstEvent && accessibilityEnabled) {
+				firstEvent = false;
+				try {
+					System.loadLibrary("atk-wrapper");
+					AtkWrapper.initNativeLibrary();
+				} catch (Exception ex) {}
+			}
+
 			if( e instanceof WindowEvent ) {
 				switch( e.getID() ) {
 				case WindowEvent.WINDOW_OPENED:
