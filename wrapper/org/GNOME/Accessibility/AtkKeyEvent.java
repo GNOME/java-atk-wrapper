@@ -25,6 +25,8 @@ import java.util.HashMap;
 
 public class AtkKeyEvent {
 
+	private static HashMap nonAlphaNumericMap = null;
+
 	public static final int ATK_KEY_EVENT_PRESSED = 0;
 	public static final int ATK_KEY_EVENT_RELEASED = 1;
 
@@ -37,6 +39,43 @@ public class AtkKeyEvent {
 	public String string;
 	public int keycode;
 	public int timestamp;
+
+	static {
+		// Non-alphanumeric symbols that need to be mapped to X11 keysym names
+		nonAlphaNumericMap = new HashMap( 40 );
+		nonAlphaNumericMap.put("!", "exclam");
+		nonAlphaNumericMap.put("@", "at");
+		nonAlphaNumericMap.put("#", "numbersign");
+		nonAlphaNumericMap.put("$", "dollar");
+		nonAlphaNumericMap.put("%", "percent");
+		nonAlphaNumericMap.put("^", "asciicircum");
+		nonAlphaNumericMap.put("&", "ampersand");
+		nonAlphaNumericMap.put("*", "asterisk");
+		nonAlphaNumericMap.put("(", "parenleft");
+		nonAlphaNumericMap.put(")", "parenright");
+		nonAlphaNumericMap.put("-", "minus");
+		nonAlphaNumericMap.put("_", "underscore");
+		nonAlphaNumericMap.put("=", "equal");
+		nonAlphaNumericMap.put("+", "plus");
+		nonAlphaNumericMap.put("\\", "backslash");
+		nonAlphaNumericMap.put("|", "bar");
+		nonAlphaNumericMap.put("`", "grave");
+		nonAlphaNumericMap.put("~", "asciitilde");
+		nonAlphaNumericMap.put("[", "bracketleft");
+		nonAlphaNumericMap.put("{", "braceleft");
+		nonAlphaNumericMap.put("]", "bracketright");
+		nonAlphaNumericMap.put("}", "braceright");
+		nonAlphaNumericMap.put(";", "semicolon");
+		nonAlphaNumericMap.put(":", "colon");
+		nonAlphaNumericMap.put("'", "apostrophe");
+		nonAlphaNumericMap.put("\"", "quotedbl");
+		nonAlphaNumericMap.put(",", "comma");
+		nonAlphaNumericMap.put("<", "less");
+		nonAlphaNumericMap.put(".", "period");
+		nonAlphaNumericMap.put(">", "greater");
+		nonAlphaNumericMap.put("/", "slash");
+		nonAlphaNumericMap.put("?", "question");
+	}
 
 	public AtkKeyEvent (KeyEvent e) {
 		//type
@@ -99,6 +138,10 @@ public class AtkKeyEvent {
 
 		keycode = e.getKeyCode();
 		timestamp = (int)e.getWhen();
+
+		String nonAlphaNumericString = (String) nonAlphaNumericMap.get(string);
+		if (nonAlphaNumericString != null)
+			string = nonAlphaNumericString;
 	}
 }
 
