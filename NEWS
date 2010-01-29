@@ -1,4 +1,9 @@
 ===============================
+Java ATK Wrapper version 0.28.2
+Important changes:
+	* Add non-alphanumeric key mapping
+
+===============================
 Java ATK Wrapper version 0.28.1
 Important changes:
 	* Fixed bug 606402 - Attempting to run swing applications with the JAW
