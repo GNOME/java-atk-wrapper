@@ -1,4 +1,9 @@
 ===============================
+Java ATK Wrapper version 0.28.3
+Important changes:
+	* Fix regression - conflict with GTK look and feel
+
+===============================
 Java ATK Wrapper version 0.28.2
 Important changes:
 	* Add non-alphanumeric key mapping
