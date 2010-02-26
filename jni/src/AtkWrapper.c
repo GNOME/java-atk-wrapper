@@ -179,12 +179,15 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 
 	key_dispatch_mutex = g_mutex_new();
 	key_dispatch_cond = g_cond_new();
-
-	GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
 	
 	// Dummy idle function for jaw_idle_dispatch to get
 	// the address of gdk_threads_dispatch
 	gdk_threads_add_idle(jaw_dummy_idle_func, NULL);
+}
+
+JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv, jclass jClass) {
+	GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
+	
 	g_idle_add(jaw_load_atk_bridge, NULL);
 
 	// We need to wait for the completion of the loading of ATK Bridge
