@@ -162,6 +162,10 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 	// Set NO_GAIL to "1" to prevent gail from executing
 	g_setenv("NO_GAIL", "1", TRUE);
 
+	// Disable ATK Bridge temporarily to aoid the loading
+	// of ATK Bridge by GTK look and feel
+	g_setenv("NO_AT_BRIDGE", "1", TRUE);
+
 	g_type_class_unref(g_type_class_ref(JAW_TYPE_UTIL));
 	g_type_class_unref(g_type_class_ref(JAW_TYPE_MISC));
 	// Force to invoke base initialization function of each ATK interfaces
@@ -186,6 +190,9 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 }
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv, jclass jClass) {
+	// Enable ATK Bridge so we can load it now
+	g_setenv("NO_AT_BRIDGE", "1", TRUE);
+
 	GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
 	
 	g_idle_add(jaw_load_atk_bridge, NULL);
