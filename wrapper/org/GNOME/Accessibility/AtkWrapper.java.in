@@ -40,6 +40,11 @@ public class AtkWrapper {
 					break;
 				}
 			}
+
+			if (accessibilityEnabled) {
+				System.loadLibrary("atk-wrapper");
+				AtkWrapper.initNativeLibrary();
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -138,8 +143,7 @@ public class AtkWrapper {
 			if (firstEvent && accessibilityEnabled) {
 				firstEvent = false;
 				try {
-					System.loadLibrary("atk-wrapper");
-					AtkWrapper.initNativeLibrary();
+					AtkWrapper.loadAtkBridge();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -494,6 +498,7 @@ public class AtkWrapper {
 	}
 
 	public native static void initNativeLibrary();
+	public native static void loadAtkBridge();
 
 	public native static void focusNotify(javax.accessibility.AccessibleContext ac);
 
