@@ -191,7 +191,7 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv, jclass jClass) {
 	// Enable ATK Bridge so we can load it now
-	g_setenv("NO_AT_BRIDGE", "1", TRUE);
+	g_setenv("NO_AT_BRIDGE", "0", TRUE);
 
 	GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
 	
