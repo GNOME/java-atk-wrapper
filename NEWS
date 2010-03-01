@@ -1,4 +1,9 @@
 ===============================
+Java ATK Wrapper version 0.29.5
+Important changes:
+	* Fix critical typo - should set NO_AT_BRIDGE to 0 instead of 1 in loadAtkBridge
+
+===============================
 Java ATK Wrapper version 0.29.4
 Important changes:
 	* Fix regression - conflict with GTK look and feel
