@@ -52,11 +52,6 @@ public class AtkText {
 
 	/* Return string from start, up to, but not including end */
 	public String get_text (int start, int end) {
-		if (acc_text instanceof AccessibleExtendedText) {
-			AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
-			return acc_ext_text.getTextRange(start, end-1);
-		}
-
 		int count = acc_text.getCharCount();
 		if (start < 0)
 			start = 0;
@@ -65,6 +60,11 @@ public class AtkText {
 			end = count;
 		if (end < -1)
 			end = 0;
+
+		if (acc_text instanceof AccessibleExtendedText) {
+			AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
+			return acc_ext_text.getTextRange(start, end);
+		}
 
 		StringBuffer buf = new StringBuffer();
 		for (int i = start; i <= end-1; i++) {
