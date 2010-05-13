@@ -56,6 +56,8 @@ GCond *key_dispatch_cond = NULL;
 static gint key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
 static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 
+static GModule* module_atk_bridge = NULL;
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve) {
 	globalJvm = javaVM;
 	return JNI_VERSION_1_2;
@@ -101,30 +103,11 @@ static gboolean
 jaw_load_atk_bridge (gpointer p)
 {
 	g_mutex_lock(atk_bridge_mutex);
-
-	if (!g_module_supported()) {
-		return NULL;
-	}
-
-	gboolean use_corba = gconf_client_get_bool(
-			gconf_client_get_default(),
-			"/desktop/gnome/interface/at-spi-corba",
-			NULL);
-
-	GModule *module;
-	if (use_corba)
-		module = g_module_open(ATK_BRIDGE_LIB_NAME_CORBA, G_MODULE_BIND_LAZY);
-	else
-		module = g_module_open(ATK_BRIDGE_LIB_NAME_DBUS, G_MODULE_BIND_LAZY);
-
-	if (!module) {
-		return NULL;
-	}
 	
 	GVoidFunc dl_init;
-	if (!g_module_symbol( module, "gnome_accessibility_module_init", (gpointer*)&dl_init)) {
-		g_module_close(module);
-		return NULL;
+	if (!g_module_symbol( module_atk_bridge, "gnome_accessibility_module_init", (gpointer*)&dl_init)) {
+		g_module_close(module_atk_bridge);
+		return FALSE;
 	}
 
 	(dl_init)();
@@ -146,7 +129,7 @@ gpointer jni_main_loop(gpointer data) {
 	return NULL;
 }
 
-JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv, jclass jClass) {
+JNIEXPORT jboolean JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv, jclass jClass) {
 	g_type_init();
 
 	// Hook up g_idle_dispatch
@@ -176,6 +159,32 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 		g_thread_init(NULL);
 	}
 
+	if (!g_module_supported()) {
+		return JNI_FALSE;
+	}
+
+	const gchar* gtk_module_path = g_getenv("GTK_PATH");
+	if (!gtk_module_path) {
+		gtk_module_path = ATK_BRIDGE_LIB_PATH;
+	}
+
+	if (jaw_debug) {
+		printf("GTK_PATH=%s\n", gtk_module_path);
+	}
+
+	const gchar* atk_bridge_file = g_strconcat(gtk_module_path,
+			"/modules/libatk-bridge.so", NULL);
+
+	if (jaw_debug) {
+		printf("We are going to load %s\n", atk_bridge_file);
+	}
+
+	module_atk_bridge = g_module_open(atk_bridge_file, G_MODULE_BIND_LAZY);
+
+	if (!module_atk_bridge) {
+		return JNI_FALSE;
+	}
+
 	jaw_impl_init_mutex();
 
 	atk_bridge_mutex = g_mutex_new();
@@ -187,6 +196,8 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
 	// Dummy idle function for jaw_idle_dispatch to get
 	// the address of gdk_threads_dispatch
 	gdk_threads_add_idle(jaw_dummy_idle_func, NULL);
+
+	return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv, jclass jClass) {
