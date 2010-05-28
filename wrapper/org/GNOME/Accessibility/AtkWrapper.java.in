@@ -29,23 +29,16 @@ public class AtkWrapper {
 	static boolean accessibilityEnabled = false;
 	static {
 		try {
-			Process p = Runtime.getRuntime().exec("@XPROP@ -root");
+			Process p = Runtime.getRuntime().exec ("gconftool-2 -g /desktop/gnome/interface/accessibility");
 			BufferedReader b = new BufferedReader (
 					new InputStreamReader (p.getInputStream ()));
-			String result;
-			accessibilityEnabled = false;
-			while ((result = b.readLine()) != null) {
-				if (result.indexOf ("AT_SPI_IOR") >= 0) {
+			String result = b.readLine();
+			if (result != null && result.equals ("true")) {
+				System.loadLibrary("atk-wrapper");
+				if ( AtkWrapper.initNativeLibrary() ) {
 					accessibilityEnabled = true;
-					break;
 				}
 			}
-
-			if (accessibilityEnabled) {
-				System.loadLibrary("atk-wrapper");
-				AtkWrapper.initNativeLibrary();
-			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -497,7 +490,7 @@ public class AtkWrapper {
 		}
 	}
 
-	public native static void initNativeLibrary();
+	public native static boolean initNativeLibrary();
 	public native static void loadAtkBridge();
 
 	public native static void focusNotify(javax.accessibility.AccessibleContext ac);
