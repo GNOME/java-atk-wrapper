@@ -1,4 +1,9 @@
 ===============================
+Java ATK Wrapper version 0.30.1
+Important changes:
+	* Use GTK_PATH to locate libatk-bridge.so
+
+===============================
 Java ATK Wrapper version 0.30.0
 Important changes:
 	* Fix bug 611256 - atk_text_get_text is not working correctly with the specified end offset
