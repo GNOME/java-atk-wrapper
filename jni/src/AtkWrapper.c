@@ -172,8 +172,8 @@ JNIEXPORT jboolean JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLib
 		printf("GTK_PATH=%s\n", gtk_module_path);
 	}
 
-	const gchar* atk_bridge_file = g_strconcat(gtk_module_path,
-			"/modules/libatk-bridge.so", NULL);
+	gtk_module_path = g_strconcat(gtk_module_path, "/modules", NULL);
+	const gchar* atk_bridge_file = g_module_build_path(gtk_module_path, "atk-bridge");
 
 	if (jaw_debug) {
 		printf("We are going to load %s\n", atk_bridge_file);

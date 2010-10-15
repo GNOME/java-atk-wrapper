@@ -26,7 +26,7 @@ libatk_wrapper_la_CPPFLAGS = $(JNI_INCLUDES)\
 			     $(JAW_CFLAGS)\
 			     -DATK_BRIDGE_LIB_PATH=\"$(ATK_BRIDGE_LIB_PATH)\"
 
-libatk_wrapper_la_LDFLAGS = -version-info $(LIB_ATK_WRAPPER_LT_VERSION)
+libatk_wrapper_la_LDFLAGS = -avoid-version -no-undefined
 
 libatk_wrapper_la_LIBADD = $(JAW_LIBS)
 
