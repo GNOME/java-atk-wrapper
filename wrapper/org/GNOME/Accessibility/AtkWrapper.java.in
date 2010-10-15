@@ -29,14 +29,20 @@ public class AtkWrapper {
 	static boolean accessibilityEnabled = false;
 	static {
 		try {
-			Process p = Runtime.getRuntime().exec ("gconftool-2 -g /desktop/gnome/interface/accessibility");
+			Process p = Runtime.getRuntime().exec ("@XPROP@ -root");
 			BufferedReader b = new BufferedReader (
 					new InputStreamReader (p.getInputStream ()));
-			String result = b.readLine();
-			if (result != null && result.equals ("true")) {
-				System.loadLibrary("atk-wrapper");
-				if ( AtkWrapper.initNativeLibrary() ) {
-					accessibilityEnabled = true;
+			
+			String result;
+			while ((result = b.readLine()) != null) {
+				if (result.indexOf("AT_SPI_IOR") >= 0 ||
+					result.indexOf("AT_SPI_BUS") >= 0) {
+					System.loadLibrary("atk-wrapper");
+					if (AtkWrapper.initNativeLibrary()) {
+						accessibilityEnabled = true;
+					}
+
+					break;
 				}
 			}
 		} catch (Exception e) {
