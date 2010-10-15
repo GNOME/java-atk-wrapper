@@ -1,4 +1,10 @@
 ===============================
+Java ATK Wrapper version 0.30.2
+Important changes:
+	* Portability fixes for libatk-wrapper
+	* Use AT_SPI_IOR and AT_SPI_BUS instead of GConf key to check enablement of accessibility
+
+===============================
 Java ATK Wrapper version 0.30.1
 Important changes:
 	* Use GTK_PATH to locate libatk-bridge.so
