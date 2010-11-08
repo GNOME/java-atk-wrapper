@@ -1,4 +1,9 @@
 ===============================
+Java ATK Wrapper version 0.30.3
+Important changes:
+	* Use -avoid-version only when target_os is cygwin
+
+===============================
 Java ATK Wrapper version 0.30.2
 Important changes:
 	* Portability fixes for libatk-wrapper
