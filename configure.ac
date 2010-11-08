@@ -43,6 +43,16 @@ PKG_CHECK_MODULES(JAW, [
 ATK_BRIDGE_LIB_PATH="`pkg-config --variable=libdir gtk+-2.0`/gtk-2.0"
 AC_SUBST(ATK_BRIDGE_LIB_PATH)
 
+case "${target_os}" in
+cygwin*)
+	LIB_ATK_WRAPPER_LD_FLAGS="-avoid-version -no-undefined"
+	;;
+*)
+	LIB_ATK_WRAPPER_LD_FLAGS="-version-info $LIB_ATK_WRAPPER_LT_VERSION -no-undefined"
+	;;
+esac
+AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
+
 # java wrapper
 
 JAVA_REQUIRED=1.5
