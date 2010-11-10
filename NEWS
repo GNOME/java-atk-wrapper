@@ -1,4 +1,9 @@
 ===============================
+Java ATK Wrapper version 0.30.4
+Important changes:
+	* Fix commit error - use xprop instead of gconf
+
+===============================
 Java ATK Wrapper version 0.30.3
 Important changes:
 	* Use -avoid-version only when target_os is cygwin
