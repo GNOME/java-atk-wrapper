@@ -485,7 +485,15 @@ public class AtkWrapper {
 					value = false;
 				}
 
+                                if(parent instanceof javax.swing.JComboBox && oldValue == javax.accessibility.AccessibleState.VISIBLE) {
+                                        objectStateChange(ac, AccessibleState.SHOWING, value);
+                                }
+
 				objectStateChange(ac, state, value);
+
+				if(parent instanceof javax.swing.JComboBox && newValue == javax.accessibility.AccessibleState.VISIBLE && oldValue == null) {
+                                        objectStateChange(ac, AccessibleState.SHOWING, value);
+                                }
 			}
 		}
 	};
