@@ -75,6 +75,8 @@ if test -z "$JAVAH"; then
 fi
 AC_SUBST(JAVAH)
 
+AC_SUBST(JAVACFLAGS)
+
 AC_PATH_PROG(JAR,jar,,${JAVA_PATH})
 if test -z "$JAR"; then
   AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
@@ -91,7 +93,7 @@ if test "x$with_jdk_auto_detect" = "xyes"; then
 	CUR_DIR=`pwd`
 	SRC_DIR=`dirname $0`
 	SRC_DIR=`cd $SRC_DIR;pwd;cd $CUR_DIR`
-	$JAVAC $SRC_DIR/JavaInfo.java
+	$JAVAC $JAVACFLAGS $SRC_DIR/JavaInfo.java
 	JDK_HOME="`CLASSPATH=$SRC_DIR $JAVA JavaInfo`"
 else
 	if test -z "$JDK_HOME"; then

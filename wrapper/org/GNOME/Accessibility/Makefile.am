@@ -11,7 +11,7 @@ AtkWrapper.java : AtkWrapper.java.in
 		< $< >$@
 
 %.class : %.java
-	CLASSPATH=$(top_srcdir)/wrapper $(JAVAC) -d $(top_builddir)/wrapper $<
+	CLASSPATH=$(top_srcdir)/wrapper $(JAVAC) $(JAVACFLAGS) -d $(top_builddir)/wrapper $<
 
 clean-local:
 	$(RM) *.class
