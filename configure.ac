@@ -1,6 +1,10 @@
 AC_INIT([java-atk-wrapper],[0.29.5])
 
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_CONFIG_AUX_DIR(config)
+AM_INIT_AUTOMAKE([-Wall])
+
+m4_pattern_allow([AM_PROG_AR])
+AM_PROG_AR
 
 # Before making a release, the LT_VERSION string should be modified.
 # The string is of the form C:R:A.
@@ -22,6 +26,8 @@ AC_PROG_INSTALL
 AC_ISC_POSIX
 
 AM_PROG_LIBTOOL
+
+AC_CONFIG_MACRO_DIR([m4])
 
 m4_define([req_ver_atk], [1.17.0])
 
@@ -115,7 +121,7 @@ elif test $j_major_version = $min_major_version; then
       AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
     fi
   fi
-fi 
+fi
 
 XPROP_PATH=${PATH}:/usr/X11/bin
 AC_PATH_PROG(XPROP,xprop,,${XPROP_PATH})
@@ -125,11 +131,11 @@ fi
 AC_SUBST(XPROP)
 
 AC_OUTPUT([
-Makefile
-jni/Makefile
-jni/src/Makefile
-wrapper/Makefile
-wrapper/org/Makefile
-wrapper/org/GNOME/Makefile
-wrapper/org/GNOME/Accessibility/Makefile
+    Makefile
+    jni/Makefile
+    jni/src/Makefile
+    wrapper/Makefile
+    wrapper/org/Makefile
+    wrapper/org/GNOME/Makefile
+    wrapper/org/GNOME/Accessibility/Makefile
 ])
