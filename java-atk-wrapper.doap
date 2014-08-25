@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
          xmlns:foaf="http://xmlns.com/foaf/0.1/"
@@ -7,17 +6,13 @@
 
   <name xml:lang="en">Java ATK Wrapper</name>
   <shortdesc xml:lang="en">ATK implementation for Java by using JNI technic</shortdesc>
+  <description>Java ATK Wrapper provides a C wrapper to java to allow access to methods
+   from the ATK API interface in java</description>
   <homepage rdf:resource="http://live.gnome.org/Accessibility/JavaATKWrapper" />
   <mailing-list rdf:resource="http://mail.gnome.org/mailman/listinfo/gnome-accessibility-devel" />
-  <category rdf:resource="http://api.gnome.org/doap-extensions#platform" />
-
-  <maintainer>
-    <foaf:Person>
-      <foaf:name>Ke Wang</foaf:name>
-      <foaf:mbox rdf:resource="mailto:ke.wang@sun.com" />
-      <gnome:userid>kewang</gnome:userid>
-    </foaf:Person>
-  </maintainer>
+  <category rdf:resource="http://api.gnome.org/doap-extensions#apps" />
+  <programming-language>Java</programming-language>
+  <programming-language>C</programming-language>
 
   <maintainer>
     <foaf:Person>
