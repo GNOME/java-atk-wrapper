@@ -1,4 +1,4 @@
-AC_INIT([java-atk-wrapper],[0.29.5])
+AC_INIT([java-atk-wrapper],[0.30.5])
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([-Wall])
