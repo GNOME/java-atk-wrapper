@@ -123,13 +123,13 @@ j_micro_version=0`echo $jversion | cut -f3 -d.`
 min_major_version=0`echo $JAVA_REQUIRED | cut -f1 -d.`
 min_minor_version=0`echo $JAVA_REQUIRED | cut -f2 -d.`
 min_micro_version=0`echo $JAVA_REQUIRED | cut -f3 -d.`
-if test $j_major_version -lt $min_major_version; then
+if test "$j_major_version" -lt "$min_major_version"; then
   AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
-elif test $j_major_version = $min_major_version; then
-  if test $j_minor_version -lt $min_minor_version; then
+elif test "$j_major_version" = "$min_major_version"; then
+  if test "$j_minor_version" -lt "$min_minor_version"; then
     AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
-  elif test $j_minor_version = $min_minor_version; then
-    if test $j_micro_version -lt $min_micro_version; then
+  elif test "$j_minor_version" = "$min_minor_version"; then
+    if test "$j_micro_version" -lt "$min_micro_version"; then
       AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
     fi
   fi

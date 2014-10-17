@@ -4,9 +4,9 @@ dnl Check to see what platform and set jni include path
 AC_CANONICAL_HOST
 AC_MSG_CHECKING([platform to setup platform specific variables])
 platform_win32="no"
-case $host in
+case "$host" in
   *-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-windows*)
-    if test $gcj_compile = "yes"; then
+    if test "$gcj_compile" = "yes"; then
       JNI_INCLUDES=
     else
       JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/win32"
@@ -18,7 +18,7 @@ case $host in
     SOPREFIX="lib"
     ;;
   *-*-cygwin*)
-    if test $gcj_compile = "yes"; then
+    if test "$gcj_compile" = "yes"; then
       JNI_INCLUDES=
     else
       JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/win32"
@@ -30,7 +30,7 @@ case $host in
     SOPREFIX="cyg"
     ;;
   *-*-linux*)
-    if test $gcj_compile = "yes"; then
+    if test "$gcj_compile" = "yes"; then
       JNI_INCLUDES=
     else
       JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/linux"
@@ -41,7 +41,7 @@ case $host in
     SOPREFIX=
     ;;
   *-*-solaris*)
-    if test $gcj_compile = "yes"; then
+    if test "$gcj_compile" = "yes"; then
       JNI_INCLUDES=
     else
       JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/solaris"
@@ -52,7 +52,7 @@ case $host in
     SOPREFIX=
     ;;
   *)
-    if test $gcj_compile = "yes"; then
+    if test "$gcj_compile" = "yes"; then
       JNI_INCLUDES=
     else
       JNI_INCLUDES="-I$JDK_HOME/include -I$JDK_HOME/include/$host_os"
