@@ -16,9 +16,9 @@
 
   <maintainer>
     <foaf:Person>
-      <foaf:name>Alejandro Piñeiro Iglesias</foaf:name>
-      <foaf:mbox rdf:resource="mailto:apinheiro@igalia.com" />
-      <gnome:userid>apinheiro</gnome:userid>
+      <foaf:name>Magdalen Berns</foaf:name>
+      <foaf:mbox rdf:resource="mailto:m.berns@thismagpie.com" />
+      <gnome:userid>mberns</gnome:userid>
     </foaf:Person>
   </maintainer>
 
