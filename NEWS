@@ -1,3 +1,19 @@
+Changes in version 0.30.6
+=========================
+
+Build:
+  Bug 738721: Fix "unary operator expected" error
+
+Mantainership:
+  738709 Updated doap file (current active maintainers)
+
+Miscellanous:
+  738730  Change JDK_HOME to JDK_SRC
+  738731	Change JAVA_HOME to JRE_SRC
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.30.5
 =========================
 
