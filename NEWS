@@ -1,3 +1,15 @@
+Changes in version 0.30.7
+=========================
+
+Build:
+  Bug 738776: Add ${ACLOCAL_FLAGS} to ACLOCAL_AMFLAGS
+
+Mantainership:
+  Added ChangeLog with full git commit history included
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.30.6
 =========================
 
@@ -9,7 +21,7 @@ Mantainership:
 
 Miscellanous:
   738730  Change JDK_HOME to JDK_SRC
-  738731	Change JAVA_HOME to JRE_SRC
+  738731  Change JAVA_HOME to JRE_SRC
 
 Contributors:
   Magdalen Berns

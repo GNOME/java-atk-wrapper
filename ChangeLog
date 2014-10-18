@@ -1,0 +1,86 @@
+833088d Makefile: add ${ACLOCAL_FLAGS} to ACLOCAL_FLAGS
+3694129 Release 0.30.6
+463d156 Change JAVA_HOME to JRE_SRC
+85e8f03 Change JDK_HOME to JDK_SRC
+6526797 Fix "unary operator expected" error
+f5dddbf DOAP: Add Magdalen Berns as maintainer
+ce8cd55 Release 0.30.5
+3b22e56 Use -avoid-version only when target_os is cygwin
+dca347d doap: Remove Ke Wang from current maintainer list
+624cdcd Add JAVACFLAGS option for build
+ff0d85c Adding initial .gitignore file
+3645e6d Updated .doap file
+33ff588 Fix Compilation errors
+5b0b399 Fix bug616693: emit both the visible and showing events for combo box Signed-off-by: Leon Fan <leon.fan@oracle.com>
+f4fb386 Added Li Yuan as maintainer
+0d30f00 Use AT_SPI_IOR and AT_SPI_BUS instead of GConf key to check enablement of accessibility
+bbf30ec Portability fixes for libatk-wrapper
+209e429 Use GTK_PATH to locate libatk-bridge.so
+0d4bc3e Fix bug 611256 - atk_text_get_text is not working correctly with the specified end offset
+08912f6 Release 0.29.5
+5dcad0c Fix critical typo - should set NO_AT_BRIDGE to 0 instead of 1 in loadAtkBridge
+e7fc242 Fix tarball version
+0965c28 Release 0.29.4
+f78a65a Disable ATK Bridge before we load it to prevent it from being loaded by GTK laf first
+6394303 Fix regression - confilct with GTK look and feel
+919717d Release 0.29.3
+44021c6 Add non-alphanumeric key mapping
+11e2da7 Release 0.29.2
+1684769 Add JAW_DEBUG - Set environment JAW_DEBUG=1 to get debug messages
+e448592 Fixed bug 606402 - Attempting to run swing applications with the JAW installed frequently causes the JRE to report a fatal runtime error
+201572a Release 0.29.1
+d4961d7 Add D-Bus support
+7a490f1 Release 0.28.0
+242478a Fixed bug 595234 - The caret position will not be  changed when input text with gok composer
+def8b17 Fixed bug 591792 - Java application tooltips are not accessible to orca screen reader
+81d7377 Release 0.27.8
+fd325d7 Fixed bug 593261 - Slider bar can not be controled by gok
+4ebe072 Fixed bug 592987 - Java Combobox is not accessible
+d21dd7e Replace jaw_impl_find_instance with jaw_impl_get_instance when handling active-descendant-changed signal
+a16cb15 Force Java app to quit before the invocation of exit func registered by ATK bridge
+dd9470a Comment out signal of visible-data-changed
+9adf3bb Update version number
+5e734e9 Release 0.27.7
+4b7a067 Fixed bug that window events are not emitted(bug 591665,591670)
+0d78630 Temporarily commentted window_state_change_handler
+4aecdea Fixed d.o.o bug 10506 - java webstart applications don't run
+4ab98ec Release 0.27.6
+06b4fc5 Add dependency on GDK 2.0
+f64c0da Solved conflict with the GTK Look And Feel
+6520ebc Add missed JavaInfo.java
+827fef2 Release 0.27.5
+4db73b0 Added JDK_HOME auto-detection
+ce7a420 Fixed GNOME bugzilla bug 588879
+2a8711c Release 0.27.4
+e1e0a0c Remove jni_AtkWrapper.h from Makefile.am
+c1e1ecd Make JAVA_HOME not mandatory
+9454375 Remove unused jni_AtkWrapper.h
+e28b69e Remove JavaInfo.java
+79fcf62 Remove functionality of JAVA_HOME auto-detection
+8b4fbfe Remove unused code
+cc4a4fb Fixed build problem of loop variables outside C99 mode
+c45e0fe Release 0.27.3
+393c280 Add AtkWrapper.java.in to EXTRA_DIST
+b879b41 Use xprop instead of gconftool-2 to check whether accessibility technology is on
+88222cc remove dependency on gtk+-2.0
+9994e26 add JavaInfo.java to EXTRA_DIST
+a501731 Revert "Revert "Add method to auto-detect JAVA_HOME""
+1ee8062 Revert "Add method to auto-detect JAVA_HOME"
+6cd94a8 Add method to auto-detect JAVA_HOME
+a791d03 Added code to determine whether to load 32 or 64-bit version of atk-bridge
+9c146a1 Fixed a dependency problem
+21c8275 Added code to get more accurate application name
+5e2905b Added code to check whether accessibility technology is switched on
+6a16496 Fixed conflict with GTK look and feel
+32fc338 Fixed build dependency problem
+b9f6ab8 Update version number
+57f226d Release 0.27.2
+290213a Changes for preparation of initial release
+2fb5d01 Minor changes to configure.in
+ac239b4 Minor changes for tarball distribution
+9dafdb4 Add version argument to AC_INIT
+0f14bcb Change license from LGPLv3 to LGPLv2.1
+3363fd8 trivial changes to configure.in
+13d1b78 Added .doap file
+9e2f1dd Remove the need of empty directory "build-aux".
+7590187 Initial commit.
