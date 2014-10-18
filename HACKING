@@ -5,14 +5,14 @@ java-access-bridge because of the deprecation of Bonobo.
 
 It is still not yet feature-complete, and there must be many bugs.
 
-The current maintainer is Ke Wang (ke.wang@sun.com). As a general rule,
-non-trivial maintainer-submitted patches should be posted to
+The current maintainer is Magdalen Berns (m.berns@thismagpie.com).
+As a general rule, non-trivial maintainer-submitted patches should be posted to
 gnome-accessibility-devel for comment and informational purpose prior to commit.
 
 Patches are welcome and if there are any suggestions, please send comments to
 
-ke.wang@sun.com
+m.berns@thismagpie.com
 
--Ke
+Magdalen
 
 
