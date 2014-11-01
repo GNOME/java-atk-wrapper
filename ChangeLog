@@ -1,3 +1,13 @@
+c8a2bdf atkwrapper: fix style and indentation
+bf9919f AtkKeyEvent: Use checked operations
+3273d5c AtkKeyEvent.java: fix indentation
+77fdaf8 Add $(srcdir)/*.java to EXTRA_DIST
+7cca5a9 autogen.sh: less is more, tidy up
+0601b23 autogen.sh: use unary operators
+23c8ddd autogen.sh: fix indentation
+63ec920 Update autogen.sh
+78aa7ac HACKING: Update maintainer contact details
+636f2d8 Release 0.30.7
 833088d Makefile: add ${ACLOCAL_FLAGS} to ACLOCAL_FLAGS
 3694129 Release 0.30.6
 463d156 Change JAVA_HOME to JRE_SRC

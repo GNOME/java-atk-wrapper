@@ -1,3 +1,23 @@
+Changes in version 0.30.8
+=========================
+
+Build:
+  Bug 739427: USE_GNOME2_MACROS=1 seems redundant => update autogen.sh
+  Bug 739503: AtkKeyEvent: Use checked operations
+              Add $(srcdir)/*.java to EXTRA_DIST
+              autogen.sh: use unary operators
+
+Miscellanous:
+  Atkwrapper: fix style and indentation
+  AtkKeyEvent: fix indentation
+  autogen.sh: less is more, tidy up
+
+Mantainership:
+  HACKING: Update maintainer contact details
+
+Contributors:
+  Magdalen Berns, Alejandro Piñeiro
+
 Changes in version 0.30.7
 =========================
 
