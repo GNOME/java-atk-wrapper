@@ -31,7 +31,7 @@ if test -z "$AUTORECONF"; then
   echo "*** No autoreconf found, please install it ***"
   exit 1
 else
-  autoreconf --force --install --verbose || exit $?
+  autoreconf -vif || exit $?
 fi
 
 cd "$olddir"
