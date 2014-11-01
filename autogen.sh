@@ -16,7 +16,7 @@ if test -z "$PKGCONFIG"; then
 fi
 
 pkg-config --print-errors gobject-introspection-1.0
-if [ $? != 0 ]; then
+if [ "$?" != 0 ]; then
   echo "You probably need to install 'libgirepository1.0-dev'"
   exit 1
 fi
@@ -27,7 +27,7 @@ fi
 touch README INSTALL
 
 AUTORECONF=`which autoreconf`
-if test -z $AUTORECONF; then
+if test -z "$AUTORECONF"; then
   echo "*** No autoreconf found, please install it ***"
   exit 1
 else
