@@ -11,14 +11,14 @@ mkdir -p m4
 
 PKGCONFIG=`which pkg-config`
 if test -z "$PKGCONFIG"; then
-        echo "*** pkg-config not found, please install it ***"
-        exit 1
+  echo "*** pkg-config not found, please install it ***"
+  exit 1
 fi
 
 pkg-config --print-errors gobject-introspection-1.0
 if [ $? != 0 ]; then
-	echo "You probably need to install 'libgirepository1.0-dev'"
-	exit 1
+  echo "You probably need to install 'libgirepository1.0-dev'"
+  exit 1
 fi
 
 # README and INSTALL are required by automake, but may be deleted by clean
@@ -28,10 +28,10 @@ touch README INSTALL
 
 AUTORECONF=`which autoreconf`
 if test -z $AUTORECONF; then
-        echo "*** No autoreconf found, please install it ***"
-        exit 1
+  echo "*** No autoreconf found, please install it ***"
+  exit 1
 else
-        autoreconf --force --install --verbose || exit $?
+  autoreconf --force --install --verbose || exit $?
 fi
 
 cd "$olddir"
