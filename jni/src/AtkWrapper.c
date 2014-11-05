@@ -233,7 +233,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   g_mutex_unlock(atk_bridge_mutex);
 }
 
-typedef enum _SigalType {
   Sig_Text_Caret_Moved = 0,
   Sig_Text_Property_Changed_Insert = 1,
   Sig_Text_Property_Changed_Delete = 2,
