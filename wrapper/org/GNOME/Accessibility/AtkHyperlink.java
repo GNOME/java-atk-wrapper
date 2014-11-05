@@ -22,7 +22,7 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 
 public class AtkHyperlink {
-	
+
 	AccessibleHyperlink acc_hyperlink;
 
 	public AtkHyperlink (AccessibleHyperlink hl) {
