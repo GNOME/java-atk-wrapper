@@ -1,7 +1,7 @@
 AC_INIT([java-atk-wrapper],[0.30.8])
 
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE([-Wall])
+AM_INIT_AUTOMAKE([-Wall check-news])
 
 m4_pattern_allow([AM_PROG_AR])
 AM_PROG_AR
