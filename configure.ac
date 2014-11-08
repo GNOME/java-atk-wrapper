@@ -1,7 +1,7 @@
 AC_INIT([java-atk-wrapper],[0.30.8])
 
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE([-Wall])
+AM_INIT_AUTOMAKE([-Wall check-news])
 
 m4_pattern_allow([AM_PROG_AR])
 AM_PROG_AR
@@ -32,12 +32,12 @@ AC_CONFIG_MACRO_DIR([m4])
 m4_define([req_ver_atk], [1.17.0])
 
 PKG_CHECK_MODULES(JAW, [
-	atk             >= req_ver_atk
-	glib-2.0
-	gthread-2.0
-	gmodule-2.0
-	gdk-2.0
-	gconf-2.0
+  atk             >= req_ver_atk
+  glib-2.0
+  gthread-2.0
+  gmodule-2.0
+  gdk-2.0
+  gconf-2.0
 ])
 
 ATK_BRIDGE_LIB_PATH="`pkg-config --variable=libdir gtk+-2.0`/gtk-2.0"
@@ -45,11 +45,11 @@ AC_SUBST(ATK_BRIDGE_LIB_PATH)
 
 case "${target_os}" in
 cygwin*)
-	LIB_ATK_WRAPPER_LD_FLAGS="-avoid-version -no-undefined"
-	;;
+  LIB_ATK_WRAPPER_LD_FLAGS="-avoid-version -no-undefined"
+  ;;
 *)
-	LIB_ATK_WRAPPER_LD_FLAGS="-version-info $LIB_ATK_WRAPPER_LT_VERSION -no-undefined"
-	;;
+  LIB_ATK_WRAPPER_LD_FLAGS="-version-info $LIB_ATK_WRAPPER_LT_VERSION -no-undefined"
+  ;;
 esac
 AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 
@@ -94,21 +94,21 @@ fi
 AC_SUBST(JAR)
 
 AC_ARG_WITH([jdk_auto_detect],
-	    [AS_HELP_STRING([--with-jdk-auto-detect],
-			    [Auto-detection of jdk location])],
-	    [],
-	    [with_jdk_auto_detect=yes])
+            [AS_HELP_STRING([--with-jdk-auto-detect],
+            [Auto-detection of jdk location])],
+            [],
+            [with_jdk_auto_detect=yes])
 
 if test "x$with_jdk_auto_detect" = "xyes"; then
-	CUR_DIR=`pwd`
-	SRC_DIR=`dirname $0`
-	SRC_DIR=`cd $SRC_DIR;pwd;cd $CUR_DIR`
-	$JAVAC $JAVACFLAGS $SRC_DIR/JavaInfo.java
-	JDK_SRC="`CLASSPATH=$SRC_DIR $JAVA JavaInfo`"
+  CUR_DIR=`pwd`
+  SRC_DIR=`dirname $0`
+  SRC_DIR=`cd $SRC_DIR;pwd;cd $CUR_DIR`
+  $JAVAC $JAVACFLAGS $SRC_DIR/JavaInfo.java
+  JDK_SRC="`CLASSPATH=$SRC_DIR $JAVA JavaInfo`"
 else
-	if test -z "$JDK_SRC"; then
-		AC_MSG_ERROR("You should specify JDK_SRC")
-	fi
+  if test -z "$JDK_SRC"; then
+    AC_MSG_ERROR("You should specify JDK_SRC")
+  fi
 fi
 AC_SUBST(JDK_SRC)
 
