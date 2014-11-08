@@ -708,230 +708,222 @@ signal_emit_handler (gpointer p)
   switch (para->signal_id)
   {
     case Sig_Text_Caret_Moved:
-		{
-			gint cursor_pos = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-			g_signal_emit_by_name(atk_obj, "text_caret_moved", cursor_pos);
-			break;
-		}
-		case Sig_Text_Property_Changed_Insert:
-		{
-			gint insert_position = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-			gint insert_length = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
-			g_signal_emit_by_name(atk_obj,
-					"text_changed::insert",
-					insert_position,
-					insert_length);
-			break;
-		}
-		case Sig_Text_Property_Changed_Delete:
-		{
-			gint delete_position = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-			gint delete_length = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
-			g_signal_emit_by_name(atk_obj,
-					"text_changed::delete",
-					delete_position,
-					delete_length);
-			break;
-		}
-		case Sig_Object_Children_Changed_Add:
-		{
-			gint child_index = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-			jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
-			JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
-			if (!child_impl) {
-				break;
-			}
+    {
+      gint cursor_pos = get_int_value(
+      jniEnv,
+      (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      g_signal_emit_by_name(atk_obj, "text_caret_moved", cursor_pos);
+      break;
+    }
+    case Sig_Text_Property_Changed_Insert:
+    {
+      gint insert_position = get_int_value(jniEnv,
+                                           (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      gint insert_length = get_int_value(jniEnv,
+                                         (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
+      g_signal_emit_by_name(atk_obj,
+      "text_changed::insert",
+      insert_position,
+      insert_length);
+      break;
+    }
+    case Sig_Text_Property_Changed_Delete:
+    {
+      gint delete_position = get_int_value(jniEnv,
+                                           (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      gint delete_length = get_int_value(jniEnv,
+                                         (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
+      g_signal_emit_by_name(atk_obj,
+                            "text_changed::delete",
+                            delete_position,
+                            delete_length);
+      break;
+    }
+    case Sig_Object_Children_Changed_Add:
+    {
+      gint child_index = get_int_value(jniEnv,
+                                       (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
+      JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
+      if (!child_impl)
+      {
+        break;
+      }
 
-			g_signal_emit_by_name(atk_obj,
-					"children_changed::add",
-					child_index,
-					child_impl);
-			break;
-		}
-		case Sig_Object_Children_Changed_Remove:
-		{
-			gint child_index = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-			jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
-			JawImpl *child_impl = jaw_impl_find_instance(jniEnv, child_ac);
-			if (!child_impl) {
-				break;
-			}
+      g_signal_emit_by_name(atk_obj,
+                            "children_changed::add",
+                            child_index,
+                            child_impl);
+        break;
+      }
+      case Sig_Object_Children_Changed_Remove:
+      {
+        gint child_index = get_int_value(jniEnv,
+                                         (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+        jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
+        JawImpl *child_impl = jaw_impl_find_instance(jniEnv, child_ac);
+        if (!child_impl)
+        {
+          break;
+        }
 
-			g_signal_emit_by_name(atk_obj,
-					"children_changed::remove",
-					child_index,
-					child_impl);
-			g_object_unref(G_OBJECT(atk_obj));
-			break;
-		}
-		case Sig_Object_Active_Descendant_Changed:
-		{
-			jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0);
-			JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
-			if (!child_impl) {
-				break;
-			}
+        g_signal_emit_by_name(atk_obj,
+                              "children_changed::remove",
+                              child_index,
+                              child_impl);
+        g_object_unref(G_OBJECT(atk_obj));
+        break;
+      }
+      case Sig_Object_Active_Descendant_Changed:
+      {
+      jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0);
+      JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
 
-			g_signal_emit_by_name(atk_obj,
-					"active_descendant_changed",
-					child_impl);
-			break;
-		}
-		case Sig_Object_Selection_Changed:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"selection_changed");
-			break;
-		}
-		case Sig_Object_Visible_Data_Changed:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"visible_data_changed");
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Actions:
-		{
-			gint oldValue = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-			gint newValue = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
-			AtkPropertyValues values = { NULL };
-			g_value_init(&values.old_value, G_TYPE_INT);
-			g_value_set_int(&values.old_value, oldValue);
-			g_value_init(&values.new_value, G_TYPE_INT);
-			g_value_set_int(&values.new_value, newValue);
-			values.property_name = "accessible-actions";
+      if (!child_impl)
+      {
+        break;
+      }
 
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-actions",
-					&values);
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Value:
-		{
-			g_object_notify(G_OBJECT(atk_obj), "accessible-value");
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Description:
-		{
-			g_object_notify(G_OBJECT(atk_obj), "accessible-description");
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Name:
-		{
-			g_object_notify(G_OBJECT(atk_obj), "accessible-name");
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Hypertext_Offset:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-hypertext-offset",
-					NULL);
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Table_Caption:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-table-caption",
-					NULL);
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Table_Summary:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-table-summary",
-					NULL);
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Table_Column_Header:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-table-column-header",
-					NULL);
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Table_Column_Description:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-table-column-description",
-					NULL);
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Table_Row_Header:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-table-row-header",
-					NULL);
-			break;
-		}
-		case Sig_Object_Property_Change_Accessible_Table_Row_Description:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"property_change::accessible-table-row-description",
-					NULL);
-			break;
-		}
-		case Sig_Table_Model_Changed:
-		{
-			g_signal_emit_by_name(atk_obj,
-					"model_changed");
-			break;
-		}
-		case Sig_Text_Property_Changed:
-		{
-			JawObject * jaw_obj = JAW_OBJECT(atk_obj);
+      g_signal_emit_by_name(atk_obj,
+                            "active_descendant_changed",
+                            child_impl);
+      break;
+    }
+    case Sig_Object_Selection_Changed:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "selection_changed");
+      break;
+    }
+    case Sig_Object_Visible_Data_Changed:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "visible_data_changed");
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Actions:
+    {
+      gint oldValue = get_int_value(jniEnv,
+                                  (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      gint newValue = get_int_value(jniEnv,
+                                    (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
+      AtkPropertyValues values = { NULL };
+      g_value_init(&values.old_value, G_TYPE_INT);
+      g_value_set_int(&values.old_value, oldValue);
+      g_value_init(&values.new_value, G_TYPE_INT);
+      g_value_set_int(&values.new_value, newValue);
+      values.property_name = "accessible-actions";
 
-			gint newValue = get_int_value(
-					jniEnv,
-					(*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      g_signal_emit_by_name(atk_obj,
+                            "property_change::accessible-actions",
+                            &values);
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Value:
+    {
+      g_object_notify(G_OBJECT(atk_obj), "accessible-value");
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Description:
+    {
+      g_object_notify(G_OBJECT(atk_obj), "accessible-description");
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Name:
+    {
+      g_object_notify(G_OBJECT(atk_obj), "accessible-name");
+      break;
+     }
+    case Sig_Object_Property_Change_Accessible_Hypertext_Offset:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "property_change::accessible-hypertext-offset",
+                            NULL);
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Table_Caption:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "property_change::accessible-table-caption",
+                            NULL);
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Table_Summary:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "property_change::accessible-table-summary",
+                            NULL);
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Table_Column_Header:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "property_change::accessible-table-column-header",
+                            NULL);
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Table_Column_Description:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "property_change::accessible-table-column-description",
+                            NULL);
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Table_Row_Header:
+    {
+      g_signal_emit_by_name(atk_obj,
+      "property_change::accessible-table-row-header",
+      NULL);
+      break;
+    }
+    case Sig_Object_Property_Change_Accessible_Table_Row_Description:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "property_change::accessible-table-row-description",
+                            NULL);
+      break;
+    }
+    case Sig_Table_Model_Changed:
+    {
+      g_signal_emit_by_name(atk_obj,
+                            "model_changed");
+      break;
+    }
+    case Sig_Text_Property_Changed:
+    {
+      JawObject * jaw_obj = JAW_OBJECT(atk_obj);
 
-			gint prevCount = (gint)g_hash_table_lookup(
-					jaw_obj->storedData,
-					"Previous_Count");
-			gint curCount = atk_text_get_character_count(
-					ATK_TEXT(jaw_obj));
+      gint newValue = get_int_value(jniEnv,
+                                    (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
 
-			g_hash_table_insert(
-					jaw_obj->storedData,
-					"Previous_Count",
-					(gpointer)curCount);
+      gint prevCount = (gint)g_hash_table_lookup(jaw_obj->storedData,
+                                                 "Previous_Count");
+      gint curCount = atk_text_get_character_count(ATK_TEXT(jaw_obj));
 
-			if (curCount > prevCount) {
-				g_signal_emit_by_name(atk_obj,
-						"text_changed::insert",
-						newValue,
-						curCount - prevCount);
-			} else if (curCount < prevCount) {
-				g_signal_emit_by_name(atk_obj,
-						"text_changed::delete",
-						newValue,
-						prevCount - curCount);
-			}
+      g_hash_table_insert(jaw_obj->storedData,
+                          "Previous_Count",
+                          (gpointer)curCount);
 
-			break;
-		}
-		default:
-			break;
-	}
-
+      if (curCount > prevCount)
+      {
+        g_signal_emit_by_name(atk_obj,
+                              "text_changed::insert",
+                              newValue,
+                              curCount - prevCount);
+      }
+      else if (curCount < prevCount)
+      {
+        g_signal_emit_by_name(atk_obj,
+                              "text_changed::delete",
+                              newValue,
+                              prevCount - curCount);
+      }
+      break;
+    }
+    default:
+    break;
+  }
   free_callback_para(para);
-
   return FALSE;
 }
 
