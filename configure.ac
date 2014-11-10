@@ -105,15 +105,17 @@ SRC_DIR=`dirname $0`
 if test "x$with_jdk_auto_detect" = "xyes"; then
   `$JAVAC $JAVACFLAGS -classpath $SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
   JDK_SRC=`$JAVA $JAVACFLAGS JavaInfo`
+  JAVA_HOME=`$JAVA JavaInfo`/include
 else
   if test -z "$JDK_SRC"; then
     AC_MSG_ERROR("You should specify JDK_SRC")
   fi
 fi
 AC_SUBST(JDK_SRC)
+AC_SUBST(JAVA_HOME)
 
 if test "x$GCC" = xyes; then
-  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JAVA_HOME/include
+  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JAVA_HOME
 else
   AC_MSG_ERROR("You should compile with GCC")
 fi
