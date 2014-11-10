@@ -102,7 +102,6 @@ AC_ARG_WITH([jdk_auto_detect],
 if test "x$with_jdk_auto_detect" = "xyes"; then
   CUR_DIR=`pwd`
   SRC_DIR=`dirname $0`
-  SRC_DIR=`cd $SRC_DIR;pwd;cd $CUR_DIR`
   $JAVAC $JAVACFLAGS $SRC_DIR/JavaInfo.java
   JDK_SRC=`CLASSPATH=$SRC_DIR $JAVA JavaInfo`
 else
