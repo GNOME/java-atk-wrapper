@@ -112,9 +112,6 @@ else
 fi
 AC_SUBST(JDK_SRC)
 
-CUR_DIR=`pwd`
-SRC_DIR=`dirname $0`
-SRC_DIR=`cd $SRC_DIR;pwd;cd $CUR_DIR`
 if test "x$GCC" = xyes; then
   JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JAVA_HOME/include
 else
