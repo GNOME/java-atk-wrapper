@@ -1,3 +1,30 @@
+Changes in version 0.30.9
+=========================
+
+Build:
+  Bug 739909: Allow writing of JavaInfo.class during distcheck
+  Bug 739912: Set JAVA_HOME properly
+              Fix invalid flag
+  Remove directory cd into cwd
+  configure: add check-news to AM_INIT_AUTOMAKE
+  configure.ac: remove quotation marks
+  fix b660968 mistake breaking build
+
+Miscellanous:
+  Replace tabs for spaces and format a bit
+  Change JRE_SRC back to JAVA_HOME
+  change tabs to spaces
+  jawaction: style improvements
+  Atktext: style improvements
+  fix typo
+  Remove whitespace
+
+Mantainership:
+  Close 9 obsolete Bugs
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.30.8
 =========================
 

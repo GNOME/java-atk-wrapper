@@ -1,4 +1,4 @@
-AC_INIT([java-atk-wrapper],[0.30.8])
+AC_INIT([java-atk-wrapper],[0.30.9])
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([-Wall check-news])
@@ -14,7 +14,7 @@ AM_PROG_AR
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LIB_ATK_WRAPPER_LT_VERSION=0:16:0
+LIB_ATK_WRAPPER_LT_VERSION=0:17:0
 AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 # jni
