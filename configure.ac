@@ -21,7 +21,7 @@ AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 AC_CONFIG_HEADERS([config.h])
 
-AC_PROG_CC
+AC_PROG_CC(cc)
 AC_PROG_INSTALL
 AC_ISC_POSIX
 
@@ -58,13 +58,13 @@ AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 JAVA_REQUIRED=1.5
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
-AC_ARG_VAR([JRE_SRC],[Java Runtime Environment location])
+AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
 AC_ARG_VAR([JDK_SRC],[JDK installation path])
 
-if test -z "$JRE_SRC"; then
+if test -z "$JAVA_HOME"; then
   JAVA_PATH=${PATH}
 else
-  JAVA_PATH=${JRE_SRC}:${JRE_SRC}/jre/bin:${JRE_SRC}/bin:${JRE_SRC}/../bin:${PATH}
+  JAVA_PATH=${JAVA_HOME}:${JAVA_HOME}/jre/bin:${JAVA_HOME}/bin:${JAVA_HOME}/../bin:${PATH}
 fi
 
 AC_PATH_PROG(JAVA,java,,${JAVA_PATH})
