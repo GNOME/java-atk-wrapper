@@ -61,11 +61,16 @@ JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-acces
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
 AC_ARG_VAR([JDK_SRC],[JDK installation path])
 
+
+`$JAVAC $JAVACFLAGS -classpath=$SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
+JAVA_HOME=`$JAVA JavaInfo`/jre
+
 if test -z "$JAVA_HOME"; then
   JAVA_PATH=${PATH}
 else
   JAVA_PATH=${JAVA_HOME}:${JAVA_HOME}/jre/bin:${JAVA_HOME}/bin:${JAVA_HOME}/../bin:${PATH}
 fi
+AC_SUBST(JAVA_HOME)
 
 AC_PATH_PROG(JAVA,java,,${JAVA_PATH})
 if test -z "$JAVA"; then
