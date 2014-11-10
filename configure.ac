@@ -99,11 +99,12 @@ AC_ARG_WITH([jdk_auto_detect],
             [],
             [with_jdk_auto_detect=yes])
 
+CUR_DIR=`pwd`
+SRC_DIR=`dirname $0`
+
 if test "x$with_jdk_auto_detect" = "xyes"; then
-  CUR_DIR=`pwd`
-  SRC_DIR=`dirname $0`
-  $JAVAC $JAVACFLAGS $SRC_DIR/JavaInfo.java
-  JDK_SRC=`CLASSPATH=$SRC_DIR $JAVA JavaInfo`
+  `$JAVAC $JAVACFLAGS -classpath=$SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
+  JDK_SRC=`$JAVA JavaInfo`
 else
   if test -z "$JDK_SRC"; then
     AC_MSG_ERROR("You should specify JDK_SRC")
