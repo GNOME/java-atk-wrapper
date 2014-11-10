@@ -1,4 +1,4 @@
-AC_INIT([java-atk-wrapper],[0.30.8])
+AC_INIT([java-atk-wrapper],[0.30.9])
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([-Wall check-news])
@@ -14,14 +14,14 @@ AM_PROG_AR
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LIB_ATK_WRAPPER_LT_VERSION=0:16:0
+LIB_ATK_WRAPPER_LT_VERSION=0:17:0
 AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 # jni
 
 AC_CONFIG_HEADERS([config.h])
 
-AC_PROG_CC
+AC_PROG_CC(gcc)
 AC_PROG_INSTALL
 AC_ISC_POSIX
 
@@ -58,13 +58,13 @@ AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 JAVA_REQUIRED=1.5
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
-AC_ARG_VAR([JRE_SRC],[Java Runtime Environment location])
+AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
 AC_ARG_VAR([JDK_SRC],[JDK installation path])
 
-if test -z "$JRE_SRC"; then
+if test -z "$JAVA_HOME"; then
   JAVA_PATH=${PATH}
 else
-  JAVA_PATH=${JRE_SRC}:${JRE_SRC}/jre/bin:${JRE_SRC}/bin:${JRE_SRC}/../bin:${PATH}
+  JAVA_PATH=${JAVA_HOME}:${JAVA_HOME}/jre/bin:${JAVA_HOME}/bin:${JAVA_HOME}/../bin:${PATH}
 fi
 
 AC_PATH_PROG(JAVA,java,,${JAVA_PATH})
@@ -99,18 +99,27 @@ AC_ARG_WITH([jdk_auto_detect],
             [],
             [with_jdk_auto_detect=yes])
 
+CUR_DIR=`pwd`
+SRC_DIR=`dirname $0`
+
 if test "x$with_jdk_auto_detect" = "xyes"; then
-  CUR_DIR=`pwd`
-  SRC_DIR=`dirname $0`
-  SRC_DIR=`cd $SRC_DIR;pwd;cd $CUR_DIR`
-  $JAVAC $JAVACFLAGS $SRC_DIR/JavaInfo.java
-  JDK_SRC="`CLASSPATH=$SRC_DIR $JAVA JavaInfo`"
+  `$JAVAC $JAVACFLAGS -classpath $SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
+  JDK_SRC=`$JAVA $JAVACFLAGS JavaInfo`
+  JAVA_HOME=`$JAVA JavaInfo`/include
 else
   if test -z "$JDK_SRC"; then
     AC_MSG_ERROR("You should specify JDK_SRC")
   fi
 fi
 AC_SUBST(JDK_SRC)
+AC_SUBST(JAVA_HOME)
+
+if test "x$GCC" = xyes; then
+  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JAVA_HOME
+else
+  AC_MSG_ERROR("You should compile with GCC")
+fi
+AC_SUBST(JAW_CFLAGS)
 
 CHECK_JNI
 

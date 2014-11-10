@@ -1,3 +1,22 @@
+0c9436f Set JAVA_HOME properly
+a367c71 fix invalid flag
+d617870 Revert "Specify JAVA_HOME"
+390cd63 Specify JAVA_HOME
+4953364 remove repeated code
+3400113 Allow writing of JavaInfo.class during distcheck
+8a6aacb Remove directory cd into cwd (pointless)
+6d3008f Style: replace tabs for spaces and format a bit
+2c0d5b5 configure.ac: remove quotation marks
+4e4c6e4 Change JRE_SRC back to JAVA_HOME
+e4e4c89 AtkWrapper: replace tabs for spaces
+0aba5b1 configure.ac: change tabs to spaces
+5bf3e3c configure: add check-news to AM_INIT_AUTOMAKE
+a288c8d ATKWrapper: fix b660968 mistake breaking build
+4c33d87 jawaction: style improvements
+a266328 Atktext: style improvements
+b660968 fix typo
+1f94187 Remove whitespace
+18605ee Release 0.30.8
 c8a2bdf atkwrapper: fix style and indentation
 bf9919f AtkKeyEvent: Use checked operations
 3273d5c AtkKeyEvent.java: fix indentation
