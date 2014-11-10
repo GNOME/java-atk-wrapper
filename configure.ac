@@ -103,8 +103,8 @@ CUR_DIR=`pwd`
 SRC_DIR=`dirname $0`
 
 if test "x$with_jdk_auto_detect" = "xyes"; then
-  `$JAVAC $JAVACFLAGS -classpath=$SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
-  JDK_SRC=`$JAVA JavaInfo`
+  `$JAVAC $JAVACFLAGS -classpath $SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
+  JDK_SRC=`$JAVA $JAVACFLAGS JavaInfo`
 else
   if test -z "$JDK_SRC"; then
     AC_MSG_ERROR("You should specify JDK_SRC")
