@@ -1,7 +1,8 @@
+AC_PREREQ(2.63)
 AC_INIT([java-atk-wrapper],[0.30.9])
 
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE([-Wall check-news])
+AM_INIT_AUTOMAKE([1.11 -Wall check-news])
 
 m4_pattern_allow([AM_PROG_AR])
 AM_PROG_AR
@@ -25,7 +26,9 @@ AC_PROG_CC(gcc)
 AC_PROG_INSTALL
 AC_ISC_POSIX
 
-AM_PROG_LIBTOOL
+# Initialize libtool
+LT_PREREQ([2.2.6])
+LT_INIT([disable-static])
 
 AC_CONFIG_MACRO_DIR([m4])
 
