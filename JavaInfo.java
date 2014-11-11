@@ -1,8 +1,7 @@
 public class JavaInfo {
 	public JavaInfo() {
 		String strHome = System.getProperty("java.home");
-		String fileSep = System.getProperty ("file.separator");
-		if (strHome.endsWith( fileSep + "jre" )) {
+		if (strHome.endsWith( "/" + "jre" )) {
 			strHome = strHome.substring(0, strHome.length()-4);
 		}
 
