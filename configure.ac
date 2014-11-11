@@ -163,3 +163,11 @@ AC_OUTPUT([
     wrapper/org/GNOME/Makefile
     wrapper/org/GNOME/Accessibility/Makefile
 ])
+
+echo "
+Build configuration:
+
+       Prefix:                                 ${prefix}
+       Source code location:                   ${srcdir}
+       Compiler:                               ${CC}
+"
