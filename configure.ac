@@ -106,7 +106,7 @@ CUR_DIR=`pwd`
 SRC_DIR=`dirname $0`
 
 if test "x$with_jdk_auto_detect" = "xyes"; then
-  `$JAVAC $JAVACFLAGS -classpath $SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
+  `$JAVAC $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
   JDK_SRC=`$JAVA $JAVACFLAGS JavaInfo`
   JAVA_HOME=`$JAVA JavaInfo`/jre
 else
