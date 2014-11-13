@@ -1,3 +1,12 @@
+b35e4bb set wrapperdir and propertiesdir to prefix
+4a6a042 Set wrapperdir and propertiesdir correctly
+3f3802e configure.ac: use current directory
+d23876a configure.ac: print useful build config info
+c295dab configure.ac: Specify minimum versions for building
+11716b3 Remove fileSeperator object
+00ba127 Set JAW_CFLAGS includes
+e17ebb4 FIX 'install-libLTLIBRARIES' failed: error
+6ffafb0 Release 0.30.9
 0c9436f Set JAVA_HOME properly
 a367c71 fix invalid flag
 d617870 Revert "Specify JAVA_HOME"

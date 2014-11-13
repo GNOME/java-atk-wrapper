@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([java-atk-wrapper],[0.30.9])
+AC_INIT([java-atk-wrapper],[0.31.0])
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([1.11 -Wall check-news])
@@ -15,7 +15,7 @@ AM_PROG_AR
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LIB_ATK_WRAPPER_LT_VERSION=0:17:0
+LIB_ATK_WRAPPER_LT_VERSION=0:18:0
 AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 # jni
@@ -32,13 +32,13 @@ LT_INIT([disable-static])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-m4_define([req_ver_atk], [1.17.0])
+m4_define([req_ver_atk], [1.18.0])
 
 PKG_CHECK_MODULES(JAW, [
-  atk             >= req_ver_atk
-  glib-2.0
+  atk >= 2.11.90
+  glib-2.0 >= 2.32.0
   gthread-2.0
-  gmodule-2.0
+  gmodule-2.0 >= 2.0.0
   gdk-2.0
   gconf-2.0
 ])
