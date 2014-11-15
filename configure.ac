@@ -43,9 +43,6 @@ PKG_CHECK_MODULES(JAW, [
   gconf-2.0
 ])
 
-ATK_BRIDGE_LIB_PATH="`pkg-config --variable=libdir gtk+-2.0`/gtk-2.0"
-AC_SUBST(ATK_BRIDGE_LIB_PATH)
-
 case "${target_os}" in
 cygwin*)
   LIB_ATK_WRAPPER_LD_FLAGS="-avoid-version -no-undefined"

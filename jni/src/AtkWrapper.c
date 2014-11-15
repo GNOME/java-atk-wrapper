@@ -171,28 +171,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
     return JNI_FALSE;
   }
 
-  const gchar* gtk_module_path = g_getenv("GTK_PATH");
-  if (!gtk_module_path)
-  {
-    gtk_module_path = ATK_BRIDGE_LIB_PATH;
-  }
-
-  if (jaw_debug) {
-    printf("GTK_PATH=%s\n", gtk_module_path);
-  }
-
-  gtk_module_path = g_strconcat(gtk_module_path, "/modules", NULL);
-  const gchar* atk_bridge_file = g_module_build_path(gtk_module_path, "atk-bridge");
-
-  if (jaw_debug) {
-    printf("We are going to load %s\n", atk_bridge_file);
-  }
-
-  module_atk_bridge = g_module_open(atk_bridge_file, G_MODULE_BIND_LAZY);
-
-  if (!module_atk_bridge) {
-    return JNI_FALSE;
-  }
+  atk_bridge_adaptor_init();
 
   jaw_impl_init_mutex();
 
