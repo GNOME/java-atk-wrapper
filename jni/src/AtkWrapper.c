@@ -58,8 +58,15 @@ static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 
 static GModule* module_atk_bridge = NULL;
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve)
+{
+  JNIEnv *env;
   globalJvm = javaVM;
+
+  if ((*javaVM)->GetEnv(javaVM, (void **)&env, JNI_VERSION_1_2))
+  {
+    return JNI_ERR; /* Not supported */
+  }
   return JNI_VERSION_1_2;
 }
 
