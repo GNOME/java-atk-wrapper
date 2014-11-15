@@ -143,8 +143,6 @@ JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv,
                                                                   jclass jClass)
 {
-  g_type_init();
-
   // Hook up g_idle_dispatch
   origin_g_idle_dispatch = g_idle_funcs.dispatch;
   g_idle_funcs.dispatch = jaw_idle_dispatch;
