@@ -168,7 +168,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   if (!g_thread_supported())
   {
     XInitThreads();
-    g_thread_init(NULL);
     return JNI_FALSE;
   }
 
