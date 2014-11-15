@@ -19,15 +19,15 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <glib.h>
 #include "jawtoplevel.h"
 
-static void		jaw_toplevel_class_init		(JawToplevelClass	*klass);
-static void		jaw_toplevel_init		(JawToplevel		*toplevel);
+static void jaw_toplevel_class_init(JawToplevelClass *klass);
+static void jaw_toplevel_init(JawToplevel *toplevel);
 
-static void		jaw_toplevel_initialize		(AtkObject		*accessible,
-							 gpointer		data);
-static void		jaw_toplevel_object_finalize	(GObject		*obj);
+static void jaw_toplevel_initialize(AtkObject *accessible, gpointer data);
+static void jaw_toplevel_object_finalize(GObject *obj);
 
 /* override AtkObject function */
 static G_CONST_RETURN gchar*	jaw_toplevel_get_name			(AtkObject		*obj);
