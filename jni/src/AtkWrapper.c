@@ -41,9 +41,9 @@ typedef struct _DummyDispatch DummyDispatch;
 
 struct _DummyDispatch
 {
-	GSourceFunc func;
-	gpointer data;
-	GDestroyNotify destroy;
+  GSourceFunc func;
+  gpointer data;
+  GDestroyNotify destroy;
 };
 
 gboolean jaw_debug = FALSE;
@@ -59,8 +59,8 @@ static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 static GModule* module_atk_bridge = NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve) {
-	globalJvm = javaVM;
-	return JNI_VERSION_1_2;
+  globalJvm = javaVM;
+  return JNI_VERSION_1_2;
 }
 
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *javaVM, void *reserve) {
