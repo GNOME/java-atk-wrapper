@@ -289,7 +289,7 @@ jaw_value_get_minimum_increment (AtkValue *obj, GValue *value)
 	}
 
 	GValue curValue = {0,};
-	atk_value_get_current_value(obj, &curValue);
+	atk_value_get_current_value_and_text(obj, &curValue);
 
 	if (G_TYPE_IS_FUNDAMENTAL (G_VALUE_TYPE (&curValue))) {
 		switch (curValue.g_type) {
