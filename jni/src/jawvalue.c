@@ -231,7 +231,7 @@ jaw_value_set_current_value (AtkValue *obj, const GValue *value)
 	switch (value->g_type) {
 		case G_TYPE_CHAR:
 		{
-			gchar c = g_value_get_char(value);
+			gchar c = g_value_get_schar(value);
 			klass = (*jniEnv)->FindClass(jniEnv, "java/lang/Byte");
 			jmidInit = (*jniEnv)->GetMethodID(jniEnv, klass, "<init>", "(B)V");
 			o = (*jniEnv)->NewObject(jniEnv, klass, jmidInit, (jbyte)c);
