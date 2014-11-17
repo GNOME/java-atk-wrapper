@@ -92,7 +92,7 @@ static void get_g_value_from_java_number (JNIEnv *jniEnv,
 	if ((*jniEnv)->IsInstanceOf(jniEnv, jnumber, classByte)) {
 		jmid = (*jniEnv)->GetMethodID(jniEnv, classByte, "byteValue", "()B");
 		g_value_init(value, G_TYPE_CHAR);
-		g_value_set_char(value,
+		g_value_set_schar(value,
 				(gchar)(*jniEnv)->CallByteMethod(jniEnv, jnumber, jmid));
 
 		return;
