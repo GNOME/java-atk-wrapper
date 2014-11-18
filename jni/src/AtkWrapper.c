@@ -286,7 +286,7 @@ focus_notify_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  atk_object_notify_state_change(atk_obj, ATK_STATE_FOCUSED, FALSE);
+  atk_object_notify_state_change(atk_obj, ATK_STATE_FOCUSED, TRUE);
 
   free_callback_para(para);
 
