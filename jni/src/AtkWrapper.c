@@ -702,9 +702,9 @@ signal_emit_handler (gpointer p)
       gint insert_length = get_int_value(jniEnv,
                                          (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
       g_signal_emit_by_name(atk_obj,
-      "text_changed::insert",
-      insert_position,
-      insert_length);
+                            "text_changed::insert",
+                            insert_position,
+                            insert_length);
       break;
     }
     case Sig_Text_Property_Changed_Delete:
