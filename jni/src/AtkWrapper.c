@@ -19,6 +19,7 @@
 
 #include <jni.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <glib.h>
 #include <gmodule.h>
 #include <gdk/gdk.h>
@@ -121,7 +122,7 @@ jaw_load_atk_bridge (gpointer p)
   }
 
   (dl_init)();
-  g_atexit( jaw_exit_func );
+  atexit( jaw_exit_func );
 
   if (jaw_debug) {
     printf("ATK Bridge has been loaded successfully\n");
