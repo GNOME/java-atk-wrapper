@@ -160,17 +160,6 @@ jaw_text_data_finalize (gpointer p)
 static gchar*
 jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, TextData *data, jstring jstr)
 {
-	/*if (data->text != NULL) {
-		(*jniEnv)->ReleaseStringUTFChars(jniEnv, data->jstrText, data->text);
-		(*jniEnv)->DeleteGlobalRef(jniEnv, data->jstrText);
-		data->text = NULL;
-	}
-
-	if (jstr != NULL) {
-		data->jstrText = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
-		data->text = (gchar*)(*jniEnv)->GetStringUTFChars( jniEnv, data->jstrText, NULL );
-	}*/
-
   if (jstr == NULL)
   {
     return NULL;
