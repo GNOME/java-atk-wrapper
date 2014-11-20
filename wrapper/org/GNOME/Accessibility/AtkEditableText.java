@@ -26,56 +26,57 @@ import javax.swing.text.*;
 
 public class AtkEditableText extends AtkText {
 
-	AccessibleEditableText acc_edt_text;
+  AccessibleEditableText acc_edt_text;
 
-	public AtkEditableText (AccessibleContext ac) {
-		super(ac);
-		acc_edt_text = ac.getAccessibleEditableText();
-	}
+  public AtkEditableText (AccessibleContext ac) {
+    super(ac);
+    acc_edt_text = ac.getAccessibleEditableText();
+  }
 
-	public void set_text_contents (String s) {
-		acc_edt_text.setTextContents(s);
-	}
+  public void set_text_contents (String s) {
+    acc_edt_text.setTextContents(s);
+  }
 
-	public void insert_text (String s, int position) {
-		if (position < 0) {
-			position = 0;
-		}
+  public void insert_text (String s, int position) {
+    if (position < 0) {
+      position = 0;
+    }
 
-		acc_edt_text.insertTextAtIndex(position, s);
-	}
+    acc_edt_text.insertTextAtIndex(position, s);
+  }
 
-	public void copy_text (int start, int end) {
-		int n = acc_edt_text.getCharCount();
+  public void copy_text (int start, int end) {
+    int n = acc_edt_text.getCharCount();
 
-		if (start < 0) {
-			start = 0;
-		}
+    if (start < 0) {
+      start = 0;
+    }
 
-		if (end > n || end == -1) {
-			end = n;
-		} else if (end < -1) {
-			end = 0;
-		}
+    if (end > n || end == -1) {
+      end = n;
+    } else if (end < -1) {
+      end = 0;
+    }
 
-		String s = acc_edt_text.getTextRange(start, end);
-		if (s != null) {
-			StringSelection stringSel = new StringSelection(s);
-			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-					stringSel, stringSel);
-		}
-	}
+    String s = acc_edt_text.getTextRange(start, end);
+    if (s != null) {
+      StringSelection stringSel = new StringSelection(s);
+      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSel,
+                                                                   stringSel
+                                                                   );
+    }
+  }
 
-	public void cut_text (int start, int end) {
-		acc_edt_text.cut(start, end);
-	}
+  public void cut_text (int start, int end) {
+    acc_edt_text.cut(start, end);
+  }
 
-	public void delete_text (int start, int end) {
-		acc_edt_text.delete(start, end);
-	}
+  public void delete_text (int start, int end) {
+    acc_edt_text.delete(start, end);
+  }
 
-	public void paste_text (int position) {
-		acc_edt_text.paste(position);
-	}
+  public void paste_text (int position) {
+    acc_edt_text.paste(position);
+  }
 }
 

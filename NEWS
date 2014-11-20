@@ -1,3 +1,21 @@
+Changes in version 0.31.0
+=========================
+
+Build:
+
+739912: Set JAVA_HOME
+739976: Fix 'install-libLTLIBRARIES' failed error
+740062: set wrapperdir and propertiesdir to prefix
+        Set wrapperdir and propertiesdir correctly
+  Set JAW_CFLAGS includes
+  configure.ac: use current working directory
+                Specify minimum versions for building
+
+Miscellanous:
+  Remove fileSeperator object
+  print useful build config info
+  Specify JAVA_HOME
+
 Changes in version 0.30.9
 =========================
 

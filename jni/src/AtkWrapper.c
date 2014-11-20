@@ -19,6 +19,7 @@
 
 #include <jni.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <glib.h>
 #include <gmodule.h>
 #include <gdk/gdk.h>
@@ -41,9 +42,9 @@ typedef struct _DummyDispatch DummyDispatch;
 
 struct _DummyDispatch
 {
-	GSourceFunc func;
-	gpointer data;
-	GDestroyNotify destroy;
+  GSourceFunc func;
+  gpointer data;
+  GDestroyNotify destroy;
 };
 
 gboolean jaw_debug = FALSE;
@@ -58,9 +59,16 @@ static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 
 static GModule* module_atk_bridge = NULL;
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve) {
-	globalJvm = javaVM;
-	return JNI_VERSION_1_2;
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve)
+{
+  JNIEnv *env;
+  globalJvm = javaVM;
+
+  if ((*javaVM)->GetEnv(javaVM, (void **)&env, JNI_VERSION_1_2))
+  {
+    return JNI_ERR; /* Not supported */
+  }
+  return JNI_VERSION_1_2;
 }
 
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *javaVM, void *reserve) {
@@ -114,7 +122,7 @@ jaw_load_atk_bridge (gpointer p)
   }
 
   (dl_init)();
-  g_atexit( jaw_exit_func );
+  atexit( jaw_exit_func );
 
   if (jaw_debug) {
     printf("ATK Bridge has been loaded successfully\n");
@@ -136,8 +144,6 @@ JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv,
                                                                   jclass jClass)
 {
-  g_type_init();
-
   // Hook up g_idle_dispatch
   origin_g_idle_dispatch = g_idle_funcs.dispatch;
   g_idle_funcs.dispatch = jaw_idle_dispatch;
@@ -163,35 +169,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   if (!g_thread_supported())
   {
     XInitThreads();
-    g_thread_init(NULL);
-  }
-
-  if (!g_module_supported()) {
     return JNI_FALSE;
   }
 
-  const gchar* gtk_module_path = g_getenv("GTK_PATH");
-  if (!gtk_module_path)
-  {
-    gtk_module_path = ATK_BRIDGE_LIB_PATH;
-  }
-
-  if (jaw_debug) {
-    printf("GTK_PATH=%s\n", gtk_module_path);
-  }
-
-  gtk_module_path = g_strconcat(gtk_module_path, "/modules", NULL);
-  const gchar* atk_bridge_file = g_module_build_path(gtk_module_path, "atk-bridge");
-
-  if (jaw_debug) {
-    printf("We are going to load %s\n", atk_bridge_file);
-  }
-
-  module_atk_bridge = g_module_open(atk_bridge_file, G_MODULE_BIND_LAZY);
-
-  if (!module_atk_bridge) {
-    return JNI_FALSE;
-  }
+  atk_bridge_adaptor_init();
 
   jaw_impl_init_mutex();
 
@@ -306,7 +287,7 @@ focus_notify_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  atk_focus_tracker_notify(atk_obj);
+  atk_object_notify_state_change(atk_obj, ATK_STATE_FOCUSED, TRUE);
 
   free_callback_para(para);
 
@@ -722,9 +703,9 @@ signal_emit_handler (gpointer p)
       gint insert_length = get_int_value(jniEnv,
                                          (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
       g_signal_emit_by_name(atk_obj,
-      "text_changed::insert",
-      insert_position,
-      insert_length);
+                            "text_changed::insert",
+                            insert_position,
+                            insert_length);
       break;
     }
     case Sig_Text_Property_Changed_Delete:
@@ -896,13 +877,13 @@ signal_emit_handler (gpointer p)
       gint newValue = get_int_value(jniEnv,
                                     (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
 
-      gint prevCount = (gint)g_hash_table_lookup(jaw_obj->storedData,
+      gint prevCount = *(gint*)g_hash_table_lookup(jaw_obj->storedData,
                                                  "Previous_Count");
       gint curCount = atk_text_get_character_count(ATK_TEXT(jaw_obj));
 
       g_hash_table_insert(jaw_obj->storedData,
                           "Previous_Count",
-                          (gpointer)curCount);
+                          (gpointer)&curCount);
 
       if (curCount > prevCount)
       {

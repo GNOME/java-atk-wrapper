@@ -1,7 +1,8 @@
-AC_INIT([java-atk-wrapper],[0.30.9])
+AC_PREREQ(2.63)
+AC_INIT([java-atk-wrapper],[0.31.0])
 
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE([-Wall check-news])
+AM_INIT_AUTOMAKE([1.11 -Wall check-news -Wdeprecated-declarations])
 
 m4_pattern_allow([AM_PROG_AR])
 AM_PROG_AR
@@ -14,7 +15,7 @@ AM_PROG_AR
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LIB_ATK_WRAPPER_LT_VERSION=0:17:0
+LIB_ATK_WRAPPER_LT_VERSION=0:18:0
 AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 # jni
@@ -25,23 +26,22 @@ AC_PROG_CC(gcc)
 AC_PROG_INSTALL
 AC_ISC_POSIX
 
-AM_PROG_LIBTOOL
+# Initialize libtool
+LT_PREREQ([2.2.6])
+LT_INIT([disable-static])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-m4_define([req_ver_atk], [1.17.0])
+m4_define([req_ver_atk], [1.18.0])
 
 PKG_CHECK_MODULES(JAW, [
-  atk             >= req_ver_atk
-  glib-2.0
+  atk >= 2.11.90
+  glib-2.0 >= 2.32.0
   gthread-2.0
-  gmodule-2.0
+  gmodule-2.0 >= 2.0.0
   gdk-2.0
   gconf-2.0
 ])
-
-ATK_BRIDGE_LIB_PATH="`pkg-config --variable=libdir gtk+-2.0`/gtk-2.0"
-AC_SUBST(ATK_BRIDGE_LIB_PATH)
 
 case "${target_os}" in
 cygwin*)
@@ -103,9 +103,9 @@ CUR_DIR=`pwd`
 SRC_DIR=`dirname $0`
 
 if test "x$with_jdk_auto_detect" = "xyes"; then
-  `$JAVAC $JAVACFLAGS -classpath $SRC_DIR/wrapper/org/GNOME/Accessibility $SRC_DIR/JavaInfo.java`
+  `$JAVAC $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
   JDK_SRC=`$JAVA $JAVACFLAGS JavaInfo`
-  JAVA_HOME=`$JAVA JavaInfo`/include
+  JAVA_HOME=`$JAVA JavaInfo`/jre
 else
   if test -z "$JDK_SRC"; then
     AC_MSG_ERROR("You should specify JDK_SRC")
@@ -115,7 +115,7 @@ AC_SUBST(JDK_SRC)
 AC_SUBST(JAVA_HOME)
 
 if test "x$GCC" = xyes; then
-  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JAVA_HOME
+  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JDK_SRC/include
 else
   AC_MSG_ERROR("You should compile with GCC")
 fi
@@ -160,3 +160,11 @@ AC_OUTPUT([
     wrapper/org/GNOME/Makefile
     wrapper/org/GNOME/Accessibility/Makefile
 ])
+
+echo "
+Build configuration:
+
+       Prefix:                                 ${prefix}
+       Source code location:                   ${srcdir}
+       Compiler:                               ${CC}
+"

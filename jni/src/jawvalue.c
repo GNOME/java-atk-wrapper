@@ -34,8 +34,7 @@ static void			jaw_value_get_minimum_value		(AtkValue	*obj,
 									 GValue		*value);
 static gboolean			jaw_value_set_current_value		(AtkValue	*obj,
 									 const GValue	*value);
-static void			jaw_value_get_minimum_increment		(AtkValue	*obj,
-									 GValue		*value);
+static gdouble jaw_value_get_increment (AtkValue *obj);
 
 typedef struct _ValueData {
 	jobject atk_value;
@@ -48,7 +47,7 @@ jaw_value_interface_init (AtkValueIface *iface)
 	iface->get_maximum_value = jaw_value_get_maximum_value;
 	iface->get_minimum_value = jaw_value_get_minimum_value;
 	iface->set_current_value = jaw_value_set_current_value;
-	iface->get_minimum_increment = jaw_value_get_minimum_increment;
+	iface->get_increment = jaw_value_get_increment;
 }
 
 gpointer
@@ -92,7 +91,7 @@ static void get_g_value_from_java_number (JNIEnv *jniEnv,
 	if ((*jniEnv)->IsInstanceOf(jniEnv, jnumber, classByte)) {
 		jmid = (*jniEnv)->GetMethodID(jniEnv, classByte, "byteValue", "()B");
 		g_value_init(value, G_TYPE_CHAR);
-		g_value_set_char(value,
+		g_value_set_schar(value,
 				(gchar)(*jniEnv)->CallByteMethod(jniEnv, jnumber, jmid));
 
 		return;
@@ -231,7 +230,7 @@ jaw_value_set_current_value (AtkValue *obj, const GValue *value)
 	switch (value->g_type) {
 		case G_TYPE_CHAR:
 		{
-			gchar c = g_value_get_char(value);
+			gchar c = g_value_get_schar(value);
 			klass = (*jniEnv)->FindClass(jniEnv, "java/lang/Byte");
 			jmidInit = (*jniEnv)->GetMethodID(jniEnv, klass, "<init>", "(B)V");
 			o = (*jniEnv)->NewObject(jniEnv, klass, jmidInit, (jbyte)c);
@@ -281,32 +280,9 @@ jaw_value_set_current_value (AtkValue *obj, const GValue *value)
 	return (jbool == JNI_TRUE) ? TRUE : FALSE;
 }
 
-static void
-jaw_value_get_minimum_increment (AtkValue *obj, GValue *value)
+static gdouble
+jaw_value_get_increment (AtkValue *obj)
 {
-	if (!value) {
-		return;
-	}
-
-	GValue curValue = {0,};
-	atk_value_get_current_value(obj, &curValue);
-
-	if (G_TYPE_IS_FUNDAMENTAL (G_VALUE_TYPE (&curValue))) {
-		switch (curValue.g_type) {
-			case G_TYPE_CHAR:
-			case G_TYPE_INT:
-			case G_TYPE_INT64:
-			{
-				g_value_init(value, G_TYPE_INT);
-				g_value_set_int(value, 1);
-				return;
-			}
-			default:
-				break;
-		}
-	}
-
-	g_value_init(value, G_TYPE_DOUBLE);
-	g_value_set_double(value, 0.0);
+ return atk_value_get_increment(obj);
 }
 

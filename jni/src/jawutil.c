@@ -38,13 +38,6 @@ static AtkObject*	jaw_util_get_root			(void);
 static G_CONST_RETURN gchar* jaw_util_get_toolkit_name		(void);
 static G_CONST_RETURN gchar* jaw_util_get_toolkit_version	(void);
 
-/* AtkMisc */
-static void		jaw_misc_class_init			(JawMiscClass		*klass);
-static void		jaw_misc_init				(JawMisc		*misc);
-
-static void		jaw_misc_threads_enter			(AtkMisc		*misc);
-static void		jaw_misc_threads_leave			(AtkMisc		*misc);
-
 static void		_listener_info_destroy			(gpointer		data);
 static guint            add_listener	                        (GSignalEmissionHook    listener,
                                                                  const gchar            *object_type,
@@ -874,37 +867,5 @@ jaw_util_get_rect_info (JNIEnv *jniEnv,
 	(*y) = (gint)(*jniEnv)->GetIntField(jniEnv, jrect, jfidY);
 	(*width) = (gint)(*jniEnv)->GetIntField(jniEnv, jrect, jfidWidth);
 	(*height) = (gint)(*jniEnv)->GetIntField(jniEnv, jrect, jfidHeight);
-}
-
-G_DEFINE_TYPE (JawMisc, jaw_misc, ATK_TYPE_MISC)
-
-static void	 
-jaw_misc_class_init (JawMiscClass *klass)
-{
-	AtkMiscClass *miscclass = ATK_MISC_CLASS (klass);
-	miscclass->threads_enter = jaw_misc_threads_enter;
-	miscclass->threads_leave = jaw_misc_threads_leave;
-	
-	AtkMiscClass *atk_class;
-	gpointer data;
-	data = g_type_class_peek (ATK_TYPE_MISC);
-	atk_class = ATK_MISC_CLASS (data);
-	atk_class->threads_enter = jaw_misc_threads_enter;
-	atk_class->threads_leave = jaw_misc_threads_leave;
-
-	atk_misc_instance = g_object_new (JAW_TYPE_MISC, NULL);
-}
-
-static void
-jaw_misc_init (JawMisc *misc)
-{
-}
-
-static void jaw_misc_threads_enter (AtkMisc *misc)
-{
-}
-
-static void jaw_misc_threads_leave (AtkMisc *misc)
-{
 }
 
