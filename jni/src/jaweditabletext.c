@@ -22,23 +22,23 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void	jaw_editable_text_interface_init (AtkEditableTextIface*);
-extern gpointer	jaw_editable_text_data_init (jobject);
-extern void	jaw_editable_text_data_finalize (gpointer);
+extern void jaw_editable_text_interface_init(AtkEditableTextIface*);
+extern gpointer jaw_editable_text_data_init(jobject);
+extern void jaw_editable_text_data_finalize(gpointer);
 
 static void jaw_editable_text_set_text_contents(AtkEditableText *text,
-                                                const gchar		*string);
-static void jaw_editable_text_insert_text(AtkEditableText	*text,
+                                                const gchar *string);
+static void jaw_editable_text_insert_text(AtkEditableText *text,
                                           const gchar *string,
                                           gint length,
                                           gint *position);
 static void jaw_editable_text_copy_text(AtkEditableText *text,
                                         gint start_pos,
                                         gint end_pos);
-static void jaw_editable_text_cut_text(AtkEditableText	*text,
+static void jaw_editable_text_cut_text(AtkEditableText *text,
                                        gint start_pos,
                                        gint end_pos);
-static void jaw_editable_text_delete_text(AtkEditableText	*text,
+static void jaw_editable_text_delete_text(AtkEditableText *text,
                                           gint start_pos,
                                           gint end_pos);
 static void jaw_editable_text_paste_text(AtkEditableText *text,
@@ -65,10 +65,18 @@ jaw_editable_text_data_init (jobject ac)
   EditableTextData *data = g_new0(EditableTextData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classEditableText, "<init>", "(Ljavax/accessibility/AccessibleContext;)V");
-  jobject jatk_editable_text = (*jniEnv)->NewObject(jniEnv, classEditableText, jmid, ac);
-  data->atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv, jatk_editable_text);
+  jclass classEditableText = (*jniEnv)->FindClass(jniEnv,
+                                                  "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classEditableText,
+                                          "<init>",
+                                          "(Ljavax/accessibility/AccessibleContext;)V");
+  jobject jatk_editable_text = (*jniEnv)->NewObject(jniEnv,
+                                                    classEditableText,
+                                                    jmid,
+                                                    ac);
+  data->atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv,
+                                                    jatk_editable_text);
 
   return data;
 }
@@ -95,8 +103,12 @@ jaw_editable_text_set_text_contents (AtkEditableText *text,
   jobject atk_editable_text = data->atk_editable_text;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkEditableText, "set_text_contents", "(Ljava/lang/String;)V");
+  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
+                                                     "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkEditableText,
+                                          "set_text_contents",
+                                          "(Ljava/lang/String;)V");
 
   jstring jstr = (*jniEnv)->NewStringUTF(jniEnv, string);
   (*jniEnv)->CallVoidMethod(jniEnv, atk_editable_text, jmid, jstr);
@@ -113,11 +125,18 @@ jaw_editable_text_insert_text (AtkEditableText *text,
   jobject atk_editable_text = data->atk_editable_text;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkEditableText, "insert_text", "(Ljava/lang/String;I)V");
+  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
+                                                     "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkEditableText,
+                                         "insert_text",
+                                         "(Ljava/lang/String;I)V");
 
   jstring jstr = (*jniEnv)->NewStringUTF(jniEnv, string);
-  (*jniEnv)->CallVoidMethod(jniEnv, atk_editable_text, jmid, jstr, (jint)*position);
+  (*jniEnv)->CallVoidMethod(jniEnv,
+                            atk_editable_text,
+                            jmid, jstr,
+                            (jint)*position);
   *position = *position + length;
   atk_text_set_caret_offset(ATK_TEXT(jaw_obj), *position);
 }
@@ -128,13 +147,22 @@ jaw_editable_text_copy_text (AtkEditableText *text,
                              gint end_pos)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
+  EditableTextData *data = jaw_object_get_interface_data(jaw_obj,
+                                                         INTERFACE_EDITABLE_TEXT);
   jobject atk_editable_text = data->atk_editable_text;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkEditableText, "copy_text", "(II)V");
-  (*jniEnv)->CallVoidMethod(jniEnv, atk_editable_text, jmid, (jint)start_pos, (jint)end_pos);
+  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
+                                                     "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkEditableText,
+                                          "copy_text",
+                                          "(II)V");
+  (*jniEnv)->CallVoidMethod(jniEnv,
+                            atk_editable_text,
+                            jmid,
+                            (jint)start_pos,
+                            (jint)end_pos);
 }
 
 void
@@ -146,9 +174,17 @@ jaw_editable_text_cut_text (AtkEditableText *text,
   jobject atk_editable_text = data->atk_editable_text;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkEditableText, "cut_text", "(II)V");
-  (*jniEnv)->CallVoidMethod(jniEnv, atk_editable_text, jmid, (jint)start_pos, (jint)end_pos);
+  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
+                                                     "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkEditableText,
+                                          "cut_text",
+                                          "(II)V");
+  (*jniEnv)->CallVoidMethod(jniEnv,
+                            atk_editable_text,
+                            jmid,
+                            (jint)start_pos,
+                            (jint)end_pos);
 }
 
 void
@@ -157,13 +193,22 @@ jaw_editable_text_delete_text (AtkEditableText *text,
                                gint end_pos)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
+  EditableTextData *data = jaw_object_get_interface_data(jaw_obj,
+                                                         INTERFACE_EDITABLE_TEXT);
   jobject atk_editable_text = data->atk_editable_text;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkEditableText, "delete_text", "(II)V");
-  (*jniEnv)->CallVoidMethod(jniEnv, atk_editable_text, jmid, (jint)start_pos, (jint)end_pos);
+  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
+                                                     "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkEditableText,
+                                          "delete_text",
+                                          "(II)V");
+  (*jniEnv)->CallVoidMethod(jniEnv,
+                            atk_editable_text,
+                            jmid,
+                            (jint)start_pos,
+                            (jint)end_pos);
 }
 
 void
@@ -171,12 +216,20 @@ jaw_editable_text_paste_text (AtkEditableText *text,
                               gint position)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
+  EditableTextData *data = jaw_object_get_interface_data(jaw_obj,
+                                                         INTERFACE_EDITABLE_TEXT);
   jobject atk_editable_text = data->atk_editable_text;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkEditableText, "paste_text", "(I)V");
-  (*jniEnv)->CallVoidMethod(jniEnv, atk_editable_text, jmid, (jint)position);
+  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
+                                                     "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkEditableText,
+                                          "paste_text",
+                                          "(I)V");
+  (*jniEnv)->CallVoidMethod(jniEnv,
+                            atk_editable_text,
+                            jmid,
+                            (jint)position);
 }
 
