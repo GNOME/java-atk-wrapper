@@ -59,6 +59,12 @@ static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 
 static GModule* module_atk_bridge = NULL;
 
+typedef struct {
+  GMutex jg_mutex;
+} JGMutex;
+
+JGMutex *jmutex;
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve)
 {
   JNIEnv *env;
@@ -176,10 +182,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
 
   jaw_impl_init_mutex();
 
-  atk_bridge_mutex = g_mutex_new();
-  atk_bridge_cond = g_cond_new();
+  jmutex = g_new(JGMutex, 1);
+  g_mutex_init (&jmutex->jg_mutex);
 
-  key_dispatch_mutex = g_mutex_new();
+  atk_bridge_cond = g_cond_new();
   key_dispatch_cond = g_cond_new();
 
   // Dummy idle function for jaw_idle_dispatch to get
