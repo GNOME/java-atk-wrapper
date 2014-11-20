@@ -62,7 +62,7 @@ extern gpointer jaw_image_data_init(jobject);
 extern void jaw_image_data_finalize(gpointer);
 
 extern void jaw_selection_interface_init(AtkSelectionIface*);
-extern gpointerjaw_selection_data_init(jobject);
+extern gpointer jaw_selection_data_init(jobject);
 extern void jaw_selection_data_finalize(gpointer);
 
 extern void jaw_value_interface_init (AtkValueIface*);
