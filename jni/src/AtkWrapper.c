@@ -150,6 +150,7 @@ JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv,
                                                                   jclass jClass)
 {
+  GCond *cond;
   // Hook up g_idle_dispatch
   origin_g_idle_dispatch = g_idle_funcs.dispatch;
   g_idle_funcs.dispatch = jaw_idle_dispatch;
@@ -185,8 +186,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   jmutex = g_new(JGMutex, 1);
   g_mutex_init (&jmutex->jg_mutex);
 
-  atk_bridge_cond = g_cond_new();
-  key_dispatch_cond = g_cond_new();
+  g_cond_init(cond);
 
   // Dummy idle function for jaw_idle_dispatch to get
   // the address of gdk_threads_dispatch
