@@ -97,5 +97,5 @@ Value:
   get_value_and_text
   set_value
 
-Window (Signals interface not yet implemented)
+Window TODO investigate in jawobject.c
 
