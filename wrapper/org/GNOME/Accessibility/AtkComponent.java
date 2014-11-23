@@ -60,18 +60,6 @@ public class AtkComponent {
 		return accessible.getAccessibleContext();
 	}
 
-	public Point get_position (int coord_type) {
-		if (coord_type == AtkCoordType.SCREEN) {
-			return acc_component.getLocationOnScreen();
-		}
-
-		return acc_component.getLocation();
-	}
-
-	public Dimension get_size () {
-		return acc_component.getSize();
-	}
-
 	public boolean grab_focus () {
 		if (!acc_component.isFocusTraversable()) {
 			return false;
@@ -80,6 +68,14 @@ public class AtkComponent {
 		acc_component.requestFocus();
 		return true;
 	}
+
+  public void set_extents(Rectangle r) {
+    acc_component.setBounds(r);
+  }
+
+  public Rectangle get_extents() {
+    return acc_component.getBounds();
+  }
 
 	public int get_layer () {
 		AccessibleRole role = ac.getAccessibleRole();
