@@ -28,6 +28,7 @@ public class AtkComponent {
 
   AccessibleContext ac;
   AccessibleComponent acc_component;
+  private int x, y;
 
   public AtkComponent (AccessibleContext ac) {
     super();
@@ -38,8 +39,8 @@ public class AtkComponent {
   public boolean contains (int x, int y, int coord_type) {
     if (coord_type == AtkCoordType.SCREEN) {
       Point p = acc_component.getLocationOnScreen();
-      x -= p.x;
-      y -= p.y;
+      this.x -= p.x;
+      this.y -= p.y;
     }
 
     return acc_component.contains(new Point(x, y));
@@ -48,8 +49,8 @@ public class AtkComponent {
   public AccessibleContext get_accessible_at_point (int x, int y, int coord_type) {
     if (coord_type == AtkCoordType.SCREEN) {
       Point p = acc_component.getLocationOnScreen();
-      x -= p.x;
-      y -= p.y;
+      this.x -= p.x;
+      this.y -= p.y;
     }
 
     javax.accessibility.Accessible accessible = acc_component.getAccessibleAt(new Point(x, y));
