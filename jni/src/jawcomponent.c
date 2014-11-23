@@ -44,8 +44,8 @@ static void jaw_component_get_extents(AtkComponent *component,
                                       AtkCoordType coord_type);
 
 static void jaw_component_get_position(AtkComponent *component,
-                                       gint         x,
-                                       gint         y,
+                                       gint         *x,
+                                       gint         *y,
                                        AtkCoordType coord_type);
 
 static void jaw_component_get_size(AtkComponent *component,
