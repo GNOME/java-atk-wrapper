@@ -100,10 +100,6 @@ Window TODO investigate in jawobject.c
 Deprecated Methods Which Are Implemented
 ----------------------------------------
 
-Component Interface:
-  get_position            -   use get_extents instead
-  get_size                -   use get_extents instead
-
 Table Interface:
   get_index_at            -   use ref_at instead
   get_column_at_index
