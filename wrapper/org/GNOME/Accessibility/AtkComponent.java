@@ -26,48 +26,48 @@ import java.awt.Dimension;
 
 public class AtkComponent {
 
-	AccessibleContext ac;
-	AccessibleComponent acc_component;
+  AccessibleContext ac;
+  AccessibleComponent acc_component;
 
-	public AtkComponent (AccessibleContext ac) {
-		super();
-		this.ac = ac;
-		this.acc_component = ac.getAccessibleComponent();
-	}
+  public AtkComponent (AccessibleContext ac) {
+    super();
+    this.ac = ac;
+    this.acc_component = ac.getAccessibleComponent();
+  }
 
-	public boolean contains (int x, int y, int coord_type) {
-		if (coord_type == AtkCoordType.SCREEN) {
-			Point p = acc_component.getLocationOnScreen();
-			x -= p.x;
-			y -= p.y;
-		}
+  public boolean contains (int x, int y, int coord_type) {
+    if (coord_type == AtkCoordType.SCREEN) {
+      Point p = acc_component.getLocationOnScreen();
+      x -= p.x;
+      y -= p.y;
+    }
 
-		return acc_component.contains(new Point(x, y));
-	}
+    return acc_component.contains(new Point(x, y));
+  }
 
-	public AccessibleContext get_accessible_at_point (int x, int y, int coord_type) {
-		if (coord_type == AtkCoordType.SCREEN) {
-			Point p = acc_component.getLocationOnScreen();
-			x -= p.x;
-			y -= p.y;
-		}
+  public AccessibleContext get_accessible_at_point (int x, int y, int coord_type) {
+    if (coord_type == AtkCoordType.SCREEN) {
+      Point p = acc_component.getLocationOnScreen();
+      x -= p.x;
+      y -= p.y;
+    }
 
-		javax.accessibility.Accessible accessible = acc_component.getAccessibleAt(new Point(x, y));
-		if (accessible == null) {
-			return null;
-		}
+    javax.accessibility.Accessible accessible = acc_component.getAccessibleAt(new Point(x, y));
+    if (accessible == null) {
+      return null;
+    }
 
-		return accessible.getAccessibleContext();
-	}
+    return accessible.getAccessibleContext();
+  }
 
-	public boolean grab_focus () {
-		if (!acc_component.isFocusTraversable()) {
-			return false;
-		}
+  public boolean grab_focus () {
+    if (!acc_component.isFocusTraversable()) {
+      return false;
+    }
 
-		acc_component.requestFocus();
-		return true;
-	}
+    acc_component.requestFocus();
+    return true;
+  }
 
   public void set_extents(Rectangle r) {
     acc_component.setBounds(r);
@@ -77,30 +77,30 @@ public class AtkComponent {
     return acc_component.getBounds();
   }
 
-	public int get_layer () {
-		AccessibleRole role = ac.getAccessibleRole();
+  public int get_layer () {
+    AccessibleRole role = ac.getAccessibleRole();
 
-		if (role == AccessibleRole.MENU ||
-			role == AccessibleRole.MENU_ITEM ||
-			role == AccessibleRole.POPUP_MENU ) {
-			return AtkLayer.POPUP;
-		}
+    if (role == AccessibleRole.MENU ||
+      role == AccessibleRole.MENU_ITEM ||
+      role == AccessibleRole.POPUP_MENU ) {
+      return AtkLayer.POPUP;
+    }
 
-		if (role == AccessibleRole.INTERNAL_FRAME) {
-			return AtkLayer.MDI;
-		}
+    if (role == AccessibleRole.INTERNAL_FRAME) {
+      return AtkLayer.MDI;
+    }
 
-		if (role == AccessibleRole.GLASS_PANE) {
-			return AtkLayer.OVERLAY;
-		}
+    if (role == AccessibleRole.GLASS_PANE) {
+      return AtkLayer.OVERLAY;
+    }
 
-		if (role == AccessibleRole.CANVAS ||
-			role == AccessibleRole.ROOT_PANE ||
-			role == AccessibleRole.LAYERED_PANE ) {
-			return AtkLayer.CANVAS;
-		}
+    if (role == AccessibleRole.CANVAS ||
+      role == AccessibleRole.ROOT_PANE ||
+      role == AccessibleRole.LAYERED_PANE ) {
+      return AtkLayer.CANVAS;
+    }
 
-		return AtkLayer.WIDGET;
-	}
+    return AtkLayer.WIDGET;
+  }
 }
 
