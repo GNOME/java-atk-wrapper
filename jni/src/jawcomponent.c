@@ -73,8 +73,6 @@ jaw_component_interface_init (AtkComponentIface *iface)
   iface->get_layer = jaw_component_get_layer;
   iface->get_mdi_zorder = NULL; /*jaw_component_get_mdi_zorder;*/
   iface->get_alpha = NULL; /*jaw_component_get_alpha;*/
-  iface->add_focus_handler = NULL;
-  iface->remove_focus_handler = NULL;
   iface->set_extents = NULL;
   iface->set_position = NULL;
   iface->set_size = NULL;
