@@ -43,12 +43,12 @@ static void jaw_component_get_extents(AtkComponent *component,
                                       gint         *height,
                                       AtkCoordType coord_type);
 
-static void jaw_component_set_extents(AtkComponent *component,
-                                      gint         *x,
-                                      gint         *y,
-                                      gint         *width,
-                                      gint         *height,
-                                      AtkCoordType coord_type);
+static gboolean jaw_component_set_extents(AtkComponent *component,
+                                          gint         *x,
+                                          gint         *y,
+                                          gint         *width,
+                                          gint         *height,
+                                          AtkCoordType coord_type);
 
 static gboolean jaw_component_grab_focus(AtkComponent *component);
 static AtkLayer jaw_component_get_layer(AtkComponent *component);
@@ -188,7 +188,7 @@ jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, 
   return ATK_OBJECT(jaw_impl);
 }
 
-static void
+static gboolean
 jaw_component_set_extents (AtkComponent *component,
                            gint         *x,
                            gint         *y,
@@ -199,7 +199,7 @@ jaw_component_set_extents (AtkComponent *component,
 
   if (x == NULL || y == NULL || width == NULL || height == NULL)
   {
-    return;
+    return FALSE;
   }
   
   JawObject *jaw_obj = JAW_OBJECT(component);
@@ -223,7 +223,7 @@ jaw_component_set_extents (AtkComponent *component,
     (*height) = 0;
     (*x) = 0;
     (*y) = 0;
-    return;
+    return FALSE;
   }
 
   jclass rectangle_class = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
@@ -254,6 +254,8 @@ jaw_component_set_extents (AtkComponent *component,
   (*height) = (gint)jheight;
   (*x) = (gint)jx;
   (*y) = (gint)jy;
+
+  return TRUE;
 }
 
 static void
