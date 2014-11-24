@@ -294,7 +294,6 @@ jaw_component_get_extents (AtkComponent *component,
     (*y) = 0;
     return;
   }
-  return jaw_component_get_extents(component, x, y, width, height, coord_type);
 }
 
 static gboolean
