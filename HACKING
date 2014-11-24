@@ -89,7 +89,6 @@ Text:
   attribute_get_value
 
 Value:
-  get_minimum_increment
   get_range
   get_sub_ranges
   get_value_and_text
