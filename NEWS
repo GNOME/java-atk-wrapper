@@ -1,3 +1,41 @@
+Changes in version 0.32.0
+=========================
+
+Build:
+  740286 FIX Warning in jaw_hypertext_get_link
+  740428 FIX Assignment makes pointer from integer without a cast
+  740589 Fix Incompatible pointer type error
+  740269 Do not used deprecated 'g_atexit'
+  740172 Do not use deprecated 'atk_focus_tracker_notify'
+  740270 Do not use deprecated 'g_mutex_new'
+  740271 Do not use deprecated 'g_cond_new'
+  740278 Do not use deprecated 'atk_misc_get_type'
+  740279 FIX cast to pointer from integer of different size
+  740280 FIX passing incompatible pointer type
+  740281 Do not use deprecated 'g_value_set_char'
+  740459 do not use deprecated 'g_mutex_new' in jawimpl.c
+
+Miscellanous:
+  740644 jawvalue.c style
+  740584 jawcomponent.c style
+  740548 jawobject.c style
+  740550 jawtoplevel.c style
+  740602 AtkComponent.java is not making use of instance methods
+  740590 remove deprecated and unimplemented focus handler methods
+  740437 jaweditabletext.c style
+  740445 jawtext.c style
+  740449 jawtext.c removed commented out code
+  740450 jawtext.c style further improved
+
+Maintainership:
+  740534 HACKING Update
+  740535 Remove TODO file
+  740539 HACKING Should list methods not yet fully implemented
+  740580 HACKING lists some deprecated functions
+  740581 HACKING should list deprecated functions which are implemented
+  740598 HACKING do not list unimplemented deprecated functions
+  740307 added java-atk-wrapper as a jhbuild module
+
 Changes in version 0.31.0
 =========================
 
