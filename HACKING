@@ -1,18 +1,117 @@
-Contributing to Java ATK Wrapper:
+Hacking Guide for Java ATK Wrapper
+==================================
 
-This is a brand new module which intends to be used to replace
-java-access-bridge because of the deprecation of Bonobo.
+Contributing to Java ATK Wrapper
+--------------------------------
 
-It is still not yet feature-complete, and there must be many bugs.
-
-The current maintainer is Magdalen Berns (m.berns@thismagpie.com).
 As a general rule, non-trivial maintainer-submitted patches should be posted to
 gnome-accessibility-devel for comment and informational purpose prior to commit.
 
-Patches are welcome and if there are any suggestions, please send comments to
+Patches are welcome and if there are any suggestions, please send comments
+directly to the current maintainer, Magdalen Berns m.berns@thismagpie.com and
+make sure to cc the gnome-accessibility-devel list too.
 
-m.berns@thismagpie.com
+To file a bug against java-atk-wrapper:
 
-Magdalen
+1. go to https://bugzilla.gnome.org/enter_bug.cgi?product=at-spi.
+2. select java-atk-wrapper from the component list
+3. file bug using a descriptive subject title.
 
+Feel free to upload a patch to your bug for review.
+
+Testing
+-------
+
+All Selection and Hypertext methods seem to be implemented but have not been
+fully tested yet.
+
+Methods Not Yet Fully Implemented
+---------------------------------
+
+Action Interface:
+  get_localized_name
+  set_description
+
+Component Interface:
+  get_mdi_zorder
+  get_alpha
+
+Document Interface (not yet implemented):
+  get_document_type
+  get_document
+  get_attribute_value
+  get_attribute_value
+  get_attributes
+  get_locale
+  get_current_page_number
+  get_page_count
+
+EditableText:
+  set_run_attributes
+
+HyperlinkImpl:
+TODO Currently Not fully documented by ATK
+
+Image:
+  get_image_locale
+  set_image_description
+
+StreamableContent (not yet implemented and may not have java equivalent):
+  get_n_mime_types
+  content_get_mime_type
+  content_get_stream
+  content_get_uri
+
+Table:
+  set_caption
+  set_row_description
+  set_column_description
+  set_row_header
+  set_column_header
+  set_summary
+  add_column_selection
+  add_row_selection
+
+TableCell (not yet implemented):
+  get_column_span
+  get_column_header_cells
+  get_position
+  get_row_span
+  get_row_header_cells
+  get_row_column_span
+  cell_get_table
+
+Text:
+  set_free
+  attribute_register
+  attribute_get_name
+  attribute_for_name
+  attribute_get_value
+
+Value:
+  get_range
+  get_sub_ranges
+  get_value_and_text
+  set_value
+
+Window TODO investigate in jawobject.c
+
+Deprecated Methods Which Are Implemented
+----------------------------------------
+
+Table Interface:
+  get_index_at            -   use ref_at instead
+  get_column_at_index
+  get_row_at_index
+
+Text Interface:
+  get_text_after_offset  -   use get_string_at_offset instead
+  get_text_at_offset     -   use get_string_at_offset instead
+  get_text_before_offset -   use get_string_at_offset instead
+
+Value Interface:
+  get_maximum_value      -   use get_range instead
+  get_minimum_value      -   use get_range instead
+  set_current_value      -   use set_value instead
+  get_minimum_increment  -   use get_increment instead
 

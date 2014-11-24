@@ -1,3 +1,52 @@
+045d08d HACKING: don't list get_minimum_increment
+485a055 jawvalue: use consistent style
+73c6573 Component: make use of instance methods
+c1e5271 AtkComponent: use consistent style
+d280772 HACKING: update Component interface info
+ec6e998 Component: Implement get and set extents
+6c16482 jawcomponent: Remove focus_handler inits
+ca0c383 jawcomponent: FIX Incompatible pointer type error
+922278a jawcomponent: fix formatting
+248d86e HACKING add list of deprecated functions
+10f6e7f HACKING: remove listed deprecated functions
+06b089f jawtoplevel: sort out formatting
+1e2d6e9 jawobject: sort out formatting
+d26fa5b HACKING: add detail about Windows interface
+d963473 HACKING: list unimplemented methods
+078b736 HACKING Update with info
+dd797f7 Remove TODO file
+c7b0b5c AtkWrapper: Use g_cond_init
+dd3e623 AtkWrapper: use g_mutex_init
+6654ea4 jawimpl.c: use g_mutex_init
+c8bd727 jawtext.c: improve formatting
+fb96ed7 jawtext: remove commented out code
+ff5fb2a jawtext: fix formatting
+3ef5c47 jaweditabletext: fix formatting
+53d40c0 FIX: assignment makes pointer from integer without a cast
+4c97514 jawimpl.c: fix formatting
+46e10e7 AtkObject for add_relationship third argument
+ebe7faf jaweditabletext: formating
+074ab3b use atexit from stdlib
+603f6bc AtkEditableText: fix formatting
+c9e4655 AtkWrapper: format spaces
+72d5cad Notify when object gets focus
+52d9505 update to jaw_value_get_increment
+e3dc525 Fix integer casting for AtkWrapper and jawimpl
+e00a9b5 unlock value from pointer
+e422818 remove references to atkmisc interface
+fc7c2b4 use atk_object_notify_state_change
+8e772e2 Use atk_value_get_value_and_text
+f72b893 use g_value_set_schar #2
+3ff3062 use g_value_set_schar
+a2e6a89 Warn for deprecated declarations
+ead5288 make atk-bridge available but do not use
+2eb4049 remove g_thread_init()
+c41bfb3 Remove repeated code logic
+471fcac remove g_type_init
+d5da1d0 make JNI Version check conditional
+7e42ab0 Style: tabs for spaces
+97df649 FIX incompatible implicit declaration warning
+cbbbb4e Release 0.31.0
 b35e4bb set wrapperdir and propertiesdir to prefix
 4a6a042 Set wrapperdir and propertiesdir correctly
 3f3802e configure.ac: use current directory

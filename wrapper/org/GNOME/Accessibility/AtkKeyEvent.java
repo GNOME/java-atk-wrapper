@@ -135,7 +135,7 @@ public class AtkKeyEvent {
     keycode = e.getKeyCode();
     timestamp = (int)e.getWhen();
 
-    String nonAlphaNumericString = (String) nonAlphaNumericMap.get(string);
+    String nonAlphaNumericString = nonAlphaNumericMap.get(string);
     if (nonAlphaNumericString != null)
       string = nonAlphaNumericString;
   }

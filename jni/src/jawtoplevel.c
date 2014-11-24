@@ -30,162 +30,162 @@ static void jaw_toplevel_initialize(AtkObject *accessible, gpointer data);
 static void jaw_toplevel_object_finalize(GObject *obj);
 
 /* override AtkObject function */
-static G_CONST_RETURN gchar*	jaw_toplevel_get_name			(AtkObject		*obj);
-static G_CONST_RETURN gchar*	jaw_toplevel_get_description		(AtkObject		*obj);
-static gint			jaw_toplevel_get_n_children		(AtkObject		*obj);
-static gint			jaw_toplevel_get_index_in_parent	(AtkObject		*obj);
-static AtkRole			jaw_toplevel_get_role			(AtkObject		*obj);
-static AtkObject*		jaw_toplevel_ref_child			(AtkObject		*obj,
-								 	 gint			i);
-static AtkObject*		jaw_toplevel_get_parent			(AtkObject		*obj);
+static G_CONST_RETURN gchar* jaw_toplevel_get_name(AtkObject *obj);
+static G_CONST_RETURN gchar* jaw_toplevel_get_description(AtkObject *obj);
+static gint jaw_toplevel_get_n_children(AtkObject *obj);
+static gint jaw_toplevel_get_index_in_parent(AtkObject *obj);
+static AtkRole jaw_toplevel_get_role(AtkObject *obj);
+static AtkObject* jaw_toplevel_ref_child(AtkObject *obj, gint i);
+static AtkObject* jaw_toplevel_get_parent(AtkObject *obj);
 
 G_DEFINE_TYPE (JawToplevel, jaw_toplevel, ATK_TYPE_OBJECT)
 
 static void
 jaw_toplevel_class_init (JawToplevelClass *klass)
 {
-	AtkObjectClass *atk_object_class = ATK_OBJECT_CLASS(klass);
-	GObjectClass *g_object_class = G_OBJECT_CLASS(klass);
+  AtkObjectClass *atk_object_class = ATK_OBJECT_CLASS(klass);
+  GObjectClass *g_object_class = G_OBJECT_CLASS(klass);
 
-	atk_object_class->initialize = jaw_toplevel_initialize;
-	atk_object_class->get_name = jaw_toplevel_get_name;
-	atk_object_class->get_description = jaw_toplevel_get_description;
-	atk_object_class->get_n_children = jaw_toplevel_get_n_children;
-	atk_object_class->get_index_in_parent = jaw_toplevel_get_index_in_parent;
-	atk_object_class->get_role = jaw_toplevel_get_role;
-	atk_object_class->ref_child = jaw_toplevel_ref_child;
-	atk_object_class->get_parent = jaw_toplevel_get_parent;
+  atk_object_class->initialize = jaw_toplevel_initialize;
+  atk_object_class->get_name = jaw_toplevel_get_name;
+  atk_object_class->get_description = jaw_toplevel_get_description;
+  atk_object_class->get_n_children = jaw_toplevel_get_n_children;
+  atk_object_class->get_index_in_parent = jaw_toplevel_get_index_in_parent;
+  atk_object_class->get_role = jaw_toplevel_get_role;
+  atk_object_class->ref_child = jaw_toplevel_ref_child;
+  atk_object_class->get_parent = jaw_toplevel_get_parent;
 
-	g_object_class->finalize = jaw_toplevel_object_finalize;
+  g_object_class->finalize = jaw_toplevel_object_finalize;
 }
 
 static void
 jaw_toplevel_init (JawToplevel *toplevel)
 {
-	toplevel->windows = NULL;
+  toplevel->windows = NULL;
 }
 
 static void
-jaw_toplevel_initialize (AtkObject *accessible,
-				gpointer data)
+jaw_toplevel_initialize(AtkObject *accessible, gpointer data)
 {
-	ATK_OBJECT_CLASS (jaw_toplevel_parent_class)->initialize(accessible, data);
+ ATK_OBJECT_CLASS (jaw_toplevel_parent_class)->initialize(accessible, data);
 }
 
 static void
 jaw_toplevel_object_finalize (GObject *obj)
 {
-	JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
-	g_list_free(jaw_toplevel->windows);
+  JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
+  g_list_free(jaw_toplevel->windows);
 
-	JawToplevelClass *klass = JAW_TOPLEVEL_GET_CLASS(obj);
-	G_OBJECT_CLASS(jaw_toplevel_parent_class)->finalize(obj);
+  JawToplevelClass *klass = JAW_TOPLEVEL_GET_CLASS(obj);
+  G_OBJECT_CLASS(jaw_toplevel_parent_class)->finalize(obj);
 }
 
 static G_CONST_RETURN gchar*
 jaw_toplevel_get_name (AtkObject *obj)
 {
-	gint i;
-	for(i = 0; i < atk_object_get_n_accessible_children(obj); i++) {
-		AtkObject* child = atk_object_ref_accessible_child(obj, i);
-		const gchar* name = atk_object_get_name(child);
-		if (name && strlen(name) > 0) {
-			g_object_unref(G_OBJECT(child));
-			return name;
-		}
-		g_object_unref(G_OBJECT(child));
-	}
+  gint i;
+  for(i = 0; i < atk_object_get_n_accessible_children(obj); i++)
+  {
+    AtkObject* child = atk_object_ref_accessible_child(obj, i);
+    const gchar* name = atk_object_get_name(child);
+    if (name && strlen(name) > 0)
+    {
+      g_object_unref(G_OBJECT(child));
+      return name;
+    }
+    g_object_unref(G_OBJECT(child));
+  }
 
-	return "Java Application";
+  return "Java Application";
 }
 
 static G_CONST_RETURN gchar*
 jaw_toplevel_get_description (AtkObject *obj)
 {
-	return "Accessible Java application";
+  return "Accessible Java application";
 }
 
 static gint
 jaw_toplevel_get_n_children (AtkObject *obj)
 {
-	JawToplevel* jaw_toplevel = JAW_TOPLEVEL(obj);
-	gint n = g_list_length(jaw_toplevel->windows);
+  JawToplevel* jaw_toplevel = JAW_TOPLEVEL(obj);
+  gint n = g_list_length(jaw_toplevel->windows);
 
-	return n;
+  return n;
 }
 
 static gint
 jaw_toplevel_get_index_in_parent (AtkObject *obj)
 {
-	JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
-	gint i = g_list_index(jaw_toplevel->windows, obj);
+  JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
+  gint i = g_list_index(jaw_toplevel->windows, obj);
 
-	return i;
+  return i;
 }
 
 static AtkRole
 jaw_toplevel_get_role (AtkObject *obj)
 {
-	return ATK_ROLE_APPLICATION;
+  return ATK_ROLE_APPLICATION;
 }
 
 static AtkObject*
-jaw_toplevel_ref_child (AtkObject *obj,
-			gint i)
+jaw_toplevel_ref_child (AtkObject *obj, gint i)
 {
-	JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
-	AtkObject* child = (AtkObject*)g_list_nth_data(
-			jaw_toplevel->windows, i);
+  JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
+  AtkObject* child = (AtkObject*)g_list_nth_data(jaw_toplevel->windows, i);
 
-	g_object_ref(G_OBJECT(child));
+  g_object_ref(G_OBJECT(child));
 
-	return child;
+  return child;
 }
 
 static AtkObject*
 jaw_toplevel_get_parent (AtkObject *obj)
 {
-	return NULL;
+  return NULL;
 }
 
 gint
-jaw_toplevel_add_window (JawToplevel *toplevel,
-		AtkObject *child)
+jaw_toplevel_add_window (JawToplevel *toplevel, AtkObject *child)
 {
-	if (toplevel == NULL)
-		return -1;
+  if (toplevel == NULL)
+  {
+    return -1;
+  }
 
-	if (g_list_index(toplevel->windows, child) != -1) {
-		return -1;
-	}
+  if (g_list_index(toplevel->windows, child) != -1)
+  {
+    return -1;
+  }
 
-	toplevel->windows = g_list_append(toplevel->windows, child);
+  toplevel->windows = g_list_append(toplevel->windows, child);
 
-	return g_list_index(toplevel->windows, child);
+  return g_list_index(toplevel->windows, child);
 }
 
-gint jaw_toplevel_remove_window(JawToplevel *toplevel,
-		AtkObject *child)
+gint jaw_toplevel_remove_window(JawToplevel *toplevel, AtkObject *child)
 {
-	gint index = -1;
+  gint index = -1;
 
-	if (toplevel == NULL)
-		return index;
+  if (toplevel == NULL)
+  {
+    return index;
+  }
 
-	if ((index = g_list_index(toplevel->windows, child)) == -1) {
-		return index;
-	}
+  if ((index = g_list_index(toplevel->windows, child)) == -1)
+  {
+    return index;
+  }
 
-	toplevel->windows = g_list_remove(toplevel->windows, child);
+  toplevel->windows = g_list_remove(toplevel->windows, child);
 
-	return index;
+  return index;
 }
 
-gint jaw_toplevel_get_child_index(JawToplevel *toplevel,
-		AtkObject *child)
+gint jaw_toplevel_get_child_index(JawToplevel *toplevel, AtkObject *child)
 {
-	gint i = g_list_index(toplevel->windows, child);
-
-	return i;
+  gint i = g_list_index(toplevel->windows, child);
+  return i;
 }
 

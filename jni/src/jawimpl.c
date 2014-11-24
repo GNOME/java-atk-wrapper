@@ -84,13 +84,17 @@ static GHashTable *typeTable = NULL;
 static GHashTable *objectTable = NULL;
 static GMutex *objectTableMutex = NULL;
 
+typedef struct {
+  GMutex jg_mutex;
+} JGMutex;
+
+JGMutex *jmutex;
+
 void
 jaw_impl_init_mutex ()
 {
-  if (objectTableMutex == NULL)
-  {
-   objectTableMutex = g_mutex_new();
-  }
+  jmutex = g_new(JGMutex, 1);
+  g_mutex_init (&jmutex->jg_mutex);
 }
 
 static void
