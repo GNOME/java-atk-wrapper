@@ -1,3 +1,8 @@
+2a738f7 NEWS add contributors info
+8f76c73 AtkKeyEvent: remove reduntant cast to string
+f36a292 Component: remove return from get_extents
+95495dc Component: set_extents returns gboolean
+b4f4c5f Release 0.32.0
 045d08d HACKING: don't list get_minimum_increment
 485a055 jawvalue: use consistent style
 73c6573 Component: make use of instance methods

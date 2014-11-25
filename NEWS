@@ -1,3 +1,15 @@
+Changes in version 0.32.1
+=========================
+
+Miscellanious:
+  740644 jawvalue.c has no style
+  740649 Component: set_extents return gboolean
+  740650 Component: get_extents should not return anything.
+  740653 Remove Reundant cast to String
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.32.0
 =========================
 
@@ -36,6 +48,8 @@ Maintainership:
   740598 HACKING do not list unimplemented deprecated functions
   740307 added java-atk-wrapper as a jhbuild module
 
+Contributors:
+  Magdalen Berns
 Changes in version 0.31.0
 =========================
 
