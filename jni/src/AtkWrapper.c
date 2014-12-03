@@ -169,7 +169,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   g_setenv("NO_AT_BRIDGE", "1", TRUE);
 
   g_type_class_unref(g_type_class_ref(JAW_TYPE_UTIL));
-  g_type_class_unref(g_type_class_ref(JAW_TYPE_MISC));
   // Force to invoke base initialization function of each ATK interfaces
   g_type_class_unref(g_type_class_ref(ATK_TYPE_NO_OP_OBJECT));
 

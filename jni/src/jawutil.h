@@ -72,27 +72,6 @@ void		jaw_util_get_rect_info(JNIEnv *jniEnv, jobject jrect,
 			gint *x, gint *y, gint *width, gint *height);
 gboolean	jaw_util_dispatch_key_event (AtkKeyEventStruct *event);
 
-#define JAW_TYPE_MISC                           (jaw_misc_get_type ())
-#define JAW_MISC_CLASS(klass)                   (G_TYPE_CHECK_CLASS_CAST ((klass), JAW_TYPE_MISC, JawMiscClass))
-#define JAW_IS_MISC(obj)                        (G_TYPE_CHECK_INSTANCE_TYPE ((obj), JAW_TYPE_MISC))
-#define JAW_IS_MISC_CLASS(klass)                (G_TYPE_CHECK_CLASS_TYPE ((klass), JAW_TYPE_MISC))
-#define JAW_MISC_GET_CLASS(obj)                 (G_TYPE_INSTANCE_GET_CLASS ((obj), JAW_TYPE_MISC, JawMiscClass))
-
-typedef struct _JawMisc		JawMisc;
-typedef struct _JawMiscClass	JawMiscClass;
-  
-struct _JawMisc
-{
-  AtkMisc parent;
-};
-
-GType jaw_misc_get_type (void);
-
-struct _JawMiscClass
-{
-  AtkMiscClass parent_class;
-};
-
 G_END_DECLS
 
 #endif
