@@ -1,3 +1,10 @@
+e80a1fc Revert "make: add top_srcdir and topsrcdir/wrapper to CFLAGS"
+44a7330 make: add top_srcdir and topsrcdir/wrapper to CFLAGS
+a964d9d Build: set propertiesdir & java_atk_wrapperdir
+347c21b jawimpl: initialise with compatible pointer type
+853eac9 jawutil: tidy up style
+35ae4b3 Fix symbol lookup error jaw_misc_type
+d6f8257 Release 0.32.1
 2a738f7 NEWS add contributors info
 8f76c73 AtkKeyEvent: remove reduntant cast to string
 f36a292 Component: remove return from get_extents

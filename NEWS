@@ -1,3 +1,17 @@
+Changes in version 0.32.2
+=========================
+
+Miscellanious:
+  741127: set propertiesdir & java_atk_wrapperdir
+  741073: initialise with compatible pointer type jawimpl
+  741062: Fix symbol lookup error jaw_misc_type
+
+Contributors:
+  741068: Tidy up style Magdalen Berns in jawutil
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.32.1
 =========================
 
