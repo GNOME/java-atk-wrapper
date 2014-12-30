@@ -5,7 +5,7 @@ AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([1.11 -Wall check-news -Wdeprecated-declarations])
 
 m4_pattern_allow([AM_PROG_AR])
-AM_PROG_AR
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Before making a release, the LT_VERSION string should be modified.
 # The string is of the form C:R:A.
