@@ -169,4 +169,5 @@ Build configuration:
        Prefix:                                 ${prefix}
        Source code location:                   ${srcdir}
        Compiler:                               ${CC}
+       JDK src                                 ${JDK_SRC}
 "
