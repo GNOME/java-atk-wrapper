@@ -35,7 +35,8 @@ AC_CONFIG_MACRO_DIR([m4])
 m4_define([req_ver_atk], [1.18.0])
 
 PKG_CHECK_MODULES(JAW, [
-  atk >= 2.11.90
+  atk
+  atk-bridge-2.0
   glib-2.0 >= 2.32.0
   gthread-2.0
   gmodule-2.0 >= 2.0.0
