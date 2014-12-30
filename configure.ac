@@ -42,6 +42,7 @@ PKG_CHECK_MODULES(JAW, [
   gdk-2.0
   gconf-2.0
 ])
+AC_SUBST(JAW_LIBS)
 
 case "${target_os}" in
 cygwin*)
