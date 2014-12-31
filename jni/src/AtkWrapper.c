@@ -177,8 +177,11 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
     XInitThreads();
     return JNI_FALSE;
   }
-
-  atk_bridge_adaptor_init();
+  atk_bridge_adaptor_init(NULL,NULL);
+  if (g_getenv ("AT_SPI_DEBUG"))
+  {
+    g_print ("Atk Accessibility bridge initialized\n");
+  }
 
   jaw_impl_init_mutex();
 
