@@ -163,8 +163,6 @@ AC_OUTPUT([
     wrapper/org/GNOME/Accessibility/Makefile
 ])
 
-AM_CONDITIONAL(USER, test `whoami` = "root")
-
 echo "
 Build configuration:
 
