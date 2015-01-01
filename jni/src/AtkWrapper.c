@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <gmodule.h>
-#include <atk-bridge.h>
 #include <gdk/gdk.h>
 #include <X11/Xlib.h>
 #include <gconf/gconf-client.h>
@@ -50,15 +49,21 @@ struct _DummyDispatch
 
 gboolean jaw_debug = FALSE;
 
-static GMutex atk_bridge_mutex;
-static GCond atk_bridge_cond;
-static GMutex key_dispatch_mutex;
-static GCond key_dispatch_cond;
+GMutex *atk_bridge_mutex = NULL;
+GCond *atk_bridge_cond = NULL;
 
+GMutex *key_dispatch_mutex = NULL;
+GCond *key_dispatch_cond = NULL;
 static gint key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
 static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 
 static GModule* module_atk_bridge = NULL;
+
+typedef struct {
+  GMutex jg_mutex;
+} JGMutex;
+
+JGMutex *jmutex;
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve)
 {
@@ -111,7 +116,7 @@ static void jaw_exit_func ()
 static gboolean
 jaw_load_atk_bridge (gpointer p)
 {
-  g_mutex_lock(&atk_bridge_mutex);
+  g_mutex_lock(atk_bridge_mutex);
 
   GVoidFunc dl_init;
   if (!g_module_symbol(module_atk_bridge,
@@ -129,8 +134,8 @@ jaw_load_atk_bridge (gpointer p)
     printf("ATK Bridge has been loaded successfully\n");
   }
 
-  g_cond_signal(&atk_bridge_cond);
-  g_mutex_unlock(&atk_bridge_mutex);
+  g_cond_signal(atk_bridge_cond);
+  g_mutex_unlock(atk_bridge_mutex);
 
   return FALSE;
 }
@@ -172,20 +177,18 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
     XInitThreads();
     return JNI_FALSE;
   }
-
-  jaw_impl_init_mutex();
-
-  g_mutex_init(&atk_bridge_mutex);
-  g_cond_init(&atk_bridge_cond);
-
-  g_mutex_init(&key_dispatch_mutex);
-  g_cond_init(&key_dispatch_cond);
-
   atk_bridge_adaptor_init(NULL,NULL);
   if (g_getenv ("AT_SPI_DEBUG"))
   {
     g_print ("Atk Accessibility bridge initialized\n");
   }
+
+  jaw_impl_init_mutex();
+
+  jmutex = g_new(JGMutex, 1);
+  g_mutex_init (&jmutex->jg_mutex);
+
+  g_cond_init(cond);
 
   // Dummy idle function for jaw_idle_dispatch to get
   // the address of gdk_threads_dispatch
@@ -208,15 +211,15 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   // We need to wait for the completion of the loading of ATK Bridge
   // in order to ensure event listeners in ATK Bridge are properly
   // registered before any emission of AWT event.
-  g_mutex_lock(&atk_bridge_mutex);
+  g_mutex_lock(atk_bridge_mutex);
 
   GThread *main_loop_thread = g_thread_create(jni_main_loop,
                                               (gpointer)main_loop,
                                               FALSE,
                                               NULL);
 
-  g_cond_wait(&atk_bridge_cond, &atk_bridge_mutex);
-  g_mutex_unlock(&atk_bridge_mutex);
+  g_cond_wait(atk_bridge_cond, atk_bridge_mutex);
+  g_mutex_unlock(atk_bridge_mutex);
 }
 
 typedef enum _SignalType {
@@ -1042,7 +1045,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(JNIEnv *jniEnv,
 static gboolean
 key_dispatch_handler (gpointer p)
 {
-  g_mutex_lock(&key_dispatch_mutex);
+  g_mutex_lock(key_dispatch_mutex);
 
   jobject jAtkKeyEvent = (jobject)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -1123,8 +1126,8 @@ key_dispatch_handler (gpointer p)
 
   (*jniEnv)->DeleteGlobalRef(jniEnv, jAtkKeyEvent);
 
-  g_cond_signal(&key_dispatch_cond);
-  g_mutex_unlock(&key_dispatch_mutex);
+  g_cond_signal(key_dispatch_cond);
+  g_mutex_unlock(key_dispatch_mutex);
 
   return FALSE;
 }
@@ -1137,12 +1140,12 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
   jboolean key_consumed;
   jobject global_key_event = (*jniEnv)->NewGlobalRef(jniEnv, jAtkKeyEvent);
 
-  g_mutex_lock(&key_dispatch_mutex);
+  g_mutex_lock(key_dispatch_mutex);
 
   g_idle_add(key_dispatch_handler, (gpointer)global_key_event);
 
   while (key_dispatch_result == KEY_DISPATCH_NOT_DISPATCHED) {
-    g_cond_wait(&key_dispatch_cond, &key_dispatch_mutex);
+    g_cond_wait(key_dispatch_cond, key_dispatch_mutex);
   }
 
   if (key_dispatch_result == KEY_DISPATCH_CONSUMED)
@@ -1155,7 +1158,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
 
   key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
 
-  g_mutex_unlock(&key_dispatch_mutex);
+  g_mutex_unlock(key_dispatch_mutex);
 
   return key_consumed;
 }

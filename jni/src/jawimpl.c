@@ -82,12 +82,19 @@ static gpointer jaw_impl_parent_class = NULL;
 
 static GHashTable *typeTable = NULL;
 static GHashTable *objectTable = NULL;
-static GMutex objectTableMutex;
+static GMutex *objectTableMutex = NULL;
+
+typedef struct {
+  GMutex jg_mutex;
+} JGMutex;
+
+JGMutex *jmutex;
 
 void
 jaw_impl_init_mutex ()
 {
-  g_mutex_init(&objectTableMutex);
+  jmutex = g_new(JGMutex, 1);
+  g_mutex_init (&jmutex->jg_mutex);
 }
 
 static void
@@ -101,9 +108,9 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl * jaw_impl)
                                           "()I");
   gint hash_key = (gint)(*jniEnv)->CallIntMethod(jniEnv, ac, jmid);
 
-  g_mutex_lock(&objectTableMutex);
+  g_mutex_lock(objectTableMutex);
   g_hash_table_insert(objectTable, (gpointer)&hash_key, (gpointer)jaw_impl);
-  g_mutex_unlock(&objectTableMutex);
+  g_mutex_unlock(objectTableMutex);
 }
 
 static JawImpl*
@@ -118,9 +125,9 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
   gpointer value = NULL;
 
-  g_mutex_lock(&objectTableMutex);
+  g_mutex_lock(objectTableMutex);
   value = g_hash_table_lookup(objectTable, (gpointer)&hash_key);
-  g_mutex_unlock(&objectTableMutex);
+  g_mutex_unlock(objectTableMutex);
 
   return (JawImpl*)value;
 }
@@ -136,9 +143,9 @@ object_table_remove(JNIEnv *jniEnv, jobject ac)
                                           "()I" );
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
 
-  g_mutex_lock(&objectTableMutex);
+  g_mutex_lock(objectTableMutex);
   g_hash_table_remove( objectTable, (gpointer)&hash_key );
-  g_mutex_unlock(&objectTableMutex);
+  g_mutex_unlock(objectTableMutex);
 }
 
 static void
@@ -245,12 +252,12 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
 
-  g_mutex_lock(&objectTableMutex);
+  g_mutex_lock(objectTableMutex);
   if (objectTable == NULL) 
   {
     objectTable = g_hash_table_new ( NULL, NULL );
   }
-  g_mutex_unlock(&objectTableMutex);
+  g_mutex_unlock(objectTableMutex);
 
   jaw_impl = object_table_lookup( jniEnv, ac );
 
@@ -277,13 +284,13 @@ jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
 
-  g_mutex_lock(&objectTableMutex);
+  g_mutex_lock(objectTableMutex);
   if (objectTable == NULL)
   {
-    g_mutex_unlock(&objectTableMutex);
+    g_mutex_unlock(objectTableMutex);
     return NULL;
   }
-  g_mutex_unlock(&objectTableMutex);
+  g_mutex_unlock(objectTableMutex);
 
   jaw_impl = object_table_lookup( jniEnv, ac );
 
