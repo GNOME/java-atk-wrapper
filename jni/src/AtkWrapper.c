@@ -50,10 +50,11 @@ struct _DummyDispatch
 
 gboolean jaw_debug = FALSE;
 
-GMutex atk_bridge_mutex;
-GCond atk_bridge_cond;
-GMutex key_dispatch_mutex;
-GCond key_dispatch_cond;
+GMutex *atk_bridge_mutex;
+GCond *atk_bridge_cond;
+
+GMutex *key_dispatch_mutex;
+GCond *key_dispatch_cond;
 
 static gint key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
 static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
@@ -111,7 +112,7 @@ static void jaw_exit_func ()
 static gboolean
 jaw_load_atk_bridge (gpointer p)
 {
-  g_mutex_lock(&atk_bridge_mutex);
+  g_mutex_lock(atk_bridge_mutex);
 
   GVoidFunc dl_init;
   if (!g_module_symbol(module_atk_bridge,
@@ -129,8 +130,8 @@ jaw_load_atk_bridge (gpointer p)
     printf("ATK Bridge has been loaded successfully\n");
   }
 
-  g_cond_signal(&atk_bridge_cond);
-  g_mutex_unlock(&atk_bridge_mutex);
+  g_cond_signal(atk_bridge_cond);
+  g_mutex_unlock(atk_bridge_mutex);
 
   return FALSE;
 }
@@ -145,7 +146,6 @@ JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv,
                                                                   jclass jClass)
 {
-  GCond *cond;
   // Hook up g_idle_dispatch
   origin_g_idle_dispatch = g_idle_funcs.dispatch;
   g_idle_funcs.dispatch = jaw_idle_dispatch;
@@ -175,11 +175,17 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
 
   jaw_impl_init_mutex();
 
-  g_mutex_init(&atk_bridge_mutex);
-  g_cond_init(&atk_bridge_cond);
+  atk_bridge_mutex = g_new(GMutex, 1);
+  g_mutex_init(atk_bridge_mutex);
 
-  g_mutex_init(&key_dispatch_mutex);
-  g_cond_init(&key_dispatch_cond);
+  atk_bridge_cond = g_new(GCond, 1);
+  g_cond_init(atk_bridge_cond);
+
+  key_dispatch_mutex = g_new(GMutex, 1);
+  g_mutex_init(key_dispatch_mutex);
+
+  key_dispatch_cond = g_new(GCond, 1);
+  g_cond_init(key_dispatch_cond);
 
   atk_bridge_adaptor_init(NULL,NULL);
   if (g_getenv ("AT_SPI_DEBUG"))
@@ -210,16 +216,17 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   // We need to wait for the completion of the loading of ATK Bridge
   // in order to ensure event listeners in ATK Bridge are properly
   // registered before any emission of AWT event.
-  g_mutex_lock(&atk_bridge_mutex);
+  g_mutex_lock(atk_bridge_mutex);
 
   GThread *main_loop_thread = g_thread_new(name,
                                            jni_main_loop,
                                            (gpointer)main_loop);
-  while ((gpointer)main_loop)
-  {
-    g_cond_wait(&atk_bridge_cond, &atk_bridge_mutex);
-  }
-  g_mutex_unlock(&atk_bridge_mutex);
+
+  g_cond_wait(atk_bridge_cond, atk_bridge_mutex);
+
+  g_mutex_unlock(atk_bridge_mutex);
+  g_mutex_clear(atk_bridge_mutex);
+  g_free(atk_bridge_mutex);
 }
 
 typedef enum _SignalType {
@@ -1045,7 +1052,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(JNIEnv *jniEnv,
 static gboolean
 key_dispatch_handler (gpointer p)
 {
-  g_mutex_lock(&key_dispatch_mutex);
+  g_mutex_lock(key_dispatch_mutex);
 
   jobject jAtkKeyEvent = (jobject)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -1126,9 +1133,8 @@ key_dispatch_handler (gpointer p)
 
   (*jniEnv)->DeleteGlobalRef(jniEnv, jAtkKeyEvent);
 
-  g_cond_signal(&key_dispatch_cond);
-  g_mutex_unlock(&key_dispatch_mutex);
-
+  g_cond_signal(key_dispatch_cond);
+  g_mutex_unlock(key_dispatch_mutex);
   return FALSE;
 }
 
@@ -1140,12 +1146,12 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
   jboolean key_consumed;
   jobject global_key_event = (*jniEnv)->NewGlobalRef(jniEnv, jAtkKeyEvent);
 
-  g_mutex_lock(&key_dispatch_mutex);
+  g_mutex_lock(key_dispatch_mutex);
 
   g_idle_add(key_dispatch_handler, (gpointer)global_key_event);
 
   while (key_dispatch_result == KEY_DISPATCH_NOT_DISPATCHED) {
-    g_cond_wait(&key_dispatch_cond, &key_dispatch_mutex);
+    g_cond_wait(key_dispatch_cond, key_dispatch_mutex);
   }
 
   if (key_dispatch_result == KEY_DISPATCH_CONSUMED)
@@ -1158,7 +1164,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
 
   key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
 
-  g_mutex_unlock(&key_dispatch_mutex);
+  g_mutex_unlock(key_dispatch_mutex);
+  g_mutex_clear(key_dispatch_mutex);
+  g_free(key_dispatch_mutex);
 
   return key_consumed;
 }
