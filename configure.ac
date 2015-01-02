@@ -37,11 +37,15 @@ m4_define([req_ver_atk], [1.18.0])
 PKG_CHECK_MODULES(JAW, [
   atk
   atk-bridge-2.0
+  atspi-2
+  dbus-1
   glib-2.0 >= 2.32.0
   gthread-2.0
   gmodule-2.0 >= 2.0.0
   gdk-2.0
+  gdk-3.0
   gconf-2.0
+  gobject-2.0
 ])
 AC_SUBST(JAW_LIBS)
 
