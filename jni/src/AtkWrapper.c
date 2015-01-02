@@ -201,6 +201,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   // Enable ATK Bridge so we can load it now
   g_setenv("NO_AT_BRIDGE", "0", TRUE);
 
+  const gchar *name = "loaded-bridge";
+
   GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
 
   g_idle_add(jaw_load_atk_bridge, NULL);
@@ -210,10 +212,13 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   // registered before any emission of AWT event.
   g_mutex_lock(&atk_bridge_mutex);
 
-  GThread *main_loop_thread = g_thread_new("atk_bridge_adaptor_init",
-                                            jni_main_loop,
+  GThread *main_loop_thread = g_thread_new(name,
+                                           jni_main_loop,
                                            (gpointer)main_loop);
-
+  while ((gpointer)main_loop)
+  {
+    g_cond_wait(&atk_bridge_cond, &atk_bridge_mutex);
+  }
   g_mutex_unlock(&atk_bridge_mutex);
 }
 
