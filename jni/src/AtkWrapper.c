@@ -173,6 +173,28 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
     return JNI_FALSE;
   }
 
+  const gchar* gtk_module_path = g_getenv("GTK_PATH");
+  if (!gtk_module_path)
+  {
+    gtk_module_path = GTK_MODULE_LIB_PATH;
+  }
+
+  if (jaw_debug) {
+    printf("GTK_PATH=%s\n", gtk_module_path);
+  }
+
+  gtk_module_path = g_strconcat(gtk_module_path, "/modules", NULL);
+  const gchar* atk_bridge_file = g_module_build_path(gtk_module_path, "atk-bridge");
+
+  if (jaw_debug) {
+    printf("We are going to load %s\n", atk_bridge_file);
+  }
+
+  module_atk_bridge = g_module_open(atk_bridge_file, G_MODULE_BIND_LAZY);
+
+  if (!module_atk_bridge) {
+    return JNI_FALSE;
+  }
   jaw_impl_init_mutex();
 
   atk_bridge_mutex = g_new(GMutex, 1);
@@ -186,12 +208,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
 
   key_dispatch_cond = g_new(GCond, 1);
   g_cond_init(key_dispatch_cond);
-
-  atk_bridge_adaptor_init(NULL,NULL);
-  if (g_getenv ("AT_SPI_DEBUG"))
-  {
-    g_print ("Atk Accessibility bridge initialized\n");
-  }
 
   // Dummy idle function for jaw_idle_dispatch to get
   // the address of gdk_threads_dispatch
