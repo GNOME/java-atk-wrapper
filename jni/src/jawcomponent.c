@@ -66,6 +66,8 @@ jaw_component_interface_init (AtkComponentIface *iface)
   iface->ref_accessible_at_point = jaw_component_ref_accessible_at_point;
   iface->get_extents = jaw_component_get_extents;
   iface->grab_focus = jaw_component_grab_focus;
+  iface->add_focus_handler = NULL;
+  iface->remove_focus_handler = NULL;
   iface->get_layer = jaw_component_get_layer;
   iface->get_mdi_zorder = NULL; /*jaw_component_get_mdi_zorder;*/
   iface->get_alpha = NULL; /*jaw_component_get_alpha;*/
@@ -292,7 +294,6 @@ jaw_component_get_extents (AtkComponent *component,
     (*height) = 0;
     (*x) = 0;
     (*y) = 0;
-    return;
   }
 }
 
