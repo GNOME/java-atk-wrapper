@@ -210,12 +210,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   // registered before any emission of AWT event.
   g_mutex_lock(&atk_bridge_mutex);
 
-  GThread *main_loop_thread = g_thread_create(jni_main_loop,
-                                              (gpointer)main_loop,
-                                              FALSE,
-                                              NULL);
+  GThread *main_loop_thread = g_thread_new("atk_bridge_adaptor_init",
+                                            jni_main_loop,
+                                           (gpointer)main_loop);
 
-  g_cond_wait(&atk_bridge_cond, &atk_bridge_mutex);
   g_mutex_unlock(&atk_bridge_mutex);
 }
 
