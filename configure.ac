@@ -4,6 +4,7 @@ AC_INIT([java-atk-wrapper],[0.32.2])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([1.11 -Wall check-news -Wdeprecated-declarations])
 
+AM_SILENT_RULES([yes])
 m4_pattern_allow([AM_PROG_AR])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
