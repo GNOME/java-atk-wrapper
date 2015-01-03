@@ -773,8 +773,8 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
                                       "()Ljavax/accessibility/AccessibleContext;");
         jobject target_ac = (*jniEnv)->CallObjectMethod( jniEnv, jtarget, jmid );
 
-        AtkObject *target_obj = (AtkObject*)jaw_impl_get_instance( jniEnv, target_ac );
-        atk_object_add_relationship(atk_obj, rel_type, target_obj);
+        JawImpl *target_obj = jaw_impl_get_instance( jniEnv, target_ac );
+        atk_object_add_relationship(atk_obj, rel_type, (AtkObject*) target_obj);
       }
     }
   }

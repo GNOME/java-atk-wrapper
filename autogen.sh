@@ -9,6 +9,12 @@ cd "$srcdir"
 
 mkdir -p m4
 
+AUTORECONF=`which autoreconf`
+if test -z $AUTORECONF; then
+        echo "*** No autoreconf found, please intall it ***"
+        exit 1
+fi
+
 PKGCONFIG=`which pkg-config`
 if test -z "$PKGCONFIG"; then
   echo "*** pkg-config not found, please install it ***"

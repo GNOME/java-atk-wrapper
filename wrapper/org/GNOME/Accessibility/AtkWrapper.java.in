@@ -24,6 +24,7 @@ import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
 import javax.accessibility.*;
+import java.awt.Toolkit;
 
 public class AtkWrapper {
 	static boolean accessibilityEnabled = false;
