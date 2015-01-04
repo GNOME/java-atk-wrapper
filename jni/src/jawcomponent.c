@@ -44,10 +44,10 @@ static void jaw_component_get_extents(AtkComponent *component,
                                       AtkCoordType coord_type);
 
 static gboolean jaw_component_set_extents(AtkComponent *component,
-                                          gint         *x,
-                                          gint         *y,
-                                          gint         *width,
-                                          gint         *height,
+                                          gint         x,
+                                          gint         y,
+                                          gint         width,
+                                          gint         height,
                                           AtkCoordType coord_type);
 
 static gboolean jaw_component_grab_focus(AtkComponent *component);
@@ -192,14 +192,14 @@ jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, 
 
 static gboolean
 jaw_component_set_extents (AtkComponent *component,
-                           gint         *x,
-                           gint         *y,
-                           gint         *width,
-                           gint         *height,
+                           gint         x,
+                           gint         y,
+                           gint         width,
+                           gint         height,
                            AtkCoordType coord_type)
 {
 
-  if (x == NULL || y == NULL || width == NULL || height == NULL)
+  if (&x == NULL || &y == NULL || &width == NULL || &height == NULL)
   {
     return FALSE;
   }
@@ -221,10 +221,10 @@ jaw_component_set_extents (AtkComponent *component,
 
   if (jrectangle == NULL)
   {
-    (*width) = 0;
-    (*height) = 0;
-    (*x) = 0;
-    (*y) = 0;
+    width = 0;
+    height = 0;
+    x = 0;
+    y = 0;
     return FALSE;
   }
 
@@ -252,10 +252,10 @@ jaw_component_set_extents (AtkComponent *component,
   jint jx = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidX);
   jint jy = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidY);
 
-  (*width) = (gint)jwidth;
-  (*height) = (gint)jheight;
-  (*x) = (gint)jx;
-  (*y) = (gint)jy;
+  width = (gint)jwidth;
+  height = (gint)jheight;
+  x = (gint)jx;
+  y = (gint)jy;
 
   return TRUE;
 }
