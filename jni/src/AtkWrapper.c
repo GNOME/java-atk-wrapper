@@ -347,7 +347,7 @@ window_open_handler (gpointer p)
   gboolean is_toplevel = para->is_toplevel;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
+  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
 
   if (!g_strcmp0(atk_role_get_name(atk_object_get_role(atk_obj)),
