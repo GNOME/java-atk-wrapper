@@ -173,6 +173,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
     return JNI_FALSE;
   }
 
+  if (!g_module_supported())
+     return JNI_FALSE;
+
   const gchar* gtk_module_path = g_getenv("GTK_PATH");
   if (!gtk_module_path)
   {
