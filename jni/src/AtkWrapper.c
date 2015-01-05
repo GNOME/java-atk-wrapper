@@ -113,22 +113,12 @@ static gboolean
 jaw_load_atk_bridge (gpointer p)
 {
   g_mutex_lock(atk_bridge_mutex);
+  atk_bridge_adaptor_init (NULL, NULL);
 
-  GVoidFunc dl_init;
-  if (!g_module_symbol(module_atk_bridge,
-                       "gnome_accessibility_module_init",
-                       (gpointer*)&dl_init))
-  {
-    g_module_close(module_atk_bridge);
-    return FALSE;
-  }
-
-  (dl_init)();
-  atexit( jaw_exit_func );
-
-  if (jaw_debug) {
+  if (jaw_debug)
     printf("ATK Bridge has been loaded successfully\n");
-  }
+
+  atexit( jaw_exit_func );
 
   g_cond_signal(atk_bridge_cond);
   g_mutex_unlock(atk_bridge_mutex);
@@ -173,31 +163,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
     return JNI_FALSE;
   }
 
-  if (!g_module_supported())
-     return JNI_FALSE;
-
-  const gchar* gtk_module_path = g_getenv("GTK_PATH");
-  if (!gtk_module_path)
-  {
-    gtk_module_path = GTK_MODULE_LIB_PATH;
-  }
-
-  if (jaw_debug) {
-    printf("GTK_PATH=%s\n", gtk_module_path);
-  }
-
-  gtk_module_path = g_strconcat(gtk_module_path, "/modules", NULL);
-  const gchar* atk_bridge_file = g_module_build_path(gtk_module_path, "atk-bridge");
-
-  if (jaw_debug) {
-    printf("We are going to load %s\n", atk_bridge_file);
-  }
-
-  module_atk_bridge = g_module_open(atk_bridge_file, G_MODULE_BIND_LAZY);
-
-  if (!module_atk_bridge) {
-    return JNI_FALSE;
-  }
   jaw_impl_init_mutex();
 
   atk_bridge_mutex = g_new(GMutex, 1);
@@ -227,7 +192,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   g_setenv("NO_AT_BRIDGE", "0", TRUE);
 
   const gchar *name = "loaded-bridge";
-
   GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
 
   g_idle_add(jaw_load_atk_bridge, NULL);

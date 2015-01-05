@@ -44,13 +44,11 @@ PKG_CHECK_MODULES(JAW, [
   gthread-2.0
   gmodule-2.0 >= 2.0.0
   gdk-2.0
+  gdk-3.0
   gconf-2.0
   gobject-2.0
 ])
 AC_SUBST(JAW_LIBS)
-
-GTK_MODULE_LIB_PATH="`pkg-config --variable=libdir gtk+-2.0`/gtk-2.0"
-AC_SUBST(GTK_MODULE_LIB_PATH)
 
 case "${target_os}" in
 cygwin*)
