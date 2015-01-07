@@ -875,8 +875,8 @@ signal_emit_handler (gpointer p)
       gint newValue = get_int_value(jniEnv,
                                     (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
 
-      gint prevCount = (gint)g_hash_table_lookup(jaw_obj->storedData,
-                                                 "Previous_Count");
+      gint prevCount = *(gint*)g_hash_table_lookup(jaw_obj->storedData,
+                                                   "Previous_Count");
       gint curCount = atk_text_get_character_count(ATK_TEXT(jaw_obj));
 
       g_hash_table_insert(jaw_obj->storedData,

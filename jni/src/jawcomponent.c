@@ -19,6 +19,7 @@
 
 #include <atk/atk.h>
 #include <glib.h>
+#include <glib-object.h>
 #include "jawimpl.h"
 #include "jawutil.h"
 
@@ -217,9 +218,9 @@ jaw_component_set_extents (AtkComponent *component,
                                           "set_extents",
                                           "()Ljava/awt/Rectangle;");
 
-  jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
+  jobject jcomponent = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
 
-  if (jrectangle == NULL)
+  if (jcomponent == NULL)
   {
     width = 0;
     height = 0;
@@ -228,29 +229,30 @@ jaw_component_set_extents (AtkComponent *component,
     return FALSE;
   }
 
-  jclass rectangle_class = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
-  jfieldID jfidWidth = (*jniEnv)->GetFieldID(jniEnv,
-                                             rectangle_class,
-                                             "width",
-                                             "I");
-  jfieldID jfidHeight = (*jniEnv)->GetFieldID(jniEnv,
-                                              rectangle_class,
-                                              "height",
-                                              "I");
-  jfieldID jfidX = (*jniEnv)->GetFieldID(jniEnv,
-                                         rectangle_class,
-                                         "x",
-                                         "I");
+  jclass componentClass = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
 
-  jfieldID jfidY = (*jniEnv)->GetFieldID(jniEnv,
-                                         rectangle_class,
-                                         "y",
-                                         "I");
+  // Get Field IDs
+  jfieldID jfidX       = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "x",
+                                               "I");
+  jfieldID jfidY       = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "y",
+                                               "I");
+  jfieldID jfidWidth   = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "width",
+                                               "I");
+  jfieldID jfidHeight  = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "height",
+                                               "I");
 
-  jint jwidth = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidWidth);
-  jint jheight = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidHeight);
-  jint jx = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidX);
-  jint jy = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidY);
+  jint jwidth = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidWidth);
+  jint jheight = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidHeight);
+  jint jx = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidX);
+  jint jy = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidY);
 
   width = (gint)jwidth;
   height = (gint)jheight;
@@ -286,15 +288,45 @@ jaw_component_get_extents (AtkComponent *component,
                                           "get_extents",
                                           "()Ljava/awt/Rectangle;");
 
-  jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
+  jobject jcomponent = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
 
-  if (jrectangle == NULL)
+  if (jcomponent == NULL)
   {
     (*width) = 0;
     (*height) = 0;
     (*x) = 0;
     (*y) = 0;
   }
+  jclass componentClass = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
+
+  // Get Field IDs
+  jfieldID jfidX       = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "x",
+                                               "I");
+  jfieldID jfidY       = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "y",
+                                               "I");
+  jfieldID jfidWidth   = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "width",
+                                               "I");
+  jfieldID jfidHeight  = (*jniEnv)->GetFieldID(jniEnv,
+                                               componentClass,
+                                               "height",
+                                               "I");
+
+  // Get Field int Fields
+  jint jx = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidX);
+  jint jy = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidY);
+  jint jwidth = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidWidth);
+  jint jheight = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidHeight);
+
+  (*width) = (gint)jwidth;
+  (*height) = (gint)jheight;
+  (*x) = (gint)jx;
+  (*y) = (gint)jy;
 }
 
 static gboolean
