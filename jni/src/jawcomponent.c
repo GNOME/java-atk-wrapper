@@ -302,11 +302,6 @@ jaw_component_set_extents (AtkComponent *component,
                            AtkCoordType coord_type)
 {
 
-  if (&x == NULL || &y == NULL || &width == NULL || &height == NULL)
-  {
-    return FALSE;
-  }
-  
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   jobject atk_component = data->atk_component;
@@ -331,30 +326,30 @@ jaw_component_set_extents (AtkComponent *component,
     return FALSE;
   }
 
-  jclass componentClass = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
+  jclass classRectangle = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
 
   // Get Field IDs
   jfieldID jfidX       = (*jniEnv)->GetFieldID(jniEnv,
-                                               componentClass,
+                                               atk_component,
                                                "x",
                                                "I");
   jfieldID jfidY       = (*jniEnv)->GetFieldID(jniEnv,
-                                               componentClass,
+                                               atk_component,
                                                "y",
                                                "I");
   jfieldID jfidWidth   = (*jniEnv)->GetFieldID(jniEnv,
-                                               componentClass,
+                                               atk_component,
                                                "width",
                                                "I");
   jfieldID jfidHeight  = (*jniEnv)->GetFieldID(jniEnv,
-                                               componentClass,
+                                               atk_component,
                                                "height",
                                                "I");
 
-  jint jwidth = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidWidth);
-  jint jheight = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidHeight);
-  jint jx = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidX);
-  jint jy = (*jniEnv)->GetIntField(jniEnv, componentClass, jfidY);
+  jint jwidth = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidWidth);
+  jint jheight = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidHeight);
+  jint jx = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidX);
+  jint jy = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidY);
 
   width = (gint)jwidth;
   height = (gint)jheight;
