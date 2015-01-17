@@ -57,8 +57,8 @@ struct _JawUtilListenerInfo
 	gulong	hook_id;
 };
 
-JavaVM	*globalJvm = NULL;
-JNIEnv	*globalEnv = NULL;
+JavaVM *cachedJVM;
+JNIEnv *cachedEnv;
 
 GType
 jaw_util_get_type(void)
@@ -398,11 +398,24 @@ jaw_util_is_same_jobject(gconstpointer a,
 }
 
 JNIEnv*
-jaw_util_get_jni_env()
+jaw_util_get_jni_env(void)
 {
-	(*globalJvm)->AttachCurrentThread( globalJvm, (void**)&globalEnv, NULL );
-	
-	return globalEnv;
+  JNIEnv *env;
+  JavaVM *jvm;
+  jvm = cachedJVM;
+  env = cachedEnv;
+  if (jvm == NULL) (*env)->GetJavaVM(globalEnv,&jvm);
+  int res;
+  #ifdef JNI_VERSION_1_8
+    res = (*jvm)->AttachCurrentThread(jvm, (void**)&env, NULL);
+  #else
+    (res*) = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+  #endif
+  if (&res < 0) {
+    fprintf(stderr, "Attach failed\n");
+  }
+
+  return env;
 }
 
 static jobject

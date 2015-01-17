@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 public class AtkKeyEvent {
 
-  private static HashMap<Object,String> nonAlphaNumericMap=null;
+  private static HashMap nonAlphaNumericMap = null;
 
   public static final int ATK_KEY_EVENT_PRESSED = 0;
   public static final int ATK_KEY_EVENT_RELEASED = 1;
@@ -42,6 +42,7 @@ public class AtkKeyEvent {
 
   static {
     // Non-alphanumeric symbols that need to be mapped to X11 keysym names
+    nonAlphaNumericMap = new HashMap( 40 );
     nonAlphaNumericMap.put("!", "exclam");
     nonAlphaNumericMap.put("@", "at");
     nonAlphaNumericMap.put("#", "numbersign");
@@ -135,7 +136,7 @@ public class AtkKeyEvent {
     keycode = e.getKeyCode();
     timestamp = (int)e.getWhen();
 
-    String nonAlphaNumericString = nonAlphaNumericMap.get(string);
+    String nonAlphaNumericString = (String) nonAlphaNumericMap.get(string);
     if (nonAlphaNumericString != null)
       string = nonAlphaNumericString;
   }
@@ -143,7 +144,7 @@ public class AtkKeyEvent {
 
 class GNOMEKeyMapping {
 
-  private static HashMap<Object,Object> keyMap = null;
+  private static HashMap keyMap = null;
 
   public static final class GNOMEKeyInfo {
     private int     gdkKeyCode;
@@ -192,6 +193,7 @@ class GNOMEKeyMapping {
   }
 
   private static void initializeMap() {
+    keyMap = new HashMap( 146 ); // Currently only 110, so allocate 110 / 0.75
 
     keyMap.put( new Integer(KeyEvent.VK_COLON),        new GNOMEKeyInfo( 0x20a1, "ColonSign" ) ); // GDK_ColonSign
     keyMap.put( new Integer(KeyEvent.VK_EURO_SIGN),    new GNOMEKeyInfo( 0x20ac, "EuroSign" ) ); // GDK_EuroSign

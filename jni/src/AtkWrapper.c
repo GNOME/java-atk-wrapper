@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib.h>
-#include <gmodule.h>
 #include <atk-bridge.h>
 #include <gdk/gdk.h>
 #include <X11/Xlib.h>
@@ -29,6 +28,13 @@
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define JNI_FALSE 0
+#define JNI_TRUE 1
 
 #define KEY_DISPATCH_NOT_DISPATCHED 0
 #define KEY_DISPATCH_CONSUMED 1
@@ -40,6 +46,7 @@
 #define GDK_META_MASK (1 << 28)
 
 typedef struct _DummyDispatch DummyDispatch;
+typedef enum _SignalType SignalType;
 
 struct _DummyDispatch
 {
@@ -56,24 +63,46 @@ GCond *atk_bridge_cond;
 GMutex *key_dispatch_mutex;
 GCond *key_dispatch_cond;
 
-static gint key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
+static gint key_dispatch_result;
 static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
+static GMainLoop* jni_main_loop;
 
-static GModule* module_atk_bridge = NULL;
+gpointer current_bridge_data = NULL;
+JavaVM* cachedJVM;
+JNIEnv *cachedEnv;
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVM, void *reserve)
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserve)
 {
   JNIEnv *env;
-  globalJvm = javaVM;
-
-  if ((*javaVM)->GetEnv(javaVM, (void **)&env, JNI_VERSION_1_2))
-  {
-    return JNI_ERR; /* Not supported */
+  cachedJVM = jvm;
+  if ((*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_8)) {
+    fprintf(stderr, "Attach failed\n");
+    return JNI_ERR; /* JNI version not supported */
   }
-  return JNI_VERSION_1_2;
+  g_assert(jvm != NULL);
+
+  return JNI_VERSION_1_8;
 }
 
-JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *javaVM, void *reserve) {
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserve) {
+}
+
+gboolean jaw_accessibility_init (void *data)
+{
+  g_mutex_lock(atk_bridge_mutex);
+  atk_bridge_adaptor_init (NULL, NULL);
+  if (jaw_debug)
+    g_print ("Atk Accessibility bridge initialized\n");
+  g_cond_signal(atk_bridge_cond);
+  g_mutex_unlock(atk_bridge_mutex);
+
+  return TRUE;
+}
+
+void
+jaw_accessibility_shutdown (void)
+{
+  atk_bridge_adaptor_cleanup();
 }
 
 static gboolean
@@ -104,32 +133,16 @@ jaw_idle_dispatch (GSource *source,
   return origin_g_idle_dispatch(source, callback, user_data);
 }
 
-static void jaw_exit_func ()
-{
-  _exit(0);
-}
 
-static gboolean
-jaw_load_atk_bridge (gpointer p)
+static
+void *jni_loop_callback(void *data)
 {
-  g_mutex_lock(atk_bridge_mutex);
-  atk_bridge_adaptor_init (NULL, NULL);
-
+  char *message;
+  message = (char *)data;
   if (jaw_debug)
-    printf("ATK Bridge has been loaded successfully\n");
-
-  atexit( jaw_exit_func );
-
-  g_cond_signal(atk_bridge_cond);
-  g_mutex_unlock(atk_bridge_mutex);
-
-  return FALSE;
-}
-
-gpointer jni_main_loop(gpointer data)
-{
-  g_main_loop_run( (GMainLoop*)data );
-  return NULL;
+    printf("%s \n", message);
+  g_main_loop_quit (jni_main_loop);
+  return 0;
 }
 
 JNIEXPORT jboolean
@@ -164,15 +177,18 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   }
 
   jaw_impl_init_mutex();
-
+  g_assert (atk_bridge_mutex == NULL);
   atk_bridge_mutex = g_new(GMutex, 1);
   g_mutex_init(atk_bridge_mutex);
+  g_assert (atk_bridge_mutex != NULL);
 
   atk_bridge_cond = g_new(GCond, 1);
   g_cond_init(atk_bridge_cond);
 
+  g_assert (key_dispatch_mutex == NULL);
   key_dispatch_mutex = g_new(GMutex, 1);
   g_mutex_init(key_dispatch_mutex);
+  g_assert (key_dispatch_mutex != NULL);
 
   key_dispatch_cond = g_new(GCond, 1);
   g_cond_init(key_dispatch_cond);
@@ -191,28 +207,31 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   // Enable ATK Bridge so we can load it now
   g_setenv("NO_AT_BRIDGE", "0", TRUE);
 
-  const gchar *name = "loaded-bridge";
-  GMainLoop *main_loop = g_main_loop_new( NULL, FALSE );
+  GThread *thread;
+  GError *err;
+  char * message;
+  message = "jni main loop";
+  err = NULL;
 
-  g_idle_add(jaw_load_atk_bridge, NULL);
+  jni_main_loop = g_main_loop_new (NULL, FALSE);
+  g_idle_add((GSourceFunc)jaw_accessibility_init, NULL);
 
-  // We need to wait for the completion of the loading of ATK Bridge
-  // in order to ensure event listeners in ATK Bridge are properly
-  // registered before any emission of AWT event.
-  g_mutex_lock(atk_bridge_mutex);
+  thread = g_thread_new(message, (GThreadFunc)jni_loop_callback, (void *)message);
+  if(thread == NULL)
+  {
+    if (jaw_debug)
+    {
+      printf("Thread create failed: %s!!\n", err->message );
+      g_error_free (err);
+    }
+  }
 
-  GThread *main_loop_thread = g_thread_new(name,
-                                           jni_main_loop,
-                                           (gpointer)main_loop);
-
-  g_cond_wait(atk_bridge_cond, atk_bridge_mutex);
-
-  g_mutex_unlock(atk_bridge_mutex);
-  g_mutex_clear(atk_bridge_mutex);
-  g_free(atk_bridge_mutex);
+  g_main_loop_run(jni_main_loop);
+  g_thread_join (thread);
+  g_main_loop_unref(jni_main_loop);
 }
 
-typedef enum _SignalType {
+enum _SignalType {
   Sig_Text_Caret_Moved = 0,
   Sig_Text_Property_Changed_Insert = 1,
   Sig_Text_Property_Changed_Delete = 2,
@@ -235,7 +254,7 @@ typedef enum _SignalType {
   Sig_Object_Property_Change_Accessible_Table_Row_Description = 19,
   Sig_Table_Model_Changed = 20,
   Sig_Text_Property_Changed = 21
-}SignalType;
+};
 
 typedef struct _CallbackPara {
   jobject global_ac;
@@ -285,7 +304,7 @@ focus_notify_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  atk_object_notify_state_change(atk_obj, ATK_STATE_FOCUSED, para->state_value);
+  atk_object_notify_state_change(atk_obj, ATK_STATE_FOCUSED, TRUE);
 
   free_callback_para(para);
 
@@ -311,7 +330,7 @@ window_open_handler (gpointer p)
   gboolean is_toplevel = para->is_toplevel;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
 
   if (!g_strcmp0(atk_role_get_name(atk_object_get_role(atk_obj)),
@@ -531,7 +550,7 @@ window_activate_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
   {
@@ -598,6 +617,7 @@ window_state_change_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -787,10 +807,24 @@ signal_emit_handler (gpointer p)
       gint newValue = get_int_value(jniEnv,
                                     (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
       AtkPropertyValues values = { NULL };
+         // GValues must be initialized
+
+      g_assert (!G_VALUE_HOLDS_INT (&values.old_value));
       g_value_init(&values.old_value, G_TYPE_INT);
+      g_assert (G_VALUE_HOLDS_INT (&values.old_value));
       g_value_set_int(&values.old_value, oldValue);
+      if (jaw_debug)
+        printf ("%d\n", g_value_get_int(&values.old_value));
+      g_value_unset(&values.old_value);
+
+      g_assert (!G_VALUE_HOLDS_INT (&values.new_value));
       g_value_init(&values.new_value, G_TYPE_INT);
+      g_assert (G_VALUE_HOLDS_INT (&values.old_value));
       g_value_set_int(&values.new_value, newValue);
+      if (jaw_debug)
+        printf ("%d\n", g_value_get_int(&values.new_value));
+      g_value_unset(&values.new_value);
+
       values.property_name = "accessible-actions";
 
       g_signal_emit_by_name(atk_obj,
@@ -875,7 +909,7 @@ signal_emit_handler (gpointer p)
       gint newValue = get_int_value(jniEnv,
                                     (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
 
-      gint prevCount = *(gint*)g_hash_table_lookup(jaw_obj->storedData,
+      gint prevCount = (gint)g_hash_table_lookup(jaw_obj->storedData,
                                                    "Previous_Count");
       gint curCount = atk_text_get_character_count(ATK_TEXT(jaw_obj));
 
@@ -1040,9 +1074,13 @@ static gboolean
 key_dispatch_handler (gpointer p)
 {
   g_mutex_lock(key_dispatch_mutex);
+  JavaVM *jvm;
+  jvm = cachedJVM;
 
   jobject jAtkKeyEvent = (jobject)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  key_dispatch_result = 0;
+  cachedEnv = jniEnv;
 
   AtkKeyEventStruct *event = g_new0(AtkKeyEventStruct, 1);
   jclass classAtkKeyEvent = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkKeyEvent");
@@ -1108,18 +1146,23 @@ key_dispatch_handler (gpointer p)
   jfieldID jfidTimestamp = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "timestamp", "I");
   event->timestamp = (guint32)(*jniEnv)->GetIntField(jniEnv, jAtkKeyEvent, jfidTimestamp);
 
+  if(jaw_debug)
+    printf("key_dispatch_result = %d\n ",key_dispatch_result);
   gboolean b = jaw_util_dispatch_key_event (event);
+  if(jaw_debug)
+    printf("b = %s\n ",(char *)&b);
   if (b) {
-    key_dispatch_result = KEY_DISPATCH_CONSUMED;
+    key_dispatch_result = 1;
   } else {
-    key_dispatch_result = KEY_DISPATCH_NOT_CONSUMED;
+    key_dispatch_result = 2;
   }
-
+  if(jaw_debug)
+    printf("key_dispatch_result = %d\n ",key_dispatch_result);
   (*jniEnv)->ReleaseStringUTFChars(jniEnv, jstr, event->string);
   g_free(event);
 
   (*jniEnv)->DeleteGlobalRef(jniEnv, jAtkKeyEvent);
-
+  (*jvm)->DetachCurrentThread(jvm);
   g_cond_signal(key_dispatch_cond);
   g_mutex_unlock(key_dispatch_mutex);
   return FALSE;
@@ -1131,17 +1174,20 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
                                                                  jobject jAtkKeyEvent)
 {
   jboolean key_consumed;
+  cachedEnv = jniEnv;
   jobject global_key_event = (*jniEnv)->NewGlobalRef(jniEnv, jAtkKeyEvent);
 
   g_mutex_lock(key_dispatch_mutex);
 
   g_idle_add(key_dispatch_handler, (gpointer)global_key_event);
 
-  while (key_dispatch_result == KEY_DISPATCH_NOT_DISPATCHED) {
+  if(jaw_debug)
+    printf("key_dispatch_result = %d\n ",key_dispatch_result);
+  while (key_dispatch_result == 0) {
     g_cond_wait(key_dispatch_cond, key_dispatch_mutex);
   }
 
-  if (key_dispatch_result == KEY_DISPATCH_CONSUMED)
+  if (key_dispatch_result == 1)
   {
     key_consumed = JNI_TRUE;
   } else
@@ -1149,12 +1195,14 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
     key_consumed = JNI_FALSE;
   }
 
-  key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
+  key_dispatch_result = 0;
 
   g_mutex_unlock(key_dispatch_mutex);
-  g_mutex_clear(key_dispatch_mutex);
-  g_free(key_dispatch_mutex);
 
   return key_consumed;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
