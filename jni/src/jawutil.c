@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <jni.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -399,9 +400,9 @@ jaw_util_get_jni_env(void)
   JavaVM *jvm;
   jvm = cachedJVM;
   env = cachedEnv;
-  if (jvm == NULL) (*env)->GetJavaVM(globalEnv,&jvm);
+  if (jvm == NULL) (*env)->GetJavaVM(env,&jvm);
   int res;
-  #ifdef JNI_VERSION_1_8
+  #ifdef JNI_VERSION_1_6
     res = (*jvm)->AttachCurrentThread(jvm, (void**)&env, NULL);
   #else
     (res*) = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
@@ -409,7 +410,6 @@ jaw_util_get_jni_env(void)
   if (&res < 0) {
     fprintf(stderr, "Attach failed\n");
   }
-
   return env;
 }
 
