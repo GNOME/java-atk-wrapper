@@ -27,7 +27,6 @@
 
 /* AtkUtil */
 static void		jaw_util_class_init			(JawUtilClass		*klass);
-static void		jaw_util_init				(JawUtil		*utils);
 
 static guint		jaw_util_add_global_event_listener	(GSignalEmissionHook	listener,
 								 const gchar		*event_type);
@@ -76,7 +75,7 @@ jaw_util_get_type(void)
 			NULL, /* class data */
 			sizeof(JawUtil), /* instance size */
 			0, /* nb preallocs */
-			(GInstanceInitFunc) jaw_util_init, /* instance init */
+			(GInstanceInitFunc) NULL, /* instance init */
 			NULL /* value table */
 		};
 
@@ -111,11 +110,6 @@ jaw_util_class_init(JawUtilClass *kclass)
 	listener_list = g_hash_table_new_full(
 				g_int_hash, g_int_equal,
 				NULL, _listener_info_destroy);
-}
-
-static void
-jaw_util_init (JawUtil *utils)
-{
 }
 
 static guint
