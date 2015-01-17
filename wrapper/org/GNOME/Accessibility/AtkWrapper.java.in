@@ -27,6 +27,7 @@ import javax.accessibility.*;
 import java.awt.Toolkit;
 
 public class AtkWrapper {
+	public native void AtkWrapper();
 	static boolean accessibilityEnabled = false;
 	static {
 		try {
@@ -48,6 +49,7 @@ public class AtkWrapper {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			e.getCause();
 		}
 	}
 
@@ -262,7 +264,9 @@ public class AtkWrapper {
 			}
 
 			focusNotify(ctx);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+				e.printStackTrace();
+		}
 	}
 
 	final Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -548,9 +552,9 @@ public class AtkWrapper {
 					public void dispatchEvent (AWTEvent e) {
 						if (e instanceof KeyEvent) {
 							if (e.getID() == KeyEvent.KEY_PRESSED) {
-								boolean isComsumed =
+								boolean isConsumed =
 									AtkWrapper.dispatchKeyEvent( new AtkKeyEvent((KeyEvent)e) );
-								if (isComsumed) {
+								if (isConsumed) {
 									previousPressConsumed = true;
 									return;
 								}
@@ -559,7 +563,7 @@ public class AtkWrapper {
 									return;
 								}
 							} else if (e.getID() == KeyEvent.KEY_RELEASED) {
-								boolean isConsumed = 
+								boolean isConsumed =
 									AtkWrapper.dispatchKeyEvent( new AtkKeyEvent((KeyEvent)e) );
 								
 								previousPressConsumed = false;
