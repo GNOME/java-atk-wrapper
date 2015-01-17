@@ -30,7 +30,7 @@ static void			jaw_image_get_image_position		(AtkImage	*image,
 									 gint		*x,
 									 gint		*y,
 									 AtkCoordType	coord_type);
-static G_CONST_RETURN gchar*	jaw_image_get_image_description		(AtkImage	*image);
+static const gchar* jaw_image_get_image_description(AtkImage *image);
 static void			jaw_image_get_image_size		(AtkImage	*image,
 									 gint		*width,
 									 gint		*height);
@@ -113,7 +113,7 @@ jaw_image_get_image_position (AtkImage *image,
 	(*y) = (gint)jy;
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_image_get_image_description (AtkImage *image)
 {
 	JawObject *jaw_obj = JAW_OBJECT(image);

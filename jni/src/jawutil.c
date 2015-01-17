@@ -35,8 +35,8 @@ static guint		jaw_util_add_key_event_listener		(AtkKeySnoopFunc	listener,
 								 gpointer		data);
 static void		jaw_util_remove_key_event_listener	(guint			remove_listener);
 static AtkObject*	jaw_util_get_root			(void);
-static G_CONST_RETURN gchar* jaw_util_get_toolkit_name		(void);
-static G_CONST_RETURN gchar* jaw_util_get_toolkit_version	(void);
+static const gchar* jaw_util_get_toolkit_name		(void);
+static const gchar* jaw_util_get_toolkit_version	(void);
 
 static void		_listener_info_destroy			(gpointer		data);
 static guint            add_listener	                        (GSignalEmissionHook    listener,
@@ -249,13 +249,13 @@ jaw_util_get_root (void)
 	return ATK_OBJECT(root);
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_util_get_toolkit_name (void)
 {
 	return "J2SE-access-bridge";
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_util_get_toolkit_version (void)
 {
 	return "1.0";

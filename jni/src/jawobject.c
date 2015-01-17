@@ -28,8 +28,8 @@ static void jaw_object_dispose(GObject *gobject);
 static void jaw_object_finalize(GObject *gobject);
 
 /* AtkObject */
-static G_CONST_RETURN gchar* jaw_object_get_name(AtkObject *atk_obj);
-static G_CONST_RETURN gchar* jaw_object_get_description(AtkObject *atk_obj);
+static const gchar* jaw_object_get_name(AtkObject *atk_obj);
+static const gchar* jaw_object_get_description(AtkObject *atk_obj);
 
 static gint jaw_object_get_n_children(AtkObject *atk_obj);
 
@@ -227,7 +227,7 @@ jaw_object_finalize (GObject *gobject)
   G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_object_get_name (AtkObject *atk_obj)
 {
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
@@ -274,7 +274,7 @@ jaw_object_get_name (AtkObject *atk_obj)
   return atk_obj->name;
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_object_get_description (AtkObject *atk_obj)
 {
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);

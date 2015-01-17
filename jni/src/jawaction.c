@@ -28,10 +28,10 @@ extern void	jaw_action_data_finalize (gpointer);
 
 static gboolean jaw_action_do_action(AtkAction *action, gint i);
 static gint jaw_action_get_n_actions(AtkAction *action);
-static G_CONST_RETURN gchar* jaw_action_get_description(AtkAction *action, gint i);
-static G_CONST_RETURN gchar* jaw_action_get_name(AtkAction	*action, gint i);
-static G_CONST_RETURN gchar* jaw_action_get_keybinding (AtkAction *action, gint i);
-/*static G_CONST_RETURN gchar*	jaw_get_localized_name			(AtkAction	*action,
+static const gchar* jaw_action_get_description(AtkAction *action, gint i);
+static const gchar* jaw_action_get_name(AtkAction	*action, gint i);
+static const gchar* jaw_action_get_keybinding (AtkAction *action, gint i);
+/*static const gchar*	jaw_get_localized_name			(AtkAction	*action,
 									 gint		i);*/
 
 typedef struct _ActionData {
@@ -137,7 +137,7 @@ jaw_action_get_n_actions (AtkAction *action)
 	return (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_action, jmid);
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_action_get_description (AtkAction *action,
 			gint i)
 {
@@ -161,7 +161,7 @@ jaw_action_get_description (AtkAction *action,
 	return data->action_description;
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_action_get_name (AtkAction *action,
 			gint i)
 {
@@ -185,7 +185,7 @@ jaw_action_get_name (AtkAction *action,
 	return data->action_name;
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_action_get_keybinding (AtkAction *action,
 			gint i)
 {

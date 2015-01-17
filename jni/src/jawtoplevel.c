@@ -30,8 +30,8 @@ static void jaw_toplevel_initialize(AtkObject *accessible, gpointer data);
 static void jaw_toplevel_object_finalize(GObject *obj);
 
 /* override AtkObject function */
-static G_CONST_RETURN gchar* jaw_toplevel_get_name(AtkObject *obj);
-static G_CONST_RETURN gchar* jaw_toplevel_get_description(AtkObject *obj);
+static const gchar* jaw_toplevel_get_name(AtkObject *obj);
+static const gchar* jaw_toplevel_get_description(AtkObject *obj);
 static gint jaw_toplevel_get_n_children(AtkObject *obj);
 static gint jaw_toplevel_get_index_in_parent(AtkObject *obj);
 static AtkRole jaw_toplevel_get_role(AtkObject *obj);
@@ -80,7 +80,7 @@ jaw_toplevel_object_finalize (GObject *obj)
   G_OBJECT_CLASS(jaw_toplevel_parent_class)->finalize(obj);
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_toplevel_get_name (AtkObject *obj)
 {
   gint i;
@@ -99,7 +99,7 @@ jaw_toplevel_get_name (AtkObject *obj)
   return "Java Application";
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_toplevel_get_description (AtkObject *obj)
 {
   return "Accessible Java application";
