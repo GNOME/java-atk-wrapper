@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
+#include <glib/gprintf.h>
 #include "jawutil.h"
 #include "jawtoplevel.h"
 #include "jawobject.h"
@@ -393,24 +394,60 @@ jaw_util_is_same_jobject(gconstpointer a,
 	}
 }
 
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserve)
+{
+  if (jvm == NULL) {
+    g_error("JavaVM pointer was NULL when initializing library");
+  }
+  cachedJVM = jvm;
+  return JNI_VERSION_1_6;
+}
+
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserve) {
+}
+
 JNIEnv*
 jaw_util_get_jni_env(void)
 {
   JNIEnv *env;
-  JavaVM *jvm;
-  jvm = cachedJVM;
-  env = cachedEnv;
-  if (jvm == NULL) (*env)->GetJavaVM(env,&jvm);
-  int res;
+  env  = NULL;
+  static int i;
+
+  i = 0;
+  void* ptr;
+  ptr = NULL;
+  JavaVMAttachArgs args = { 0, };
+  jint res;
+
   #ifdef JNI_VERSION_1_6
-    res = (*jvm)->AttachCurrentThread(jvm, (void**)&env, NULL);
-  #else
-    (res*) = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+  res = (*cachedJVM)->GetEnv(cachedJVM, &ptr, JNI_VERSION_1_6);
   #endif
-  if (&res < 0) {
-    fprintf(stderr, "Attach failed\n");
-  }
-  return env;
+  env = (JNIEnv*) ptr;
+
+  if (env != NULL)
+    return env;
+
+    switch (res)
+    {
+      case JNI_EDETACHED:
+        args.version = JNI_VERSION_1_6;
+        args.name = g_strdup_printf("NativeThread %d", i++);
+        res = (*cachedJVM)->AttachCurrentThread(cachedJVM, &ptr, NULL);
+        env = (JNIEnv*) ptr;
+        if ((res == JNI_OK) && (env != NULL))
+        {
+          g_free(args.name);
+          return env;
+        }
+        g_printerr("\n *** Attach failed. *** JNIEnv thread is detached.\n");
+        break;
+      case JNI_EVERSION:
+        g_printerr(" *** Version error *** \n");
+        break;
+    }
+    fflush(stderr);
+    exit(2);
+  return NULL;
 }
 
 static jobject

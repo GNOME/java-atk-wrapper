@@ -69,16 +69,6 @@ static GMainLoop* jni_main_loop;
 static int jaw_initialized = 0;
 
 gpointer current_bridge_data = NULL;
-JavaVM* cachedJVM;
-JNIEnv *cachedEnv;
-
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserve)
-{
-  return JNI_VERSION_1_6;
-}
-
-JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserve) {
-}
 
 gboolean jaw_accessibility_init (void)
 {
@@ -1087,7 +1077,6 @@ key_dispatch_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
   key_dispatch_result = 0;
-  cachedEnv = jniEnv;
 
   AtkKeyEventStruct *event = g_new0(AtkKeyEventStruct, 1);
   jclass classAtkKeyEvent = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkKeyEvent");
@@ -1181,7 +1170,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
                                                                  jobject jAtkKeyEvent)
 {
   jboolean key_consumed;
-  cachedEnv = jniEnv;
   jobject global_key_event = (*jniEnv)->NewGlobalRef(jniEnv, jAtkKeyEvent);
 
   g_mutex_lock(key_dispatch_mutex);
