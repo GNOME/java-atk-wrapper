@@ -24,6 +24,7 @@
 #include <atk-bridge.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
+#include <gtk/gtk.h>
 #include <X11/Xlib.h>
 #include <gconf/gconf-client.h>
 #include "jawutil.h"
@@ -46,34 +47,18 @@ extern "C" {
 #define GDK_MOD1_MASK (1 << 3)
 #define GDK_META_MASK (1 << 28)
 
-typedef struct _DummyDispatch DummyDispatch;
 typedef enum _SignalType SignalType;
-
-struct _DummyDispatch
-{
-  GSourceFunc func;
-  gpointer data;
-  GDestroyNotify destroy;
-};
 
 gboolean jaw_debug = FALSE;
 
-GMutex *atk_bridge_mutex;
-GCond *atk_bridge_cond;
-
-GMutex *key_dispatch_mutex;
-GCond *key_dispatch_cond;
-
 static gint key_dispatch_result;
-static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 static GMainLoop* jni_main_loop;
-static gboolean jaw_initialized;
+static jobject lock;
 
-gpointer current_bridge_data = NULL;
+static gboolean jaw_initialized = FALSE;
 
 gboolean jaw_accessibility_init (void)
 {
-
   atk_bridge_adaptor_init (NULL, NULL);
   if (jaw_debug)
     printf("Atk Bridge Initialized\n");
@@ -86,48 +71,37 @@ jaw_accessibility_shutdown (void)
   atk_bridge_adaptor_cleanup();
 }
 
-static gboolean
-jaw_dummy_idle_func (gpointer p)
+void
+jni_threads_lock()
 {
-  return FALSE;
-}
+  JNIEnv* env;
 
-static gboolean
-jaw_idle_dispatch (GSource *source,
-                   GSourceFunc callback,
-                   gpointer user_data)
+  env = jaw_util_get_jni_env();
+
+  if ((*env)->MonitorEnter(env, lock) != JNI_OK) {
+    g_critical("Error trying to get Java side GDK lock");
+  }
+}
+void
+jni_threads_unlock()
 {
-  static GSourceFunc gdk_dispatch_func = NULL;
+  JNIEnv* env;
+  env = jaw_util_get_jni_env();
 
-  if (gdk_dispatch_func == NULL
-      && user_data != NULL
-      && ((DummyDispatch*)user_data)->func == jaw_dummy_idle_func)
-  {
-    gdk_dispatch_func = callback;
-    return FALSE;
-  }
-
-  if (gdk_dispatch_func == callback)
-  {
-    return FALSE;
-  }
-  return origin_g_idle_dispatch(source, callback, user_data);
+  if ((*env)->MonitorExit(env, lock) != JNI_OK)
+    g_critical("Error trying to release Java side GDK lock");
 }
-
 
 static gpointer jni_loop_callback(void *data)
 {
   char *message;
   message = (char *)data;
-  g_mutex_lock (atk_bridge_mutex);
   if (!g_main_loop_is_running((GMainLoop *)data))
     g_main_loop_run((GMainLoop *)data);
   else {
       if (jaw_debug)
     printf("Running %s already\n", message);
   }
-  g_assert (atk_bridge_mutex != NULL);
-  g_mutex_unlock (atk_bridge_mutex);
   return 0;
 }
 
@@ -135,15 +109,13 @@ JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv,
                                                                   jclass jClass)
 {
-  // Hook up g_idle_dispatch
-  origin_g_idle_dispatch = g_idle_funcs.dispatch;
-  g_idle_funcs.dispatch = jaw_idle_dispatch;
-
   const gchar* debug_env = g_getenv("JAW_DEBUG");
   if (g_strcmp0(debug_env, "1") == 0) {
     jaw_debug = TRUE;
   }
 
+  if (jaw_initialized)
+    return;
   // Java app with GTK Look And Feel will load gail
   // Set NO_GAIL to "1" to prevent gail from executing
   g_setenv("NO_GAIL", "1", TRUE);
@@ -156,25 +128,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   // Force to invoke base initialization function of each ATK interfaces
   g_type_class_unref(g_type_class_ref(ATK_TYPE_NO_OP_OBJECT));
 
-  if (!g_thread_supported())
-  {
-    XInitThreads();
-    return JNI_FALSE;
-  }
-
-  jaw_impl_init_mutex();
-  g_assert (key_dispatch_mutex == NULL);
-  key_dispatch_mutex = g_new(GMutex, 1);
-  g_mutex_init(key_dispatch_mutex);
-  g_assert (key_dispatch_mutex != NULL);
-
-  key_dispatch_cond = g_new(GCond, 1);
-  g_cond_init(key_dispatch_cond);
-
-  // Dummy idle function for jaw_idle_dispatch to get
-  // the address of gdk_threads_dispatch
-  gdk_threads_add_idle(jaw_dummy_idle_func, NULL);
-
   return JNI_TRUE;
 }
 
@@ -184,13 +137,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
 {
   // Enable ATK Bridge so we can load it now
   g_unsetenv ("NO_AT_BRIDGE");
-  g_assert (atk_bridge_mutex == NULL);
-  atk_bridge_mutex = g_new(GMutex, 1);
-  g_mutex_init(atk_bridge_mutex);
-  g_assert (atk_bridge_mutex != NULL);
-
-  atk_bridge_cond = g_new(GCond, 1);
-  g_cond_init(atk_bridge_cond);
 
   GThread *thread;
   GError *err;
@@ -202,9 +148,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   if (jaw_debug)
     printf("Jaw Initialization STATUS in loadAtkBridge: %d\n", jaw_initialized);
 
-  g_mutex_lock(atk_bridge_mutex);
   jni_main_loop = g_main_loop_new (NULL, FALSE); /*main loop NOT running*/
-  thread = g_thread_new(message, jni_loop_callback, (void *) message);
+  thread = g_thread_new(message, jni_loop_callback, (void *) jni_main_loop);
   if(thread == NULL)
   {
     if (jaw_debug)
@@ -213,9 +158,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
       g_error_free (err);
     }
   }
-  g_mutex_unlock (atk_bridge_mutex);
-  g_thread_join (thread);
-  g_main_loop_unref(jni_main_loop);
 }
 
 enum _SignalType {
@@ -255,6 +197,8 @@ typedef struct _CallbackPara {
 static CallbackPara*
 alloc_callback_para (jobject ac)
 {
+  if (ac == NULL)
+    return;
   CallbackPara *para = g_new(CallbackPara, 1);
   para->global_ac = ac;
   para->args = NULL;
@@ -282,8 +226,13 @@ focus_notify_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
 
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
   {
     free_callback_para(para);
@@ -291,7 +240,7 @@ focus_notify_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  atk_object_notify_state_change(atk_obj, ATK_STATE_FOCUSED, TRUE);
+  atk_focus_tracker_notify(atk_obj);
 
   free_callback_para(para);
 
@@ -303,9 +252,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_focusNotify(JNIEnv *jniEnv,
                                                             jclass jClass,
                                                             jobject jAccContext)
 {
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
-
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(focus_notify_handler, para);
 }
 
@@ -317,6 +267,12 @@ window_open_handler (gpointer p)
   gboolean is_toplevel = para->is_toplevel;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
 
@@ -360,10 +316,11 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowOpen(JNIEnv *jniEnv,
                                                            jboolean jIsToplevel)
 {
 
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
   para->is_toplevel = (jIsToplevel == JNI_TRUE) ? TRUE : FALSE;
-
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(window_open_handler, para);
 }
 
@@ -375,6 +332,12 @@ window_close_handler (gpointer p)
   gboolean is_toplevel = para->is_toplevel;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -423,10 +386,11 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowClose(JNIEnv *jniEnv,
                                                             jboolean jIsToplevel)
 {
 
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
   para->is_toplevel = (jIsToplevel == JNI_TRUE) ? TRUE : FALSE;
-
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(window_close_handler, para);
 }
 
@@ -437,6 +401,12 @@ window_minimize_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -458,9 +428,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMinimize(JNIEnv *jniEnv,
                                                                jclass jClass,
                                                                jobject jAccContext)
 {
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
-
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(window_minimize_handler, para);
 }
 
@@ -471,6 +442,12 @@ window_maximize_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -487,13 +464,15 @@ window_maximize_handler (gpointer p)
   return FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMaximize(
-	JNIEnv *jniEnv, jclass jClass, jobject jAccContext) {
-
-jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-CallbackPara *para = alloc_callback_para(global_ac);
-
-g_idle_add(window_maximize_handler, para);
+JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMaximize(JNIEnv *jniEnv,
+                                                                              jclass jClass,
+                                                                              jobject jAccContext)
+{
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
+  g_idle_add(window_maximize_handler, para);
 }
 
 static gboolean
@@ -503,6 +482,12 @@ window_restore_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -524,9 +509,10 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowRestore(JNI
                                                                              jobject jAccContext)
 {
 
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
-
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(window_restore_handler, para);
 }
 
@@ -537,6 +523,12 @@ window_activate_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -556,9 +548,10 @@ window_activate_handler (gpointer p)
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowActivate(JNIEnv *jniEnv,
                                                                               jclass jClass, jobject jAccContext) {
 
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
-
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
+  CallbackPara *para = alloc_callback_para(lock);
   g_idle_add(window_activate_handler, para);
 }
 
@@ -569,6 +562,12 @@ window_deactivate_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -591,8 +590,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowDeactivate(JNIEnv *jniEnv,
                                                                  jobject jAccContext)
 {
 
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
 
   g_idle_add(window_deactivate_handler, para);
 }
@@ -604,6 +605,11 @@ window_state_change_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 
@@ -627,10 +633,11 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowStateChange(JNIEnv *jniEnv
                                                                   jobject jAccContext)
 {
 
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
-
-  //g_idle_add(window_state_change_handler, para);
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
+  g_idle_add(window_state_change_handler, para);
 }
 
 static gchar
@@ -678,9 +685,14 @@ signal_emit_handler (gpointer p)
 {
   CallbackPara *para = (CallbackPara*)p;
   jobject global_ac = para->global_ac;
-  jobjectArray args = para->args;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  jobjectArray args = para->args;
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -794,8 +806,8 @@ signal_emit_handler (gpointer p)
       gint newValue = get_int_value(jniEnv,
                                     (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
       AtkPropertyValues values = { NULL };
-         // GValues must be initialized
 
+      // GValues must be initialized
       g_assert (!G_VALUE_HOLDS_INT (&values.old_value));
       g_value_init(&values.old_value, G_TYPE_INT);
       g_assert (G_VALUE_HOLDS_INT (&values.old_value));
@@ -934,12 +946,14 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
                                                            jint id,
                                                            jobjectArray args)
 {
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   jobjectArray global_args = (jobjectArray)(*jniEnv)->NewGlobalRef(jniEnv, args);
-  CallbackPara *para = alloc_callback_para(global_ac);
+  CallbackPara *para = alloc_callback_para(lock);
   para->signal_id = (gint)id;
   para->args = global_args;
 
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(signal_emit_handler, para);
 }
 
@@ -950,7 +964,13 @@ object_state_change_handler (gpointer p)
   jobject global_ac = para->global_ac;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
   {
@@ -974,8 +994,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_objectStateChange(JNIEnv *jniEnv
                                                                   jobject state,
                                                                   jboolean value)
 {
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
   AtkStateType state_type = jaw_util_get_atk_state_type_from_java_state( jniEnv, state );
   para->atk_state = state_type;
   if (value == JNI_TRUE) {
@@ -983,25 +1003,42 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_objectStateChange(JNIEnv *jniEnv
   } else {
     para->state_value = FALSE;
   }
-
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(object_state_change_handler, para);
 }
 
 static gboolean
 component_added_handler (gpointer p)
 {
+  JNIEnv *jniEnv;
+
   CallbackPara *para = (CallbackPara*)p;
   jobject global_ac = para->global_ac;
 
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
+  jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** component_added_handler: lock == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, lock);
+
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
   {
     atk_object_notify_state_change(atk_obj,
                                    ATK_STATE_SHOWING,
-                                   para->state_value);
+                                   1);
   }
 
   free_callback_para(para);
@@ -1014,19 +1051,35 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentAdded(JNIEnv *jniEnv,
                                                                jclass jClass,
                                                                jobject jAccContext)
 {
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+ // gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock); FIXME
+ // gdk_threads_init();
   g_idle_add(component_added_handler, para);
 }
 
 static gboolean
 component_removed_handler (gpointer p)
 {
+  JNIEnv *jniEnv;
+
   CallbackPara *para = (CallbackPara*)p;
   jobject global_ac = para->global_ac;
+  jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return FALSE;
+  }
 
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** component_removed_handler: lock == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, lock);
 
   if (!jaw_impl)
   {
@@ -1038,7 +1091,7 @@ component_removed_handler (gpointer p)
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP) {
     atk_object_notify_state_change(atk_obj,
                                    ATK_STATE_SHOWING,
-                                   para->state_value);
+                                   0);
   }
 
   free_callback_para(para);
@@ -1051,21 +1104,26 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(JNIEnv *jniEnv,
                                                                  jclass jClass,
                                                                  jobject jAccContext)
 {
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(global_ac);
-
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(lock);
+ // gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock); //FIXME
+ // gdk_threads_init();
   g_idle_add(component_removed_handler, para);
 }
 
 static gboolean
 key_dispatch_handler (gpointer p)
 {
-  jobject jAtkKeyEvent = (jobject)p;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
   key_dispatch_result = 0;
-
+  jobject jAtkKeyEvent = (jobject)p;
   AtkKeyEventStruct *event = g_new0(AtkKeyEventStruct, 1);
+
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    return FALSE;
+  }
+
   jclass classAtkKeyEvent = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkKeyEvent");
 
   // type
@@ -1131,9 +1189,9 @@ key_dispatch_handler (gpointer p)
 
   if(jaw_debug)
     printf("key_dispatch_result = %d\n ",key_dispatch_result);
-  gboolean b = jaw_util_dispatch_key_event (event);
+  gboolean b = jaw_util_dispatch_key_event (event); //FIXME
   if(jaw_debug)
-    printf("b = %s\n ",(char *)&b);
+    printf("b = %s\n ",(char *)b);
   if (b) {
     key_dispatch_result = 1;
   } else {
@@ -1141,13 +1199,11 @@ key_dispatch_handler (gpointer p)
   }
   if(jaw_debug)
     printf("key_dispatch_result = %d\n ",key_dispatch_result);
+
   (*jniEnv)->ReleaseStringUTFChars(jniEnv, jstr, event->string);
   g_free(event);
 
   (*jniEnv)->DeleteGlobalRef(jniEnv, jAtkKeyEvent);
-
-  g_cond_signal(key_dispatch_cond);
-  g_mutex_unlock(key_dispatch_mutex);
   return FALSE;
 }
 
@@ -1158,16 +1214,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
 {
   jboolean key_consumed;
   jobject global_key_event = (*jniEnv)->NewGlobalRef(jniEnv, jAtkKeyEvent);
-
-  g_mutex_lock(key_dispatch_mutex);
-
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(key_dispatch_handler, (gpointer)global_key_event);
-
-  if(jaw_debug)
-    printf("key_dispatch_result = %d\n ",key_dispatch_result);
-  while (key_dispatch_result == 0) {
-    g_cond_wait(key_dispatch_cond, key_dispatch_mutex);
-  }
 
   if (key_dispatch_result == 1)
   {
@@ -1178,9 +1227,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
   }
 
   key_dispatch_result = 0;
-
-  g_mutex_unlock(key_dispatch_mutex);
-
   return key_consumed;
 }
 

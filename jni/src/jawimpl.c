@@ -24,6 +24,7 @@
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
+#include "jawobject.h"
 
 static void jaw_impl_class_init (JawImplClass *klass);
 //static void			jaw_impl_init				(JawImpl		*impl);
@@ -83,14 +84,6 @@ static gpointer jaw_impl_parent_class = NULL;
 
 static GHashTable *typeTable = NULL;
 static GHashTable *objectTable = NULL;
-static GMutex *objectTableMutex;
-
-void
-jaw_impl_init_mutex ()
-{
-   objectTableMutex = g_new(GMutex, 1);
-    g_mutex_init(objectTableMutex);
-}
 
 static void
 object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl * jaw_impl)
@@ -102,10 +95,7 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl * jaw_impl)
                                           "hashCode",
                                           "()I");
   gint hash_key = (gint)(*jniEnv)->CallIntMethod(jniEnv, ac, jmid);
-
-  g_mutex_lock(objectTableMutex);
   g_hash_table_insert(objectTable, (gpointer)&hash_key, (gpointer)jaw_impl);
-  g_mutex_unlock(objectTableMutex);
 }
 
 static JawImpl*
@@ -120,10 +110,7 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
   gpointer value = NULL;
 
-  g_mutex_lock(objectTableMutex);
   value = g_hash_table_lookup(objectTable, (gpointer)&hash_key);
-  g_mutex_unlock(objectTableMutex);
-
   return (JawImpl*)value;
 }
 
@@ -138,9 +125,7 @@ object_table_remove(JNIEnv *jniEnv, jobject ac)
                                           "()I" );
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
 
-  g_mutex_lock(objectTableMutex);
-  g_hash_table_remove( objectTable, (gpointer)&hash_key );
-  g_mutex_unlock(objectTableMutex);
+  g_hash_table_remove(objectTable, (gpointer)&hash_key );
 }
 
 static void
@@ -246,32 +231,50 @@ JawImpl*
 jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
-
-  g_mutex_lock(objectTableMutex);
-  if (objectTable == NULL) 
+  jniEnv = jaw_util_get_jni_env();
+  if (objectTable == NULL)
   {
     objectTable = g_hash_table_new ( NULL, NULL );
   }
-  g_mutex_unlock(objectTableMutex);
 
   jaw_impl = object_table_lookup( jniEnv, ac );
 
   if (jaw_impl == NULL)
   {
     jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, ac);
-    guint tflag = jaw_util_get_tflag_from_jobj(jniEnv, global_ac);
-    jaw_impl = g_object_new( JAW_TYPE_IMPL(tflag), NULL );
-    JawObject *jaw_obj = JAW_OBJECT(jaw_impl);
-    jaw_obj->acc_context = global_ac;
-    jaw_obj->storedData = g_hash_table_new(g_str_hash, g_str_equal);
-    aggregate_interface(jniEnv, jaw_obj, tflag);
+    if (global_ac != NULL)
+    {
+      guint tflag = jaw_util_get_tflag_from_jobj(jniEnv, global_ac);
+      jaw_impl = g_object_new( JAW_TYPE_IMPL(tflag), NULL );
+      if (jaw_impl != NULL)
+      {
+        JawObject *jaw_obj = JAW_OBJECT(jaw_impl);
 
-    atk_object_initialize( ATK_OBJECT(jaw_impl), NULL );
-
-    object_table_insert( jniEnv, global_ac, jaw_impl);
+        if (jaw_obj != NULL)
+        {
+          jaw_obj->acc_context = global_ac;
+          jaw_obj->storedData = g_hash_table_new(g_str_hash, g_str_equal);
+          aggregate_interface(jniEnv, jaw_obj, tflag);
+          atk_object_initialize( ATK_OBJECT(jaw_impl), NULL );
+          object_table_insert( jniEnv, global_ac, jaw_impl);
+        } else {
+          printf("\n *** JAW_OBJECT == NULL *** jaw_impl_get_instance: %s \n",
+                 (char *) (ATK_OBJECT(jaw_obj)));
+        }
+      } else {
+        printf("\n *** JAW_IMPL == NULL ***  jaw_impl_get_instance: %s \n",
+               (char *) ATK_OBJECT(jaw_impl));
+      }
+    }
   }
-
-	return jaw_impl;
+  if (jaw_impl != NULL)
+  {
+    return jaw_impl;
+  }
+  else {
+    printf("\n *** JAW_IMPL == NULL *** jaw_impl_get_instance\n");
+  }
+  return NULL;
 }
 
 JawImpl*
@@ -279,15 +282,17 @@ jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
 
-  g_mutex_lock(objectTableMutex);
   if (objectTable == NULL)
-  {
-    g_mutex_unlock(objectTableMutex);
-    return NULL;
-  }
-  g_mutex_unlock(objectTableMutex);
+   return NULL;
 
   jaw_impl = object_table_lookup( jniEnv, ac );
+
+  if (jaw_impl == NULL)
+  {
+    printf("\n *** JAW_IMPL == NULL ***  jaw_impl_find_instance: %s \n",
+           (char *) ATK_OBJECT(jaw_impl));
+    return NULL;
+  }
 
   return jaw_impl;
 }
@@ -616,7 +621,8 @@ jaw_impl_ref_child (AtkObject *atk_obj, gint i)
   jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
 
   AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
-  g_object_ref (G_OBJECT(obj));
+  if (G_OBJECT(obj) != NULL)
+    g_object_ref (G_OBJECT(obj));
 
   return obj;
 }
