@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include <glib-object.h>
+#include <glib/gprintf.h>
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
