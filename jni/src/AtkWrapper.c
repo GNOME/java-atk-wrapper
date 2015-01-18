@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <atk-bridge.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
 #include <X11/Xlib.h>
 #include <gconf/gconf-client.h>
 #include "jawutil.h"
@@ -66,28 +67,17 @@ GCond *key_dispatch_cond;
 static gint key_dispatch_result;
 static gboolean (*origin_g_idle_dispatch) (GSource*, GSourceFunc, gpointer);
 static GMainLoop* jni_main_loop;
-static int jaw_initialized = 0;
+static gboolean jaw_initialized;
 
 gpointer current_bridge_data = NULL;
 
 gboolean jaw_accessibility_init (void)
 {
-  if (jaw_debug)
-    printf("2. Jaw Initialized %d\n", jaw_initialized);
+
   atk_bridge_adaptor_init (NULL, NULL);
   if (jaw_debug)
-    g_print ("Atk Accessibility bridge initialized\n");
-   if (g_getenv ("AT_SPI_DEBUG"))
-    {
-    if (jaw_debug)
-        printf("3. Jaw Initialized %d\n", jaw_initialized );
-      return TRUE;
-    } else {
-      if (jaw_debug)
-        printf("3. Jaw NOT Initialized %d\n", jaw_initialized );
-      return FALSE;
-    }
-  return FALSE;
+    printf("Atk Bridge Initialized\n");
+  return TRUE;
 }
 
 void
@@ -193,7 +183,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
                                                               jclass jClass)
 {
   // Enable ATK Bridge so we can load it now
-  g_setenv("NO_AT_BRIDGE", "0", TRUE);
+  g_unsetenv ("NO_AT_BRIDGE");
   g_assert (atk_bridge_mutex == NULL);
   atk_bridge_mutex = g_new(GMutex, 1);
   g_mutex_init(atk_bridge_mutex);
@@ -202,18 +192,15 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   atk_bridge_cond = g_new(GCond, 1);
   g_cond_init(atk_bridge_cond);
 
-  if (jaw_debug)
-    printf("1. Jaw Initialized = %d\n", jaw_initialized);
-
   GThread *thread;
   GError *err;
   char * message;
   message = "JNI main loop";
   err = NULL;
 
-  jaw_accessibility_init();
+  jaw_initialized = jaw_accessibility_init();
   if (jaw_debug)
-    printf("4. Jaw Initialized = %d\n", jaw_initialized);
+    printf("Jaw Initialization STATUS in loadAtkBridge: %d\n", jaw_initialized);
 
   g_mutex_lock(atk_bridge_mutex);
   jni_main_loop = g_main_loop_new (NULL, FALSE); /*main loop NOT running*/
