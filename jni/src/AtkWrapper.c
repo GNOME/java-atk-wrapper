@@ -198,7 +198,7 @@ static CallbackPara*
 alloc_callback_para (jobject ac)
 {
   if (ac == NULL)
-    return;
+    return NULL;
   CallbackPara *para = g_new(CallbackPara, 1);
   para->global_ac = ac;
   para->args = NULL;
@@ -209,7 +209,20 @@ alloc_callback_para (jobject ac)
 static void
 free_callback_para (CallbackPara *para)
 {
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    free_callback_para(para);
+    return;
+  }
+
+  if (para->global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** free_callback_para: para->global_ac == NULL *** \n");
+    free_callback_para(para);
+    return;
+  }
+
 	(*jniEnv)->DeleteGlobalRef(jniEnv, para->global_ac);
 
 	if (para->args) {
@@ -228,6 +241,13 @@ focus_notify_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  if (global_ac == NULL)
+  {
+	  fprintf(stderr,"\n *** focus_notify_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -269,6 +289,13 @@ window_open_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_open_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -334,6 +361,13 @@ window_close_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_closed_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -407,6 +441,13 @@ window_minimize_handler (gpointer p)
     return FALSE;
   }
 
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_minimize_handler: global_ac == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -448,6 +489,13 @@ window_maximize_handler (gpointer p)
     return FALSE;
   }
 
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_maximize_handler: global_ac == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -484,6 +532,13 @@ window_restore_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_restore_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -529,6 +584,13 @@ window_activate_handler (gpointer p)
     return FALSE;
   }
 
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_activate_handler: global_ac == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -564,6 +626,13 @@ window_deactivate_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_deactivate_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -607,6 +676,13 @@ window_state_change_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    free_callback_para(para);
+    return FALSE;
+  }
+
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** window_state_change_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -693,6 +769,14 @@ signal_emit_handler (gpointer p)
   }
 
   jobjectArray args = para->args;
+
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** signal_emit_handler: global_ac == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -970,6 +1054,13 @@ object_state_change_handler (gpointer p)
     return FALSE;
   }
 
+  if (global_ac == NULL)
+  {
+    fprintf(stderr,"\n *** object_state_change_handler: global_ac == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
+
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
 
   if (jaw_impl == NULL)
@@ -1025,7 +1116,7 @@ component_added_handler (gpointer p)
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** component_added_handler: lock == NULL *** \n");
+    fprintf(stderr,"\n *** component_added_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -1074,7 +1165,7 @@ component_removed_handler (gpointer p)
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** component_removed_handler: lock == NULL *** \n");
+    fprintf(stderr,"\n *** component_removed_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
