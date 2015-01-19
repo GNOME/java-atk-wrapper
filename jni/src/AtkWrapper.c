@@ -1080,7 +1080,6 @@ component_removed_handler (gpointer p)
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, lock);
-
   if (!jaw_impl)
   {
     free_callback_para(para);
@@ -1138,8 +1137,11 @@ key_dispatch_handler (gpointer p)
   if (type == type_pressed)
   {
     event->type = ATK_KEY_EVENT_PRESS;
-  } else if (type == type_released) {
+  } else if (type == type_released)
+  {
     event->type = ATK_KEY_EVENT_RELEASE;
+  } else {
+    g_assert_not_reached();
   }
 
   // state
@@ -1187,18 +1189,14 @@ key_dispatch_handler (gpointer p)
   jfieldID jfidTimestamp = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "timestamp", "I");
   event->timestamp = (guint32)(*jniEnv)->GetIntField(jniEnv, jAtkKeyEvent, jfidTimestamp);
 
-  if(jaw_debug)
-    printf("key_dispatch_result = %d\n ",key_dispatch_result);
   gboolean b = jaw_util_dispatch_key_event (event); //FIXME
   if(jaw_debug)
-    printf("b = %s\n ",(char *)b);
+    printf("key_dispatch_result b = %d\n ", b);
   if (b) {
     key_dispatch_result = 1;
   } else {
     key_dispatch_result = 2;
   }
-  if(jaw_debug)
-    printf("key_dispatch_result = %d\n ",key_dispatch_result);
 
   (*jniEnv)->ReleaseStringUTFChars(jniEnv, jstr, event->string);
   g_free(event);
@@ -1218,6 +1216,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
   gdk_threads_init();
   g_idle_add(key_dispatch_handler, (gpointer)global_key_event);
 
+  if(jaw_debug)
+    printf("key_dispatch_result saved = %d\n ", key_dispatch_result);
   if (key_dispatch_result == 1)
   {
     key_consumed = JNI_TRUE;
