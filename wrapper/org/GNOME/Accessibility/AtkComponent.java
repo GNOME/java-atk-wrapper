@@ -81,9 +81,10 @@ public class AtkComponent {
   public Dimension get_size () {
     return acc_component.getSize();
   }
+
   public Rectangle set_extents(int x, int y, int width, int height, int coord_type) {
-    this.width  = width;
-    this.height = height;
+    this.width  = (int)acc_component.getSize().getWidth();
+    this.height = (int)acc_component.getSize().getHeight();
 
     if (coord_type == AtkCoordType.SCREEN) {
       Point p = acc_component.getLocationOnScreen();
@@ -92,11 +93,7 @@ public class AtkComponent {
       this.x -= p.x;
       this.y -= p.y;
     }
-    this.extents = new Rectangle(x, y, width, height);
-    return extents;
-  }
-  public Rectangle get_extents(int x, int y, int width, int height, int coord_type){
-    return set_extents(x, y, width, height, coord_type);
+    return new Rectangle(x, y, width, height);
   }
 
   public int get_layer () {
