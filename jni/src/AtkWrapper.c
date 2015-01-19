@@ -1030,7 +1030,7 @@ component_added_handler (gpointer p)
     return FALSE;
   }
 
-  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, lock);
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
 
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -1079,7 +1079,7 @@ component_removed_handler (gpointer p)
     return FALSE;
   }
 
-  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, lock);
+  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
   if (!jaw_impl)
   {
     free_callback_para(para);
