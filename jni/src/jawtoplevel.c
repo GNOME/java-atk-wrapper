@@ -77,7 +77,7 @@ jaw_toplevel_object_finalize (GObject *obj)
   g_list_free(jaw_toplevel->windows);
 
   JawToplevelClass *klass = JAW_TOPLEVEL_GET_CLASS(obj);
-  G_OBJECT_CLASS(jaw_toplevel_parent_class)->finalize(obj);
+  G_OBJECT_CLASS(klass)->finalize(obj);
 }
 
 static const gchar*
