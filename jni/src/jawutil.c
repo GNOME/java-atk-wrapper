@@ -60,7 +60,6 @@ struct _JawUtilListenerInfo
 };
 
 JavaVM *cachedJVM;
-JNIEnv *cachedEnv;
 
 GType
 jaw_util_get_type(void)
@@ -154,9 +153,18 @@ jaw_util_remove_global_event_listener (guint remove_listener)
 						listener_info->hook_id);
 
 				g_hash_table_remove(listener_list, &tmp_idx);
-			}
-		}
-	}
+			} else {
+        g_warning("Invalid listener hook_id %ld or signal_id %d\n",
+                  listener_info->hook_id, listener_info->signal_id);
+      }
+    }
+    else {
+      g_warning("No listener with the specified listener id %d", remove_listener);
+    }
+  }
+  else {
+    g_warning("Invalid listener_id %d", remove_listener);
+  }
 }
 
 typedef struct _JawKeyListenerInfo{
@@ -532,7 +540,7 @@ jaw_util_get_atk_role_from_jobj (jobject jobj)
 	}
 
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "DESKTOP_PANE") ) {
-		return ATK_ROLE_LAYERED_PANE;
+    return ATK_ROLE_DESKTOP_FRAME;
 	}
 
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "DIALOG") ) {
@@ -542,6 +550,10 @@ jaw_util_get_atk_role_from_jobj (jobject jobj)
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "DIRECTORY_PANE") ) {
 		return ATK_ROLE_DIRECTORY_PANE;
 	}
+
+  if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "EDITBAR") ) {
+    return ATK_ROLE_EDITBAR;
+  }
 
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "FILE_CHOOSER") ) {
 		return ATK_ROLE_FILE_CHOOSER;
@@ -555,6 +567,10 @@ jaw_util_get_atk_role_from_jobj (jobject jobj)
 		return ATK_ROLE_FONT_CHOOSER;
 	}
 
+  if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "FOOTER") ) {
+    return ATK_ROLE_FOOTER;
+  }
+
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "FRAME") ) {
 		return ATK_ROLE_FRAME;
 	}
@@ -566,6 +582,14 @@ jaw_util_get_atk_role_from_jobj (jobject jobj)
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "GROUP_BOX") ) {
 		return ATK_ROLE_PANEL;
 	}
+
+  if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "HEADER") ) {
+    return ATK_ROLE_HEADER;
+  }
+
+  if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "HTML_CONTAINER") ) {
+    return ATK_ROLE_HTML_CONTAINER;
+  }
 
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "HYPERLINK") ) {
 		return ATK_ROLE_UNKNOWN;
@@ -623,6 +647,10 @@ jaw_util_get_atk_role_from_jobj (jobject jobj)
 		return ATK_ROLE_PANEL;
 	}
 
+  if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "PARAGRAPH") ) {
+    return ATK_ROLE_PARAGRAPH;
+  }
+
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "PASSWORD_TEXT") ) {
 		return ATK_ROLE_PASSWORD_TEXT;
 	}
@@ -663,6 +691,10 @@ jaw_util_get_atk_role_from_jobj (jobject jobj)
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "ROW_HEADER") ) {
 		return ATK_ROLE_ROW_HEADER;
 	}
+
+  if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "RULER") ) {
+    return ATK_ROLE_RULER;
+  }
 
 	if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "SCROLL_BAR") ) {
 		return ATK_ROLE_SCROLL_BAR;
