@@ -79,7 +79,8 @@ jni_threads_lock()
   env = jaw_util_get_jni_env();
 
   if ((*env)->MonitorEnter(env, lock) != JNI_OK) {
-    g_critical("Error trying to get Java side GDK lock");
+    if (jaw_debug)
+      g_critical("Error trying to get Java side GDK lock");
   }
 }
 void
@@ -88,8 +89,10 @@ jni_threads_unlock()
   JNIEnv* env;
   env = jaw_util_get_jni_env();
 
-  if ((*env)->MonitorExit(env, lock) != JNI_OK)
-    g_critical("Error trying to release Java side GDK lock");
+  if ((*env)->MonitorExit(env, lock) != JNI_OK){
+    if (jaw_debug)
+      g_critical("Error trying to release Java side GDK lock");
+  }
 }
 
 static gpointer jni_loop_callback(void *data)
@@ -241,20 +244,20 @@ focus_notify_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** focus_notify_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
-
   if (global_ac == NULL)
   {
-	  fprintf(stderr,"\n *** focus_notify_handler: global_ac == NULL *** \n");
+    g_warning("\n *** focus_notify_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
-
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** focus_notify_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -361,21 +364,21 @@ window_close_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** window_close_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** window_closed_handler: global_ac == NULL *** \n");
+    g_warning("\n *** window_close_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
-
-  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
-
+  JawImpl *jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** window_close_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -437,21 +440,21 @@ window_minimize_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** window_minimize_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** window_minimize_handler: global_ac == NULL *** \n");
+    g_warning("\n *** window_minimize_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
-
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
-
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** window_minimize_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -485,21 +488,22 @@ window_maximize_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** window_maximize_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** window_maximize_handler: global_ac == NULL *** \n");
+    g_warning("\n *** window_maximize_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
-
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** window_maximize_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -532,21 +536,22 @@ window_restore_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** window_restore_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** window_restore_handler: global_ac == NULL *** \n");
+    g_warning("\n *** window_restore_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
-
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** window_restore_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -580,21 +585,21 @@ window_activate_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** window_activate_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** window_activate_handler: global_ac == NULL *** \n");
+    g_warning("\n *** window_activate_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
-
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
-
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** window_activate_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -626,21 +631,21 @@ window_deactivate_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** window_deactivate_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** window_deactivate_handler: global_ac == NULL *** \n");
+    g_warning("\n *** window_deactivate_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
-
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
-
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** window_deactivate_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -676,21 +681,22 @@ window_state_change_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** window_state_change_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** window_state_change_handler: global_ac == NULL *** \n");
+    g_warning("\n *** window_state_change_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
-
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** window_state_change_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -1050,21 +1056,22 @@ object_state_change_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** object_state_change_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** object_state_change_handler: global_ac == NULL *** \n");
+    g_warning("\n *** object_state_change_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
-
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** object_state_change_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -1110,18 +1117,25 @@ component_added_handler (gpointer p)
   jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** component_added_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** component_added_handler: global_ac == NULL *** \n");
+    g_warning("\n *** component_added_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
+  if (jaw_impl == NULL)
+  {
+    g_warning("\n *** component_added_handler: jaw_impl == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
 
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -1159,20 +1173,22 @@ component_removed_handler (gpointer p)
   jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** component_removed_handler: env == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** component_removed_handler: global_ac == NULL *** \n");
+    g_warning("\n *** component_removed_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
-  if (!jaw_impl)
+  if (jaw_impl == NULL)
   {
+    g_warning("\n *** component_removed_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -1211,6 +1227,7 @@ key_dispatch_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** key_dispatch_handler: env == NULL *** \n");
     return FALSE;
   }
 
