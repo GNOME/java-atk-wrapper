@@ -1,3 +1,41 @@
+Changes in version 0.32.3
+=========================
+
+Build:
+  Use JNI_VERSION_1_6
+  LDFLAGS Use proper version info syntax
+  check if AM_PROG_AR is defined
+  Add -rpath flag to LDFLAGS
+  Add dependency on atk-bridge-2.0
+  Add AC_SUBST(JAW_LIBS)
+  Don't use $JAVACFLAGS when setting JDK_SRC
+  Add JDK_SRC to Build configuration
+  put lt version info first in LDFLAGS
+  Check minimum version of atk and spi is installed
+  Add AM_SILENT_RULES([yes])
+
+Miscellanous:
+  Directly initialise accessibility rather than load via gtk module
+  jawutil: include string header for strcmp use
+  Replace G_CONST_RETURN with const
+  Print exception stack traces
+  FIX SIGEV fatal error
+  fix jfieldID in get_extents
+  Merge branch 'old' into amend
+  set x y extents for both WINDOW and SCREEN
+  Use defined top level klass
+  AtkWrapper: Remove hard-coded handler values
+  Rectangle width and height for set_extents
+  Replace G_CONST_RETURN with const
+  FIX incompatable pointer
+  FIX g_cond lockup
+
+Maintainership:
+  Add various g_debug messages, warnings and erros for JAW_DEBUG=1
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.32.2
 =========================
 
