@@ -263,7 +263,9 @@ focus_notify_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  atk_focus_tracker_notify(atk_obj);
+  atk_object_notify_state_change(atk_obj,
+                                 ATK_STATE_SHOWING,
+                                 1);
 
   free_callback_para(para);
 
@@ -770,6 +772,7 @@ signal_emit_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
+    g_warning("\n *** signal_emit_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -778,7 +781,7 @@ signal_emit_handler (gpointer p)
 
   if (global_ac == NULL)
   {
-    fprintf(stderr,"\n *** signal_emit_handler: global_ac == NULL *** \n");
+    g_warning("\n *** signal_emit_handler: global_ac == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
@@ -787,6 +790,7 @@ signal_emit_handler (gpointer p)
 
   if (jaw_impl == NULL)
   {
+    g_warning("\n *** signal_emit_handler: jaw_impl == NULL *** \n");
     free_callback_para(para);
     return FALSE;
   }
