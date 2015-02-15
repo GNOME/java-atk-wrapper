@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -463,7 +464,9 @@ public class AtkWrapper {
 						} else if (parent_role != null &&
 							(parent_role == javax.accessibility.AccessibleRole.MENU &&
 							 (role == javax.accessibility.AccessibleRole.CHECK_BOX ||
-							  role == javax.accessibility.AccessibleRole.RADIO_BUTTON))) {
+								role == javax.accessibility.AccessibleRole.RADIO_BUTTON ||
+								role == javax.accessibility.AccessibleRole.PUSH_BUTTON ||
+								role == javax.accessibility.AccessibleRole.TOGGLE_BUTTON))) {
 							dispatchFocusEvent(o);
 						}
 					}
@@ -505,7 +508,11 @@ public class AtkWrapper {
 
 	public static void registerPropertyChangeListener(AccessibleContext ac) {
 		if (ac != null) {
+      try {
 			ac.addPropertyChangeListener(propertyChangeListener);
+      } catch (Exception e){
+        e.printStackTrace();
+      }
 		}
 	}
 
