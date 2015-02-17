@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +39,8 @@ static gint jaw_object_get_index_in_parent(AtkObject *atk_obj);
 static AtkRole jaw_object_get_role(AtkObject *atk_obj);
 static AtkStateSet* jaw_object_ref_state_set(AtkObject *atk_obj);
 
+static gpointer parent_class = NULL;
+
 enum {
   ACTIVATE,
   CREATE,
@@ -63,6 +66,8 @@ jaw_object_class_init (JawObjectClass *klass)
   gobject_class->finalize = jaw_object_finalize;
 
   AtkObjectClass *atk_class = ATK_OBJECT_CLASS (klass);
+  parent_class = g_type_class_peek_parent (klass);
+
   atk_class->get_name = jaw_object_get_name;
   atk_class->get_description = jaw_object_get_description;
   atk_class->get_n_children = jaw_object_get_n_children;
@@ -234,8 +239,9 @@ jaw_object_get_name (AtkObject *atk_obj)
   jobject ac = jaw_obj->acc_context;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
-  if (atk_object_get_role(atk_obj) ==
-      ATK_ROLE_COMBO_BOX &&
+  atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
+
+  if (atk_object_get_role(atk_obj) == ATK_ROLE_COMBO_BOX &&
       atk_object_get_n_accessible_children(atk_obj) == 1)
   {
     AtkSelection *selection = ATK_SELECTION(atk_obj);
