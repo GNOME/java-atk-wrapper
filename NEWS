@@ -1,3 +1,16 @@
+Changes in version 0.32.90
+=========================
+
+Important Changes:
+  JNI: get name before checking for COMBO BOX
+  JNI: dispatch radio, push toggle button events
+
+Maintainership:
+  Update Authors
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.32.3
 =========================
 

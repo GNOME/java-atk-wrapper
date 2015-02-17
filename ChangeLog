@@ -1,3 +1,8 @@
+e5c1782 JNI: get name before checking for COMBO BOX
+5ee3b8b update copyright
+67f7912 dispatch radio, push toggle button events
+b4016fa AUTHORS: Add Magdalen Berns
+abcd681 Release 0.32.3
 1937e99 Atwrapper add debugging to signals
 acfc165 AtkWrapper: warn if handler object is NULL
 69d1dba Return JNI_OK for jboolean function
