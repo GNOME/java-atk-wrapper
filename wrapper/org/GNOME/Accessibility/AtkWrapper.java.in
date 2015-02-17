@@ -28,116 +28,139 @@ import javax.accessibility.*;
 import java.awt.Toolkit;
 
 public class AtkWrapper {
-	public native void AtkWrapper();
-	static boolean accessibilityEnabled = false;
-	static {
-		try {
-			Process p = Runtime.getRuntime().exec ("@XPROP@ -root");
-			BufferedReader b = new BufferedReader (
-					new InputStreamReader (p.getInputStream ()));
-			
-			String result;
-			while ((result = b.readLine()) != null) {
-				if (result.indexOf("AT_SPI_IOR") >= 0 ||
-					result.indexOf("AT_SPI_BUS") >= 0) {
-					System.loadLibrary("atk-wrapper");
-					if (AtkWrapper.initNativeLibrary()) {
-						accessibilityEnabled = true;
-					}
+  public native void AtkWrapper();
+  static boolean accessibilityEnabled = false;
+  static {
+    try {
+      Process p = Runtime.getRuntime().exec("@XPROP@ -root");
+      BufferedReader b = new BufferedReader(new InputStreamReader (p.getInputStream ()));
+      String result;
+      while ((result = b.readLine()) != null) {
+        if (result.indexOf("AT_SPI_IOR") >= 0 || result.indexOf("AT_SPI_BUS") >= 0) {
+          System.loadLibrary("atk-wrapper");
+          if (AtkWrapper.initNativeLibrary())
+            accessibilityEnabled = true;
+          break;
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      e.getCause();
+    }
+  }
 
-					break;
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			e.getCause();
-		}
-	}
+  final WindowAdapter winAdapter = new WindowAdapter() {
+    public void windowActivated(WindowEvent e) {
+      Object o = e.getSource();
+      if ( o instanceof javax.accessibility.Accessible ) {
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowActivate(ac);
+      }
+    }
 
-	final WindowAdapter winAdapter = new WindowAdapter() {
-		public void windowActivated(WindowEvent e) {
-			Object o = e.getSource();
-			if ( o instanceof javax.accessibility.Accessible ) {
-				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
-				AtkWrapper.windowActivate(ac);
-			}
-		}
+   /**
+    * windowDeactivated
+    * @param e A WindowEvent object
+    */
+    public void windowDeactivated(WindowEvent e) {
+      Object o = e.getSource();
+      if (o instanceof javax.accessibility.Accessible) {
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowDeactivate(ac);
+      }
+    }
 
-		public void windowDeactivated(WindowEvent e) {
-			Object o = e.getSource();
-			if ( o instanceof javax.accessibility.Accessible ) {
-				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
-				AtkWrapper.windowDeactivate(ac);
-			}
-		}
+   /**
+    * windowStateChanged
+    * @param e A WindowEvent object
+    */
+    public void windowStateChanged(WindowEvent e) {
+      Object o = e.getSource();
+      if (o instanceof javax.accessibility.Accessible) {
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowStateChange(ac);
 
-		public void windowStateChanged(WindowEvent e) {
-			Object o = e.getSource();
-			if ( o instanceof javax.accessibility.Accessible ) {
-				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
-				AtkWrapper.windowStateChange(ac);
+        if( (e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH ) {
+          AtkWrapper.windowMaximize(ac);
+        }
+      }
+    }
 
-				if( (e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH ) {
-					AtkWrapper.windowMaximize(ac);
-				}
-			}
-		}
+   /**
+    * windowDeiconified
+    * @param e A WindowEvent object
+    */
+    public void windowDeiconified(WindowEvent e) {
+      Object o = e.getSource();
+      if (o instanceof javax.accessibility.Accessible) {
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowRestore(ac);
+      }
+    }
 
-		public void windowDeiconified(WindowEvent e) {
-			Object o = e.getSource();
-			if ( o instanceof javax.accessibility.Accessible ) {
-				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
-				AtkWrapper.windowRestore(ac);
-			}
-		}
+   /**
+    *  windowIconified
+    * @param e A WindowEvent object
+    */
+    public void windowIconified(WindowEvent e) {
+      Object o = e.getSource();
+      if (o instanceof javax.accessibility.Accessible) {
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowMinimize(ac);
+      }
+    }
 
-		public void windowIconified(WindowEvent e) {
-			Object o = e.getSource();
-			if ( o instanceof javax.accessibility.Accessible ) {
-				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
-				AtkWrapper.windowMinimize(ac);
-			}
-		}
+   /**
+    *  windowOpened
+    * @param e A WindowEvent object
+    */
+    public void windowOpened(WindowEvent e) {
+      Object o = e.getSource();
+      if ( o instanceof javax.accessibility.Accessible ) {
+        boolean isToplevel = isToplevel(o);
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowOpen(ac, isToplevel);
+      }
+    }
 
-		public void windowOpened(WindowEvent e) {
-			Object o = e.getSource();
-			if ( o instanceof javax.accessibility.Accessible ) {
-				boolean isToplevel = false;
-				if (o instanceof java.awt.Window ||
-					o instanceof java.awt.Frame ||
-					o instanceof java.awt.Dialog) {
-					isToplevel = true;
-				}
+   /**
+    * windowClosed
+    * @param e A WindowEvent object
+    */
+    public void windowClosed(WindowEvent e) {
+      Object o = e.getSource();
+      if (o instanceof javax.accessibility.Accessible) {
+        boolean isToplevel = isToplevel(o);
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowClose(ac, isToplevel);
+      }
+    }
 
-				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
-				AtkWrapper.windowOpen(ac, isToplevel);
-			}
-		}
+    public void windowClosing(WindowEvent e) {
+    }
 
-		public void windowClosed(WindowEvent e) {
-			Object o = e.getSource();
-			if ( o instanceof javax.accessibility.Accessible ) {
-				boolean isToplevel = false;
-				if (o instanceof java.awt.Window ||
-					o instanceof java.awt.Frame ||
-					o instanceof java.awt.Dialog) {
-					isToplevel = true;
-				}
+    public void windowGainedFocus(WindowEvent e) {
+    }
 
-				AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
-				AtkWrapper.windowClose(ac, isToplevel);
-			}
-		}
+    public void windowLostFocus(WindowEvent e) {
+    }
+  }; // Close WindowAdapter brace
 
-		public void windowClosing(WindowEvent e) {
-		}
-
-		public void windowGainedFocus(WindowEvent e) {
-		}
-
-		public void windowLostFocus(WindowEvent e) {
-		}
-	};
+ /**
+  * isToplevel
+  * @param o an instance
+  * @return true if instance is of a window, frame or dialogue object
+  *         false otherwise.
+  */
+  public static boolean isToplevel(Object o) {
+    boolean isToplevel = false;
+    if (o instanceof java.awt.Window ||
+        o instanceof java.awt.Frame ||
+        o instanceof java.awt.Dialog) {
+      isToplevel = true;
+    }
+    return isToplevel;
+  }
 
 	final AWTEventListener globalListener = new AWTEventListener() {
 		private boolean firstEvent = true;
