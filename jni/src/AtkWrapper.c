@@ -1163,8 +1163,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentAdded(JNIEnv *jniEnv,
 {
   lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   CallbackPara *para = alloc_callback_para(lock);
- // gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock); FIXME
- // gdk_threads_init();
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(component_added_handler, para);
 }
 
@@ -1217,8 +1217,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(JNIEnv *jniEnv,
 {
   lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   CallbackPara *para = alloc_callback_para(lock);
- // gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock); //FIXME
- // gdk_threads_init();
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
   g_idle_add(component_removed_handler, para);
 }
 
@@ -1302,7 +1302,7 @@ key_dispatch_handler (gpointer p)
   jfieldID jfidTimestamp = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "timestamp", "I");
   event->timestamp = (guint32)(*jniEnv)->GetIntField(jniEnv, jAtkKeyEvent, jfidTimestamp);
 
-  gboolean b = jaw_util_dispatch_key_event (event); //FIXME
+  gboolean b = jaw_util_dispatch_key_event (event);
   if(jaw_debug)
     printf("key_dispatch_result b = %d\n ", b);
   if (b) {
