@@ -273,8 +273,9 @@ jaw_text_get_text_after_offset (AtkText *text,
 
 static gchar*
 jaw_text_get_text_at_offset (AtkText *text,
-		gint offset, AtkTextBoundary boundary_type,
-		gint *start_offset, gint *end_offset)
+                             gint offset,
+                             AtkTextBoundary boundary_type,
+                             gint *start_offset, gint *end_offset)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
@@ -425,7 +426,7 @@ jaw_text_get_character_extents (AtkText *text,
   }
 
   jaw_util_get_rect_info(jniEnv, jrect, x, y, width, height);
-  }
+}
 
 static gint
 jaw_text_get_character_count (AtkText *text)
