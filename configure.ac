@@ -62,7 +62,7 @@ AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 
 # java wrapper
 
-JAVA_REQUIRED=1.5
+JAVA_REQUIRED=1.6
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
