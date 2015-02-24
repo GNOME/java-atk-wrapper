@@ -528,7 +528,7 @@ public class AtkWrapper {
         if (newValue == javax.accessibility.AccessibleState.ARMED) {
           if (role != null) {
             if (role == javax.accessibility.AccessibleRole.MENU_ITEM ||
-              role == javax.accessibility.AccessibleRole.MENU) {
+                role == javax.accessibility.AccessibleRole.MENU) {
               dispatchFocusEvent(o);
             } else if (parent_role != null &&
               (parent_role == javax.accessibility.AccessibleRole.MENU &&
