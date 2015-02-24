@@ -540,8 +540,8 @@ public class AtkWrapper {
             }
           }
         } else if (newValue == javax.accessibility.AccessibleState.SELECTED &&
-            o instanceof AccessibleContext &&
-            role == javax.accessibility.AccessibleRole.MENU) {
+                               o instanceof AccessibleContext &&
+                               role == javax.accessibility.AccessibleRole.MENU) {
           dispatchFocusEvent(o);
         } else if (newValue == javax.accessibility.AccessibleState.FOCUSED) {
           dispatchFocusEvent(o);
