@@ -28,7 +28,6 @@ import javax.accessibility.*;
 import java.awt.Toolkit;
 
 public class AtkWrapper {
-  public native void AtkWrapper();
   static boolean accessibilityEnabled = false;
   static {
     try {
@@ -450,6 +449,7 @@ public class AtkWrapper {
         } else if( propertyName.equals(AccessibleContext.ACCESSIBLE_SELECTION_PROPERTY) ) {
           boolean isTextEvent = false;
           AccessibleRole role = ac.getAccessibleRole();
+          System.out.println(role);
           if ((role == AccessibleRole.TEXT) ||
               role.toDisplayString(java.util.Locale.US).equalsIgnoreCase("paragraph")) {
             isTextEvent = true;
@@ -524,31 +524,14 @@ public class AtkWrapper {
         if (parent != null) {
           parent_role = parent.getAccessibleContext().getAccessibleRole();
         }
-
-        if (newValue == javax.accessibility.AccessibleState.ARMED) {
-          if (role != null) {
-            if (role == javax.accessibility.AccessibleRole.MENU_ITEM ||
-                role == javax.accessibility.AccessibleRole.MENU) {
-              dispatchFocusEvent(o);
-            } else if (parent_role != null &&
-              (parent_role == javax.accessibility.AccessibleRole.MENU &&
-               (role == javax.accessibility.AccessibleRole.CHECK_BOX ||
-                role == javax.accessibility.AccessibleRole.RADIO_BUTTON ||
-                role == javax.accessibility.AccessibleRole.PUSH_BUTTON ||
-                role == javax.accessibility.AccessibleRole.TOGGLE_BUTTON))) {
-              dispatchFocusEvent(o);
-            }
+        if (role != null) {
+          if (newValue == javax.accessibility.AccessibleState.FOCUSED ||
+              newValue == javax.accessibility.AccessibleState.SELECTED) {
+            dispatchFocusEvent(o);
           }
-        } else if (newValue == javax.accessibility.AccessibleState.SELECTED &&
-                               o instanceof AccessibleContext &&
-                               role == javax.accessibility.AccessibleRole.MENU) {
-          dispatchFocusEvent(o);
-        } else if (newValue == javax.accessibility.AccessibleState.FOCUSED) {
-          dispatchFocusEvent(o);
         }
-
         AccessibleState state;
-        boolean value;
+        boolean value = false;
         if (newValue != null) {
           state = (AccessibleState)newValue;
           value = true;
