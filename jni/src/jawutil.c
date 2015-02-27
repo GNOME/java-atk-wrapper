@@ -490,15 +490,6 @@ jaw_util_get_jni_env(void)
   return NULL;
 }
 
-
-void
-jaw_util_detach(void)
-{
-  JavaVM* jvm;
-  jvm = cachedJVM;
-  (*jvm)->DetachCurrentThread(jvm);
-}
-
 static jobject
 jaw_util_get_java_acc_role (JNIEnv *jniEnv, const gchar* roleName)
 {

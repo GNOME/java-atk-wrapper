@@ -792,8 +792,7 @@ signal_emit_handler (gpointer p)
   if (jaw_impl == NULL)
   {
     g_warning("\n *** signal_emit_handler: jaw_impl == NULL *** \n");
-    //free_callback_para(para);
-    jaw_util_detach();
+    free_callback_para(para);
     return FALSE;
   }
 
@@ -1032,7 +1031,6 @@ signal_emit_handler (gpointer p)
     break;
   }
   free_callback_para(para);
-  jaw_util_detach();
   return FALSE;
 }
 
@@ -1294,7 +1292,7 @@ key_dispatch_handler (gpointer p)
   jfieldID jfidString = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "string", "Ljava/lang/String;");
   jstring jstr = (jstring)(*jniEnv)->GetObjectField(jniEnv, jAtkKeyEvent, jfidString);
   event->length = (gint)(*jniEnv)->GetStringLength(jniEnv, jstr);
-  event->string = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv, jstr, 0);
+  event->string = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv, jstr, NULL);
 
   // keycode
   jfieldID jfidKeycode = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "keycode", "I");

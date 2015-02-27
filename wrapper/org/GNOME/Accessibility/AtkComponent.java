@@ -78,8 +78,11 @@ public class AtkComponent {
     return acc_component.getLocation();
   }
 
+  public Dimension get_size () {
+    return acc_component.getSize();
+  }
+
   public Rectangle set_extents(int x, int y, int width, int height, int coord_type) {
-  	
     this.width  = (int)acc_component.getSize().getWidth();
     this.height = (int)acc_component.getSize().getHeight();
 
@@ -90,12 +93,7 @@ public class AtkComponent {
       this.x -= p.x;
       this.y -= p.y;
     }
-    acc_component.setBounds(new Rectangle(x, y, width, height));
     return new Rectangle(x, y, width, height);
-  }
-
-  public Rectangle get_extents() {
-    return acc_component.getBounds();
   }
 
   public int get_layer () {
