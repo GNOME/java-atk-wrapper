@@ -263,19 +263,15 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
           printf("\n *** JAW_OBJECT == NULL *** jaw_impl_get_instance: %s \n",
                  (char *) (ATK_OBJECT(jaw_obj)));
         }
-      } else {
-        printf("\n *** JAW_IMPL == NULL ***  jaw_impl_get_instance: %s \n",
-               (char *) ATK_OBJECT(jaw_impl));
       }
+    } else {
+      printf("\n *** jaw_impl_get_instance: global_ac == NULL ***");
     }
   }
   if (jaw_impl != NULL)
-  {
     return jaw_impl;
-  }
-  else {
+  else
     printf("\n *** JAW_IMPL == NULL *** jaw_impl_get_instance\n");
-  }
   return NULL;
 }
 
