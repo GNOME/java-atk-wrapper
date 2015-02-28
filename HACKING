@@ -28,33 +28,12 @@ fully tested yet.
 Methods Not Yet Fully Implemented
 ---------------------------------
 
-Action Interface:
-  get_localized_name
-  set_description
-
-Component Interface:
-  get_mdi_zorder
-  get_alpha
-
 Document Interface (not yet implemented):
-  get_document_type
-  get_document
-  get_attribute_value
-  get_attribute_value
-  get_attributes
-  get_locale
   get_current_page_number
   get_page_count
 
-EditableText:
-  set_run_attributes
-
 HyperlinkImpl:
 TODO Currently Not fully documented by ATK
-
-Image:
-  get_image_locale
-  set_image_description
 
 # NOTE: Window interface signals currently seems to be being handled in jawobject.c
 Object base class:
@@ -77,12 +56,6 @@ Object base class:
   get_object_locale
   get_localized_name
   for_name
-
-StreamableContent (not yet implemented and may not have java equivalent):
-  get_n_mime_types
-  content_get_mime_type
-  content_get_stream
-  content_get_uri
 
 Table:
   set_caption
@@ -109,12 +82,6 @@ Text:
   attribute_get_name
   attribute_for_name
   attribute_get_value
-
-Value:
-  get_range
-  get_sub_ranges
-  get_value_and_text
-  set_value
 
 Deprecated Methods Which Are Implemented
 ----------------------------------------
