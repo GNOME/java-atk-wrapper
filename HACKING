@@ -102,3 +102,19 @@ Value Interface:
   set_current_value      -   use set_value instead
   get_minimum_increment  -   use get_increment instead
 
+Conventions for Writing Java ATK Wrapper Code
+---------------------------------------------
+
+Spaces instead of tabs.
+Two spaces per indent.
+
+JNI error messages are in the form:
+  g_warning("\n *** method calling instance: instance == NULL *** \n");
+
+Other Things to Keep in Mind
+----------------------------
+
+The jint object is mapped to C's long which is always at least 32 bits), instead
+of of C's int (which could be 16 bits). The resource for glib types can be
+found at <https://developer.gnome.org/glib/stable/glib-Basic-Types.html>
+
