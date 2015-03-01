@@ -307,6 +307,8 @@ window_open_handler (gpointer p)
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
+  if (jaw_impl == NULL)
+    g_warning("\n *** window_open_handler: jaw_impl == NULL *** \n");
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
 
   if (!g_strcmp0(atk_role_get_name(atk_object_get_role(atk_obj)),
@@ -756,7 +758,6 @@ get_int_value (JNIEnv *jniEnv, jobject o)
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classInteger, "intValue", "()I");
   return (gint)(*jniEnv)->CallIntMethod(jniEnv, o, jmid);
 }
-
 static gint64
 get_int64_value (JNIEnv *jniEnv, jobject o)
 {
@@ -838,6 +839,12 @@ signal_emit_handler (gpointer p)
                                        (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
       jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
       JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
+      if (child_impl == NULL)
+      {
+        g_warning("\n *** signal_emit_handler: child_impl == NULL *** \n");
+        free_callback_para(para);
+        return FALSE;
+      }
       if (!child_impl)
       {
         break;
@@ -871,7 +878,12 @@ signal_emit_handler (gpointer p)
       {
       jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0);
       JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
-
+      if (child_impl == NULL)
+      {
+        g_warning("\n *** signal_emit_handler: child_impl == NULL *** \n");
+        free_callback_para(para);
+        return FALSE;
+      }
       if (!child_impl)
       {
         break;
@@ -1199,12 +1211,8 @@ component_removed_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP) {
-    atk_object_notify_state_change(atk_obj,
-                                   ATK_STATE_SHOWING,
-                                   0);
-  }
-
+  if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
+    atk_object_notify_state_change(atk_obj, ATK_STATE_SHOWING, FALSE);
   free_callback_para(para);
 
   return FALSE;
@@ -1292,7 +1300,7 @@ key_dispatch_handler (gpointer p)
   jfieldID jfidString = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "string", "Ljava/lang/String;");
   jstring jstr = (jstring)(*jniEnv)->GetObjectField(jniEnv, jAtkKeyEvent, jfidString);
   event->length = (gint)(*jniEnv)->GetStringLength(jniEnv, jstr);
-  event->string = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv, jstr, NULL);
+  event->string = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv, jstr, 0);
 
   // keycode
   jfieldID jfidKeycode = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "keycode", "I");
