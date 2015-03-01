@@ -246,8 +246,8 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
     jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, ac);
     if (global_ac != NULL)
     {
-      guint tflag = jaw_util_get_tflag_from_jobj(jniEnv, global_ac);
-      jaw_impl = g_object_new( JAW_TYPE_IMPL(tflag), NULL );
+      gint tflag = jaw_util_get_tflag_from_jobj(jniEnv, global_ac);
+      jaw_impl = g_object_new(JAW_TYPE_IMPL(tflag), NULL );
       if (jaw_impl != NULL)
       {
         JawObject *jaw_obj = JAW_OBJECT(jaw_impl);
@@ -263,17 +263,15 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
           g_warning("\n *** jaw_impl_get_instance: jaw_obj == NULL *** \n");
           return NULL;
         }
+      } else {
+        g_warning("\n *** jaw_impl_get_instance: jaw_impl == NULL *** \n");
       }
     } else {
       g_warning("\n *** jaw_impl_get_instance: global_ac == NULL *** \n");
       return NULL;
     }
   }
-  if (jaw_impl != NULL)
-    return jaw_impl;
-  else
-    g_warning("\n *** jaw_impl_get_instance: jaw_impl == NULL *** \n");
-  return NULL;
+  return jaw_impl;
 }
 
 JawImpl*
