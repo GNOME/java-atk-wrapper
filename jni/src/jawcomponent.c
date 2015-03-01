@@ -260,7 +260,7 @@ jaw_component_set_extents (AtkComponent *component,
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAtkComponent,
                                           "set_extents",
-                                          "()Ljava/awt/Rectangle;");
+                                          "(IIII)Ljava/awt/Rectangle;");
 
   jobject jcomponent = (*jniEnv)->CallObjectMethod(jniEnv,
                                                    atk_component,
