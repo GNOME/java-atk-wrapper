@@ -1202,7 +1202,7 @@ component_removed_handler (gpointer p)
     return FALSE;
   }
 
-  JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
   {
     g_warning("\n *** component_removed_handler: jaw_impl == NULL *** \n");
