@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <atk/atk.h>
 #include <glib.h>
 #include "jawobject.h"
 #include "jawutil.h"
@@ -56,7 +57,7 @@ enum {
 
 static guint jaw_window_signals[TOTAL_SIGNAL] = { 0, };
 
-G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT)
+G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT);
 
 static void
 jaw_object_class_init (JawObjectClass *klass)
@@ -170,11 +171,8 @@ gpointer
 jaw_object_get_interface_data (JawObject *jaw_obj, guint iface)
 {
   JawObjectClass *klass = JAW_OBJECT_GET_CLASS(jaw_obj);
-
   if (klass->get_interface_data)
-  {
     return klass->get_interface_data(jaw_obj, iface);
-  }
 
   return NULL;
 }
@@ -218,18 +216,18 @@ jaw_object_finalize (GObject *gobject)
     (*jniEnv)->ReleaseStringUTFChars(jniEnv,
                                      jaw_obj->jstrDescription,
                                      atk_obj->description);
+
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
     jaw_obj->jstrDescription = NULL;
     atk_obj->description = NULL;
   }
 
-  if (jaw_obj->state_set != NULL)
+  if (G_OBJECT(jaw_obj->state_set) != NULL)
   {
     g_object_unref(G_OBJECT(jaw_obj->state_set));
+    /* Chain up to parent's finalize method */
+    G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
   }
-
-  /* Chain up to parent's finalize method */
-  G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
 }
 
 static const gchar*
@@ -401,7 +399,8 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
     }
   }
 
-  g_object_ref(G_OBJECT(state_set));
+  if (G_OBJECT(state_set) != NULL)
+    g_object_ref(G_OBJECT(state_set));
 
   return state_set;
 }

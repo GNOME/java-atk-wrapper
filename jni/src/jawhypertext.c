@@ -50,7 +50,8 @@ static void
 link_destroy_notify (gpointer p)
 {
 	JawHyperlink* jaw_hyperlink = (JawHyperlink*)p;
-	g_object_unref(G_OBJECT(jaw_hyperlink));
+	if(G_OBJECT(jaw_hyperlink) != NULL)
+		g_object_unref(G_OBJECT(jaw_hyperlink));
 }
 
 gpointer

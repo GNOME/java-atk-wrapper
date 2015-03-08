@@ -135,7 +135,8 @@ jaw_toplevel_ref_child (AtkObject *obj, gint i)
   JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
   AtkObject* child = (AtkObject*)g_list_nth_data(jaw_toplevel->windows, i);
 
-  g_object_ref(G_OBJECT(child));
+  if (G_OBJECT(child) != NULL)
+    g_object_ref(G_OBJECT(child));
 
   return child;
 }
