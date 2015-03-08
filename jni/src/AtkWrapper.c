@@ -871,7 +871,8 @@ signal_emit_handler (gpointer p)
                               "children_changed::remove",
                               child_index,
                               child_impl);
-        g_object_unref(G_OBJECT(atk_obj));
+        if (G_OBJECT(atk_obj) != NULL)
+          g_object_unref(G_OBJECT(atk_obj));
         break;
       }
       case Sig_Object_Active_Descendant_Changed:
@@ -1211,6 +1212,13 @@ component_removed_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
+
+  if (atk_obj == NULL)
+  {
+    g_warning("\n *** component_removed_handler: atk_obj == NULL *** \n");
+    free_callback_para(para);
+    return FALSE;
+  }
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
     atk_object_notify_state_change(atk_obj, ATK_STATE_SHOWING, FALSE);
   free_callback_para(para);
@@ -1250,10 +1258,21 @@ key_dispatch_handler (gpointer p)
   jfieldID jfidType = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "type", "I");
   jint type = (*jniEnv)->GetIntField(jniEnv, jAtkKeyEvent, jfidType);
 
-  jfieldID jfidTypePressed = (*jniEnv)->GetStaticFieldID(jniEnv, classAtkKeyEvent, "ATK_KEY_EVENT_PRESSED", "I");
-  jfieldID jfidTypeReleased = (*jniEnv)->GetStaticFieldID(jniEnv, classAtkKeyEvent, "ATK_KEY_EVENT_RELEASED", "I");
-  jint type_pressed = (*jniEnv)->GetStaticIntField(jniEnv, classAtkKeyEvent, jfidTypePressed);
-  jint type_released = (*jniEnv)->GetStaticIntField(jniEnv, classAtkKeyEvent, jfidTypeReleased);
+  jfieldID jfidTypePressed = (*jniEnv)->GetStaticFieldID(jniEnv,
+                                                         classAtkKeyEvent,
+                                                         "ATK_KEY_EVENT_PRESSED",
+                                                         "I");
+  jfieldID jfidTypeReleased = (*jniEnv)->GetStaticFieldID(jniEnv,
+                                                          classAtkKeyEvent,
+                                                          "ATK_KEY_EVENT_RELEASED",
+                                                          "I");
+
+  jint type_pressed = (*jniEnv)->GetStaticIntField(jniEnv,
+                                                   classAtkKeyEvent,
+                                                   jfidTypePressed);
+  jint type_released = (*jniEnv)->GetStaticIntField(jniEnv,
+                                                    classAtkKeyEvent,
+                                                    jfidTypeReleased);
 
   if (type == type_pressed)
   {
@@ -1314,9 +1333,9 @@ key_dispatch_handler (gpointer p)
   if(jaw_debug)
     printf("key_dispatch_result b = %d\n ", b);
   if (b) {
-    key_dispatch_result = 1;
+    key_dispatch_result = KEY_DISPATCH_CONSUMED;
   } else {
-    key_dispatch_result = 2;
+    key_dispatch_result = KEY_DISPATCH_NOT_CONSUMED;
   }
 
   (*jniEnv)->ReleaseStringUTFChars(jniEnv, jstr, event->string);
@@ -1339,7 +1358,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
 
   if(jaw_debug)
     printf("key_dispatch_result saved = %d\n ", key_dispatch_result);
-  if (key_dispatch_result == 1)
+  if (key_dispatch_result == KEY_DISPATCH_CONSUMED)
   {
     key_consumed = JNI_TRUE;
   } else
@@ -1347,7 +1366,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
     key_consumed = JNI_FALSE;
   }
 
-  key_dispatch_result = 0;
+  key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
+
   return key_consumed;
 }
 
