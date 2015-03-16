@@ -28,6 +28,10 @@
 #include "jawtoplevel.h"
 #include "jawobject.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* AtkUtil */
 static void jaw_util_class_init(JawUtilClass *klass);
 
@@ -311,7 +315,7 @@ guint
 jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
 {
   guint tflag = 0;
-  jmethodID jmid;	
+  jmethodID jmid;
   jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
                                                        "javax/accessibility/AccessibleContext");
   jclass classAccessible = (*jniEnv)->FindClass(jniEnv,
@@ -438,6 +442,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserve)
   if (jvm == NULL)
   {
     g_error("JavaVM pointer was NULL when initializing library");
+    return JNI_ERR;
   }
   cachedJVM = jvm;
   return JNI_VERSION_1_6;
@@ -489,7 +494,6 @@ jaw_util_get_jni_env(void)
     exit(2);
   return NULL;
 }
-
 
 void
 jaw_util_detach(void)
@@ -933,3 +937,6 @@ jaw_util_get_rect_info (JNIEnv *jniEnv,
   (*height) = (gint)(*jniEnv)->GetIntField(jniEnv, jrect, jfidHeight);
 }
 
+#ifdef __cplusplus
+}
+#endif
