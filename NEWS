@@ -1,3 +1,34 @@
+Changes in version 0.32.92
+=========================
+
+Build:
+  Set 1.6 as minimum java version
+
+Miscellanous:
+  JNI: return JNI_ERR if JNI is NULL
+  Wrapper: Don't set bounds in set_extents
+  JNI: Add NULL check before referencing gobjects
+  JNI: Use guint type not gint
+  JNI: Make use of dispatch constants
+  JNI: get_instance with component_removed_handler
+  JNI: get instance in window_deactivate_handler
+  JNI: find instance for object_state_change_handler
+  JNI use IIII for method argument
+  JNI-Wrapper: remove get_size and get_position
+  Wrapper: remove state ARMED condition
+  JNI: fix casting warning
+  Wrapper: Add isTopLevel static method
+
+Maintainership:
+  uncomment gtk_threads functions
+  Wrapper: Add documentation and formatting
+  JNI: format jawutil and jawaction
+  JNI: Use consistent debug messages
+  HACKING: Add some object info and update
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.32.90
 =========================
 

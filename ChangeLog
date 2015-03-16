@@ -1,3 +1,33 @@
+ebcf2ff JNI: return JNI_ERR if JNI is NULL
+f65ebb7 JNI: Format jawaction
+340d6a5 Wrapper: Don't set bounds in set_extents
+6fce7ec JNI: Add NULL check before referencing gobjects
+da3b29a JNI: Use guint type not gint
+36b3a4a JNI: Make use of dispatch constants
+86f5eb2 JNI: get_instance with component_removed_handler
+4061ce5 JNI: get instance in window_deactivate_handler
+fd00cca JNI find instance for object_state_change_handler
+01abf43 HACKING: Add some convention and style info
+74b7d96 JNI: organise some debug
+b4f4b5e JNI: Use consistent debug messages
+88ee903 JNI use IIII for method argument
+5f7d020 HACKING: remove unimplemented deprecated functions
+08c4311 JNI: implement DetachCurrentThread function
+399eb9b JNI-Wrapper: remove get_size and get_position
+0fc6221 Wrapper: remove state ARMED condition
+443947d Revert "Wrapper: remove state ARMED condition"
+82d3351 Wrapper: remove state ARMED condition
+795a04e Wrapper: minor formatting
+3b71e11 Wrapper: Minor formatting improvement
+d625c15 Build: Set 1.6 as minimum java version
+bca842b HACKING: describe state of object class
+f4db2a6 JNI: improve formatting of jawtext
+1cfd5ba JNI: format jawutil style
+2d20481 JNI: fix casting warning
+39a672b uncomment gtk_threads functions
+372a884 Wrapper: Add documentation and formatting
+50e2b59 Wrapper: Add isTopLevel static method
+cbdd3d2 Release 0.32.90
 e5c1782 JNI: get name before checking for COMBO BOX
 5ee3b8b update copyright
 67f7912 dispatch radio, push toggle button events
