@@ -28,7 +28,8 @@ public class AtkComponent {
 
   AccessibleContext ac;
   AccessibleComponent acc_component;
-  private int x, y;
+  private int x, y, width, height;
+  private Rectangle extents;
 
   public AtkComponent (AccessibleContext ac) {
     super();
@@ -70,11 +71,30 @@ public class AtkComponent {
     return true;
   }
 
-  public void set_extents(Rectangle r) {
-    acc_component.setBounds(r);
+  public Point get_position (int coord_type) {
+    if (coord_type == AtkCoordType.SCREEN)
+      return acc_component.getLocationOnScreen();
+
+    return acc_component.getLocation();
+  }
+
+  public Rectangle set_extents(int x, int y, int width, int height, int coord_type) {
+    this.width  = (int)acc_component.getSize().getWidth();
+    this.height = (int)acc_component.getSize().getHeight();
+
+    if (coord_type == AtkCoordType.SCREEN) {
+      Point p = acc_component.getLocationOnScreen();
+    } else {
+      Point p = acc_component.getLocation();
+      this.x -= p.x;
+      this.y -= p.y;
+    }
+
+    return new Rectangle(x, y, width, height);
   }
 
   public Rectangle get_extents() {
+    System.out.println(acc_component.getBounds());
     return acc_component.getBounds();
   }
 

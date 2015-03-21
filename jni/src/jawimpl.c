@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +21,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <glib.h>
+#include <glib-object.h>
+#include <glib/gprintf.h>
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
+#include "jawobject.h"
 
 static void jaw_impl_class_init (JawImplClass *klass);
 //static void			jaw_impl_init				(JawImpl		*impl);
@@ -82,23 +86,9 @@ static gpointer jaw_impl_parent_class = NULL;
 
 static GHashTable *typeTable = NULL;
 static GHashTable *objectTable = NULL;
-static GMutex *objectTableMutex = NULL;
-
-typedef struct {
-  GMutex jg_mutex;
-} JGMutex;
-
-JGMutex *jmutex;
-
-void
-jaw_impl_init_mutex ()
-{
-  jmutex = g_new(JGMutex, 1);
-  g_mutex_init (&jmutex->jg_mutex);
-}
 
 static void
-object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl * jaw_impl)
+object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
 {
   jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
                                                        "javax/accessibility/AccessibleContext");
@@ -107,10 +97,7 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl * jaw_impl)
                                           "hashCode",
                                           "()I");
   gint hash_key = (gint)(*jniEnv)->CallIntMethod(jniEnv, ac, jmid);
-
-  g_mutex_lock(objectTableMutex);
-  g_hash_table_insert(objectTable, (gpointer)&hash_key, (gpointer)jaw_impl);
-  g_mutex_unlock(objectTableMutex);
+  g_hash_table_insert(objectTable, (gpointer)&hash_key, (gpointer)&jaw_impl);
 }
 
 static JawImpl*
@@ -124,11 +111,10 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
                                           "()I" );
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
   gpointer value = NULL;
+  if (objectTable==NULL)
+    return NULL;
 
-  g_mutex_lock(objectTableMutex);
   value = g_hash_table_lookup(objectTable, (gpointer)&hash_key);
-  g_mutex_unlock(objectTableMutex);
-
   return (JawImpl*)value;
 }
 
@@ -143,9 +129,7 @@ object_table_remove(JNIEnv *jniEnv, jobject ac)
                                           "()I" );
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
 
-  g_mutex_lock(objectTableMutex);
-  g_hash_table_remove( objectTable, (gpointer)&hash_key );
-  g_mutex_unlock(objectTableMutex);
+  g_hash_table_remove(objectTable, (gpointer)&hash_key );
 }
 
 static void
@@ -251,32 +235,47 @@ JawImpl*
 jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
+  jniEnv = jaw_util_get_jni_env();
 
-  g_mutex_lock(objectTableMutex);
-  if (objectTable == NULL) 
-  {
-    objectTable = g_hash_table_new ( NULL, NULL );
-  }
-  g_mutex_unlock(objectTableMutex);
+  if (jniEnv == NULL)
+    return NULL;
 
-  jaw_impl = object_table_lookup( jniEnv, ac );
+  if (objectTable == NULL)
+    objectTable = g_hash_table_new (NULL, NULL);
+
+  jaw_impl = object_table_lookup(jniEnv, ac);
 
   if (jaw_impl == NULL)
   {
     jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, ac);
-    guint tflag = jaw_util_get_tflag_from_jobj(jniEnv, global_ac);
-    jaw_impl = g_object_new( JAW_TYPE_IMPL(tflag), NULL );
-    JawObject *jaw_obj = JAW_OBJECT(jaw_impl);
-    jaw_obj->acc_context = global_ac;
-    jaw_obj->storedData = g_hash_table_new(g_str_hash, g_str_equal);
-    aggregate_interface(jniEnv, jaw_obj, tflag);
+    if (global_ac != NULL)
+    {
+      guint tflag = jaw_util_get_tflag_from_jobj(jniEnv, global_ac);
+      jaw_impl = (JawImpl*)g_object_new(JAW_TYPE_IMPL(tflag), NULL);
+      if (jaw_impl != NULL)
+      {
+        JawObject *jaw_obj = JAW_OBJECT(jaw_impl);
 
-    atk_object_initialize( ATK_OBJECT(jaw_impl), NULL );
-
-    object_table_insert( jniEnv, global_ac, jaw_impl);
+        if (jaw_obj != NULL)
+        {
+          jaw_obj->acc_context = global_ac;
+          jaw_obj->storedData = g_hash_table_new(g_str_hash, g_str_equal);
+          aggregate_interface(jniEnv, jaw_obj, tflag);
+          atk_object_initialize(ATK_OBJECT(jaw_impl), NULL);
+          object_table_insert(jniEnv, global_ac, jaw_impl);
+        } else {
+          g_warning("\n *** jaw_impl_get_instance: jaw_obj == NULL *** \n");
+          return NULL;
+        }
+      } else {
+        g_warning("\n *** jaw_impl_get_instance: jaw_impl == NULL *** \n");
+      }
+    } else {
+      g_warning("\n *** jaw_impl_get_instance: global_ac == NULL *** \n");
+      return NULL;
+    }
   }
-
-	return jaw_impl;
+  return jaw_impl;
 }
 
 JawImpl*
@@ -284,15 +283,12 @@ jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
 
-  g_mutex_lock(objectTableMutex);
-  if (objectTable == NULL)
+  jaw_impl = object_table_lookup(jniEnv, ac);
+  if (jaw_impl == NULL)
   {
-    g_mutex_unlock(objectTableMutex);
+    g_warning("\n *** jaw_impl_find_instance: jaw_impl == NULL *** \n");
     return NULL;
   }
-  g_mutex_unlock(objectTableMutex);
-
-  jaw_impl = object_table_lookup( jniEnv, ac );
 
   return jaw_impl;
 }
@@ -401,49 +397,31 @@ jaw_impl_get_type (guint tflag)
     type = g_type_register_static(JAW_TYPE_OBJECT, className, &tinfo, 0);
 
     if (tflag & INTERFACE_ACTION)
-    {
       g_type_add_interface_static (type, ATK_TYPE_ACTION, &atk_action_info);
-    }
 
     if (tflag & INTERFACE_COMPONENT)
-    {
       g_type_add_interface_static (type, ATK_TYPE_COMPONENT,&atk_component_info);
-    }
 
     if (tflag & INTERFACE_TEXT)
-    {
       g_type_add_interface_static (type, ATK_TYPE_TEXT,&atk_text_info);
-    }
 
     if (tflag & INTERFACE_EDITABLE_TEXT)
-    {
-     g_type_add_interface_static (type, ATK_TYPE_EDITABLE_TEXT, &atk_editable_text_info);
-    }
+      g_type_add_interface_static (type, ATK_TYPE_EDITABLE_TEXT, &atk_editable_text_info);
 
     if (tflag & INTERFACE_HYPERTEXT)
-    {
       g_type_add_interface_static (type, ATK_TYPE_HYPERTEXT,&atk_hypertext_info);
-    }
 
     if (tflag & INTERFACE_IMAGE)
-    {
       g_type_add_interface_static (type, ATK_TYPE_IMAGE, &atk_image_info);
-    }
 
     if (tflag & INTERFACE_SELECTION)
-    {
       g_type_add_interface_static (type, ATK_TYPE_SELECTION, &atk_selection_info);
-    }
 
     if (tflag & INTERFACE_VALUE)
-    {
       g_type_add_interface_static (type, ATK_TYPE_VALUE, &atk_value_info);
-    }
 
     if (tflag & INTERFACE_TABLE)
-    {
       g_type_add_interface_static (type, ATK_TYPE_TABLE, &atk_table_info);
-    }
 
     g_hash_table_insert(typeTable, (gpointer)&tflag, (gpointer)type);
   }
@@ -510,10 +488,11 @@ jaw_impl_finalize(GObject *gobject)
 
     g_hash_table_iter_remove(&iter);
   }
-  g_hash_table_unref(jaw_impl->ifaceTable);
-
-  g_hash_table_destroy(jaw_obj->storedData);
-
+  if (jaw_impl->ifaceTable != NULL)
+  {
+    g_hash_table_unref(jaw_impl->ifaceTable);
+    g_hash_table_destroy(jaw_obj->storedData);
+  }
   /* Chain up to parent's finalize */
   G_OBJECT_CLASS(jaw_impl_parent_class)->finalize(gobject);
 }
@@ -523,17 +502,13 @@ jaw_impl_get_interface_data (JawObject *jaw_obj, guint iface)
 {
   JawImpl *jaw_impl = (JawImpl*)jaw_obj;
 
-  if (jaw_impl == NULL || jaw_impl->ifaceTable == NULL)
-  {
+  if (jaw_impl->ifaceTable == NULL || jaw_impl == NULL)
     return NULL;
-  }
 
   JawInterfaceInfo *info = g_hash_table_lookup(jaw_impl->ifaceTable, (gpointer)&iface);
 
-  if (info)
-  {
+  if (info != NULL)
     return info->data;
-  }
 
   return NULL;
 }
@@ -621,7 +596,8 @@ jaw_impl_ref_child (AtkObject *atk_obj, gint i)
   jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
 
   AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
-  g_object_ref (G_OBJECT(obj));
+  if (G_OBJECT(obj) != NULL)
+    g_object_ref(G_OBJECT(obj));
 
   return obj;
 }
@@ -657,8 +633,7 @@ is_java_relation_key (JNIEnv *jniEnv,jstring jKey, const gchar* strKey)
 }
 
 static AtkRelationType
-get_atk_relation_type_from_java_key (JNIEnv *jniEnv,
-				jstring jrel_key)
+get_atk_relation_type_from_java_key (JNIEnv *jniEnv, jstring jrel_key)
 {
   if ( is_java_relation_key(jniEnv, jrel_key, "CHILD_NODE_OF") )
   {
@@ -716,11 +691,10 @@ static AtkRelationSet*
 jaw_impl_ref_relation_set (AtkObject *atk_obj)
 {
   if (atk_obj->relation_set)
-  {
     g_object_unref(G_OBJECT(atk_obj->relation_set));
-  }
-
   atk_obj->relation_set = atk_relation_set_new();
+  if(atk_obj == NULL)
+    return NULL;
 
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   jobject ac = jaw_obj->acc_context;
@@ -735,7 +709,7 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
   jobject jrel_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
 
   jclass classAccessibleRelationSet = (*jniEnv)->FindClass( jniEnv,
-                                                           "javax/accessibility/AccessibleRelationSet" );
+                                                           "javax/accessibility/AccessibleRelationSet");
   jmid = (*jniEnv)->GetMethodID(jniEnv,
                                 classAccessibleRelationSet,
                                 "toArray",
@@ -747,21 +721,20 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
   for (i = 0; i < jarr_size; i++)
   {
     jobject jrel = (*jniEnv)->GetObjectArrayElement(jniEnv, jrel_arr, i);
-    jclass classAccessibleRelation = (*jniEnv)->FindClass( jniEnv,
-                                                           "javax/accessibility/AccessibleRelation" );
+    jclass classAccessibleRelation = (*jniEnv)->FindClass(jniEnv,
+                                                          "javax/accessibility/AccessibleRelation");
     jmid = (*jniEnv)->GetMethodID(jniEnv,
                                   classAccessibleRelation,
                                   "getKey",
-                                  "()Ljava/lang/String;" );
+                                  "()Ljava/lang/String;");
     jstring jrel_key = (*jniEnv)->CallObjectMethod( jniEnv, jrel, jmid );
-
     AtkRelationType rel_type = get_atk_relation_type_from_java_key(jniEnv, jrel_key);
 
     jmid = (*jniEnv)->GetMethodID(jniEnv,
                                   classAccessibleRelation,
                                   "getTarget",
                                   "()[Ljava/lang/Object;");
-    jobjectArray jtarget_arr = (*jniEnv)->CallObjectMethod( jniEnv, jrel, jmid );
+    jobjectArray jtarget_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel, jmid);
     jsize jtarget_size = (*jniEnv)->GetArrayLength(jniEnv, jtarget_arr);
 
     jsize j;
@@ -769,22 +742,26 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
     {
       jobject jtarget = (*jniEnv)->GetObjectArrayElement(jniEnv, jtarget_arr, j);
       jclass classAccessible = (*jniEnv)->FindClass( jniEnv,
-                                                    "javax/accessibility/Accessible" );
+                                                    "javax/accessibility/Accessible");
       if ((*jniEnv)->IsInstanceOf(jniEnv, jtarget, classAccessible))
       {
         jmid = (*jniEnv)->GetMethodID(jniEnv,
                                       classAccessible,
                                       "getAccessibleContext",
                                       "()Ljavax/accessibility/AccessibleContext;");
-        jobject target_ac = (*jniEnv)->CallObjectMethod( jniEnv, jtarget, jmid );
+        jobject target_ac = (*jniEnv)->CallObjectMethod(jniEnv, jtarget, jmid);
 
-        AtkObject *target_obj = jaw_impl_get_instance( jniEnv, target_ac );
-        atk_object_add_relationship(atk_obj, rel_type, target_obj);
+        JawImpl *target_obj = jaw_impl_get_instance(jniEnv, target_ac);
+        if(target_obj == NULL)
+          return NULL;
+        atk_object_add_relationship(atk_obj, rel_type, (AtkObject*) target_obj);
       }
     }
   }
-
-  g_object_ref (atk_obj->relation_set);
+  if(atk_obj->relation_set == NULL)
+    return NULL;
+  if (G_OBJECT(atk_obj->relation_set) != NULL)
+    g_object_ref (atk_obj->relation_set);
 
   return atk_obj->relation_set;
 }

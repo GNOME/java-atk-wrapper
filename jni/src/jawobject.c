@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <atk/atk.h>
 #include <glib.h>
 #include "jawobject.h"
 #include "jawutil.h"
@@ -28,8 +30,8 @@ static void jaw_object_dispose(GObject *gobject);
 static void jaw_object_finalize(GObject *gobject);
 
 /* AtkObject */
-static G_CONST_RETURN gchar* jaw_object_get_name(AtkObject *atk_obj);
-static G_CONST_RETURN gchar* jaw_object_get_description(AtkObject *atk_obj);
+static const gchar* jaw_object_get_name(AtkObject *atk_obj);
+static const gchar* jaw_object_get_description(AtkObject *atk_obj);
 
 static gint jaw_object_get_n_children(AtkObject *atk_obj);
 
@@ -37,6 +39,8 @@ static gint jaw_object_get_index_in_parent(AtkObject *atk_obj);
 
 static AtkRole jaw_object_get_role(AtkObject *atk_obj);
 static AtkStateSet* jaw_object_ref_state_set(AtkObject *atk_obj);
+
+static gpointer parent_class = NULL;
 
 enum {
   ACTIVATE,
@@ -53,7 +57,7 @@ enum {
 
 static guint jaw_window_signals[TOTAL_SIGNAL] = { 0, };
 
-G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT)
+G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT);
 
 static void
 jaw_object_class_init (JawObjectClass *klass)
@@ -63,6 +67,8 @@ jaw_object_class_init (JawObjectClass *klass)
   gobject_class->finalize = jaw_object_finalize;
 
   AtkObjectClass *atk_class = ATK_OBJECT_CLASS (klass);
+  parent_class = g_type_class_peek_parent (klass);
+
   atk_class->get_name = jaw_object_get_name;
   atk_class->get_description = jaw_object_get_description;
   atk_class->get_n_children = jaw_object_get_n_children;
@@ -165,11 +171,8 @@ gpointer
 jaw_object_get_interface_data (JawObject *jaw_obj, guint iface)
 {
   JawObjectClass *klass = JAW_OBJECT_GET_CLASS(jaw_obj);
-
   if (klass->get_interface_data)
-  {
     return klass->get_interface_data(jaw_obj, iface);
-  }
 
   return NULL;
 }
@@ -213,29 +216,30 @@ jaw_object_finalize (GObject *gobject)
     (*jniEnv)->ReleaseStringUTFChars(jniEnv,
                                      jaw_obj->jstrDescription,
                                      atk_obj->description);
+
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
     jaw_obj->jstrDescription = NULL;
     atk_obj->description = NULL;
   }
 
-  if (jaw_obj->state_set != NULL)
+  if (G_OBJECT(jaw_obj->state_set) != NULL)
   {
     g_object_unref(G_OBJECT(jaw_obj->state_set));
+    /* Chain up to parent's finalize method */
+    G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
   }
-
-  /* Chain up to parent's finalize method */
-  G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_object_get_name (AtkObject *atk_obj)
 {
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   jobject ac = jaw_obj->acc_context;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
-  if (atk_object_get_role(atk_obj) ==
-      ATK_ROLE_COMBO_BOX &&
+  atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
+
+  if (atk_object_get_role(atk_obj) == ATK_ROLE_COMBO_BOX &&
       atk_object_get_n_accessible_children(atk_obj) == 1)
   {
     AtkSelection *selection = ATK_SELECTION(atk_obj);
@@ -274,7 +278,7 @@ jaw_object_get_name (AtkObject *atk_obj)
   return atk_obj->name;
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 jaw_object_get_description (AtkObject *atk_obj)
 {
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
@@ -395,7 +399,8 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
     }
   }
 
-  g_object_ref(G_OBJECT(state_set));
+  if (G_OBJECT(state_set) != NULL)
+    g_object_ref(G_OBJECT(state_set));
 
   return state_set;
 }

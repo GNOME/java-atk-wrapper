@@ -1,3 +1,99 @@
+ebcf2ff JNI: return JNI_ERR if JNI is NULL
+f65ebb7 JNI: Format jawaction
+340d6a5 Wrapper: Don't set bounds in set_extents
+6fce7ec JNI: Add NULL check before referencing gobjects
+da3b29a JNI: Use guint type not gint
+36b3a4a JNI: Make use of dispatch constants
+86f5eb2 JNI: get_instance with component_removed_handler
+4061ce5 JNI: get instance in window_deactivate_handler
+fd00cca JNI find instance for object_state_change_handler
+01abf43 HACKING: Add some convention and style info
+74b7d96 JNI: organise some debug
+b4f4b5e JNI: Use consistent debug messages
+88ee903 JNI use IIII for method argument
+5f7d020 HACKING: remove unimplemented deprecated functions
+08c4311 JNI: implement DetachCurrentThread function
+399eb9b JNI-Wrapper: remove get_size and get_position
+0fc6221 Wrapper: remove state ARMED condition
+443947d Revert "Wrapper: remove state ARMED condition"
+82d3351 Wrapper: remove state ARMED condition
+795a04e Wrapper: minor formatting
+3b71e11 Wrapper: Minor formatting improvement
+d625c15 Build: Set 1.6 as minimum java version
+bca842b HACKING: describe state of object class
+f4db2a6 JNI: improve formatting of jawtext
+1cfd5ba JNI: format jawutil style
+2d20481 JNI: fix casting warning
+39a672b uncomment gtk_threads functions
+372a884 Wrapper: Add documentation and formatting
+50e2b59 Wrapper: Add isTopLevel static method
+cbdd3d2 Release 0.32.90
+e5c1782 JNI: get name before checking for COMBO BOX
+5ee3b8b update copyright
+67f7912 dispatch radio, push toggle button events
+b4016fa AUTHORS: Add Magdalen Berns
+abcd681 Release 0.32.3
+1937e99 Atwrapper add debugging to signals
+acfc165 AtkWrapper: warn if handler object is NULL
+69d1dba Return JNI_OK for jboolean function
+1702923 Add debug messages for global_ac == NULL
+02cac3d use global_ac not lock in get/find instance
+3bf09c9 Fix some debug inconsistencies
+78f59a8 set_extents Rectangle width and height
+c8e4b30 Update object roles to include missing roles
+1f3387b Check minimum version of atk and spi is installed
+c11a4dd use defined top level klass
+f06a2dd fix implicit function warning for g_sprintf
+14e24c0 Fix post initialization lock up
+48a3008 Fix debug message
+fbce3dd cache JVM onLoad so env attaches current thread
+079f7cc return JNI_VERSION_1_6
+15ed5a7 Use (GInstanceInitFunc) NULL
+93ce3ec jawutil: include string header for strcmp use
+5c7a112 Replace G_CONST_RETURN with const
+6e7a344 AtkWrapper print exception stack traces
+5bf850a FIX SIGEV fatal error
+15a15ac fix jfieldID in get_extents
+a3b5c20 Merge branch 'old' into amend
+5258611 set x y extents for both WINDOW and SCREEN
+ffed314 The set extents method only sets points x and y when AtkCoordType.SCREEN returns true. It is necessary to set them for AtkCoordType.WINDOW too.
+8e0952c AtkWrapper: Remove hard-coded handler values
+7da1a77 fixes for get and set extent methods
+1f77888 Directly initialise accessibility
+6a3f1b6 fix imcompatable pointer w in set_extents
+78d0c91 fatal error when executing java programs
+73d21e8 Check if g_module_supported
+2969474 Add AM_SILENT_RULES([yes])
+69c586f Add autoconf check to autogen.sh
+86a937b initialise using gnome_accessibility_module_init
+1e55ab4 Fix mutex and cond initialisation
+70ec322 remove return from jaw_component_get_extents
+71108e2 Add additional dependencies
+6bdf1ec AtkWrapper: implement g_cond_wait
+fa48f1b AtkWrapper: FIX hang on g_cond thread wait
+c5fadf7 Fix g_mutex and g_cond update syntax
+5235f35 Revert "Fix g_mutex and g_cond update syntax"
+e769736 Fix g_mutex and g_cond update syntax
+49d93f3 Init atk_bridge_adaptor in a standard way
+31c5fa3 remove workaround for non root installs
+781f1d2 Revert "remove workaround for non root installs"
+3e7ce33 remove workaround for non root installs
+f955ce6 LDFLAGS Use proper version info syntax
+c1cc147 check if AM_PROG_AR is defined
+1c7eab0 Add -rpath flag to LDFLAGS
+a3d7805 Add dependency on atk-bridge-2.0
+35e8780 Add AC_SUBST(JAW_LIBS)
+ce57131 Don't use $JAVACFLAGS when setting JDK_SRC
+8b48abf Add JDK_SRC to Build configuration
+e7e1fd6 put lt version info first in LDFLAGS
+96e32ab Release 0.32.2
+e80a1fc Revert "make: add top_srcdir and topsrcdir/wrapper to CFLAGS"
+44a7330 make: add top_srcdir and topsrcdir/wrapper to CFLAGS
+a964d9d Build: set propertiesdir & java_atk_wrapperdir
+347c21b jawimpl: initialise with compatible pointer type
+853eac9 jawutil: tidy up style
+35ae4b3 Fix symbol lookup error jaw_misc_type
+d6f8257 Release 0.32.1
 2a738f7 NEWS add contributors info
 8f76c73 AtkKeyEvent: remove reduntant cast to string
 f36a292 Component: remove return from get_extents

@@ -1,3 +1,99 @@
+Changes in version 0.32.92
+=========================
+
+Build:
+  Set 1.6 as minimum java version
+
+Miscellanous:
+  JNI: return JNI_ERR if JNI is NULL
+  Wrapper: Don't set bounds in set_extents
+  JNI: Add NULL check before referencing gobjects
+  JNI: Use guint type not gint
+  JNI: Make use of dispatch constants
+  JNI: get_instance with component_removed_handler
+  JNI: get instance in window_deactivate_handler
+  JNI: find instance for object_state_change_handler
+  JNI use IIII for method argument
+  JNI-Wrapper: remove get_size and get_position
+  Wrapper: remove state ARMED condition
+  JNI: fix casting warning
+  Wrapper: Add isTopLevel static method
+
+Maintainership:
+  uncomment gtk_threads functions
+  Wrapper: Add documentation and formatting
+  JNI: format jawutil and jawaction
+  JNI: Use consistent debug messages
+  HACKING: Add some object info and update
+
+Contributors:
+  Magdalen Berns
+
+Changes in version 0.32.90
+=========================
+
+Important Changes:
+  JNI: get name before checking for COMBO BOX
+  JNI: dispatch radio, push toggle button events
+
+Maintainership:
+  Update Authors
+
+Contributors:
+  Magdalen Berns
+
+Changes in version 0.32.3
+=========================
+
+Build:
+  Use JNI_VERSION_1_6
+  LDFLAGS Use proper version info syntax
+  check if AM_PROG_AR is defined
+  Add -rpath flag to LDFLAGS
+  Add dependency on atk-bridge-2.0
+  Add AC_SUBST(JAW_LIBS)
+  Don't use $JAVACFLAGS when setting JDK_SRC
+  Add JDK_SRC to Build configuration
+  put lt version info first in LDFLAGS
+  Check minimum version of atk and spi is installed
+  Add AM_SILENT_RULES([yes])
+
+Miscellanous:
+  Directly initialise accessibility rather than load via gtk module
+  jawutil: include string header for strcmp use
+  Replace G_CONST_RETURN with const
+  Print exception stack traces
+  FIX SIGEV fatal error
+  fix jfieldID in get_extents
+  Merge branch 'old' into amend
+  set x y extents for both WINDOW and SCREEN
+  Use defined top level klass
+  AtkWrapper: Remove hard-coded handler values
+  Rectangle width and height for set_extents
+  Replace G_CONST_RETURN with const
+  FIX incompatable pointer
+  FIX g_cond lockup
+
+Maintainership:
+  Add various g_debug messages, warnings and erros for JAW_DEBUG=1
+
+Contributors:
+  Magdalen Berns
+
+Changes in version 0.32.2
+=========================
+
+Miscellanious:
+  741127: set propertiesdir & java_atk_wrapperdir
+  741073: initialise with compatible pointer type jawimpl
+  741062: Fix symbol lookup error jaw_misc_type
+
+Contributors:
+  741068: Tidy up style Magdalen Berns in jawutil
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.32.1
 =========================
 

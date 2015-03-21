@@ -1,11 +1,12 @@
 AC_PREREQ(2.63)
-AC_INIT([java-atk-wrapper],[0.32.1])
+AC_INIT([java-atk-wrapper],[0.32.92])
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([1.11 -Wall check-news -Wdeprecated-declarations])
 
+AM_SILENT_RULES([yes])
 m4_pattern_allow([AM_PROG_AR])
-AM_PROG_AR
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Before making a release, the LT_VERSION string should be modified.
 # The string is of the form C:R:A.
@@ -15,7 +16,7 @@ AM_PROG_AR
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LIB_ATK_WRAPPER_LT_VERSION=0:20:0
+LIB_ATK_WRAPPER_LT_VERSION=3:21:2
 AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 # jni
@@ -35,13 +36,19 @@ AC_CONFIG_MACRO_DIR([m4])
 m4_define([req_ver_atk], [1.18.0])
 
 PKG_CHECK_MODULES(JAW, [
-  atk >= 2.11.90
+  atk >= 2.14.0
+  atk-bridge-2.0
+  atspi-2 >= 2.14.0
+  dbus-1
   glib-2.0 >= 2.32.0
   gthread-2.0
   gmodule-2.0 >= 2.0.0
   gdk-2.0
+  gdk-3.0
   gconf-2.0
+  gobject-2.0
 ])
+AC_SUBST(JAW_LIBS)
 
 case "${target_os}" in
 cygwin*)
@@ -55,7 +62,7 @@ AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 
 # java wrapper
 
-JAVA_REQUIRED=1.5
+JAVA_REQUIRED=1.6
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
@@ -104,7 +111,7 @@ SRC_DIR=`dirname $0`
 
 if test "x$with_jdk_auto_detect" = "xyes"; then
   `$JAVAC $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
-  JDK_SRC=`$JAVA $JAVACFLAGS JavaInfo`
+  JDK_SRC=`$JAVA JavaInfo`
   JAVA_HOME=`$JAVA JavaInfo`/jre
 else
   if test -z "$JDK_SRC"; then
@@ -167,4 +174,5 @@ Build configuration:
        Prefix:                                 ${prefix}
        Source code location:                   ${srcdir}
        Compiler:                               ${CC}
+       JDK src                                 ${JDK_SRC}
 "

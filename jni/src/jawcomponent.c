@@ -19,6 +19,7 @@
 
 #include <atk/atk.h>
 #include <glib.h>
+#include <glib-object.h>
 #include "jawimpl.h"
 #include "jawutil.h"
 
@@ -44,10 +45,10 @@ static void jaw_component_get_extents(AtkComponent *component,
                                       AtkCoordType coord_type);
 
 static gboolean jaw_component_set_extents(AtkComponent *component,
-                                          gint         *x,
-                                          gint         *y,
-                                          gint         *width,
-                                          gint         *height,
+                                          gint         x,
+                                          gint         y,
+                                          gint         width,
+                                          gint         height,
                                           AtkCoordType coord_type);
 
 static gboolean jaw_component_grab_focus(AtkComponent *component);
@@ -66,6 +67,8 @@ jaw_component_interface_init (AtkComponentIface *iface)
   iface->ref_accessible_at_point = jaw_component_ref_accessible_at_point;
   iface->get_extents = jaw_component_get_extents;
   iface->grab_focus = jaw_component_grab_focus;
+  iface->add_focus_handler = NULL;
+  iface->remove_focus_handler = NULL;
   iface->get_layer = jaw_component_get_layer;
   iface->get_mdi_zorder = NULL; /*jaw_component_get_mdi_zorder;*/
   iface->get_alpha = NULL; /*jaw_component_get_alpha;*/
@@ -188,20 +191,64 @@ jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, 
   return ATK_OBJECT(jaw_impl);
 }
 
-static gboolean
-jaw_component_set_extents (AtkComponent *component,
+static void
+jaw_component_get_extents (AtkComponent *component,
                            gint         *x,
                            gint         *y,
                            gint         *width,
                            gint         *height,
                            AtkCoordType coord_type)
 {
-
   if (x == NULL || y == NULL || width == NULL || height == NULL)
+    return;
+
+  if (component == NULL)
+    return;
+
+  JawObject *jaw_obj = JAW_OBJECT(component);
+  ComponentData *data = jaw_object_get_interface_data(jaw_obj,
+                                                      INTERFACE_COMPONENT);
+  jobject atk_component = data->atk_component;
+
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
+                                                  "org/GNOME/Accessibility/AtkComponent");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkComponent,
+                                          "get_extents",
+                                          "()Ljava/awt/Rectangle;");
+
+  jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
+
+  if (jrectangle == NULL)
   {
-    return FALSE;
+    (*x) = 0;
+    (*y) = 0;
+    (*width) = 0;
+    (*height) = 0;
+    return;
   }
-  
+
+  jclass classRectangle = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
+  jfieldID jfidX = (*jniEnv)->GetFieldID(jniEnv, classRectangle, "x", "I");
+  jfieldID jfidY = (*jniEnv)->GetFieldID(jniEnv, classRectangle, "y", "I");
+  jfieldID jfidW = (*jniEnv)->GetFieldID(jniEnv, classRectangle, "width", "I");
+  jfieldID jfidH = (*jniEnv)->GetFieldID(jniEnv, classRectangle, "height", "I");
+  (*x)      = (gint)(*jniEnv)->GetIntField(jniEnv, jrectangle, jfidX);
+  (*y)      = (gint)(*jniEnv)->GetIntField(jniEnv, jrectangle, jfidY);
+  (*width)  = (gint)(*jniEnv)->GetIntField(jniEnv, jrectangle, jfidW);
+  (*height) = (gint)(*jniEnv)->GetIntField(jniEnv, jrectangle, jfidH);
+}
+
+static gboolean
+jaw_component_set_extents (AtkComponent *component,
+                           gint         x,
+                           gint         y,
+                           gint         width,
+                           gint         height,
+                           AtkCoordType coord_type)
+{
+
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   jobject atk_component = data->atk_component;
@@ -213,87 +260,57 @@ jaw_component_set_extents (AtkComponent *component,
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAtkComponent,
                                           "set_extents",
-                                          "()Ljava/awt/Rectangle;");
+                                          "(IIII)Ljava/awt/Rectangle;");
 
-  jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
+  jobject jcomponent = (*jniEnv)->CallObjectMethod(jniEnv,
+                                                   atk_component,
+                                                   jmid,
+                                                   (jint)x,
+                                                   (jint)y,
+                                                   (jint)width,
+                                                   (jint)height,
+                                                   (jint)coord_type);
 
-  if (jrectangle == NULL)
+  if (jcomponent == NULL)
   {
-    (*width) = 0;
-    (*height) = 0;
-    (*x) = 0;
-    (*y) = 0;
+    width = 0;
+    height = 0;
+    x = 0;
+    y = 0;
     return FALSE;
   }
 
-  jclass rectangle_class = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
-  jfieldID jfidWidth = (*jniEnv)->GetFieldID(jniEnv,
-                                             rectangle_class,
-                                             "width",
-                                             "I");
-  jfieldID jfidHeight = (*jniEnv)->GetFieldID(jniEnv,
-                                              rectangle_class,
-                                              "height",
-                                              "I");
-  jfieldID jfidX = (*jniEnv)->GetFieldID(jniEnv,
-                                         rectangle_class,
-                                         "x",
-                                         "I");
+  jclass classRectangle = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
 
-  jfieldID jfidY = (*jniEnv)->GetFieldID(jniEnv,
-                                         rectangle_class,
-                                         "y",
-                                         "I");
+  // Get Field IDs
+  jfieldID jfidX       = (*jniEnv)->GetFieldID(jniEnv,
+                                               atk_component,
+                                               "x",
+                                               "I");
+  jfieldID jfidY       = (*jniEnv)->GetFieldID(jniEnv,
+                                               atk_component,
+                                               "y",
+                                               "I");
+  jfieldID jfidWidth   = (*jniEnv)->GetFieldID(jniEnv,
+                                               atk_component,
+                                               "width",
+                                               "I");
+  jfieldID jfidHeight  = (*jniEnv)->GetFieldID(jniEnv,
+                                               atk_component,
+                                               "height",
+                                               "I");
 
-  jint jwidth = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidWidth);
-  jint jheight = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidHeight);
-  jint jx = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidX);
-  jint jy = (*jniEnv)->GetIntField(jniEnv, rectangle_class, jfidY);
+  jint jwidth = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidWidth);
+  jint jheight = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidHeight);
+  jint jx = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidX);
+  jint jy = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidY);
 
-  (*width) = (gint)jwidth;
-  (*height) = (gint)jheight;
-  (*x) = (gint)jx;
-  (*y) = (gint)jy;
+  width = (gint)jwidth;
+  height = (gint)jheight;
+  x = (gint)jx;
+  y = (gint)jy;
 
   return TRUE;
-}
-
-static void
-jaw_component_get_extents (AtkComponent *component,
-                           gint         *x,
-                           gint         *y,
-                           gint         *width,
-                           gint         *height,
-                           AtkCoordType coord_type)
-{
-  if (x == NULL || y == NULL || width == NULL || height == NULL)
-  {
-    return;
-  }
-  
-  JawObject *jaw_obj = JAW_OBJECT(component);
-  ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  jobject atk_component = data->atk_component;
-
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
-                                                  "org/GNOME/Accessibility/AtkComponent");
-
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAtkComponent,
-                                          "get_extents",
-                                          "()Ljava/awt/Rectangle;");
-
-  jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
-
-  if (jrectangle == NULL)
-  {
-    (*width) = 0;
-    (*height) = 0;
-    (*x) = 0;
-    (*y) = 0;
-    return;
-  }
 }
 
 static gboolean

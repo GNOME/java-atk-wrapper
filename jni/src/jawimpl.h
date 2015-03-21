@@ -41,7 +41,6 @@ struct _JawImpl
 	GHashTable *ifaceTable;
 };
 
-void jaw_impl_init_mutex();
 JawImpl* jaw_impl_get_instance(JNIEnv*, jobject);
 JawImpl* jaw_impl_find_instance(JNIEnv*, jobject);
 GType jaw_impl_get_type (guint);
