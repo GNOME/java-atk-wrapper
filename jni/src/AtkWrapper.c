@@ -122,6 +122,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
     return JNI_TRUE;
   // Java app with GTK Look And Feel will load gail
   // Set NO_GAIL to "1" to prevent gail from executing
+
   g_setenv("NO_GAIL", "1", TRUE);
 
   // Disable ATK Bridge temporarily to aoid the loading
@@ -131,6 +132,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   g_type_class_unref(g_type_class_ref(JAW_TYPE_UTIL));
   // Force to invoke base initialization function of each ATK interfaces
   g_type_class_unref(g_type_class_ref(ATK_TYPE_NO_OP_OBJECT));
+
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
 
   return JNI_TRUE;
 }
@@ -162,6 +166,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
       g_error_free (err);
     }
   }
+
 }
 
 enum _SignalType {
@@ -278,10 +283,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_focusNotify(JNIEnv *jniEnv,
                                                             jclass jClass,
                                                             jobject jAccContext)
 {
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(focus_notify_handler, para);
 }
 
@@ -351,11 +354,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowOpen(JNIEnv *jniEnv,
                                                            jboolean jIsToplevel)
 {
 
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   para->is_toplevel = (jIsToplevel == JNI_TRUE) ? TRUE : FALSE;
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
   g_idle_add(window_open_handler, para);
 }
 
@@ -427,12 +428,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowClose(JNIEnv *jniEnv,
                                                             jobject jAccContext,
                                                             jboolean jIsToplevel)
 {
-
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   para->is_toplevel = (jIsToplevel == JNI_TRUE) ? TRUE : FALSE;
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
   g_idle_add(window_close_handler, para);
 }
 
@@ -477,10 +475,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMinimize(JNIEnv *jniEnv,
                                                                jclass jClass,
                                                                jobject jAccContext)
 {
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(window_minimize_handler, para);
 }
 
@@ -525,10 +521,8 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMaximize(JN
                                                                               jclass jClass,
                                                                               jobject jAccContext)
 {
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac );
   g_idle_add(window_maximize_handler, para);
 }
 
@@ -574,10 +568,8 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowRestore(JNI
                                                                              jobject jAccContext)
 {
 
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(window_restore_handler, para);
 }
 
@@ -618,12 +610,11 @@ window_activate_handler (gpointer p)
 }
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowActivate(JNIEnv *jniEnv,
-                                                                              jclass jClass, jobject jAccContext) {
+                                                                              jclass jClass,
+                                                                              jobject jAccContext) {
 
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
-  CallbackPara *para = alloc_callback_para(lock);
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(window_activate_handler, para);
 }
 
@@ -669,11 +660,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowDeactivate(JNIEnv *jniEnv,
                                                                  jobject jAccContext)
 {
 
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
-
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(window_deactivate_handler, para);
 }
 
@@ -720,10 +708,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowStateChange(JNIEnv *jniEnv
                                                                   jobject jAccContext)
 {
 
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(window_state_change_handler, para);
 }
 
@@ -1054,14 +1040,11 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
                                                            jint id,
                                                            jobjectArray args)
 {
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   jobjectArray global_args = (jobjectArray)(*jniEnv)->NewGlobalRef(jniEnv, args);
-  CallbackPara *para = alloc_callback_para(lock);
+  CallbackPara *para = alloc_callback_para(global_ac);
   para->signal_id = (gint)id;
   para->args = global_args;
-
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
   g_idle_add(signal_emit_handler, para);
 }
 
@@ -1110,8 +1093,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_objectStateChange(JNIEnv *jniEnv
                                                                   jobject state,
                                                                   jboolean value)
 {
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   AtkStateType state_type = jaw_util_get_atk_state_type_from_java_state( jniEnv, state );
   para->atk_state = state_type;
   if (value == JNI_TRUE) {
@@ -1119,8 +1102,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_objectStateChange(JNIEnv *jniEnv
   } else {
     para->state_value = FALSE;
   }
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
   g_idle_add(object_state_change_handler, para);
 }
 
@@ -1174,10 +1155,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentAdded(JNIEnv *jniEnv,
                                                                jclass jClass,
                                                                jobject jAccContext)
 {
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(component_added_handler, para);
 }
 
@@ -1231,10 +1210,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(JNIEnv *jniEnv,
                                                                  jclass jClass,
                                                                  jobject jAccContext)
 {
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
-  CallbackPara *para = alloc_callback_para(lock);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
   g_idle_add(component_removed_handler, para);
 }
 
@@ -1352,8 +1329,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
 {
   jboolean key_consumed;
   jobject global_key_event = (*jniEnv)->NewGlobalRef(jniEnv, jAtkKeyEvent);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
   g_idle_add(key_dispatch_handler, (gpointer)global_key_event);
 
   if(jaw_debug)
