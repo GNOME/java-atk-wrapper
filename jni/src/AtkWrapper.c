@@ -98,13 +98,12 @@ jni_threads_unlock()
 
 static gpointer jni_loop_callback(void *data)
 {
-  char *message;
-  message = (char *)data;
   if (!g_main_loop_is_running((GMainLoop *)data))
     g_main_loop_run((GMainLoop *)data);
-  else {
-      if (jaw_debug)
-    printf("Running %s already\n", message);
+  else
+  {
+    if (jaw_debug)
+      printf("Running JNI already\n");
   }
   return 0;
 }
