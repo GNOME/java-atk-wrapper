@@ -86,6 +86,7 @@ static gpointer jaw_impl_parent_class = NULL;
 
 static GHashTable *typeTable = NULL;
 static GHashTable *objectTable = NULL;
+static gboolean jaw_debug = FALSE;
 
 static void
 object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
@@ -263,15 +264,21 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
           aggregate_interface(jniEnv, jaw_obj, tflag);
           atk_object_initialize(ATK_OBJECT(jaw_impl), NULL);
           object_table_insert(jniEnv, global_ac, jaw_impl);
-        } else {
-          g_warning("\n *** jaw_impl_get_instance: jaw_obj == NULL *** \n");
+        } else
+        {
+          if (jaw_debug)
+            g_warning("jaw_impl_get_instance: jaw_obj == NULL");
           return NULL;
         }
-      } else {
-        g_warning("\n *** jaw_impl_get_instance: jaw_impl == NULL *** \n");
+      } else
+      {
+        if (jaw_debug)
+          g_warning("jaw_impl_get_instance: jaw_impl == NULL");
       }
-    } else {
-      g_warning("\n *** jaw_impl_get_instance: global_ac == NULL *** \n");
+    } else
+    {
+      if (jaw_debug)
+        g_warning("jaw_impl_get_instance: global_ac == NULL");
       return NULL;
     }
   }
@@ -286,7 +293,8 @@ jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
   jaw_impl = object_table_lookup(jniEnv, ac);
   if (jaw_impl == NULL)
   {
-    g_warning("\n *** jaw_impl_find_instance: jaw_impl == NULL *** \n");
+    if (jaw_debug)
+      g_warning("jaw_impl_find_instance: jaw_impl");
     return NULL;
   }
 
