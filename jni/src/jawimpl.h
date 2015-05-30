@@ -20,6 +20,7 @@
 #ifndef _JAW_IMPL_H_
 #define _JAW_IMPL_H_
 
+#include <glib-object.h>
 #include "jawobject.h"
 
 G_BEGIN_DECLS

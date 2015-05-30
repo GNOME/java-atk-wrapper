@@ -28,6 +28,14 @@
 #include "jawtoplevel.h"
 #include "jawobject.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef GTYPE_TO_POINTER
+  #define GTYPE_TO_POINTER (x) (GSIZE_TO_POINTER (x))
+#endif
+
 static void jaw_impl_class_init (JawImplClass *klass);
 //static void			jaw_impl_init				(JawImpl		*impl);
 static void jaw_impl_dispose(GObject *gobject);
@@ -384,7 +392,7 @@ jaw_impl_get_type (guint tflag)
     typeTable = g_hash_table_new( NULL, NULL );
   }
 
-  type = (GType)g_hash_table_lookup(typeTable, (gpointer)&tflag);
+  type = (GType)g_hash_table_lookup(typeTable, GINT_TO_POINTER(tflag));
   if (type == 0) {
     GTypeInfo tinfo = {
       sizeof(JawImplClass),
@@ -431,7 +439,7 @@ jaw_impl_get_type (guint tflag)
     if (tflag & INTERFACE_TABLE)
       g_type_add_interface_static (type, ATK_TYPE_TABLE, &atk_table_info);
 
-    g_hash_table_insert(typeTable, (gpointer)&tflag, (gpointer)type);
+    g_hash_table_insert(typeTable, GINT_TO_POINTER(tflag), (gpointer)type);
   }
 
   return type;
@@ -773,4 +781,8 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
 
   return atk_obj->relation_set;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
