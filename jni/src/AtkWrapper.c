@@ -132,9 +132,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
   // Force to invoke base initialization function of each ATK interfaces
   g_type_class_unref(g_type_class_ref(ATK_TYPE_NO_OP_OBJECT));
 
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
-
   return JNI_TRUE;
 }
 
@@ -150,6 +147,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   char * message;
   message = "JNI main loop";
   err = NULL;
+  jobject obj;
 
   jaw_initialized = jaw_accessibility_init();
   if (jaw_debug)
@@ -165,7 +163,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
       g_error_free (err);
     }
   }
-
+  lock = (*jniEnv)->NewGlobalRef(jniEnv, obj);
+  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
+  gdk_threads_init();
 }
 
 enum _SignalType {
