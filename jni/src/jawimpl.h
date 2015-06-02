@@ -20,7 +20,7 @@
 #ifndef _JAW_IMPL_H_
 #define _JAW_IMPL_H_
 
-#include <glib-object.h>
+#include <glib.h>
 #include "jawobject.h"
 
 G_BEGIN_DECLS
@@ -31,6 +31,13 @@ G_BEGIN_DECLS
 #define JAW_IS_IMPL(tf, obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), JAW_TYPE_IMPL(tf)))
 #define JAW_IS_IMPL_CLASS(tf, klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), JAW_TYPE_IMPL(tf)))
 #define JAW_IMPL_GET_CLASS(tf, obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), JAW_TYPE_IMPL(tf), JawImplClass))
+
+#ifdef GPOINTER_TO_SIZE
+  #define GPOINTER_TO_GTYPE(gpointer) (GPOINTER_TO_SIZE (gpointer))
+#endif
+#ifdef GSIZE_TO_POINTER
+  #define GTYPE_TO_POINTER(gtype) (GSIZE_TO_POINTER(gtype))
+#endif
 
 typedef struct _JawImpl			JawImpl;
 typedef struct _JawImplClass		JawImplClass;

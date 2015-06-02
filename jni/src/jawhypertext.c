@@ -101,7 +101,7 @@ jaw_hypertext_get_link (AtkHypertext *hypertext, gint link_index)
 	}
 
 	JawHyperlink *jaw_hyperlink = jaw_hyperlink_new(jhyperlink);
-	g_hash_table_insert(data->link_table, (gpointer)&link_index, (gpointer)jaw_hyperlink);
+	g_hash_table_insert(data->link_table, GINT_TO_POINTER(link_index), (gpointer)jaw_hyperlink);
 
 	return ATK_HYPERLINK(jaw_hyperlink);
 }

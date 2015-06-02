@@ -227,7 +227,7 @@ free_callback_para (CallbackPara *para)
   if (para->global_ac == NULL)
   {
     if (jaw_debug)
-      (stderr,"\n *** free_callback_para: para->global_ac == NULL *** \n");
+      g_warning("free_callback_para: para->global_ac == NULL");
     free_callback_para(para);
     return;
   }
@@ -822,9 +822,8 @@ signal_emit_handler (gpointer p)
   {
     case Sig_Text_Caret_Moved:
     {
-      gint cursor_pos = get_int_value(
-      jniEnv,
-      (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      gint cursor_pos = get_int_value(jniEnv,
+                                      (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
       g_signal_emit_by_name(atk_obj, "text_caret_moved", cursor_pos);
       break;
     }
@@ -931,7 +930,7 @@ signal_emit_handler (gpointer p)
     case Sig_Object_Property_Change_Accessible_Actions:
     {
       gint oldValue = get_int_value(jniEnv,
-                                  (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+                                    (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
       gint newValue = get_int_value(jniEnv,
                                     (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1));
       AtkPropertyValues values = { NULL };
@@ -943,15 +942,13 @@ signal_emit_handler (gpointer p)
       g_value_set_int(&values.old_value, oldValue);
       if (jaw_debug)
         printf ("%d\n", g_value_get_int(&values.old_value));
-      g_value_unset(&values.old_value);
 
       g_assert (!G_VALUE_HOLDS_INT (&values.new_value));
       g_value_init(&values.new_value, G_TYPE_INT);
-      g_assert (G_VALUE_HOLDS_INT (&values.old_value));
+      g_assert (G_VALUE_HOLDS_INT (&values.new_value));
       g_value_set_int(&values.new_value, newValue);
       if (jaw_debug)
         printf ("%d\n", g_value_get_int(&values.new_value));
-      g_value_unset(&values.new_value);
 
       values.property_name = "accessible-actions";
 
@@ -1037,13 +1034,13 @@ signal_emit_handler (gpointer p)
       gint newValue = get_int_value(jniEnv,
                                     (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
 
-      gint prevCount = *(gint*)g_hash_table_lookup(jaw_obj->storedData,
-                                                   "Previous_Count");
+      gint prevCount = GPOINTER_TO_INT(g_hash_table_lookup(jaw_obj->storedData,
+                                                           "Previous_Count"));
       gint curCount = atk_text_get_character_count(ATK_TEXT(jaw_obj));
 
       g_hash_table_insert(jaw_obj->storedData,
                           "Previous_Count",
-                          (gpointer)&curCount);
+                          GINT_TO_POINTER(curCount));
 
       if (curCount > prevCount)
       {
@@ -1062,7 +1059,7 @@ signal_emit_handler (gpointer p)
       break;
     }
     default:
-    break;
+      break;
   }
   free_callback_para(para);
   return FALSE;
