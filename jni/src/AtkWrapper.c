@@ -27,7 +27,6 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 #include <X11/Xlib.h>
-#include <gconf/gconf-client.h>
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
