@@ -144,14 +144,14 @@ jaw_util_remove_global_event_listener (guint remove_listener)
     JawUtilListenerInfo *listener_info;
     gint tmp_idx = remove_listener;
 
-    listener_info = (JawUtilListenerInfo*)g_hash_table_lookup(listener_list, &tmp_idx);
+    listener_info = (JawUtilListenerInfo*)g_hash_table_lookup(listener_list, GINT_TO_POINTER(tmp_idx));
 
     if (listener_info != NULL)
     {
       if (listener_info->hook_id != 0 && listener_info->signal_id != 0)
       {
         g_signal_remove_emission_hook(listener_info->signal_id, listener_info->hook_id);
-        g_hash_table_remove(listener_list, &tmp_idx);
+        g_hash_table_remove(listener_list, GINT_TO_POINTER(tmp_idx));
       } else {
         g_warning("Invalid listener hook_id %ld or signal_id %d\n",
                   listener_info->hook_id, listener_info->signal_id);
