@@ -486,9 +486,9 @@ jaw_impl_finalize(GObject *gobject)
   jaw_obj->acc_context = NULL;
 
   /* Interface finalize */
-  GHashTableIter *iter;
-  gpointer *key;
-  gpointer *value;
+  GHashTableIter *iter = NULL;
+  gpointer *key = NULL;
+  gpointer *value = NULL;
 
   g_hash_table_iter_init(iter, jaw_impl->ifaceTable);
   while (g_hash_table_iter_next(iter, key, value))
