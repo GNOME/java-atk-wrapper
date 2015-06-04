@@ -1,3 +1,20 @@
+Changes in version 0.33.0
+=========================
+
+Miscellanous:
+  750295 JNI: create NewGlobalRef for gdk threads
+  698095 JNI: FIX crash on java applications
+         JNI: GINT_TO_POINTER cast for g_hash_table_lookup arg
+  745823 JNI: fix jawimpl type error
+  749926 JNI: Remove data from debug message
+  749392 JNI: Call gtk threads only once
+
+Maintainership:
+  749927 JNI: only show warnings with JAW_DEBUG=1
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.32.92
 =========================
 

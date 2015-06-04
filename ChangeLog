@@ -1,3 +1,11 @@
+c26046a JNI: GINT_TO_POINTER cast for g_hash_table_lookup arg
+5f1dfcb JNI: create NewGlobalRef for gdk threads
+236b9dd JNI: fix crash on java applications
+5218010 JNI: fix jawimpl type error
+2a6dd6c JNI: only show warnings with JAW_DEBUG=1
+62edb07 JNI: remove data message
+0067a0e Call gtk threads only once
+3595f83 Release 0.32.92
 ebcf2ff JNI: return JNI_ERR if JNI is NULL
 f65ebb7 JNI: Format jawaction
 340d6a5 Wrapper: Don't set bounds in set_extents
