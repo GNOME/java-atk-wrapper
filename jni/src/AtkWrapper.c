@@ -53,7 +53,6 @@ gboolean jaw_debug = FALSE;
 
 static gint key_dispatch_result;
 static GMainLoop* jni_main_loop;
-static jobject lock;
 
 static gboolean jaw_initialized = FALSE;
 
@@ -69,30 +68,6 @@ void
 jaw_accessibility_shutdown (void)
 {
   atk_bridge_adaptor_cleanup();
-}
-
-void
-jni_threads_lock()
-{
-  JNIEnv* env;
-
-  env = jaw_util_get_jni_env();
-
-  if ((*env)->MonitorEnter(env, lock) != JNI_OK) {
-    if (jaw_debug)
-      g_critical("Error trying to get Java side GDK lock");
-  }
-}
-void
-jni_threads_unlock()
-{
-  JNIEnv* env;
-  env = jaw_util_get_jni_env();
-
-  if ((*env)->MonitorExit(env, lock) != JNI_OK){
-    if (jaw_debug)
-      g_critical("Error trying to release Java side GDK lock");
-  }
 }
 
 static gpointer jni_loop_callback(void *data)
@@ -146,7 +121,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
   char * message;
   message = "JNI main loop";
   err = NULL;
-  jobject obj;
 
   jaw_initialized = jaw_accessibility_init();
   if (jaw_debug)
@@ -162,9 +136,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
       g_error_free (err);
     }
   }
-  lock = (*jniEnv)->NewGlobalRef(jniEnv, obj);
-  gdk_threads_set_lock_functions(jni_threads_lock, jni_threads_unlock);
-  gdk_threads_init();
 }
 
 enum _SignalType {
