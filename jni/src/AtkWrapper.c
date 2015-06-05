@@ -223,14 +223,14 @@ focus_notify_handler (gpointer p)
     if (jaw_debug)
       g_warning("\nfocus_notify_handler: env == NULL\n");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
   if (global_ac == NULL)
   {
     if (jaw_debug)
       g_warning("\nfocus_notify_handler: global_ac == NULL\n");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
@@ -238,7 +238,7 @@ focus_notify_handler (gpointer p)
     if (jaw_debug)
       g_warning("\nfocus_notify_handler: jaw_impl == NULL\n");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -248,7 +248,7 @@ focus_notify_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -274,7 +274,7 @@ window_open_handler (gpointer p)
     if (jaw_debug)
       fprintf(stderr,"\n *** window_open_handler: jniEnv == NULL *** \n");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -282,7 +282,7 @@ window_open_handler (gpointer p)
     if (jaw_debug)
       fprintf(stderr,"\n *** window_open_handler: global_ac == NULL *** \n");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
@@ -297,13 +297,13 @@ window_open_handler (gpointer p)
                  "redundant object"))
   {
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
   {
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (is_toplevel)
@@ -323,7 +323,7 @@ window_open_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -352,7 +352,7 @@ window_close_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_close_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -360,7 +360,7 @@ window_close_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_close_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
   JawImpl *jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
@@ -368,7 +368,7 @@ window_close_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_close_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -376,13 +376,13 @@ window_close_handler (gpointer p)
   if (!g_strcmp0(atk_role_get_name(atk_object_get_role(atk_obj)), "redundant object"))
   {
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
   {
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (is_toplevel) {
@@ -401,7 +401,7 @@ window_close_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -428,7 +428,7 @@ window_minimize_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_minimize_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -436,7 +436,7 @@ window_minimize_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_minimize_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
@@ -444,7 +444,7 @@ window_minimize_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_minimize_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -452,7 +452,7 @@ window_minimize_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -477,7 +477,7 @@ window_maximize_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_maximize_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -485,7 +485,7 @@ window_maximize_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_maximize_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
@@ -494,7 +494,7 @@ window_maximize_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_maximize_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -502,7 +502,7 @@ window_maximize_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMaximize(JNIEnv *jniEnv,
@@ -526,7 +526,7 @@ window_restore_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_restore_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -534,7 +534,7 @@ window_restore_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_restore_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
@@ -543,7 +543,7 @@ window_restore_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_restore_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -551,7 +551,7 @@ window_restore_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowRestore(JNIEnv *jniEnv,
@@ -576,7 +576,7 @@ window_activate_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_activate_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -584,7 +584,7 @@ window_activate_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_activate_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
@@ -592,7 +592,7 @@ window_activate_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_activate_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -600,7 +600,7 @@ window_activate_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowActivate(JNIEnv *jniEnv,
@@ -624,7 +624,7 @@ window_deactivate_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_deactivate_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -632,7 +632,7 @@ window_deactivate_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_deactivate_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
@@ -640,7 +640,7 @@ window_deactivate_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_deactivate_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -648,7 +648,7 @@ window_deactivate_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -674,7 +674,7 @@ window_state_change_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_state_change_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -682,7 +682,7 @@ window_state_change_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_state_change_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
@@ -691,7 +691,7 @@ window_state_change_handler (gpointer p)
     if (jaw_debug)
       g_warning("window_state_change_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -699,7 +699,7 @@ window_state_change_handler (gpointer p)
 
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -763,7 +763,7 @@ signal_emit_handler (gpointer p)
     if (jaw_debug)
       g_warning("signal_emit_handler: jniEnv == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   jobjectArray args = para->args;
@@ -773,7 +773,7 @@ signal_emit_handler (gpointer p)
     if (jaw_debug)
       g_warning("signal_emit_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_find_instance(jniEnv, global_ac);
@@ -783,7 +783,7 @@ signal_emit_handler (gpointer p)
     if (jaw_debug)
       g_warning("signal_emit_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -832,7 +832,7 @@ signal_emit_handler (gpointer p)
         if (jaw_debug)
           g_warning("signal_emit_handler: child_impl == NULL");
         free_callback_para(para);
-        return FALSE;
+        return G_SOURCE_REMOVE;
       }
       if (!child_impl)
       {
@@ -873,7 +873,7 @@ signal_emit_handler (gpointer p)
         if (jaw_debug)
           g_warning("signal_emit_handler: child_impl == NULL");
         free_callback_para(para);
-        return FALSE;
+        return G_SOURCE_REMOVE;
       }
       if (!child_impl)
       {
@@ -1032,7 +1032,7 @@ signal_emit_handler (gpointer p)
       break;
   }
   free_callback_para(para);
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -1062,7 +1062,7 @@ object_state_change_handler (gpointer p)
     if (jaw_debug)
       g_warning("object_state_change_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -1070,7 +1070,7 @@ object_state_change_handler (gpointer p)
     if (jaw_debug)
       g_warning("object_state_change_handler: global_ac");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
@@ -1079,7 +1079,7 @@ object_state_change_handler (gpointer p)
     if (jaw_debug)
       g_warning("object_state_change_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   atk_object_notify_state_change(ATK_OBJECT(jaw_impl),
@@ -1087,8 +1087,7 @@ object_state_change_handler (gpointer p)
                                  para->state_value);
 
   free_callback_para(para);
-
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -1124,7 +1123,7 @@ component_added_handler (gpointer p)
     if (jaw_debug)
       g_warning("component_added_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -1132,7 +1131,7 @@ component_added_handler (gpointer p)
     if (jaw_debug)
       g_warning("component_added_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
@@ -1141,7 +1140,7 @@ component_added_handler (gpointer p)
     if (jaw_debug)
       g_warning("component_added_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
 
@@ -1154,7 +1153,7 @@ component_added_handler (gpointer p)
   }
 
   free_callback_para(para);
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -1180,7 +1179,7 @@ component_removed_handler (gpointer p)
     if (jaw_debug)
       g_warning("component_removed_handler: env == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   if (global_ac == NULL)
@@ -1188,7 +1187,7 @@ component_removed_handler (gpointer p)
     if (jaw_debug)
       g_warning("component_removed_handler: global_ac == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
@@ -1197,7 +1196,7 @@ component_removed_handler (gpointer p)
     if (jaw_debug)
       g_warning("component_removed_handler: jaw_impl == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
@@ -1207,13 +1206,13 @@ component_removed_handler (gpointer p)
     if (jaw_debug)
       g_warning("component_removed_handler: atk_obj == NULL");
     free_callback_para(para);
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
     atk_object_notify_state_change(atk_obj, ATK_STATE_SHOWING, FALSE);
   free_callback_para(para);
 
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT void
@@ -1238,7 +1237,7 @@ key_dispatch_handler (gpointer p)
   {
     if (jaw_debug)
       g_warning("key_dispatch_handler: env == NULL");
-    return FALSE;
+    return G_SOURCE_REMOVE;
   }
 
   jclass classAtkKeyEvent = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkKeyEvent");
@@ -1331,7 +1330,7 @@ key_dispatch_handler (gpointer p)
   g_free(event);
 
   (*jniEnv)->DeleteGlobalRef(jniEnv, jAtkKeyEvent);
-  return FALSE;
+  return G_SOURCE_REMOVE;
 }
 
 JNIEXPORT jboolean
