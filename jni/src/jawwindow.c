@@ -20,7 +20,6 @@
 
 #include <atk/atk.h>
 #include <glib.h>
-#include <string.h>
 #include "jawobject.h"
 #include "jawwindow.h"
 #include "jawutil.h"
