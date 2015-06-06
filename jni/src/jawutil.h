@@ -40,6 +40,7 @@ JNIEnv *globalEnv;
 #define INTERFACE_TABLE                   0x00000200
 #define INTERFACE_TEXT                    0x00000400
 #define INTERFACE_VALUE                   0x00000800
+#define INTERFACE_WINDOW                  0x00001000
 
 #define JAW_TYPE_UTIL               (jaw_util_get_type())
 #define JAW_UTIL(obj)               (G_TYPE_CHECK_INSTANCE_CAST ((obj), JAW_TYPE_UTIL, JawUtil))

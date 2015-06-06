@@ -21,13 +21,12 @@
 #include <atk/atk.h>
 #include <glib.h>
 #include "jawobject.h"
+#include "jawwindow.h"
 #include "jawutil.h"
 #include "jawtoplevel.h"
 
 static void jaw_object_class_init(JawObjectClass *klass);
 static void jaw_object_init(JawObject *object);
-static void jaw_object_dispose(GObject *gobject);
-static void jaw_object_finalize(GObject *gobject);
 
 /* AtkObject */
 static const gchar* jaw_object_get_name(AtkObject *atk_obj);
@@ -42,30 +41,11 @@ static AtkStateSet* jaw_object_ref_state_set(AtkObject *atk_obj);
 
 static gpointer parent_class = NULL;
 
-enum {
-  ACTIVATE,
-  CREATE,
-  DEACTIVATE,
-  DESTROY,
-  MAXIMIZE,
-  MINIMIZE,
-  MOVE,
-  RESIZE,
-  RESTORE,
-  TOTAL_SIGNAL
-};
-
-static guint jaw_window_signals[TOTAL_SIGNAL] = { 0, };
-
 G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT);
 
 static void
 jaw_object_class_init (JawObjectClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-  gobject_class->dispose = jaw_object_dispose;
-  gobject_class->finalize = jaw_object_finalize;
-
   AtkObjectClass *atk_class = ATK_OBJECT_CLASS (klass);
   parent_class = g_type_class_peek_parent (klass);
 
@@ -92,80 +72,7 @@ jaw_object_class_init (JawObjectClass *klass)
 	atk_class->get_attributes = jaw_object_get_attributes;
 */
   klass->get_interface_data = NULL;
-
-  jaw_window_signals [ACTIVATE] = g_signal_new ("activate",
-                                                G_TYPE_FROM_CLASS (klass),
-                                                G_SIGNAL_RUN_LAST,
-                                                0, /* default signal handler */
-                                                NULL,
-                                                NULL,
-                                                g_cclosure_marshal_VOID__VOID,
-                                                G_TYPE_NONE,
-                                                0);
-  jaw_window_signals [CREATE] = g_signal_new ("create",
-                                              G_TYPE_FROM_CLASS (klass),
-                                              G_SIGNAL_RUN_LAST,
-                                              0, /* default signal handler */
-                                              NULL, NULL,
-                                              g_cclosure_marshal_VOID__VOID,
-                                              G_TYPE_NONE,
-                                              0);
-  jaw_window_signals [DEACTIVATE] = g_signal_new ("deactivate",
-                                                  G_TYPE_FROM_CLASS (klass),
-                                                  G_SIGNAL_RUN_LAST,
-                                                  0, /* default signal handler */
-                                                  NULL, NULL,
-                                                  g_cclosure_marshal_VOID__VOID,
-                                                  G_TYPE_NONE, 0);
-  jaw_window_signals [DESTROY] = g_signal_new ("destroy",
-                                                G_TYPE_FROM_CLASS (klass),
-                                                G_SIGNAL_RUN_LAST,
-                                                0, /* default signal handler */
-                                                NULL,
-                                                NULL,
-                                                g_cclosure_marshal_VOID__VOID,
-                                                G_TYPE_NONE,
-                                                0);
-  jaw_window_signals [MAXIMIZE] = g_signal_new ("maximize",
-                                                G_TYPE_FROM_CLASS (klass),
-                                                G_SIGNAL_RUN_LAST,
-                                                0, /* default signal handler */
-                                                NULL, NULL,
-                                                g_cclosure_marshal_VOID__VOID,
-                                                G_TYPE_NONE, 0);
-  jaw_window_signals [MINIMIZE] = g_signal_new ("minimize",
-                                                G_TYPE_FROM_CLASS (klass),
-                                                G_SIGNAL_RUN_LAST,
-                                                0, /* default signal handler */
-                                                NULL, NULL,
-                                                g_cclosure_marshal_VOID__VOID,
-                                                G_TYPE_NONE, 0);
-  jaw_window_signals [MOVE] = g_signal_new ("move",
-                                            G_TYPE_FROM_CLASS (klass),
-                                            G_SIGNAL_RUN_LAST,
-                                            0, /* default signal handler */
-                                            NULL, NULL,
-                                            g_cclosure_marshal_VOID__VOID,
-                                            G_TYPE_NONE, 0);
-  jaw_window_signals [RESIZE] = g_signal_new ("resize",
-                                              G_TYPE_FROM_CLASS (klass),
-                                              G_SIGNAL_RUN_LAST,
-                                              0, /* default signal handler */
-                                              NULL,
-                                              NULL,
-                                              g_cclosure_marshal_VOID__VOID,
-                                              G_TYPE_NONE,
-                                              0);
-  jaw_window_signals [RESTORE] = g_signal_new ("restore",
-                                                G_TYPE_FROM_CLASS (klass),
-                                                G_SIGNAL_RUN_LAST,
-                                                0, /* default signal handler */
-                                                NULL,
-                                                NULL,
-                                                g_cclosure_marshal_VOID__VOID,
-                                                G_TYPE_NONE,
-                                                0);
-  }
+}
 
 gpointer
 jaw_object_get_interface_data (JawObject *jaw_obj, guint iface)
@@ -184,50 +91,6 @@ jaw_object_init (JawObject *object)
   atk_obj->description = NULL;
 
   object->state_set = atk_state_set_new();
-}
-
-static void
-jaw_object_dispose (GObject *gobject)
-{
-  /* Customized dispose code */
-
-  /* Chain up to parent's dispose method */
-  G_OBJECT_CLASS(jaw_object_parent_class)->dispose(gobject);
-}
-
-static void
-jaw_object_finalize (GObject *gobject)
-{
-  /* Customized finalize code */
-  JawObject *jaw_obj = JAW_OBJECT(gobject);
-  AtkObject *atk_obj = ATK_OBJECT(gobject);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  if (atk_obj->name != NULL)
-  {
-    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
-    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
-    jaw_obj->jstrName = NULL;
-    atk_obj->name = NULL;
-  }
-
-  if (atk_obj->description != NULL)
-  {
-    (*jniEnv)->ReleaseStringUTFChars(jniEnv,
-                                     jaw_obj->jstrDescription,
-                                     atk_obj->description);
-
-    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
-    jaw_obj->jstrDescription = NULL;
-    atk_obj->description = NULL;
-  }
-
-  if (G_OBJECT(jaw_obj->state_set) != NULL)
-  {
-    g_object_unref(G_OBJECT(jaw_obj->state_set));
-    /* Chain up to parent's finalize method */
-    G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
-  }
 }
 
 static const gchar*

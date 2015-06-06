@@ -22,6 +22,7 @@
 #include <string.h>
 #include <glib.h>
 #include "jawtoplevel.h"
+#include "jawwindow.h"
 
 static void jaw_toplevel_class_init(JawToplevelClass *klass);
 static void jaw_toplevel_init(JawToplevel *toplevel);

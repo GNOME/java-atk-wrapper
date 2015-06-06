@@ -14,13 +14,15 @@ libatk_wrapper_la_SOURCES = AtkWrapper.c \
                             jawimage.c \
                             jawselection.c \
                             jawvalue.c \
-                            jawtable.c
+                            jawtable.c \
+                            jawwindow.c
 
 noinst_HEADERS = jawimpl.h \
                  jawobject.h \
                  jawhyperlink.h \
                  jawtoplevel.h \
-                 jawutil.h
+                 jawutil.h \
+                 jawwindow.h
 
 libatk_wrapper_la_CFLAGS = $(JNI_INCLUDES)\
                            $(JAW_CFLAGS)

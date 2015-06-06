@@ -26,6 +26,7 @@
 #include <glib/gprintf.h>
 #include "jawutil.h"
 #include "jawtoplevel.h"
+#include "jawwindow.h"
 #include "jawobject.h"
 
 #ifdef __cplusplus
