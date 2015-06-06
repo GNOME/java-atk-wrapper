@@ -121,7 +121,7 @@ AC_SUBST(JDK_SRC)
 AC_SUBST(JAVA_HOME)
 
 if test "x$GCC" = xyes; then
-  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JDK_SRC/include
+  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS $JNI_INCLUDES
 else
   AC_MSG_ERROR("You should compile with GCC")
 fi
@@ -173,5 +173,7 @@ Build configuration:
        Prefix:                                 ${prefix}
        Source code location:                   ${srcdir}
        Compiler:                               ${CC}
-       JDK src                                 ${JDK_SRC}
+       JDK src:                                ${JDK_SRC}
+       Host OS:                                ${host_os}
+       JNI includes:                           ${JNI_INCLUDES}
 "
