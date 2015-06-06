@@ -2,7 +2,7 @@ AC_PREREQ(2.63)
 AC_INIT([java-atk-wrapper],[0.33.0])
 
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE([1.11 -Wall check-news -Wdeprecated-declarations])
+AM_INIT_AUTOMAKE([1.11 -Wall check-news])
 
 AM_SILENT_RULES([yes])
 m4_pattern_allow([AM_PROG_AR])
@@ -42,7 +42,6 @@ PKG_CHECK_MODULES(JAW, [
   dbus-1
   glib-2.0 >= 2.32.0
   gthread-2.0
-  gmodule-2.0 >= 2.0.0
   gdk-2.0
   gdk-3.0
   gobject-2.0
@@ -174,6 +173,5 @@ Build configuration:
        Source code location:                   ${srcdir}
        Compiler:                               ${CC}
        JDK src:                                ${JDK_SRC}
-       Host OS:                                ${host_os}
        JNI includes:                           ${JNI_INCLUDES}
 "
