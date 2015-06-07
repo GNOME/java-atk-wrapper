@@ -25,9 +25,6 @@
 
 G_BEGIN_DECLS
 
-JavaVM *globalJvm;
-JNIEnv *globalEnv;
-
 #define INTERFACE_ACTION                  0x00000001
 #define INTERFACE_COMPONENT               0x00000002
 #define INTERFACE_DOCUMENT                0x00000004
