@@ -120,7 +120,7 @@ AC_SUBST(JDK_SRC)
 AC_SUBST(JAVA_HOME)
 
 if test "x$GCC" = xyes; then
-  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS $JNI_INCLUDES
+  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS
 else
   AC_MSG_ERROR("You should compile with GCC")
 fi
