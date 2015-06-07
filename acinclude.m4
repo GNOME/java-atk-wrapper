@@ -51,6 +51,17 @@ case "$host" in
     PLATFORM_CLASSPATH_SEPARATOR=":"
     SOPREFIX=
     ;;
+  *-*-darwin*)
+    if test "$gcj_compile" = "yes"; then
+      JNI_INCLUDES=
+    else
+      JNI_INCLUDES="-I$JDK_SRC/include -I$JDK_SRC/include/darwin"
+    fi
+    PLATFORM_CFLAGS=
+    PLATFORM_LDFLAGS=
+    PLATFORM_CLASSPATH_SEPARATOR=":"
+    SOPREFIX=
+    ;;
   *)
     if test "$gcj_compile" = "yes"; then
       JNI_INCLUDES=
