@@ -38,6 +38,7 @@ static gint jaw_object_get_index_in_parent(AtkObject *atk_obj);
 
 static AtkRole jaw_object_get_role(AtkObject *atk_obj);
 static AtkStateSet* jaw_object_ref_state_set(AtkObject *atk_obj);
+static void jaw_object_initialize(AtkObject *jaw_obj, gpointer data);
 
 static gpointer parent_class = NULL;
 
@@ -57,6 +58,7 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_layer = NULL;
   atk_class->get_mdi_zorder = NULL;
   atk_class->ref_state_set = jaw_object_ref_state_set;
+  atk_class->initialize = jaw_object_initialize;
 /*	atk_class->set_name = jaw_object_set_name;
 	atk_class->set_description = jaw_object_set_description;
 	atk_class->set_parent = jaw_object_set_parent;
@@ -91,6 +93,12 @@ jaw_object_init (JawObject *object)
   atk_obj->description = NULL;
 
   object->state_set = atk_state_set_new();
+}
+
+static void
+jaw_object_initialize(AtkObject *atk_obj, gpointer data)
+{
+ ATK_OBJECT_CLASS (jaw_object_parent_class)->initialize(atk_obj, data);
 }
 
 static const gchar*
