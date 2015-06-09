@@ -66,8 +66,6 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_index_in_parent = jaw_object_get_index_in_parent;
   atk_class->get_role = jaw_object_get_role;
   atk_class->get_parent = jaw_object_get_parent;
-  atk_class->get_layer = NULL;
-  atk_class->get_mdi_zorder = NULL;
   atk_class->ref_state_set = jaw_object_ref_state_set;
   atk_class->initialize = jaw_object_initialize;
   atk_class->state_change = jaw_object_state_change;
@@ -77,14 +75,6 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->set_description = jaw_object_set_description;
   atk_class->set_parent = jaw_object_set_parent;
 /* atk_class->set_role = jaw_object_set_role;
-	atk_class->connect_property_change_handler = jaw_object_connect_property_change_handler;
-	atk_class->remove_property_change_handler = jaw_object_remove_property_change_handler;
-	atk_class->children_changed = jaw_object_children_changed;
-	atk_class->focus_event = jaw_object_focus_event;
-	atk_class->property_change = jaw_object_property_change;
-	atk_class->state_change = jaw_object_state_change;
-	atk_class->visible_data_changed = jaw_object_visible_data_changed;
-	atk_class->active_descendant_changed = jaw_object_active_descendant_changed;
 	atk_class->get_attributes = jaw_object_get_attributes;
 */
   klass->get_interface_data = NULL;
