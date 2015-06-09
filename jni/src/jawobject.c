@@ -48,7 +48,7 @@ static AtkObject * jaw_object_ref_child (AtkObject *atk_obj, gint i);
 static AtkRelationSet* jaw_object_ref_relation_set(AtkObject *atk_obj);
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
-
+static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
 
 static gpointer parent_class = NULL;
 
@@ -75,8 +75,8 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->ref_relation_set = jaw_object_ref_relation_set;
   atk_class->set_name = jaw_object_set_name;
   atk_class->set_description = jaw_object_set_description;
-/*atk_class->set_parent = jaw_object_set_parent;
-	atk_class->set_role = jaw_object_set_role;
+  atk_class->set_parent = jaw_object_set_parent;
+/* atk_class->set_role = jaw_object_set_role;
 	atk_class->connect_property_change_handler = jaw_object_connect_property_change_handler;
 	atk_class->remove_property_change_handler = jaw_object_remove_property_change_handler;
 	atk_class->children_changed = jaw_object_children_changed;
@@ -156,6 +156,22 @@ static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)
   jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
 
   return ATK_OBJECT(jparent);
+}
+
+static void
+jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  jobject ac = jaw_obj->acc_context;
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "setAccessibleParent",
+                                          "(Ljavax/accessibility/AccessibleContext;)");
+  jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
 }
 
 static const gchar*
