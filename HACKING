@@ -40,8 +40,6 @@ Object base class:
   AtkFunction
   implementor_ref_accessible
   peek_parent
-  set_name
-  set_description
   set_parent
   set_role
   add_relationship

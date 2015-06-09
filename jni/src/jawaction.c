@@ -53,7 +53,6 @@ jaw_action_interface_init (AtkActionIface *iface)
   iface->get_name = jaw_action_get_name;
   iface->get_keybinding = jaw_action_get_keybinding;
   iface->get_localized_name = NULL; /*jaw_get_localized_name;*/
-  iface->set_description = NULL;
 }
 
 gpointer

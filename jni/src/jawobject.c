@@ -47,6 +47,8 @@ static void jaw_object_state_change (AtkObject   *atk_obj,
 static AtkObject * jaw_object_ref_child (AtkObject *atk_obj, gint i);
 static AtkRelationSet* jaw_object_ref_relation_set(AtkObject *atk_obj);
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
+static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
+
 
 static gpointer parent_class = NULL;
 
@@ -72,8 +74,8 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->ref_child = jaw_object_ref_child;
   atk_class->ref_relation_set = jaw_object_ref_relation_set;
   atk_class->set_name = jaw_object_set_name;
-/*atk_class->set_description = jaw_object_set_description;
-	atk_class->set_parent = jaw_object_set_parent;
+  atk_class->set_description = jaw_object_set_description;
+/*atk_class->set_parent = jaw_object_set_parent;
 	atk_class->set_role = jaw_object_set_role;
 	atk_class->connect_property_change_handler = jaw_object_connect_property_change_handler;
 	atk_class->remove_property_change_handler = jaw_object_remove_property_change_handler;
@@ -273,6 +275,39 @@ jaw_object_get_description (AtkObject *atk_obj)
   return atk_obj->description;
 }
 
+static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  jobject ac = jaw_obj->acc_context;
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "setAccessibleDescription",
+                                          "(Ljava/lang/String;)");
+  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+
+  if (description != NULL)
+  {
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrDescription, description);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
+    description = NULL;
+  }
+
+  if (jstr != NULL)
+  {
+    jaw_obj->jstrDescription = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
+    description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
+                                                       jaw_obj->jstrDescription,
+                                                       NULL);
+  }
+  if (jstr != NULL)
+  {
+    description = "";
+  }
+}
 static gint
 jaw_object_get_n_children (AtkObject *atk_obj)
 {
