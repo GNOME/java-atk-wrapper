@@ -39,17 +39,12 @@ TODO Currently Not fully documented by ATK
 Object base class:
   AtkFunction
   implementor_ref_accessible
-  get_parent
   peek_parent
-  get_n_accessible_children # get_n_children currently implemented
-  ref_accessible_child
   ref_relation_set
   set_name
   set_description
   set_parent
   set_role
-  notify_state_change
-  object_initialize
   add_relationship
   remove_relationship
   get_attributes

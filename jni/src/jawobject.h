@@ -39,12 +39,10 @@ typedef struct _JawObjectClass		JawObjectClass;
 struct _JawObject
 {
 	AtkObject parent;
-	
 	jobject acc_context;
 	jstring jstrName;
 	jstring jstrDescription;
 	AtkStateSet *state_set;
-
 	GHashTable *storedData;
 };
 
