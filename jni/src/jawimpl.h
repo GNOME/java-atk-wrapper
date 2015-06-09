@@ -58,6 +58,8 @@ struct _JawImplClass
 	JawObjectClass parent_class;
 };
 
+AtkRelationType jaw_impl_get_atk_relation_type_from_java_key (JNIEnv *jniEnv, jstring jrel_key);
+
 G_END_DECLS
 
 #endif

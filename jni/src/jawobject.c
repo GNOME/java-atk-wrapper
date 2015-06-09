@@ -404,7 +404,7 @@ jaw_object_ref_relation_set (AtkObject *atk_obj)
                                   "getKey",
                                   "()Ljava/lang/String;");
     jstring jrel_key = (*jniEnv)->CallObjectMethod( jniEnv, jrel, jmid );
-    AtkRelationType rel_type = get_atk_relation_type_from_java_key(jniEnv, jrel_key);
+    AtkRelationType rel_type = jaw_impl_get_atk_relation_type_from_java_key(jniEnv, jrel_key);
 
     jmid = (*jniEnv)->GetMethodID(jniEnv,
                                   classAccessibleRelation,

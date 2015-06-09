@@ -662,6 +662,12 @@ get_atk_relation_type_from_java_key (JNIEnv *jniEnv, jstring jrel_key)
   return ATK_RELATION_NULL;
 }
 
+AtkRelationType
+jaw_impl_get_atk_relation_type_from_java_key (JNIEnv *jniEnv, jstring jrel_key)
+{
+  return get_atk_relation_type_from_java_key (jniEnv, jrel_key);
+}
+
 #ifdef __cplusplus
 }
 #endif
