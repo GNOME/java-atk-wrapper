@@ -21,7 +21,6 @@
 #define _JAW_OBJECT_H_
 
 #include <atk/atk.h>
-#include <atk-bridge.h>
 #include <jni.h>
 
 G_BEGIN_DECLS
