@@ -29,6 +29,7 @@
 #include <X11/Xlib.h>
 #include "jawutil.h"
 #include "jawimpl.h"
+#include "jawwindow.h"
 #include "jawtoplevel.h"
 
 #ifdef __cplusplus

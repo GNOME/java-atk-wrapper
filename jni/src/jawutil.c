@@ -424,6 +424,16 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
     tflag |= INTERFACE_VALUE;
   }
 
+  jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                classAccessibleContext,
+                                "getAccessibleContext",
+                                "()Ljavax/accessibility/AccessibleContext;");
+  iface = (*jniEnv)->CallObjectMethod(jniEnv, ac, jmid);
+  if (iface != NULL)
+  {
+    tflag |= INTERFACE_WINDOW;
+  }
+
   return tflag;
 }
 
