@@ -39,8 +39,6 @@ TODO Currently Not fully documented by ATK
 Object base class:
   AtkFunction
   implementor_ref_accessible
-  peek_parent
-  set_parent
   set_role
   add_relationship
   remove_relationship

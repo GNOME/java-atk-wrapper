@@ -148,6 +148,14 @@ static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)
   return ATK_OBJECT(jparent);
 }
 
+AtkObject* jaw_object_peek_parent(AtkObject *atk_obj)
+{
+  AtkObject *atk_parent = jaw_object_get_parent(atk_obj);
+  if (atk_parent != NULL)
+    return atk_parent;
+  return NULL;
+}
+
 static void
 jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
 {
