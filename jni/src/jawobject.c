@@ -49,6 +49,7 @@ static AtkRelationSet* jaw_object_ref_relation_set(AtkObject *atk_obj);
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
 static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
+static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
 
 static gpointer parent_class = NULL;
 
@@ -74,9 +75,8 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->set_name = jaw_object_set_name;
   atk_class->set_description = jaw_object_set_description;
   atk_class->set_parent = jaw_object_set_parent;
-/* atk_class->set_role = jaw_object_set_role;
-	atk_class->get_attributes = jaw_object_get_attributes;
-*/
+  atk_class->set_role = jaw_object_set_role;
+
   klass->get_interface_data = NULL;
 }
 
@@ -369,6 +369,15 @@ jaw_object_get_role (AtkObject *atk_obj)
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   atk_obj->role = jaw_util_get_atk_role_from_jobj(jaw_obj->acc_context);
   return atk_obj->role;
+}
+
+static void
+jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  atk_obj->role = role;
+  if (atk_obj != NULL && role)
+    atk_object_set_role(atk_obj, atk_obj->role);
 }
 
 static AtkObject*
