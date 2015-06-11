@@ -50,6 +50,7 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
 static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
 static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
+static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj);
 
 static gpointer parent_class = NULL;
 
@@ -76,6 +77,7 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->set_description = jaw_object_set_description;
   atk_class->set_parent = jaw_object_set_parent;
   atk_class->set_role = jaw_object_set_role;
+  atk_class->get_object_locale = jaw_object_get_object_locale;
 
   klass->get_interface_data = NULL;
 }
@@ -535,5 +537,25 @@ jaw_object_ref_relation_set (AtkObject *atk_obj)
     g_object_ref (atk_obj->relation_set);
 
   return atk_obj->relation_set;
+}
+
+static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  jobject ac = jaw_obj->acc_context;
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "getLocale",
+                                          "()Ljavax/accessibility/AccessibleContext;");
+  jobject locale = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  JawImpl *target_obj = jaw_impl_get_instance(jniEnv, locale);
+  if(target_obj == NULL)
+    return NULL;
+
+  return atk_object_get_object_locale((AtkObject*) target_obj);
 }
 
