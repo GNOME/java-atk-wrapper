@@ -243,8 +243,8 @@ focus_notify_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  jaw_object_notify_state_change(atk_obj,
-                                 (const gchar*) ATK_STATE_SHOWING,
+  atk_object_notify_state_change(atk_obj,
+                                 ATK_STATE_SHOWING,
                                  1);
 
   free_callback_para(para);
@@ -1083,9 +1083,9 @@ object_state_change_handler (gpointer p)
     return G_SOURCE_REMOVE;
   }
 
-  jaw_object_notify_state_change(ATK_OBJECT(jaw_impl),
-                                 (const gchar*)para->atk_state,
-                                 para->state_value);
+  atk_object_notify_state_change(ATK_OBJECT(jaw_impl),
+                              para->atk_state,
+                              para->state_value);
 
   free_callback_para(para);
   return G_SOURCE_REMOVE;
@@ -1148,8 +1148,8 @@ component_added_handler (gpointer p)
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
   {
-    jaw_object_notify_state_change(atk_obj,
-                                   (const gchar*)ATK_STATE_SHOWING,
+    atk_object_notify_state_change(atk_obj,
+                                   ATK_STATE_SHOWING,
                                    1);
   }
 
@@ -1210,8 +1210,8 @@ component_removed_handler (gpointer p)
     return G_SOURCE_REMOVE;
   }
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
-    jaw_object_notify_state_change(atk_obj,
-                                   (const gchar*) ATK_STATE_SHOWING,
+    atk_object_notify_state_change(atk_obj,
+                                   ATK_STATE_SHOWING,
                                    FALSE);
   free_callback_para(para);
 

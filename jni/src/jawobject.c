@@ -41,9 +41,6 @@ static AtkRole jaw_object_get_role(AtkObject *atk_obj);
 static AtkStateSet* jaw_object_ref_state_set(AtkObject *atk_obj);
 static void jaw_object_initialize(AtkObject *jaw_obj, gpointer data);
 static AtkObject* jaw_object_get_parent(AtkObject *obj);
-static void jaw_object_state_change (AtkObject   *atk_obj,
-                                     const gchar *state,
-                                     gboolean    state_set);
 static AtkObject * jaw_object_ref_child (AtkObject *atk_obj, gint i);
 static AtkRelationSet* jaw_object_ref_relation_set(AtkObject *atk_obj);
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
@@ -70,7 +67,6 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_parent = jaw_object_get_parent;
   atk_class->ref_state_set = jaw_object_ref_state_set;
   atk_class->initialize = jaw_object_initialize;
-  atk_class->state_change = jaw_object_state_change;
   atk_class->ref_child = jaw_object_ref_child;
   atk_class->ref_relation_set = jaw_object_ref_relation_set;
   atk_class->set_name = jaw_object_set_name;
@@ -105,32 +101,6 @@ static void
 jaw_object_initialize(AtkObject *atk_obj, gpointer data)
 {
  ATK_OBJECT_CLASS (jaw_object_parent_class)->initialize(atk_obj, data);
-}
-
-static void jaw_object_state_change (AtkObject   *atk_obj,
-                                            const gchar *state,
-                                            gboolean    state_set)
-{
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "firePropertyChange",
-                                          "()Ljavax/accessibility/AccessibleContext;");
-  (*jniEnv)->CallVoidMethod( jniEnv, ac, jmid );
-
-  return;
-}
-
-void jaw_object_notify_state_change (AtkObject   *atk_obj,
-                                     const gchar *state,
-                                     gboolean    state_set)
-{
-  jaw_object_state_change(atk_obj, state, state_set);
 }
 
 static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)

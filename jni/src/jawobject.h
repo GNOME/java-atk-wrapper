@@ -55,9 +55,6 @@ struct _JawObjectClass
 };
 
 gpointer jaw_object_get_interface_data (JawObject*, guint);
-void jaw_object_notify_state_change(AtkObject   *atk_obj,
-                                    const gchar *state,
-                                    gboolean    state_set);
 AtkObject *jaw_object_peek_parent(AtkObject *atk_obj);
 
 G_END_DECLS
