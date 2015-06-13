@@ -21,7 +21,6 @@
 #include <atk/atk.h>
 #include <glib.h>
 #include "jawobject.h"
-#include "jawwindow.h"
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"

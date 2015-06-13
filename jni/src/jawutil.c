@@ -26,7 +26,6 @@
 #include <glib/gprintf.h>
 #include "jawutil.h"
 #include "jawtoplevel.h"
-#include "jawwindow.h"
 #include "jawobject.h"
 
 #ifdef __cplusplus
@@ -426,8 +425,8 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
 
   jmid = (*jniEnv)->GetMethodID(jniEnv,
                                 classAccessibleContext,
-                                "getAccessibleContext",
-                                "()Ljavax/accessibility/AccessibleContext;");
+                                "getAccessibleComponent",
+                                "()Ljavax/accessibility/AccessibleComponent;");
   iface = (*jniEnv)->CallObjectMethod(jniEnv, ac, jmid);
   if (iface != NULL)
   {
