@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -94,7 +95,6 @@ public class AtkComponent {
   }
 
   public Rectangle get_extents() {
-    System.out.println(acc_component.getBounds());
     return acc_component.getBounds();
   }
 
@@ -119,6 +119,10 @@ public class AtkComponent {
       role == AccessibleRole.ROOT_PANE ||
       role == AccessibleRole.LAYERED_PANE ) {
       return AtkLayer.CANVAS;
+    }
+
+    if (role == AccessibleRole.WINDOW) {
+      return AtkLayer.WINDOW;
     }
 
     return AtkLayer.WIDGET;
