@@ -179,9 +179,9 @@ public class AtkTable {
 		return acc_table.isAccessibleSelected(row, column);
 	}
 
-	public boolean add_column_selection (int column) {
-		return false;
-	}
+  public boolean addColumnSelection (int column) {
+    return is_column_selected(column);
+  }
 
   public boolean addRowSelection (int row) {
     return is_row_selected(row);
