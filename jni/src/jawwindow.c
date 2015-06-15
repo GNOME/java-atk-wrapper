@@ -33,54 +33,10 @@ typedef struct _WindowData {
   jobject atk_window;
 } WindowData;
 
-enum {
-  ACTIVATE,
-  CREATE,
-  DEACTIVATE,
-  DESTROY,
-  MAXIMIZE,
-  MINIMIZE,
-  MOVE,
-  RESIZE,
-  RESTORE,
-  LAST_SIGNAL
-};
-
-static guint atk_window_signals[LAST_SIGNAL] = { 0 };
-
-static guint
-jaw_window_add_signal (const gchar *name)
-{
-  return g_signal_new (name,
-                       JAW_TYPE_OBJECT,
-                       G_SIGNAL_RUN_LAST,
-                       0,
-                       (GSignalAccumulator) NULL, NULL,
-                       g_cclosure_marshal_VOID__VOID,
-                       G_TYPE_NONE,
-                       0);
-}
-
-typedef struct _JawWindowIface JawWindowIface;
-
 void
 jaw_window_interface_init (AtkWindowIface *iface)
 {
- static gboolean initialized = FALSE;
-
-  if (!initialized)
-    {
-      atk_window_signals[ACTIVATE]    = jaw_window_add_signal ("activate");
-      atk_window_signals[CREATE]      = jaw_window_add_signal ("create");
-      atk_window_signals[DEACTIVATE]  = jaw_window_add_signal ("deactivate");
-      atk_window_signals[DESTROY]     = jaw_window_add_signal ("destroy");
-      atk_window_signals[MAXIMIZE]    = jaw_window_add_signal ("maximize");
-      atk_window_signals[MINIMIZE]    = jaw_window_add_signal ("minimize");
-      atk_window_signals[MOVE]        = jaw_window_add_signal ("move");
-      atk_window_signals[RESIZE]      = jaw_window_add_signal ("resize");
-      atk_window_signals[RESTORE]     = jaw_window_add_signal ("restore");
-      initialized = TRUE;
-    }
+  // Signals
 }
 
 gpointer
