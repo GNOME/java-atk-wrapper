@@ -26,10 +26,11 @@ public class AtkTable {
 	AccessibleContext ac;
 	AccessibleTable acc_table;
 
-	public AtkTable (AccessibleContext ac) {
-		super();
-		this.acc_table = ac.getAccessibleTable();
-	}
+  public AtkTable (AccessibleContext ac) {
+    super();
+    this.ac = ac;
+    this.acc_table = ac.getAccessibleTable();
+  }
 
 	public AccessibleContext ref_at (int row, int column) {
 		javax.accessibility.Accessible accessible = acc_table.getAccessibleAt(row, column);
@@ -182,9 +183,9 @@ public class AtkTable {
 		return false;
 	}
 
-	public boolean add_row_selection (int row) {
-		return false;
-	}
+  public boolean addRowSelection (int row) {
+    return is_row_selected(row);
+  }
 
 	public boolean remove_column_selection (int column) {
 		return false;
