@@ -153,7 +153,8 @@ jaw_table_ref_at (AtkTable *table, gint	row, gint column)
 
 	JawImpl* jaw_impl = jaw_impl_get_instance( jniEnv, jac );
 
-	g_object_ref( G_OBJECT(jaw_impl) );
+  if (G_OBJECT(jaw_impl) != NULL)
+    g_object_ref(G_OBJECT(jaw_impl));
 
 	return ATK_OBJECT(jaw_impl);
 }
