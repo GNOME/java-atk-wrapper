@@ -65,6 +65,8 @@ static gboolean			jaw_table_is_row_selected		(AtkTable	*table,
 static gboolean			jaw_table_is_selected			(AtkTable	*table,
 									 gint		row,
 									 gint		column);
+static gboolean jaw_table_add_row_selection(AtkTable  *table,
+                                            gint       row);
 
 typedef struct _TableData {
 	jobject atk_table;
@@ -94,6 +96,7 @@ jaw_table_interface_init (AtkTableIface *iface)
 	iface->is_column_selected = jaw_table_is_column_selected;
 	iface->is_row_selected = jaw_table_is_row_selected;
 	iface->is_selected = jaw_table_is_selected;
+  iface->add_row_selection= jaw_table_add_row_selection;
 }
 
 gpointer
@@ -504,3 +507,20 @@ jaw_table_is_selected (AtkTable *table, gint row, gint column)
 	return FALSE;
 }
 
+static gboolean
+jaw_table_add_row_selection(AtkTable *table, gint row)
+{
+  JawObject *jaw_obj = JAW_OBJECT(table);
+  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
+  jobject atk_table = data->atk_table;
+
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jclass classAtkTable = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkTable");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkTable, "addRowSelection", "(I)Z");
+  jboolean jselected = (*jniEnv)->CallBooleanMethod(jniEnv, atk_table, jmid, (jint)row);
+
+  if (jselected == JNI_TRUE)
+    return TRUE;
+
+  return FALSE;
+}
