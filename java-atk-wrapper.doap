@@ -8,8 +8,10 @@
   <shortdesc xml:lang="en">ATK implementation for Java by using JNI technic</shortdesc>
   <description>Java ATK Wrapper provides a C wrapper to java to allow access to methods
    from the ATK API interface in java</description>
-  <homepage rdf:resource="http://live.gnome.org/Accessibility/JavaATKWrapper" />
+  <homepage rdf:resource="http://live.gnome.org/Accessibility/JavaAtkWrapper" />
   <mailing-list rdf:resource="http://mail.gnome.org/mailman/listinfo/gnome-accessibility-devel" />
+  <bug-database rdf:resource="https://bugzilla.gnome.org/browse.cgi?product=java-atk-wrapper" />
+  <download-page rdf:resource="https://download.gnome.org/sources/java-atk-wrapper" />
   <category rdf:resource="http://api.gnome.org/doap-extensions#apps" />
   <programming-language>Java</programming-language>
   <programming-language>C</programming-language>
