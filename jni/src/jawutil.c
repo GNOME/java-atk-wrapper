@@ -142,16 +142,16 @@ jaw_util_remove_global_event_listener (guint remove_listener)
 {
   if (remove_listener > 0) {
     JawUtilListenerInfo *listener_info;
-    gint tmp_idx = remove_listener;
+    guint tmp_idx = remove_listener;
 
-    listener_info = (JawUtilListenerInfo*)g_hash_table_lookup(listener_list, GINT_TO_POINTER(tmp_idx));
+    listener_info = g_hash_table_lookup(listener_list, GUINT_TO_POINTER(tmp_idx));
 
     if (listener_info != NULL)
     {
       if (listener_info->hook_id != 0 && listener_info->signal_id != 0)
       {
         g_signal_remove_emission_hook(listener_info->signal_id, listener_info->hook_id);
-        g_hash_table_remove(listener_list, GINT_TO_POINTER(tmp_idx));
+        g_hash_table_remove(listener_list, GUINT_TO_POINTER(tmp_idx));
       } else {
         g_warning("Invalid listener hook_id %ld or signal_id %d\n",
                   listener_info->hook_id, listener_info->signal_id);
@@ -298,7 +298,7 @@ add_listener(GSignalEmissionHook listener,
                                                           (GDestroyNotify) g_free);
       listener_info->signal_id = signal_id;
 
-      g_hash_table_insert(listener_list, &(listener_info->key), listener_info);
+      g_hash_table_insert(listener_list, GINT_TO_POINTER(listener_info->key), listener_info);
       listener_idx++;
     } else {
       g_warning("Invalid signal type %s\n", signal);
