@@ -39,11 +39,9 @@ TODO Currently Not fully documented by ATK
 Object base class:
   AtkFunction
   implementor_ref_accessible
-  set_role
   add_relationship
   remove_relationship
   get_attributes
-  get_object_locale
   get_localized_name
   for_name
 
@@ -54,17 +52,14 @@ Table:
   set_row_header
   set_column_header
   set_summary
-  add_column_selection
-  add_row_selection
 
-TableCell (not yet implemented):
+TableCell:
   get_column_span
   get_column_header_cells
   get_position
   get_row_span
   get_row_header_cells
   get_row_column_span
-  cell_get_table
 
 Text:
   set_free
@@ -77,7 +72,7 @@ Deprecated Methods Which Are Implemented
 ----------------------------------------
 
 Table Interface:
-  get_index_at            -   use ref_at instead
+  get_index_at
   get_column_at_index
   get_row_at_index
 
@@ -99,7 +94,7 @@ Spaces instead of tabs.
 Two spaces per indent.
 
 JNI error messages are in the form:
-  g_warning("\n *** method calling instance: instance == NULL *** \n");
+  g_warning("method calling instance: instance_name == NULL");
 
 Other Things to Keep in Mind
 ----------------------------
