@@ -26,7 +26,10 @@ extern void jaw_table_cell_interface_init (AtkTableCellIface*);
 extern gpointer jaw_table_cell_data_init (jobject ac);
 extern void jaw_table_cell_data_finalize (gpointer);
 
-static AtkObject *jaw_table_cell_get_table (AtkTableCell *cell);
+static AtkObject      *jaw_table_cell_get_table   (AtkTableCell *cell);
+static gboolean        jaw_table_cell_get_position(AtkTableCell *cell,
+                                                   gint *row,
+                                                   gint *column);
 
 typedef struct _TableCellData {
   jobject atk_table_cell;
@@ -38,6 +41,7 @@ void
 jaw_table_cell_interface_init (AtkTableCellIface *iface)
 {
   iface->get_table = jaw_table_cell_get_table;
+  iface->get_position = jaw_table_cell_get_position;
 }
 
 gpointer
@@ -98,3 +102,38 @@ jaw_table_cell_get_table(AtkTableCell *cell)
 
   return ATK_OBJECT(jaw_impl);
 }
+
+static gboolean
+jaw_table_cell_get_position (AtkTableCell *cell, gint *row, gint *column)
+{
+  if (row == NULL || column == NULL)
+    return FALSE;
+
+  JawObject *jaw_obj = JAW_OBJECT(cell);
+  TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
+  jobject jatk_table_cell = data->atk_table_cell;
+
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkComponent");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkComponent, "getPosition", "(II)Ljava/awt/Point;");
+  jobject jpoint = (*jniEnv)->CallObjectMethod(jniEnv, jatk_table_cell, jmid);
+
+  if (jpoint == NULL)
+  {
+    (*row) = 0;
+    (*column) = 0;
+    return FALSE;
+  }
+
+  jclass classPoint = (*jniEnv)->FindClass(jniEnv, "java/awt/Point");
+  jfieldID jfidR = (*jniEnv)->GetFieldID(jniEnv, classPoint, "row", "I");
+  jfieldID jfidC = (*jniEnv)->GetFieldID(jniEnv, classPoint, "column", "I");
+  jint jr = (*jniEnv)->GetIntField(jniEnv, jpoint, jfidR);
+  jint jc = (*jniEnv)->GetIntField(jniEnv, jpoint, jfidC);
+
+  (*row)    = (gint)jr;
+  (*column) = (gint)jc;
+
+  return TRUE;
+}
+

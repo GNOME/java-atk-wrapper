@@ -20,6 +20,7 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import java.awt.Point;
 
 public class AtkTableCell {
 
@@ -34,6 +35,12 @@ public class AtkTableCell {
 
   public AccessibleTable getTable() {
     return acc_table_cell;
+  }
+
+  public Point getPosition (int row, int column) {
+    int rowExtent = acc_table_cell.getAccessibleRowExtentAt(row, column);
+    int colExtent = acc_table_cell.getAccessibleColumnExtentAt(row, column);
+    return new Point(rowExtent, colExtent);
   }
 }
 
