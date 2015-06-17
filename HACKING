@@ -13,9 +13,9 @@ make sure to cc the gnome-accessibility-devel list too.
 
 To file a bug against java-atk-wrapper:
 
-1. go to https://bugzilla.gnome.org/enter_bug.cgi?product=java-atk-wrapper.
+1. go to https://bugzilla.gnome.org/enter_bug.cgi?product=java-atk-wrapper
 2. select java-atk-wrapper from the component list
-3. file bug using a descriptive subject title.
+3. file bug using a descriptive subject title
 
 Feel free to upload a patch to your bug for review.
 
@@ -35,7 +35,6 @@ Document Interface (not yet implemented):
 HyperlinkImpl:
 TODO Currently Not fully documented by ATK
 
-# NOTE: Window interface signals currently seems to be being handled in jawobject.c
 Object base class:
   AtkFunction
   implementor_ref_accessible
