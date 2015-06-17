@@ -79,6 +79,10 @@ extern void jaw_table_interface_init (AtkTableIface*);
 extern gpointer jaw_table_data_init (jobject);
 extern void jaw_table_data_finalize (gpointer);
 
+extern void jaw_table_cell_interface_init (AtkTableCellIface*);
+extern gpointer jaw_table_cell_data_init (jobject);
+extern void jaw_table_cell_data_finalize (gpointer);
+
 extern void jaw_window_interface_init (AtkWindowIface*);
 extern gpointer jaw_window_data_init (jobject);
 extern void jaw_window_data_finalize (gpointer);
@@ -234,6 +238,16 @@ aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
     info->finalize = jaw_table_data_finalize;
     g_hash_table_insert(jaw_impl->ifaceTable,
                         (gpointer)INTERFACE_TABLE,
+                        (gpointer)info);
+  }
+
+  if (tflag & INTERFACE_TABLE_CELL)
+  {
+    JawInterfaceInfo *info = g_new(JawInterfaceInfo, 1);
+    info->data = jaw_table_cell_data_init(ac);
+    info->finalize = jaw_table_cell_data_finalize;
+    g_hash_table_insert(jaw_impl->ifaceTable,
+                        (gpointer)INTERFACE_TABLE_CELL,
                         (gpointer)info);
   }
 
@@ -396,6 +410,13 @@ jaw_impl_get_type (guint tflag)
     NULL
   };
 
+  static const GInterfaceInfo atk_table_cell_info =
+  {
+    (GInterfaceInitFunc) jaw_table_cell_interface_init,
+    (GInterfaceFinalizeFunc) NULL,
+    NULL
+  };
+
   static const GInterfaceInfo atk_window_info =
   {
     (GInterfaceInitFunc) jaw_window_interface_init,
@@ -453,6 +474,9 @@ jaw_impl_get_type (guint tflag)
 
     if (tflag & INTERFACE_TABLE)
       g_type_add_interface_static (type, ATK_TYPE_TABLE, &atk_table_info);
+
+    if (tflag & INTERFACE_TABLE_CELL)
+      g_type_add_interface_static (type, ATK_TYPE_TABLE_CELL, &atk_table_cell_info);
 
     if (tflag & INTERFACE_WINDOW)
       g_type_add_interface_static (type, ATK_TYPE_WINDOW, &atk_window_info);

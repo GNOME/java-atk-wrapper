@@ -415,6 +415,16 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
 
   jmid = (*jniEnv)->GetMethodID(jniEnv,
                                 classAccessibleContext,
+                                "getAccessibleTable",
+                                "()Ljavax/accessibility/AccessibleTableModelChange;");
+  iface = (*jniEnv)->CallObjectMethod(jniEnv, ac, jmid);
+  if (iface != NULL)
+  {
+    tflag |= INTERFACE_TABLE_CELL;
+  }
+
+  jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                classAccessibleContext,
                                 "getAccessibleValue",
                                 "()Ljavax/accessibility/AccessibleValue;");
   iface = (*jniEnv)->CallObjectMethod(jniEnv, ac, jmid);
