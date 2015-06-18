@@ -22,7 +22,8 @@ noinst_HEADERS = jawimpl.h \
                  jawobject.h \
                  jawhyperlink.h \
                  jawtoplevel.h \
-                 jawutil.h
+                 jawutil.h \
+                 jawwindow.h
 
 libatk_wrapper_la_CFLAGS = $(JAW_CFLAGS) \
                            $(JNI_INCLUDES)
