@@ -21,7 +21,13 @@ package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
 
-public interface AtkWindow {
+public class AtkWindow {
 
-    public AccessibleContext getAccessibleContext();
+  AccessibleContext ac;
+  AccessibleComponent acc_window;
+
+  public AtkWindow (AccessibleContext ac) {
+    super();
+    this.ac = ac;
+  }
 }
