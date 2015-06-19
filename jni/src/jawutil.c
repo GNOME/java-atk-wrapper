@@ -123,12 +123,19 @@ jaw_util_add_global_event_listener(GSignalEmissionHook listener,
   gchar **split_string;
   guint length;
 
-  split_string = g_strsplit (event_type, ":", 0);
-  length = g_strv_length (split_string);
+  g_type_class_unref( g_type_class_ref(JAW_TYPE_WINDOW));
+  split_string = g_strsplit (event_type, ":", 3);
 
-  if ((length == 3) || (length == 4))
-    rc = add_listener (listener, split_string[1], split_string[2], event_type);
-  g_strfreev (split_string);
+  if (split_string) {
+    if (!strcmp ("window", split_string[0])) {
+      rc = add_listener (listener, "JawWindow", split_string[1], event_type);
+    } else {
+      rc = add_listener (listener, split_string[1], split_string[2], event_type);
+    }
+
+    g_strfreev (split_string);
+  }
+
 
   return rc;
 }
