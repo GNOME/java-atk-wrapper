@@ -45,6 +45,7 @@ static AtkObject* jaw_object_get_parent(AtkObject *obj);
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
 static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
+static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
 
 static gpointer parent_class = NULL;
 
@@ -97,6 +98,8 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_role = jaw_object_get_role;
   atk_class->get_parent = jaw_object_get_parent;
   atk_class->set_parent = jaw_object_set_parent;
+  atk_class->set_role = jaw_object_set_role;
+
   atk_class->ref_state_set = jaw_object_ref_state_set;
   atk_class->initialize = jaw_object_initialize;
 
@@ -415,6 +418,16 @@ jaw_object_get_role (AtkObject *atk_obj)
   atk_obj->role = jaw_util_get_atk_role_from_jobj(jaw_obj->acc_context);
   return atk_obj->role;
 }
+
+static void
+jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  atk_obj->role = role;
+  if (atk_obj != NULL && role)
+    atk_object_set_role(atk_obj, atk_obj->role);
+}
+
 
 static AtkStateSet*
 jaw_object_ref_state_set (AtkObject *atk_obj)
