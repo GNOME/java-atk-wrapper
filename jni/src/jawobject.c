@@ -42,6 +42,8 @@ static AtkRole jaw_object_get_role(AtkObject *atk_obj);
 static AtkStateSet* jaw_object_ref_state_set(AtkObject *atk_obj);
 static AtkObject* jaw_object_get_parent(AtkObject *obj);
 
+static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
+
 static gpointer parent_class = NULL;
 
 enum {
@@ -85,6 +87,7 @@ jaw_object_class_init (JawObjectClass *klass)
   parent_class = g_type_class_peek_parent (klass);
 
   atk_class->get_name = jaw_object_get_name;
+  atk_class->set_name = jaw_object_set_name;
   atk_class->get_description = jaw_object_get_description;
   atk_class->get_n_children = jaw_object_get_n_children;
   atk_class->get_index_in_parent = jaw_object_get_index_in_parent;
@@ -240,6 +243,42 @@ jaw_object_get_name (AtkObject *atk_obj)
   }
 
   return atk_obj->name;
+}
+
+static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  jobject ac = jaw_obj->acc_context;
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+  atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
+
+  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "setAccessibleName",
+                                          "(Ljava/lang/String;)");
+  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+
+  if (atk_obj->name != NULL)
+  {
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
+  }
+
+  if (jstr != NULL)
+  {
+    jaw_obj->jstrName = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
+    atk_obj->name = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
+                                                         jaw_obj->jstrName,
+                                                         NULL);
+  }
+  if (jstr == NULL)
+  {
+    name = "";
+    return;
+  }
 }
 
 static const gchar*
