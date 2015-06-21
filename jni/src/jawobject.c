@@ -26,6 +26,7 @@
 
 static void jaw_object_class_init(JawObjectClass *klass);
 static void jaw_object_init(JawObject *object);
+static void jaw_object_initialize(AtkObject *jaw_obj, gpointer data);
 static void jaw_object_dispose(GObject *gobject);
 static void jaw_object_finalize(GObject *gobject);
 
@@ -90,6 +91,7 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_layer = NULL;
   atk_class->get_mdi_zorder = NULL;
   atk_class->ref_state_set = jaw_object_ref_state_set;
+  atk_class->initialize = jaw_object_initialize;
 
   jaw_window_signals[ACTIVATE]    = jaw_window_add_signal ("activate", klass);
   jaw_window_signals[CREATE]      = jaw_window_add_signal ("create", klass);
@@ -102,6 +104,12 @@ jaw_object_class_init (JawObjectClass *klass)
   jaw_window_signals[RESTORE]     = jaw_window_add_signal ("restore", klass);
 
   klass->get_interface_data = NULL;
+}
+
+static void
+jaw_object_initialize(AtkObject *atk_obj, gpointer data)
+{
+  ATK_OBJECT_CLASS (jaw_object_parent_class)->initialize(atk_obj, data);
 }
 
 gpointer
