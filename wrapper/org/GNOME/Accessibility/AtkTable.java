@@ -27,7 +27,6 @@ public class AtkTable {
 	AccessibleTable acc_table;
 
   public AtkTable (AccessibleContext ac) {
-    super();
     this.ac = ac;
     this.acc_table = ac.getAccessibleTable();
   }

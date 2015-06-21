@@ -411,6 +411,11 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
   if (iface != NULL)
   {
     tflag |= INTERFACE_TABLE;
+    jclass classAccessibleExtendedTable = (*jniEnv)->FindClass(jniEnv, "javax/accessibility/AccessibleExtendedTable");
+    if ((*jniEnv)->IsInstanceOf(jniEnv, iface, classAccessibleExtendedTable))
+    {
+      tflag |= INTERFACE_TABLE_CELL;
+    }
   }
 
   jmid = (*jniEnv)->GetMethodID(jniEnv,

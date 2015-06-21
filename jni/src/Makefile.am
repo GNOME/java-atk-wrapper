@@ -14,7 +14,8 @@ libatk_wrapper_la_SOURCES = AtkWrapper.c \
                             jawimage.c \
                             jawselection.c \
                             jawvalue.c \
-                            jawtable.c
+                            jawtable.c \
+                            jawtablecell.c
 
 noinst_HEADERS = jawimpl.h \
                  jawobject.h \
