@@ -449,7 +449,6 @@ public class AtkWrapper {
         } else if( propertyName.equals(AccessibleContext.ACCESSIBLE_SELECTION_PROPERTY) ) {
           boolean isTextEvent = false;
           AccessibleRole role = ac.getAccessibleRole();
-          System.out.println(role);
           if ((role == AccessibleRole.TEXT) ||
               role.toDisplayString(java.util.Locale.US).equalsIgnoreCase("paragraph")) {
             isTextEvent = true;

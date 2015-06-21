@@ -94,7 +94,6 @@ public class AtkComponent {
   }
 
   public Rectangle get_extents() {
-    System.out.println(acc_component.getBounds());
     return acc_component.getBounds();
   }
 
