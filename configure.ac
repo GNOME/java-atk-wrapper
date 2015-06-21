@@ -2,7 +2,7 @@ AC_PREREQ(2.63)
 AC_INIT([java-atk-wrapper],[0.33.0])
 
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE([1.11 -Wall check-news])
+AM_INIT_AUTOMAKE([1.11 -Wall check-news -Wdeprecated-declarations])
 
 AM_SILENT_RULES([yes])
 m4_pattern_allow([AM_PROG_AR])
@@ -20,6 +20,7 @@ LIB_ATK_WRAPPER_LT_VERSION=3:22:2
 AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 # jni
+
 AC_CONFIG_HEADERS([config.h])
 
 AC_PROG_CC(gcc)
@@ -41,6 +42,7 @@ PKG_CHECK_MODULES(JAW, [
   dbus-1
   glib-2.0 >= 2.32.0
   gthread-2.0
+  gmodule-2.0 >= 2.0.0
   gdk-2.0
   gdk-3.0
   gobject-2.0
@@ -59,7 +61,6 @@ AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 
 # java wrapper
 
-AM_CONDITIONAL(USER, test `whoami` = "root")
 JAVA_REQUIRED=1.6
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
@@ -120,7 +121,7 @@ AC_SUBST(JDK_SRC)
 AC_SUBST(JAVA_HOME)
 
 if test "x$GCC" = xyes; then
-  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS
+  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS -I$JDK_SRC/include
 else
   AC_MSG_ERROR("You should compile with GCC")
 fi
@@ -172,6 +173,5 @@ Build configuration:
        Prefix:                                 ${prefix}
        Source code location:                   ${srcdir}
        Compiler:                               ${CC}
-       JDK src:                                ${JDK_SRC}
-       JNI includes:                           ${JNI_INCLUDES}
+       JDK src                                 ${JDK_SRC}
 "

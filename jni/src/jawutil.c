@@ -27,7 +27,6 @@
 #include "jawutil.h"
 #include "jawtoplevel.h"
 #include "jawobject.h"
-#include "jawwindow.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -121,21 +120,19 @@ jaw_util_add_global_event_listener(GSignalEmissionHook listener,
 {
   guint rc = 0;
   gchar **split_string;
-  guint length;
 
-  g_type_class_unref( g_type_class_ref(JAW_TYPE_WINDOW));
+  g_type_class_unref( g_type_class_ref(JAW_TYPE_OBJECT));
   split_string = g_strsplit (event_type, ":", 3);
 
   if (split_string) {
     if (!strcmp ("window", split_string[0])) {
-      rc = add_listener (listener, "JawWindow", split_string[1], event_type);
+      rc = add_listener (listener, "JawObject", split_string[1], event_type);
     } else {
       rc = add_listener (listener, split_string[1], split_string[2], event_type);
     }
 
     g_strfreev (split_string);
   }
-
 
   return rc;
 }
@@ -145,16 +142,16 @@ jaw_util_remove_global_event_listener (guint remove_listener)
 {
   if (remove_listener > 0) {
     JawUtilListenerInfo *listener_info;
-    guint tmp_idx = remove_listener;
+    gint tmp_idx = remove_listener;
 
-    listener_info = g_hash_table_lookup(listener_list, GUINT_TO_POINTER(tmp_idx));
+    listener_info = (JawUtilListenerInfo*)g_hash_table_lookup(listener_list, GINT_TO_POINTER(tmp_idx));
 
     if (listener_info != NULL)
     {
       if (listener_info->hook_id != 0 && listener_info->signal_id != 0)
       {
         g_signal_remove_emission_hook(listener_info->signal_id, listener_info->hook_id);
-        g_hash_table_remove(listener_list, GUINT_TO_POINTER(tmp_idx));
+        g_hash_table_remove(listener_list, GINT_TO_POINTER(tmp_idx));
       } else {
         g_warning("Invalid listener hook_id %ld or signal_id %d\n",
                   listener_info->hook_id, listener_info->signal_id);
@@ -301,7 +298,7 @@ add_listener(GSignalEmissionHook listener,
                                                           (GDestroyNotify) g_free);
       listener_info->signal_id = signal_id;
 
-      g_hash_table_insert(listener_list, GINT_TO_POINTER(listener_info->key), listener_info);
+      g_hash_table_insert(listener_list, &(listener_info->key), listener_info);
       listener_idx++;
     } else {
       g_warning("Invalid signal type %s\n", signal);
@@ -418,32 +415,12 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
 
   jmid = (*jniEnv)->GetMethodID(jniEnv,
                                 classAccessibleContext,
-                                "getAccessibleTable",
-                                "()Ljavax/accessibility/AccessibleTableModelChange;");
-  iface = (*jniEnv)->CallObjectMethod(jniEnv, ac, jmid);
-  if (iface != NULL)
-  {
-    tflag |= INTERFACE_TABLE_CELL;
-  }
-
-  jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                classAccessibleContext,
                                 "getAccessibleValue",
                                 "()Ljavax/accessibility/AccessibleValue;");
   iface = (*jniEnv)->CallObjectMethod(jniEnv, ac, jmid);
   if (iface != NULL)
   {
     tflag |= INTERFACE_VALUE;
-  }
-
-  jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                classAccessibleContext,
-                                "getAccessibleComponent",
-                                "()Ljavax/accessibility/AccessibleComponent;");
-  iface = (*jniEnv)->CallObjectMethod(jniEnv, ac, jmid);
-  if (iface != NULL)
-  {
-    tflag |= INTERFACE_WINDOW;
   }
 
   return tflag;

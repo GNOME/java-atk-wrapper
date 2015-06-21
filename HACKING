@@ -13,9 +13,9 @@ make sure to cc the gnome-accessibility-devel list too.
 
 To file a bug against java-atk-wrapper:
 
-1. go to https://bugzilla.gnome.org/enter_bug.cgi?product=java-atk-wrapper
+1. go to https://bugzilla.gnome.org/enter_bug.cgi?product=at-spi.
 2. select java-atk-wrapper from the component list
-3. file bug using a descriptive subject title
+3. file bug using a descriptive subject title.
 
 Feel free to upload a patch to your bug for review.
 
@@ -35,12 +35,25 @@ Document Interface (not yet implemented):
 HyperlinkImpl:
 TODO Currently Not fully documented by ATK
 
+# NOTE: Window interface signals currently seems to be being handled in jawobject.c
 Object base class:
   AtkFunction
   implementor_ref_accessible
+  get_parent
+  peek_parent
+  get_n_accessible_children # get_n_children currently implemented
+  ref_accessible_child
+  ref_relation_set
+  set_name
+  set_description
+  set_parent
+  set_role
+  notify_state_change
+  object_initialize
   add_relationship
   remove_relationship
   get_attributes
+  get_object_locale
   get_localized_name
   for_name
 
@@ -51,13 +64,17 @@ Table:
   set_row_header
   set_column_header
   set_summary
+  add_column_selection
+  add_row_selection
 
-TableCell:
+TableCell (not yet implemented):
   get_column_span
   get_column_header_cells
+  get_position
   get_row_span
   get_row_header_cells
   get_row_column_span
+  cell_get_table
 
 Text:
   set_free
@@ -70,7 +87,7 @@ Deprecated Methods Which Are Implemented
 ----------------------------------------
 
 Table Interface:
-  get_index_at
+  get_index_at            -   use ref_at instead
   get_column_at_index
   get_row_at_index
 
@@ -92,7 +109,7 @@ Spaces instead of tabs.
 Two spaces per indent.
 
 JNI error messages are in the form:
-  g_warning("method calling instance: instance_name == NULL");
+  g_warning("\n *** method calling instance: instance == NULL *** \n");
 
 Other Things to Keep in Mind
 ----------------------------

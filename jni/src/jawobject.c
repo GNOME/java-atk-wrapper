@@ -22,11 +22,12 @@
 #include <glib.h>
 #include "jawobject.h"
 #include "jawutil.h"
-#include "jawimpl.h"
 #include "jawtoplevel.h"
 
 static void jaw_object_class_init(JawObjectClass *klass);
 static void jaw_object_init(JawObject *object);
+static void jaw_object_dispose(GObject *gobject);
+static void jaw_object_finalize(GObject *gobject);
 
 /* AtkObject */
 static const gchar* jaw_object_get_name(AtkObject *atk_obj);
@@ -38,23 +39,33 @@ static gint jaw_object_get_index_in_parent(AtkObject *atk_obj);
 
 static AtkRole jaw_object_get_role(AtkObject *atk_obj);
 static AtkStateSet* jaw_object_ref_state_set(AtkObject *atk_obj);
-static void jaw_object_initialize(AtkObject *jaw_obj, gpointer data);
-static AtkObject* jaw_object_get_parent(AtkObject *obj);
-static AtkObject * jaw_object_ref_child (AtkObject *atk_obj, gint i);
-static AtkRelationSet* jaw_object_ref_relation_set(AtkObject *atk_obj);
-static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
-static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
-static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
-static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
-static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj);
 
 static gpointer parent_class = NULL;
+
+enum {
+  ACTIVATE,
+  CREATE,
+  DEACTIVATE,
+  DESTROY,
+  MAXIMIZE,
+  MINIMIZE,
+  MOVE,
+  RESIZE,
+  RESTORE,
+  TOTAL_SIGNAL
+};
+
+static guint jaw_window_signals[TOTAL_SIGNAL] = { 0, };
 
 G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT);
 
 static void
 jaw_object_class_init (JawObjectClass *klass)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+  gobject_class->dispose = jaw_object_dispose;
+  gobject_class->finalize = jaw_object_finalize;
+
   AtkObjectClass *atk_class = ATK_OBJECT_CLASS (klass);
   parent_class = g_type_class_peek_parent (klass);
 
@@ -63,19 +74,98 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_n_children = jaw_object_get_n_children;
   atk_class->get_index_in_parent = jaw_object_get_index_in_parent;
   atk_class->get_role = jaw_object_get_role;
-  atk_class->get_parent = jaw_object_get_parent;
+  atk_class->get_layer = NULL;
+  atk_class->get_mdi_zorder = NULL;
   atk_class->ref_state_set = jaw_object_ref_state_set;
-  atk_class->initialize = jaw_object_initialize;
-  atk_class->ref_child = jaw_object_ref_child;
-  atk_class->ref_relation_set = jaw_object_ref_relation_set;
-  atk_class->set_name = jaw_object_set_name;
-  atk_class->set_description = jaw_object_set_description;
-  atk_class->set_parent = jaw_object_set_parent;
-  atk_class->set_role = jaw_object_set_role;
-  atk_class->get_object_locale = jaw_object_get_object_locale;
-
+/*	atk_class->set_name = jaw_object_set_name;
+	atk_class->set_description = jaw_object_set_description;
+	atk_class->set_parent = jaw_object_set_parent;
+	atk_class->set_role = jaw_object_set_role;
+	atk_class->connect_property_change_handler = jaw_object_connect_property_change_handler;
+	atk_class->remove_property_change_handler = jaw_object_remove_property_change_handler;
+	atk_class->children_changed = jaw_object_children_changed;
+	atk_class->focus_event = jaw_object_focus_event;
+	atk_class->property_change = jaw_object_property_change;
+	atk_class->state_change = jaw_object_state_change;
+	atk_class->visible_data_changed = jaw_object_visible_data_changed;
+	atk_class->active_descendant_changed = jaw_object_active_descendant_changed;
+	atk_class->get_attributes = jaw_object_get_attributes;
+*/
   klass->get_interface_data = NULL;
-}
+
+  jaw_window_signals [ACTIVATE] = g_signal_new ("activate",
+                                                G_TYPE_FROM_CLASS (klass),
+                                                G_SIGNAL_RUN_LAST,
+                                                0, /* default signal handler */
+                                                NULL,
+                                                NULL,
+                                                g_cclosure_marshal_VOID__VOID,
+                                                G_TYPE_NONE,
+                                                0);
+  jaw_window_signals [CREATE] = g_signal_new ("create",
+                                              G_TYPE_FROM_CLASS (klass),
+                                              G_SIGNAL_RUN_LAST,
+                                              0, /* default signal handler */
+                                              NULL, NULL,
+                                              g_cclosure_marshal_VOID__VOID,
+                                              G_TYPE_NONE,
+                                              0);
+  jaw_window_signals [DEACTIVATE] = g_signal_new ("deactivate",
+                                                  G_TYPE_FROM_CLASS (klass),
+                                                  G_SIGNAL_RUN_LAST,
+                                                  0, /* default signal handler */
+                                                  NULL, NULL,
+                                                  g_cclosure_marshal_VOID__VOID,
+                                                  G_TYPE_NONE, 0);
+  jaw_window_signals [DESTROY] = g_signal_new ("destroy",
+                                                G_TYPE_FROM_CLASS (klass),
+                                                G_SIGNAL_RUN_LAST,
+                                                0, /* default signal handler */
+                                                NULL,
+                                                NULL,
+                                                g_cclosure_marshal_VOID__VOID,
+                                                G_TYPE_NONE,
+                                                0);
+  jaw_window_signals [MAXIMIZE] = g_signal_new ("maximize",
+                                                G_TYPE_FROM_CLASS (klass),
+                                                G_SIGNAL_RUN_LAST,
+                                                0, /* default signal handler */
+                                                NULL, NULL,
+                                                g_cclosure_marshal_VOID__VOID,
+                                                G_TYPE_NONE, 0);
+  jaw_window_signals [MINIMIZE] = g_signal_new ("minimize",
+                                                G_TYPE_FROM_CLASS (klass),
+                                                G_SIGNAL_RUN_LAST,
+                                                0, /* default signal handler */
+                                                NULL, NULL,
+                                                g_cclosure_marshal_VOID__VOID,
+                                                G_TYPE_NONE, 0);
+  jaw_window_signals [MOVE] = g_signal_new ("move",
+                                            G_TYPE_FROM_CLASS (klass),
+                                            G_SIGNAL_RUN_LAST,
+                                            0, /* default signal handler */
+                                            NULL, NULL,
+                                            g_cclosure_marshal_VOID__VOID,
+                                            G_TYPE_NONE, 0);
+  jaw_window_signals [RESIZE] = g_signal_new ("resize",
+                                              G_TYPE_FROM_CLASS (klass),
+                                              G_SIGNAL_RUN_LAST,
+                                              0, /* default signal handler */
+                                              NULL,
+                                              NULL,
+                                              g_cclosure_marshal_VOID__VOID,
+                                              G_TYPE_NONE,
+                                              0);
+  jaw_window_signals [RESTORE] = g_signal_new ("restore",
+                                                G_TYPE_FROM_CLASS (klass),
+                                                G_SIGNAL_RUN_LAST,
+                                                0, /* default signal handler */
+                                                NULL,
+                                                NULL,
+                                                g_cclosure_marshal_VOID__VOID,
+                                                G_TYPE_NONE,
+                                                0);
+  }
 
 gpointer
 jaw_object_get_interface_data (JawObject *jaw_obj, guint iface)
@@ -97,50 +187,47 @@ jaw_object_init (JawObject *object)
 }
 
 static void
-jaw_object_initialize(AtkObject *atk_obj, gpointer data)
+jaw_object_dispose (GObject *gobject)
 {
- ATK_OBJECT_CLASS (jaw_object_parent_class)->initialize(atk_obj, data);
-}
+  /* Customized dispose code */
 
-static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)
-{
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleParent",
-                                          "()Ljavax/accessibility/AccessibleContext;");
-  jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-
-  return ATK_OBJECT(jparent);
-}
-
-AtkObject* jaw_object_peek_parent(AtkObject *atk_obj)
-{
-  AtkObject *atk_parent = jaw_object_get_parent(atk_obj);
-  if (atk_parent != NULL)
-    return atk_parent;
-  return NULL;
+  /* Chain up to parent's dispose method */
+  G_OBJECT_CLASS(jaw_object_parent_class)->dispose(gobject);
 }
 
 static void
-jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
+jaw_object_finalize (GObject *gobject)
 {
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
+  /* Customized finalize code */
+  JawObject *jaw_obj = JAW_OBJECT(gobject);
+  AtkObject *atk_obj = ATK_OBJECT(gobject);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "setAccessibleParent",
-                                          "(Ljavax/accessibility/AccessibleContext;)");
-  jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  if (atk_obj->name != NULL)
+  {
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
+    jaw_obj->jstrName = NULL;
+    atk_obj->name = NULL;
+  }
+
+  if (atk_obj->description != NULL)
+  {
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv,
+                                     jaw_obj->jstrDescription,
+                                     atk_obj->description);
+
+    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
+    jaw_obj->jstrDescription = NULL;
+    atk_obj->description = NULL;
+  }
+
+  if (G_OBJECT(jaw_obj->state_set) != NULL)
+  {
+    g_object_unref(G_OBJECT(jaw_obj->state_set));
+    /* Chain up to parent's finalize method */
+    G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
+  }
 }
 
 static const gchar*
@@ -191,42 +278,6 @@ jaw_object_get_name (AtkObject *atk_obj)
   return atk_obj->name;
 }
 
-static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
-{
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "setAccessibleName",
-                                          "(Ljava/lang/String;)");
-  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-
-  if (atk_obj->name != NULL)
-  {
-    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
-    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
-  }
-
-  if (jstr != NULL)
-  {
-    jaw_obj->jstrName = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
-    atk_obj->name = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
-                                                         jaw_obj->jstrName,
-                                                         NULL);
-  }
-  if (jstr == NULL)
-  {
-    name = "";
-    return;
-  }
-}
-
 static const gchar*
 jaw_object_get_description (AtkObject *atk_obj)
 {
@@ -260,39 +311,6 @@ jaw_object_get_description (AtkObject *atk_obj)
   return atk_obj->description;
 }
 
-static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description)
-{
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "setAccessibleDescription",
-                                          "(Ljava/lang/String;)");
-  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-
-  if (description != NULL)
-  {
-    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrDescription, description);
-    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
-    description = NULL;
-  }
-
-  if (jstr != NULL)
-  {
-    jaw_obj->jstrDescription = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
-    description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
-                                                       jaw_obj->jstrDescription,
-                                                       NULL);
-  }
-  if (jstr != NULL)
-  {
-    description = "";
-  }
-}
 static gint
 jaw_object_get_n_children (AtkObject *atk_obj)
 {
@@ -342,48 +360,6 @@ jaw_object_get_role (AtkObject *atk_obj)
   return atk_obj->role;
 }
 
-static void
-jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
-{
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  atk_obj->role = role;
-  if (atk_obj != NULL && role)
-    atk_object_set_role(atk_obj, atk_obj->role);
-}
-
-static AtkObject*
-jaw_object_ref_child (AtkObject *atk_obj, gint i)
-{
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleChild",
-                                          "(I)Ljavax/accessibility/Accessible;" );
-  jobject jchild = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid, i );
-  if (jchild == NULL)
-  {
-    return NULL;
-  }
-
-  jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
-  jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                classAccessible,
-                                "getAccessibleContext",
-                                "()Ljavax/accessibility/AccessibleContext;" );
-  jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
-
-  AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
-  if (G_OBJECT(obj) != NULL)
-    g_object_ref(G_OBJECT(obj));
-
-  return obj;
-}
-
 static AtkStateSet*
 jaw_object_ref_state_set (AtkObject *atk_obj)
 {
@@ -427,104 +403,5 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
     g_object_ref(G_OBJECT(state_set));
 
   return state_set;
-}
-
-static AtkRelationSet*
-jaw_object_ref_relation_set (AtkObject *atk_obj)
-{
-  if (atk_obj->relation_set)
-    g_object_unref(G_OBJECT(atk_obj->relation_set));
-  atk_obj->relation_set = atk_relation_set_new();
-  if(atk_obj == NULL)
-    return NULL;
-
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleRelationSet",
-                                          "()Ljavax/accessibility/AccessibleRelationSet;" );
-  jobject jrel_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-
-  jclass classAccessibleRelationSet = (*jniEnv)->FindClass( jniEnv,
-                                                           "javax/accessibility/AccessibleRelationSet");
-  jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                classAccessibleRelationSet,
-                                "toArray",
-                                "()[Ljavax/accessibility/AccessibleRelation;");
-  jobjectArray jrel_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel_set, jmid);
-  jsize jarr_size = (*jniEnv)->GetArrayLength(jniEnv, jrel_arr);
-
-  jsize i;
-  for (i = 0; i < jarr_size; i++)
-  {
-    jobject jrel = (*jniEnv)->GetObjectArrayElement(jniEnv, jrel_arr, i);
-    jclass classAccessibleRelation = (*jniEnv)->FindClass(jniEnv,
-                                                          "javax/accessibility/AccessibleRelation");
-    jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                  classAccessibleRelation,
-                                  "getKey",
-                                  "()Ljava/lang/String;");
-    jstring jrel_key = (*jniEnv)->CallObjectMethod( jniEnv, jrel, jmid );
-    AtkRelationType rel_type = jaw_impl_get_atk_relation_type_from_java_key(jniEnv, jrel_key);
-
-    jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                  classAccessibleRelation,
-                                  "getTarget",
-                                  "()[Ljava/lang/Object;");
-    jobjectArray jtarget_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel, jmid);
-    jsize jtarget_size = (*jniEnv)->GetArrayLength(jniEnv, jtarget_arr);
-
-    jsize j;
-    for (j = 0; j < jtarget_size; j++)
-    {
-      jobject jtarget = (*jniEnv)->GetObjectArrayElement(jniEnv, jtarget_arr, j);
-      jclass classAccessible = (*jniEnv)->FindClass( jniEnv,
-                                                    "javax/accessibility/Accessible");
-      if ((*jniEnv)->IsInstanceOf(jniEnv, jtarget, classAccessible))
-      {
-        jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                      classAccessible,
-                                      "getAccessibleContext",
-                                      "()Ljavax/accessibility/AccessibleContext;");
-        jobject target_ac = (*jniEnv)->CallObjectMethod(jniEnv, jtarget, jmid);
-
-        JawImpl *target_obj = jaw_impl_get_instance(jniEnv, target_ac);
-        if(target_obj == NULL)
-          return NULL;
-        atk_object_add_relationship(atk_obj, rel_type, (AtkObject*) target_obj);
-      }
-    }
-  }
-  if(atk_obj->relation_set == NULL)
-    return NULL;
-  if (G_OBJECT(atk_obj->relation_set) != NULL)
-    g_object_ref (atk_obj->relation_set);
-
-  return atk_obj->relation_set;
-}
-
-static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
-{
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getLocale",
-                                          "()Ljavax/accessibility/AccessibleContext;");
-  jobject locale = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-  JawImpl *target_obj = jaw_impl_get_instance(jniEnv, locale);
-  if(target_obj == NULL)
-    return NULL;
-
-  return atk_object_get_object_locale((AtkObject*) target_obj);
 }
 

@@ -30,7 +30,6 @@
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
-#include "jawwindow.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -319,7 +318,7 @@ window_open_handler (gpointer p)
                           atk_obj,
                           NULL);
 
-    g_signal_emit(atk_obj, g_signal_lookup("create", JAW_TYPE_WINDOW), 0);
+    g_signal_emit(atk_obj, g_signal_lookup("create", JAW_TYPE_OBJECT), 0);
   }
 
   free_callback_para(para);
@@ -397,7 +396,7 @@ window_close_handler (gpointer p)
                           atk_obj,
                           NULL);
 
-    g_signal_emit(atk_obj, g_signal_lookup("destroy", JAW_TYPE_WINDOW), 0);
+    g_signal_emit(atk_obj, g_signal_lookup("destroy", JAW_TYPE_OBJECT), 0);
   }
 
   free_callback_para(para);
@@ -449,7 +448,7 @@ window_minimize_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("minimize", JAW_TYPE_WINDOW), 0);
+  g_signal_emit(atk_obj, g_signal_lookup("minimize", JAW_TYPE_OBJECT), 0);
 
   free_callback_para(para);
 
@@ -499,7 +498,7 @@ window_maximize_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("maximize", JAW_TYPE_WINDOW), 0);
+  g_signal_emit(atk_obj, g_signal_lookup("maximize", JAW_TYPE_OBJECT), 0);
 
   free_callback_para(para);
 
@@ -548,7 +547,7 @@ window_restore_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("restore", JAW_TYPE_WINDOW), 0);
+  g_signal_emit(atk_obj, g_signal_lookup("restore", JAW_TYPE_OBJECT), 0);
 
   free_callback_para(para);
 
@@ -597,7 +596,7 @@ window_activate_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("activate", JAW_TYPE_WINDOW), 0);
+  g_signal_emit(atk_obj, g_signal_lookup("activate", JAW_TYPE_OBJECT), 0);
 
   free_callback_para(para);
 
@@ -645,7 +644,7 @@ window_deactivate_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("deactivate", JAW_TYPE_WINDOW), 0);
+  g_signal_emit(atk_obj, g_signal_lookup("deactivate", JAW_TYPE_OBJECT), 0);
 
   free_callback_para(para);
 
@@ -696,7 +695,7 @@ window_state_change_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("state-change", JAW_TYPE_WINDOW), 0);
+  g_signal_emit(atk_obj, g_signal_lookup("state-change", JAW_TYPE_OBJECT), 0);
 
   free_callback_para(para);
 
@@ -1084,8 +1083,8 @@ object_state_change_handler (gpointer p)
   }
 
   atk_object_notify_state_change(ATK_OBJECT(jaw_impl),
-                              para->atk_state,
-                              para->state_value);
+                                 para->atk_state,
+                                 para->state_value);
 
   free_callback_para(para);
   return G_SOURCE_REMOVE;
@@ -1210,9 +1209,7 @@ component_removed_handler (gpointer p)
     return G_SOURCE_REMOVE;
   }
   if (atk_object_get_role(atk_obj) == ATK_ROLE_TOOL_TIP)
-    atk_object_notify_state_change(atk_obj,
-                                   ATK_STATE_SHOWING,
-                                   FALSE);
+    atk_object_notify_state_change(atk_obj, ATK_STATE_SHOWING, FALSE);
   free_callback_para(para);
 
   return G_SOURCE_REMOVE;

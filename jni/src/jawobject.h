@@ -21,6 +21,7 @@
 #define _JAW_OBJECT_H_
 
 #include <atk/atk.h>
+#include <atk-bridge.h>
 #include <jni.h>
 
 G_BEGIN_DECLS
@@ -38,10 +39,12 @@ typedef struct _JawObjectClass		JawObjectClass;
 struct _JawObject
 {
 	AtkObject parent;
+	
 	jobject acc_context;
 	jstring jstrName;
 	jstring jstrDescription;
 	AtkStateSet *state_set;
+
 	GHashTable *storedData;
 };
 
@@ -55,7 +58,6 @@ struct _JawObjectClass
 };
 
 gpointer jaw_object_get_interface_data (JawObject*, guint);
-AtkObject *jaw_object_peek_parent(AtkObject *atk_obj);
 
 G_END_DECLS
 

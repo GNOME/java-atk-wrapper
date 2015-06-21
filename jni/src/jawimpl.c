@@ -42,6 +42,8 @@ static gpointer jaw_impl_get_interface_data(JawObject *jaw_obj, guint iface);
 /* AtkObject */
 static void jaw_impl_initialize(AtkObject *atk_obj, gpointer data);
 static AtkObject* jaw_impl_get_parent(AtkObject *atk_obj);
+static AtkObject* jaw_impl_ref_child (AtkObject *atk_obj, gint i);
+static AtkRelationSet* jaw_impl_ref_relation_set(AtkObject *atk_obj);
 
 extern void jaw_action_interface_init(AtkActionIface*);
 extern gpointer jaw_action_data_init(jobject);
@@ -78,14 +80,6 @@ extern void jaw_value_data_finalize (gpointer);
 extern void jaw_table_interface_init (AtkTableIface*);
 extern gpointer jaw_table_data_init (jobject);
 extern void jaw_table_data_finalize (gpointer);
-
-extern void jaw_table_cell_interface_init (AtkTableCellIface*);
-extern gpointer jaw_table_cell_data_init (jobject);
-extern void jaw_table_cell_data_finalize (gpointer);
-
-extern void jaw_window_interface_init (AtkWindowIface*);
-extern gpointer jaw_window_data_init (jobject);
-extern void jaw_window_data_finalize (gpointer);
 
 typedef struct _JawInterfaceInfo {
   void (*finalize) (gpointer);
@@ -240,26 +234,6 @@ aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
                         (gpointer)INTERFACE_TABLE,
                         (gpointer)info);
   }
-
-  if (tflag & INTERFACE_TABLE_CELL)
-  {
-    JawInterfaceInfo *info = g_new(JawInterfaceInfo, 1);
-    info->data = jaw_table_cell_data_init(ac);
-    info->finalize = jaw_table_cell_data_finalize;
-    g_hash_table_insert(jaw_impl->ifaceTable,
-                        (gpointer)INTERFACE_TABLE_CELL,
-                        (gpointer)info);
-  }
-
-  if (tflag & INTERFACE_WINDOW)
-  {
-    JawInterfaceInfo *info = g_new(JawInterfaceInfo, 1);
-    info->data = jaw_window_data_init(ac);
-    info->finalize = jaw_window_data_finalize;
-    g_hash_table_insert(jaw_impl->ifaceTable,
-                        (gpointer)INTERFACE_WINDOW,
-                        (gpointer)info);
-  }
 }
 
 JawImpl*
@@ -410,20 +384,6 @@ jaw_impl_get_type (guint tflag)
     NULL
   };
 
-  static const GInterfaceInfo atk_table_cell_info =
-  {
-    (GInterfaceInitFunc) jaw_table_cell_interface_init,
-    (GInterfaceFinalizeFunc) NULL,
-    NULL
-  };
-
-  static const GInterfaceInfo atk_window_info =
-  {
-    (GInterfaceInitFunc) jaw_window_interface_init,
-    (GInterfaceFinalizeFunc) NULL,
-    NULL
-  };
-
   if (typeTable == NULL) {
     typeTable = g_hash_table_new( NULL, NULL );
   }
@@ -475,12 +435,6 @@ jaw_impl_get_type (guint tflag)
     if (tflag & INTERFACE_TABLE)
       g_type_add_interface_static (type, ATK_TYPE_TABLE, &atk_table_info);
 
-    if (tflag & INTERFACE_TABLE_CELL)
-      g_type_add_interface_static (type, ATK_TYPE_TABLE_CELL, &atk_table_cell_info);
-
-    if (tflag & INTERFACE_WINDOW)
-      g_type_add_interface_static (type, ATK_TYPE_WINDOW, &atk_window_info);
-
     g_hash_table_insert(typeTable, GINT_TO_POINTER(tflag), GTYPE_TO_POINTER(type));
   }
 
@@ -497,6 +451,8 @@ jaw_impl_class_init(JawImplClass *klass)
   AtkObjectClass *atk_class = ATK_OBJECT_CLASS (klass);
   atk_class->initialize = jaw_impl_initialize;
   atk_class->get_parent = jaw_impl_get_parent;
+  atk_class->ref_child = jaw_impl_ref_child;
+  atk_class->ref_relation_set = jaw_impl_ref_relation_set;
 
   JawObjectClass *jaw_class = JAW_OBJECT_CLASS (klass);
   jaw_class->get_interface_data = jaw_impl_get_interface_data;
@@ -621,7 +577,41 @@ jaw_impl_get_parent (AtkObject *atk_obj)
        return obj;
     }
   }
+
   return ATK_OBJECT(atk_get_root());
+}
+
+static AtkObject*
+jaw_impl_ref_child (AtkObject *atk_obj, gint i)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  jobject ac = jaw_obj->acc_context;
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "getAccessibleChild",
+                                          "(I)Ljavax/accessibility/Accessible;" );
+  jobject jchild = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid, i );
+  if (jchild == NULL)
+  {
+    return NULL;
+  }
+
+  jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
+  jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                classAccessible,
+                                "getAccessibleContext",
+                                "()Ljavax/accessibility/AccessibleContext;" );
+  jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
+
+  AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
+  if (G_OBJECT(obj) != NULL)
+    g_object_ref(G_OBJECT(obj));
+
+  return obj;
 }
 
 static jstring
@@ -709,10 +699,83 @@ get_atk_relation_type_from_java_key (JNIEnv *jniEnv, jstring jrel_key)
   return ATK_RELATION_NULL;
 }
 
-AtkRelationType
-jaw_impl_get_atk_relation_type_from_java_key (JNIEnv *jniEnv, jstring jrel_key)
+static AtkRelationSet*
+jaw_impl_ref_relation_set (AtkObject *atk_obj)
 {
-  return get_atk_relation_type_from_java_key (jniEnv, jrel_key);
+  if (atk_obj->relation_set)
+    g_object_unref(G_OBJECT(atk_obj->relation_set));
+  atk_obj->relation_set = atk_relation_set_new();
+  if(atk_obj == NULL)
+    return NULL;
+
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  jobject ac = jaw_obj->acc_context;
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "getAccessibleRelationSet",
+                                          "()Ljavax/accessibility/AccessibleRelationSet;" );
+  jobject jrel_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+
+  jclass classAccessibleRelationSet = (*jniEnv)->FindClass( jniEnv,
+                                                           "javax/accessibility/AccessibleRelationSet");
+  jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                classAccessibleRelationSet,
+                                "toArray",
+                                "()[Ljavax/accessibility/AccessibleRelation;");
+  jobjectArray jrel_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel_set, jmid);
+  jsize jarr_size = (*jniEnv)->GetArrayLength(jniEnv, jrel_arr);
+
+  jsize i;
+  for (i = 0; i < jarr_size; i++)
+  {
+    jobject jrel = (*jniEnv)->GetObjectArrayElement(jniEnv, jrel_arr, i);
+    jclass classAccessibleRelation = (*jniEnv)->FindClass(jniEnv,
+                                                          "javax/accessibility/AccessibleRelation");
+    jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                  classAccessibleRelation,
+                                  "getKey",
+                                  "()Ljava/lang/String;");
+    jstring jrel_key = (*jniEnv)->CallObjectMethod( jniEnv, jrel, jmid );
+    AtkRelationType rel_type = get_atk_relation_type_from_java_key(jniEnv, jrel_key);
+
+    jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                  classAccessibleRelation,
+                                  "getTarget",
+                                  "()[Ljava/lang/Object;");
+    jobjectArray jtarget_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel, jmid);
+    jsize jtarget_size = (*jniEnv)->GetArrayLength(jniEnv, jtarget_arr);
+
+    jsize j;
+    for (j = 0; j < jtarget_size; j++)
+    {
+      jobject jtarget = (*jniEnv)->GetObjectArrayElement(jniEnv, jtarget_arr, j);
+      jclass classAccessible = (*jniEnv)->FindClass( jniEnv,
+                                                    "javax/accessibility/Accessible");
+      if ((*jniEnv)->IsInstanceOf(jniEnv, jtarget, classAccessible))
+      {
+        jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                      classAccessible,
+                                      "getAccessibleContext",
+                                      "()Ljavax/accessibility/AccessibleContext;");
+        jobject target_ac = (*jniEnv)->CallObjectMethod(jniEnv, jtarget, jmid);
+
+        JawImpl *target_obj = jaw_impl_get_instance(jniEnv, target_ac);
+        if(target_obj == NULL)
+          return NULL;
+        atk_object_add_relationship(atk_obj, rel_type, (AtkObject*) target_obj);
+      }
+    }
+  }
+  if(atk_obj->relation_set == NULL)
+    return NULL;
+  if (G_OBJECT(atk_obj->relation_set) != NULL)
+    g_object_ref (atk_obj->relation_set);
+
+  return atk_obj->relation_set;
 }
 
 #ifdef __cplusplus
