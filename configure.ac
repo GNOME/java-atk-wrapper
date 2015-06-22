@@ -41,7 +41,6 @@ PKG_CHECK_MODULES(JAW, [
   dbus-1
   glib-2.0 >= 2.32.0
   gthread-2.0
-  gmodule-2.0 >= 2.0.0
   gdk-2.0
   gdk-3.0
   gobject-2.0
@@ -121,7 +120,7 @@ AC_SUBST(JDK_SRC)
 AC_SUBST(JAVA_HOME)
 
 if test "x$GCC" = xyes; then
-  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS $JNI_INCLUDES
+  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS
 else
   AC_MSG_ERROR("You should compile with GCC")
 fi
