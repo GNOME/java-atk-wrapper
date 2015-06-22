@@ -13,6 +13,8 @@ AUTORECONF=`which autoreconf`
 if test -z $AUTORECONF; then
         echo "*** No autoreconf found, please intall it ***"
         exit 1
+else
+  autoreconf -vif || exit $?
 fi
 
 PKGCONFIG=`which pkg-config`
@@ -31,14 +33,6 @@ fi
 # up rules. to get automake to work, simply touch these here, they will be
 # regenerated from their corresponding *.in files by ./configure anyway.
 touch README INSTALL
-
-AUTORECONF=`which autoreconf`
-if test -z "$AUTORECONF"; then
-  echo "*** No autoreconf found, please install it ***"
-  exit 1
-else
-  autoreconf -vif || exit $?
-fi
 
 cd "$olddir"
 test -n "$NOCONFIGURE" || "$srcdir/configure" "$@"
