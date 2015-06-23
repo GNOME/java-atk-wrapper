@@ -4,18 +4,14 @@ ALL_CLASSES=org/GNOME/Accessibility/*.class
 DEP_CLASSES=$(wildcard $(ALL_CLASSES))
 
 if USER
-java_atk_wrapperdir = $(JDK_SRC)/jre/lib/ext
+java_atk_wrapperdir = $(JAVA_HOME)/lib/ext
+propertiesdir = $(JAVA_HOME)/lib
 else
-java_atk_wrapperdir = $(HOME)/.local$(JDK_SRC)/jre/lib/ext
+java_atk_wrapperdir = $(HOME)/.local/share/java-atk-wrapper$(JAVA_HOME)/lib/ext
+propertiesdir = $(HOME)/.local/share/java-atk-wrapper$(JAVA_HOME)/lib
 endif
+
 java_atk_wrapper_DATA = $(JARFILES)
-
-if USER
-propertiesdir = $(JDK_SRC)/jre/lib
-else
-propertiesdir = $(HOME)/.local$(JAVA_HOME)/lib
-endif
-
 properties_DATA = accessibility.properties
 EXTRA_DIST = $(properties_DATA)
 
