@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([java-atk-wrapper],[0.33.0])
+AC_INIT([java-atk-wrapper],[0.33.1])
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([1.11 -Wall check-news])
@@ -16,7 +16,7 @@ m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LIB_ATK_WRAPPER_LT_VERSION=3:22:2
+LIB_ATK_WRAPPER_LT_VERSION=4:0:0
 AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 
 # jni
