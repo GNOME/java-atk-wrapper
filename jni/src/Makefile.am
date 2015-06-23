@@ -31,7 +31,7 @@ libatk_wrapper_la_CPPFLAGS = $(JNI_INCLUDES)\
 
 libatk_wrapper_la_LDFLAGS = $(LIB_ATK_WRAPPER_LD_FLAGS) \
                             $(LT_VERSION_INFO) \
-                            -rpath $(libdir) \
+                            $(PLATFORM_LDFLAGS) \
                             $(AM_LDFLAGS)
 
 libatk_wrapper_la_LIBADD = $(JAW_LIBS)

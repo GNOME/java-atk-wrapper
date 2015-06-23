@@ -36,7 +36,7 @@ case "$host" in
       JNI_INCLUDES="-I$JDK_SRC/include -I$JDK_SRC/include/linux"
     fi
     PLATFORM_CFLAGS=
-    PLATFORM_LDFLAGS=
+    PLATFORM_LDFLAGS="-rpath $libdir"
     PLATFORM_CLASSPATH_SEPARATOR=":"
     SOPREFIX=
     ;;
