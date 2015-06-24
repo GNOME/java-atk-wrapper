@@ -25,6 +25,10 @@
 #include "jawimpl.h"
 #include "jawtoplevel.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void jaw_object_class_init(JawObjectClass *klass);
 static void jaw_object_init(JawObject *object);
 static void jaw_object_initialize(AtkObject *jaw_obj, gpointer data);
@@ -50,6 +54,9 @@ static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
 static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj);
 
 static gpointer parent_class = NULL;
+static GHashTable *object_table = NULL;
+
+static JawObject* jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac);
 
 enum {
   ACTIVATE,
@@ -190,6 +197,11 @@ jaw_object_finalize (GObject *gobject)
 
 static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)
 {
+  if (jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj) != -1)
+  {
+    return ATK_OBJECT(atk_get_root());
+  }
+
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   jobject ac = jaw_obj->acc_context;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -201,8 +213,20 @@ static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)
                                           "getAccessibleParent",
                                           "()Ljavax/accessibility/AccessibleContext;");
   jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-
-  return ATK_OBJECT(jparent);
+  if (jparent != NULL )
+  {
+    jclass classAccessible = (*jniEnv)->FindClass(jniEnv,
+                                                  "javax/accessibility/Accessible" );
+    jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                  classAccessible,
+                                  "getAccessibleContext",
+                                  "()Ljavax/accessibility/AccessibleContext;");
+    jobject parent_ac = (*jniEnv)->CallObjectMethod(jniEnv, jparent, jmid);
+    AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup( jniEnv, parent_ac );
+    if (parent_obj != NULL )
+       return parent_obj;
+  }
+  return ATK_OBJECT(atk_get_root());
 }
 
 static void
@@ -497,3 +521,24 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
   return atk_object_get_object_locale((AtkObject*) target_obj);
 }
 
+static JawObject*
+jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
+{
+  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "hashCode",
+                                          "()I" );
+  gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
+  gpointer value = NULL;
+  if (object_table == NULL)
+    return NULL;
+
+  value = g_hash_table_lookup(object_table, GINT_TO_POINTER(hash_key));
+  return (JawObject*)value;
+}
+
+#ifdef __cplusplus
+}
+#endif
