@@ -462,12 +462,10 @@ jaw_object_get_role (AtkObject *atk_obj)
 static void
 jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
 {
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   atk_obj->role = role;
-  if (atk_obj != NULL && role)
+  if (atk_obj != NULL && atk_obj->role)
     atk_object_set_role(atk_obj, atk_obj->role);
 }
-
 
 static AtkStateSet*
 jaw_object_ref_state_set (AtkObject *atk_obj)
