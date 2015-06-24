@@ -55,7 +55,6 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj);
 
 static gpointer parent_class = NULL;
 static GHashTable *object_table = NULL;
-
 static JawObject* jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac);
 
 enum {
@@ -535,6 +534,7 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
 static JawObject*
 jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
 {
+  object_table = jaw_impl_get_object_hash_table();
   jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,

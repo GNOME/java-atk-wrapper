@@ -141,6 +141,12 @@ object_table_remove(JNIEnv *jniEnv, jobject ac)
   g_hash_table_remove(objectTable, GINT_TO_POINTER(hash_key));
 }
 
+GHashTable*
+jaw_impl_get_object_hash_table(void)
+{
+  return objectTable;
+}
+
 static void
 aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
 {

@@ -51,6 +51,8 @@ struct _JawImpl
 
 JawImpl* jaw_impl_get_instance(JNIEnv*, jobject);
 JawImpl* jaw_impl_find_instance(JNIEnv*, jobject);
+GHashTable* jaw_impl_get_object_hash_table(void);
+
 GType jaw_impl_get_type (guint);
 
 struct _JawImplClass
