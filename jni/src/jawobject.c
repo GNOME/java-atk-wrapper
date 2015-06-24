@@ -243,6 +243,19 @@ jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
                                           "setAccessibleParent",
                                           "(Ljavax/accessibility/AccessibleContext;)");
   jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  if (jparent != NULL )
+  {
+    jclass classAccessible = (*jniEnv)->FindClass(jniEnv,
+                                                  "javax/accessibility/Accessible" );
+    jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                  classAccessible,
+                                  "getAccessibleContext",
+                                  "()Ljavax/accessibility/AccessibleContext;");
+    jobject parent_ac = (*jniEnv)->CallObjectMethod(jniEnv, jparent, jmid);
+    AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup( jniEnv, parent_ac );
+    if (parent_obj == NULL)
+      return;
+  }
 }
 
 static const gchar*
