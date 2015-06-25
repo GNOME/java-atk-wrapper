@@ -53,6 +53,7 @@ static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
 static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
 static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj);
 static AtkRelationSet *jaw_object_ref_relation_set (AtkObject *atk_obj);
+static AtkObject *jaw_object_ref_child(AtkObject *atk_obj, gint i);
 
 static gpointer parent_class = NULL;
 static GHashTable *object_table = NULL;
@@ -110,6 +111,7 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->set_role = jaw_object_set_role;
   atk_class->get_object_locale = jaw_object_get_object_locale;
   atk_class->ref_relation_set = jaw_object_ref_relation_set;
+  atk_class->ref_child = jaw_object_ref_child;
 
   atk_class->ref_state_set = jaw_object_ref_state_set;
   atk_class->initialize = jaw_object_initialize;
@@ -610,6 +612,39 @@ jaw_object_ref_relation_set (AtkObject *atk_obj)
     g_object_ref (atk_obj->relation_set);
 
   return atk_obj->relation_set;
+}
+
+static AtkObject*
+jaw_object_ref_child(AtkObject *atk_obj, gint i)
+{
+  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  jobject ac = jaw_obj->acc_context;
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+
+  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
+                                                       "javax/accessibility/AccessibleContext" );
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAccessibleContext,
+                                          "getAccessibleChild",
+                                          "(I)Ljavax/accessibility/Accessible;" );
+  jobject jchild = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid, i );
+  if (jchild == NULL)
+  {
+    return NULL;
+  }
+
+  jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
+  jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                classAccessible,
+                                "getAccessibleContext",
+                                "()Ljavax/accessibility/AccessibleContext;" );
+  jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
+
+  AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
+  if (G_OBJECT(obj) != NULL)
+    g_object_ref(G_OBJECT(obj));
+
+  return obj;
 }
 
 static JawObject*
