@@ -109,7 +109,7 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->set_parent = jaw_object_set_parent;
   atk_class->set_role = jaw_object_set_role;
   atk_class->get_object_locale = jaw_object_get_object_locale;
-  atk_class->ref_relation_set= jaw_object_ref_relation_set;
+  atk_class->ref_relation_set = jaw_object_ref_relation_set;
 
   atk_class->ref_state_set = jaw_object_ref_state_set;
   atk_class->initialize = jaw_object_initialize;
@@ -634,3 +634,4 @@ jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
 #ifdef __cplusplus
 }
 #endif
+
