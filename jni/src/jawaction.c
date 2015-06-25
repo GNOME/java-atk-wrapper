@@ -31,6 +31,7 @@ static gint jaw_action_get_n_actions(AtkAction *action);
 static const gchar* jaw_action_get_description(AtkAction *action, gint i);
 static const gchar* jaw_action_get_name(AtkAction	*action, gint i);
 static const gchar* jaw_action_get_keybinding (AtkAction *action, gint i);
+static gboolean jaw_action_set_description (AtkAction *action, gint i, const gchar *description);
 /*static const gchar*	jaw_get_localized_name			(AtkAction	*action,
 									 gint		i);*/
 
@@ -52,8 +53,8 @@ jaw_action_interface_init (AtkActionIface *iface)
   iface->get_description = jaw_action_get_description;
   iface->get_name = jaw_action_get_name;
   iface->get_keybinding = jaw_action_get_keybinding;
+  iface->set_description = jaw_action_set_description;
   iface->get_localized_name = NULL; /*jaw_get_localized_name;*/
-  iface->set_description = NULL;
 }
 
 gpointer
@@ -188,6 +189,34 @@ jaw_action_get_description (AtkAction *action, gint i)
                                                                   NULL);
 
   return data->action_description;
+}
+
+static gboolean
+jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
+{
+  JawObject *jaw_obj = JAW_OBJECT(action);
+  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
+  jobject atk_action = data->atk_action;
+
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
+                                               "org/GNOME/Accessibility/AtkAction");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkAction,
+                                          "setDescription",
+                                          "(ILjava/lang/String;)Z");
+  jboolean jisset = (*jniEnv)->CallBooleanMethod(jniEnv,
+                                                 atk_action,
+                                                 jmid,
+                                                 (jint)i,
+                                                 (jstring)description);
+
+  if (jisset == JNI_TRUE)
+  {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }
 
 static const gchar*
