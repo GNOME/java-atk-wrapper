@@ -54,6 +54,7 @@ JawImpl* jaw_impl_find_instance(JNIEnv*, jobject);
 GHashTable* jaw_impl_get_object_hash_table(void);
 
 GType jaw_impl_get_type (guint);
+AtkRelationType jaw_impl_get_atk_relation_type(JNIEnv *jniEnv, jstring jrel_key);
 
 struct _JawImplClass
 {
