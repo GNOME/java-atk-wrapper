@@ -120,6 +120,10 @@ public class AtkComponent {
       return AtkLayer.CANVAS;
     }
 
+    if (role == AccessibleRole.WINDOW) {
+     return AtkLayer.WINDOW;
+    }
+
     return AtkLayer.WIDGET;
   }
 }
