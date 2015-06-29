@@ -11,6 +11,7 @@
 .tm*
 ~*
 
+nbproject/
 .idea/
 *.iml
 
