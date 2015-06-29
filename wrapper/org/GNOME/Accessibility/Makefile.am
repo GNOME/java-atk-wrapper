@@ -1,4 +1,4 @@
-JAVA_SRC=$(wildcard $(srcdir)/*.java)
+JAVA_SRC=$(srcdir)/*.java
 CLASSES=$(patsubst %.java,%.class,$(JAVA_SRC))
 BUILD_CLASSES=$(patsubst $(srcdir)%,$(builddir)%,$(CLASSES)) $(builddir)/AtkWrapper.class
 
@@ -14,6 +14,6 @@ AtkWrapper.java : AtkWrapper.java.in
 	CLASSPATH=$(top_srcdir)/wrapper $(JAVAC) $(JAVACFLAGS) -d $(top_builddir)/wrapper $<
 
 clean-local:
-	$(RM) *.class
-	$(RM) AtkWrapper.java
+	$(RM) $(builddir)/*.class
+	$(RM) $(builddir)/AtkWrapper.java
 
