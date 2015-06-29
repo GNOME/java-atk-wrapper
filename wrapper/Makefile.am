@@ -16,7 +16,7 @@ properties_DATA = accessibility.properties
 EXTRA_DIST = $(properties_DATA)
 
 $(JARFILES) : $(DEP_CLASSES)
-	$(JAR) cf $(JARFILES) $(ALL_CLASSES)
+	$(JAR) cfm $(JARFILES) manifest.txt org/GNOME/Accessibility/*.class
 
 all-local : $(DATA) $(JARFILES)
 
