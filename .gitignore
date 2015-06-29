@@ -11,6 +11,10 @@
 .tm*
 ~*
 
+# Ignore Intellij project files
+.idea/
+*.iml
+
 /autom4te.cache
 
 /INSTALL
