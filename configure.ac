@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([java-atk-wrapper],[0.33.1])
+AC_INIT([java-atk-wrapper],[0.33.1],[https://bugzilla.gnome.org/enter_bug.cgi?product=java-atk-wrapper])
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([1.11 -Wall check-news])
