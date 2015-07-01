@@ -1,5 +1,6 @@
 AC_PREREQ(2.63)
 AC_INIT([java-atk-wrapper],[0.33.1],[https://bugzilla.gnome.org/enter_bug.cgi?product=java-atk-wrapper])
+: ${CXXFLAGS=""}
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([1.11 -Wall check-news])
@@ -23,6 +24,7 @@ AC_SUBST(LIB_ATK_WRAPPER_LT_VERSION)
 AC_CONFIG_HEADERS([config.h])
 
 AC_PROG_CC(gcc)
+AC_PROG_CXX(gcc)
 AC_PROG_INSTALL
 AC_ISC_POSIX
 AC_PATH_XTRA
