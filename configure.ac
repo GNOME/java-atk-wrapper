@@ -25,6 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC(gcc)
 AC_PROG_INSTALL
 AC_ISC_POSIX
+AC_PATH_XTRA
 
 # Initialize libtool
 LT_PREREQ([2.2.6])
