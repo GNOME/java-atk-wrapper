@@ -318,7 +318,7 @@ window_open_handler (gpointer p)
                           atk_obj,
                           NULL);
 
-    g_signal_emit(atk_obj, g_signal_lookup("create", JAW_TYPE_OBJECT), 0);
+    g_signal_emit_by_name(atk_obj, "create", 0);
   }
 
   free_callback_para(para);
@@ -396,7 +396,7 @@ window_close_handler (gpointer p)
                           atk_obj,
                           NULL);
 
-    g_signal_emit(atk_obj, g_signal_lookup("destroy", JAW_TYPE_OBJECT), 0);
+    g_signal_emit_by_name(atk_obj, "destroy", 0);
   }
 
   free_callback_para(para);
@@ -448,7 +448,7 @@ window_minimize_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("minimize", JAW_TYPE_OBJECT), 0);
+  g_signal_emit_by_name(atk_obj, "minimize", 0);
 
   free_callback_para(para);
 
@@ -498,7 +498,7 @@ window_maximize_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("maximize", JAW_TYPE_OBJECT), 0);
+  g_signal_emit_by_name(atk_obj, "maximize", 0);
 
   free_callback_para(para);
 
@@ -547,7 +547,7 @@ window_restore_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("restore", JAW_TYPE_OBJECT), 0);
+  g_signal_emit_by_name(atk_obj, "restore", 0);
 
   free_callback_para(para);
 
@@ -596,7 +596,7 @@ window_activate_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("activate", JAW_TYPE_OBJECT), 0);
+  g_signal_emit_by_name(atk_obj, "activate", 0);
 
   free_callback_para(para);
 
@@ -644,7 +644,7 @@ window_deactivate_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("deactivate", JAW_TYPE_OBJECT), 0);
+  g_signal_emit_by_name(atk_obj, "deactivate", 0);
 
   free_callback_para(para);
 
@@ -695,7 +695,7 @@ window_state_change_handler (gpointer p)
   }
 
   AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
-  g_signal_emit(atk_obj, g_signal_lookup("state-change", JAW_TYPE_OBJECT), 0);
+  g_signal_emit_by_name(atk_obj, "state-change", 0);
 
   free_callback_para(para);
 
