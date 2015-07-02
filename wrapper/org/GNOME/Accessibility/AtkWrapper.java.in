@@ -171,6 +171,12 @@ public class AtkWrapper {
     * @param e A WindowEvent object
     */
     public void windowClosing(WindowEvent e) {
+      Object o = e.getSource();
+      if (o instanceof javax.accessibility.Accessible) {
+        boolean isToplevel = isToplevel(o);
+        AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+        AtkWrapper.windowClose(ac, isToplevel);
+      }
     }
 
    /**
