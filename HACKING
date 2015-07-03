@@ -90,8 +90,15 @@ Conventions for Writing Java ATK Wrapper Code
 Spaces instead of tabs.
 Two spaces per indent.
 
-JNI error messages are in the form:
-  g_warning("\n *** method calling instance: instance == NULL *** \n");
+JNI warning and error messages are in the form:
+
+  if (jaw_debug)
+    g_warning("method calling instance: instance == NULL");
+
+These statements will only print if the environment variable JAW_DEBUG is set to 1. To use this
+setting type the following into the terminal or set it in ~/.bashrc:
+
+  export JAW_DEBUG=1
 
 Other Things to Keep in Mind
 ----------------------------
