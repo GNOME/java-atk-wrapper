@@ -36,12 +36,12 @@ Object base class:
   get_attributes
 
 Table:
-  set_caption
-  set_row_description
-  set_column_description
-  set_row_header
-  set_column_header
-  set_summary
+  set_caption <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n75>
+  set_row_description <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n83>
+  set_column_description <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n77>
+  set_row_header <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n86>
+  set_column_header <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n80>
+  set_summary <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n89>
 
 TableCell:
   get_column_span
