@@ -51,13 +51,6 @@ TableCell:
   get_row_header_cells
   get_row_column_span
 
-Text:
-  set_free
-  attribute_register
-  attribute_get_name
-  attribute_for_name
-  attribute_get_value
-
 Deprecated Methods Which Are Implemented
 ----------------------------------------
 
