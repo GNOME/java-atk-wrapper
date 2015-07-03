@@ -174,6 +174,10 @@ public class AtkTable {
 		return null;
 	}
 
+    public void setRowHeader (int row, AccessibleTable table) {
+        acc_table.setAccessibleRowHeader(table);
+    }
+
 	public AccessibleContext get_summary () {
 		javax.accessibility.Accessible accessible = acc_table.getAccessibleSummary();
 
