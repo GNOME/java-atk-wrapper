@@ -107,6 +107,19 @@ public class AtkTable {
 		return "";
 	}
 
+/**
+ *
+ * @param column an int representing a column in table
+ * @param description a String object representing the description text to set for the
+ *                    specified column of the table
+ */
+  public void setColumnDescription(int column, String description) {
+    javax.accessibility.Accessible accessible = acc_table.getAccessibleColumnDescription(column);
+    if (description.equals(accessible.toString()) && accessible != null) {
+      acc_table.setAccessibleColumnDescription(column, accessible);
+    }
+  }
+
 	public String get_row_description (int row) {
 		javax.accessibility.Accessible accessible =
 			acc_table.getAccessibleRowDescription(row);
