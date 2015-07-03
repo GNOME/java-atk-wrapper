@@ -1,9 +1,6 @@
 Hacking Guide for Java ATK Wrapper
 ==================================
 
-Contributing to Java ATK Wrapper
---------------------------------
-
 As a general rule, non-trivial maintainer-submitted patches should be posted to
 gnome-accessibility-devel for comment and informational purpose prior to commit.
 
