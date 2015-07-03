@@ -39,23 +39,8 @@ TODO Currently Not fully documented by ATK
 Object base class:
   AtkFunction
   implementor_ref_accessible
-  get_parent
-  peek_parent
-  get_n_accessible_children # get_n_children currently implemented
-  ref_accessible_child
-  ref_relation_set
-  set_name
-  set_description
-  set_parent
-  set_role
-  notify_state_change
-  object_initialize
-  add_relationship
-  remove_relationship
+  notify_state_change # AtkWrapper handler
   get_attributes
-  get_object_locale
-  get_localized_name
-  for_name
 
 Table:
   set_caption
@@ -64,17 +49,14 @@ Table:
   set_row_header
   set_column_header
   set_summary
-  add_column_selection
-  add_row_selection
 
-TableCell (not yet implemented):
+TableCell:
   get_column_span
   get_column_header_cells
   get_position
   get_row_span
   get_row_header_cells
   get_row_column_span
-  cell_get_table
 
 Text:
   set_free
