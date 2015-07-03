@@ -48,6 +48,9 @@ static gboolean     jaw_table_is_row_selected(AtkTable *table, gint row);
 static gboolean     jaw_table_is_selected(AtkTable *table,gint row, gint column);
 static gboolean     jaw_table_add_row_selection(AtkTable *table, gint row);
 static gboolean     jaw_table_add_column_selection(AtkTable *table, gint column);
+static void         jaw_table_set_row_description(AtkTable *table,
+                                                  gint row,
+                                                  const gchar *description);
 
 typedef struct _TableData {
   jobject atk_table;
@@ -79,6 +82,7 @@ jaw_table_interface_init (AtkTableIface *iface)
   iface->is_selected = jaw_table_is_selected;
   iface->add_row_selection= jaw_table_add_row_selection;
   iface->add_column_selection= jaw_table_add_column_selection;
+  iface->set_row_description = jaw_table_set_row_description;
 }
 
 gpointer
@@ -529,4 +533,21 @@ jaw_table_add_column_selection(AtkTable *table, gint column)
     return TRUE;
 
   return FALSE;
+}
+
+static void
+jaw_table_set_row_description(AtkTable *table, gint row, const gchar *description)
+{
+  JawObject *jaw_obj = JAW_OBJECT(table);
+  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
+  jobject atk_table = data->atk_table;
+
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
+  jmethodID jmid = (*env)->GetMethodID(env,
+                                       classAtkTable,
+                                       "setRowDescription",
+                                       "(ILjava/lang/String;)V");
+  jstring jstr = (*env)->NewStringUTF(env, description);
+  (*env)->CallVoidMethod(env, atk_table, jmid, (jint)row, jstr);
 }
