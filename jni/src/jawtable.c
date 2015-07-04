@@ -55,6 +55,7 @@ static void         jaw_table_set_column_description(AtkTable *table,
                                                      gint column,
                                                      const gchar *description);
 static void         jaw_table_set_row_header(AtkTable *table, gint row, AtkObject *header);
+static void         jaw_table_set_column_header(AtkTable *table, gint column, AtkObject *header);
 
 typedef struct _TableData {
   jobject atk_table;
@@ -89,6 +90,7 @@ jaw_table_interface_init (AtkTableIface *iface)
   iface->set_row_description = jaw_table_set_row_description;
   iface->set_column_description = jaw_table_set_column_description;
   iface->set_row_header = jaw_table_set_row_header;
+  iface->set_column_header = jaw_table_set_column_header;
 }
 
 gpointer
@@ -589,4 +591,20 @@ jaw_table_set_row_header(AtkTable *table, gint row, AtkObject *header)
                                        "setRowHeader",
                                        "(ILjavax/accessibility/AccessibleTable;)V");
   (*env)->CallVoidMethod(env, atk_table, jmid, (jint)row, (jobject)header);
+}
+
+static void
+jaw_table_set_column_header(AtkTable *table, gint column, AtkObject *header)
+{
+  JawObject *jaw_obj = JAW_OBJECT(table);
+  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
+  jobject atk_table = data->atk_table;
+
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
+  jmethodID jmid = (*env)->GetMethodID(env,
+                                       classAtkTable,
+                                       "setColumnHeader",
+                                       "(ILjavax/accessibility/AccessibleTable;)V");
+  (*env)->CallVoidMethod(env, atk_table, jmid, (jint)column, (jobject)header);
 }
