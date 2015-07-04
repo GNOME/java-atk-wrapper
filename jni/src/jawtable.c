@@ -85,8 +85,8 @@ jaw_table_interface_init (AtkTableIface *iface)
   iface->is_column_selected = jaw_table_is_column_selected;
   iface->is_row_selected = jaw_table_is_row_selected;
   iface->is_selected = jaw_table_is_selected;
-  iface->add_row_selection= jaw_table_add_row_selection;
-  iface->add_column_selection= jaw_table_add_column_selection;
+  iface->add_row_selection = jaw_table_add_row_selection;
+  iface->add_column_selection = jaw_table_add_column_selection;
   iface->set_row_description = jaw_table_set_row_description;
   iface->set_column_description = jaw_table_set_column_description;
   iface->set_row_header = jaw_table_set_row_header;
