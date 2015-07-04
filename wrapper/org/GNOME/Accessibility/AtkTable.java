@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -158,6 +159,15 @@ public class AtkTable {
 
 		return null;
 	}
+
+    /**
+     *
+     * @param column an int representing a column in table
+     * @param table an AccessibleTable object
+     */
+    public void setColumnHeader (int column, AccessibleTable table) {
+        acc_table.setAccessibleColumnHeader(table);
+    }
 
 	public AccessibleContext get_row_header (int row) {
 		AccessibleTable accessibleTable =
