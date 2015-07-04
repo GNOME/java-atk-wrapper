@@ -37,7 +37,6 @@ Object base class:
 
 Table:
   set_caption <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n75>
-  set_column_header <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n80>
   set_summary <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n89>
 
 TableCell:
