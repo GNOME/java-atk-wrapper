@@ -36,7 +36,6 @@ Object base class:
   get_attributes
 
 Table:
-  set_caption <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n75>
   set_summary <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n89>
 
 TableCell:
