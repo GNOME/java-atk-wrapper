@@ -206,6 +206,14 @@ public class AtkTable {
 		return null;
 	}
 
+    /**
+     *
+     * @param a the Accessible object to set summary for
+     */
+    public void setSummary(Accessible a) {
+        acc_table.setAccessibleSummary(a);
+    }
+
 	public int[] get_selected_columns () {
 		return acc_table.getSelectedAccessibleColumns();
 	}
