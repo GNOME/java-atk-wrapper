@@ -97,6 +97,14 @@ public class AtkTable {
 		return null;
 	}
 
+    /**
+     *
+     * @param a an Accessible object
+     */
+    public void setCaption(Accessible a) {
+        acc_table.setAccessibleCaption(a);
+    }
+
 	public String get_column_description (int column) {
 		javax.accessibility.Accessible accessible =
 			acc_table.getAccessibleColumnDescription(column);
