@@ -235,11 +235,11 @@ public class AtkTable {
 	}
 
   public boolean addColumnSelection (int column) {
-    return is_column_selected(column);
+    return false;
   }
 
   public boolean addRowSelection (int row) {
-    return is_row_selected(row);
+    return false;
   }
 
 	public boolean remove_column_selection (int column) {
