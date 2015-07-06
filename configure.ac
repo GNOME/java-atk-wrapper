@@ -70,6 +70,27 @@ JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-acces
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
 AC_ARG_VAR([JDK_SRC],[JDK installation path])
 
+CUR_DIR=`pwd`
+SRC_DIR=`dirname $0`
+
+AC_ARG_WITH([jdk_auto_detect],
+            [AS_HELP_STRING([--with-jdk-auto-detect],
+            [Auto-detection of jdk location])],
+            [],
+            [with_jdk_auto_detect=yes])
+if test "x$with_jdk_auto_detect" = "xyes"; then
+  `javac $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
+  JDK_SRC=`java JavaInfo`
+  JAVA_HOME=`java JavaInfo`/jre
+else
+  if test -z "$JDK_SRC"; then
+    AC_MSG_ERROR("You should specify JDK_SRC")
+  fi
+fi
+
+AC_SUBST(JDK_SRC)
+AC_SUBST(JAVA_HOME)
+
 if test -z "$JAVA_HOME"; then
   JAVA_PATH=${PATH}
 else
@@ -102,26 +123,6 @@ if test -z "$JAR"; then
 fi
 AC_SUBST(JAR)
 
-AC_ARG_WITH([jdk_auto_detect],
-            [AS_HELP_STRING([--with-jdk-auto-detect],
-            [Auto-detection of jdk location])],
-            [],
-            [with_jdk_auto_detect=yes])
-
-CUR_DIR=`pwd`
-SRC_DIR=`dirname $0`
-
-if test "x$with_jdk_auto_detect" = "xyes"; then
-  `$JAVAC $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
-  JDK_SRC=`$JAVA JavaInfo`
-  JAVA_HOME=`$JAVA JavaInfo`/jre
-else
-  if test -z "$JDK_SRC"; then
-    AC_MSG_ERROR("You should specify JDK_SRC")
-  fi
-fi
-AC_SUBST(JDK_SRC)
-AC_SUBST(JAVA_HOME)
 
 if test "x$GCC" = xyes; then
   JAW_CFLAGS=$JAW_CFLAGS $CFLAGS
