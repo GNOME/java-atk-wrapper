@@ -35,9 +35,6 @@ Object base class:
   notify_state_change # AtkWrapper handler
   get_attributes
 
-Table:
-  set_summary <https://git.gnome.org/browse/atk/tree/atk/atktable.h#n89>
-
 TableCell:
   get_column_span
   get_column_header_cells
