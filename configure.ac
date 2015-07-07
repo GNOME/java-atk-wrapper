@@ -161,7 +161,7 @@ if test -z "$XPROP"; then
 fi
 AC_SUBST(XPROP)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
     Makefile
     jni/Makefile
     jni/src/Makefile
@@ -170,6 +170,7 @@ AC_OUTPUT([
     wrapper/org/GNOME/Makefile
     wrapper/org/GNOME/Accessibility/Makefile
 ])
+AC_OUTPUT
 
 echo "
 Build configuration:
