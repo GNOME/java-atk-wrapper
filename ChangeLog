@@ -1,3 +1,62 @@
+3272fde Build: set AC_CONFIG_FILES for AC_OUTPUT
+07d38bd Build: set JAVA_HOME before setting J path macros
+d43e0d9 Wrapper: add or remove ColumnSelection return false
+37ab55b HACKING: remove set_summary from table list
+582547a JNI: Create jaw_table_set_summary
+f04b199 Wrapper: Create setSummary in AtkTable
+410ae8c HACKING: remove set_caption from table list
+e6b3492 JNI: Create jaw_table_set_caption
+519074f Wrapper: Create setCaption in AtkTable
+f35407a Build: Address warning in autogen.sh
+dad0250 Update copyright for jawcomponent and AtkComponent
+11be3ba JNI: fix java descriptor for set_extents call
+7f0e70b JNI: minor formatting in jawtable.c
+20d0e86 HACKING: remove set_column_header
+f3e635a JNI: Create jaw_table_set_column_header
+c59ceb0 Wrapper: Create setColumnHeader in AtkTable
+99171b4 HACKING: remove set_row_header
+046bb83 JNI: Create jaw_table_set_row_header
+542cba0 Wrapper: Create setRowHeader in AtkTable
+d4d9dcc HACKING: remove set_column_description
+d958b3c HACKING: remove set_row_description
+4b88e3b Wrapper: Create setColumnDescription in AtkTable
+f369fb1 JNI: Create jaw_table_set_column_description
+0eeb57c Wrapper: Create setRowDescription in AtkTable
+8c91d01 JNI: Create jaw_table_set_row_description
+c907993 Add links to atk table pointers
+7b982b2 JNI: fix jawtable style and formatting
+9b30dd6 HACKING: remove public ATK methods from text listing
+cfaa744 HACKING: format link
+e901dd1 HACKING: add link to wiki page
+cf9af15 HACKING: remove pointless header
+addc08c HACKING: Add information on debugging
+932bbe8 HACKING: update list of implemented functions
+288ee82 Wrapper: Fix for window:destroy events
+095603b JNI: window events use g_signal_emit_by_name
+1a59e45 Build: remove gcc from AC_PROG_CXX
+cebb7bc Build: fix configure.ac warning
+4915bdd Build: fix AC_PROG_CXX missing macro
+0b4386d Build: fix missing AC_PATH_X warning
+18028d3 Build: add bug report info to AC_INIT
+61e0c85 revert to commit eda0e53
+b191b72 Build: fix JAVA_SRC wildcard compiler warning
+4078b8c Build: fix DEP_CLASSES wildcard compiler warning
+eda0e53 Git: Ignore netbeans project files
+a22f707 gitignore: remove comment
+7ee6025 Git: Ignore intellij project files
+60a1077 JAR: Add manifest
+b2fccac Wrapper: add check for WINDOW to get_layer
+a43cf94 Wrapper: create getDescription in AtkAction
+62fd94a JNI: Create jaw_action_set_description
+2167afc JNI: Create jaw_object_ref_child
+ef1d041 JNI: Minor formatting improvement
+fe3cbcf JNI: Create jaw_object_ref_relation_set
+510067e Wrapper: Use checked operations
+3c73d3a JNI: Create jaw_impl_get_object_hash_table
+b6ffbf7 JNI: Fix unused warning in jaw_object_set_role
+038384c JNI: fix unused variable warning in set_parent
+227ec21 JNI: Fix unused variable warning in jaw_object_get_parent
+2efa160 Release 0.33.1
 35caeed Build: Use PLATFORM_LDFLAGS
 4ed46b8 Build: tidy up root check
 462d16d Build: fix unrecognised warning

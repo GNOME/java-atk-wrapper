@@ -1,3 +1,49 @@
+Changes in version 0.33.2
+=========================
+
+Build:
+  752060: Set AC_CONFIG_FILES for AC_OUTPUT
+  752038: Set JAVA_HOME before setting JA* path macros
+  751958: Fix warning in autogen.sh
+  751762: Fix AC_PROG_CXX missing macro warning
+  751671: Add manifest to jar
+
+JNI:
+  751997: Create jaw_table_set_summary
+  751995: Create jaw_table_set_caption
+  751938: Create jaw_table_set_column_header
+  751937: Create jaw_table_set_row_header
+  751897: Create jaw_table_set_column_description
+  751895: Create jaw_table_set_row_description
+  740543: Create jaw_action_set_description
+  750640: Create jaw_object_ref_child
+  750641: Create jaw_object_ref_relation_set
+  751441: Fix unused warnings
+  751951: Fix java descriptor for set_extents call
+  751183: window events use g_signal_emit_by_name
+  Create jaw_impl_get_object_hash_table
+
+Wrapper:
+  751997: Create setSummary in AtkTable
+  751995: Create setCaption in AtkTable
+  751938: Create setColumnHeader in AtkTable
+  751937: Create setRowHeader in AtkTable
+  751897: Create setColumnDescription in AtkTable
+  751895: Create setRowDescription in AtkTable
+  740543: Create getDescription in AtkAction
+  751837: Fix window:destroy events
+  750934: add check for WINDOW to get_layer
+  739503: Use checked operations
+
+Maintainership:
+   Update copyright for jawcomponent and AtkComponent
+   751758: Add bug report info to AC_INIT
+   751673: gitignore netbeans and intellij IDE project files
+   740534: update HACKING
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.33.1
 =========================
 
@@ -270,7 +316,7 @@ Mantainership:
   HACKING: Update maintainer contact details
 
 Contributors:
-  Magdalen Berns, Alejandro Piñeiro
+  Magdalen Berns, Alejandro Piï¿½eiro
 
 Changes in version 0.30.7
 =========================
@@ -342,7 +388,7 @@ Additionally, this NEWS entry will include all the changes since
 [1] https://mail.gnome.org/archives/release-team/2014-July/msg00045.html
 
 Contributors:
-Magdalen Berns, Leon Fan, James Page, Alejandro Piñeiro, Yaakov Selkowitz, Ke Wang,
+Magdalen Berns, Leon Fan, James Page, Alejandro Piï¿½eiro, Yaakov Selkowitz, Ke Wang,
 
 ===============================
 Java ATK Wrapper version 0.29.5
