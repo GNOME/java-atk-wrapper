@@ -27,6 +27,7 @@ extern gpointer jaw_table_cell_data_init (jobject ac);
 extern void jaw_table_cell_data_finalize (gpointer);
 
 static AtkObject *jaw_table_cell_get_table (AtkTableCell *cell);
+static gboolean jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column);
 
 typedef struct _TableCellData {
   jobject atk_table_cell;
@@ -38,6 +39,7 @@ void
 jaw_table_cell_interface_init (AtkTableCellIface *iface)
 {
   iface->get_table = jaw_table_cell_get_table;
+  iface->get_position = jaw_table_cell_get_position;
 }
 
 gpointer
@@ -97,5 +99,31 @@ jaw_table_cell_get_table(AtkTableCell *cell)
   JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, jac);
 
   return ATK_OBJECT(jaw_impl);
+}
+
+static gboolean
+jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column)
+{
+  JawObject *jaw_obj = JAW_OBJECT(cell);
+  TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
+  jobject jatk_table_cell = data->atk_table_cell;
+
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jclass classAtkTableCell = (*jniEnv)->FindClass(jniEnv,
+                                                  "org/GNOME/Accessibility/AtkTableCell");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkTableCell,
+                                          "getPosition",
+                                          "(II)Z;");
+ jboolean jposition = (*jniEnv)->CallBooleanMethod(jniEnv,
+                                                   jatk_table_cell,
+                                                   jmid,
+                                                   (jint)GPOINTER_TO_INT(row),
+                                                   (jint)GPOINTER_TO_INT(column));
+
+  if (jposition == JNI_TRUE)
+    return TRUE;
+
+  return FALSE;
 }
 
