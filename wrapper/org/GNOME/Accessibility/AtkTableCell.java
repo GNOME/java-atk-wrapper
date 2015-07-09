@@ -26,6 +26,7 @@ public class AtkTableCell extends AtkTable {
   AccessibleContext ac;
 
   AccessibleExtendedTable acc_table_cell;
+  int rowSpan, columnSpan;
 
   public AtkTableCell (AccessibleContext ac) {
     super(ac);
@@ -37,6 +38,8 @@ public class AtkTableCell extends AtkTable {
     } else {
       acc_table_cell = null;
     }
+    rowSpan = 0;
+    columnSpan = 0;
   }
 
 /**
@@ -57,6 +60,23 @@ public class AtkTableCell extends AtkTable {
   public boolean getPosition(int row, int column) {
     int index = acc_table_cell.getAccessibleIndex(row, column);
     if (index < 0)
+      return false;
+    return true;
+  }
+
+/**
+ * @param row the row of the accessible table cell
+ * @param column the column of the accessible table cell
+ * @param rowSpan the row span of the accessible table cell the
+ * @param columnSpan the column span of the accessible table cell
+ * @return: whether the column and row span was retrieved
+ */
+  public boolean getRowColumnSpan(int row, int column, int rowSpan, int columnSpan) {
+    this.rowSpan = rowSpan;
+    this.columnSpan = columnSpan;
+    rowSpan = acc_table.getAccessibleRowExtentAt(row, column);
+    columnSpan = acc_table.getAccessibleColumnExtentAt(row, column);
+    if (rowSpan < 0 && columnSpan < 0)
       return false;
     return true;
   }
