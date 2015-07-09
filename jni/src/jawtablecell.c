@@ -88,7 +88,7 @@ jaw_table_cell_get_table(AtkTableCell *cell)
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAtkTableCell,
                                           "getTable",
-                                          "()Ljavax/accessibility/AccessibleContext;");
+                                          "()Ljavax/accessibility/AccessibleTable;");
   jobject jac = (*jniEnv)->CallObjectMethod(jniEnv, jatk_table_cell, jmid);
 
   if (!jac)
