@@ -26,7 +26,7 @@ public class AtkTableCell extends AtkTable {
   AccessibleContext ac;
 
   AccessibleExtendedTable acc_table_cell;
-  int rowSpan, columnSpan;
+  private int rowSpan, columnSpan;
 
   public AtkTableCell (AccessibleContext ac) {
     super(ac);
@@ -79,6 +79,15 @@ public class AtkTableCell extends AtkTable {
     if (rowSpan < 0 && columnSpan < 0)
       return false;
     return true;
+  }
+
+/**
+ * @return: span of the table_cell row as an int
+ */
+  public int getRowSpan() {
+    if (rowSpan < 0)
+      return -1;
+    return rowSpan;
   }
 }
 
