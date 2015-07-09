@@ -28,6 +28,11 @@ extern void jaw_table_cell_data_finalize (gpointer);
 
 static AtkObject *jaw_table_cell_get_table (AtkTableCell *cell);
 static gboolean jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column);
+static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
+                                                   gint         *row,
+                                                   gint         *column,
+                                                   gint         *row_span,
+                                                   gint         *column_span);
 
 typedef struct _TableCellData {
   jobject atk_table_cell;
@@ -40,6 +45,7 @@ jaw_table_cell_interface_init (AtkTableCellIface *iface)
 {
   iface->get_table = jaw_table_cell_get_table;
   iface->get_position = jaw_table_cell_get_position;
+  iface->get_row_column_span = jaw_table_cell_get_row_column_span;
 }
 
 gpointer
@@ -122,6 +128,37 @@ jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column)
                                                    (jint)GPOINTER_TO_INT(column));
 
   if (jposition == JNI_TRUE)
+    return TRUE;
+
+  return FALSE;
+}
+
+static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
+                                                   gint         *row,
+                                                   gint         *column,
+                                                   gint         *row_span,
+                                                   gint         *column_span)
+{
+  JawObject *jaw_obj = JAW_OBJECT(cell);
+  TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
+  jobject jatk_table_cell = data->atk_table_cell;
+
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jclass classAtkTableCell = (*jniEnv)->FindClass(jniEnv,
+                                                  "org/GNOME/Accessibility/AtkTableCell");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                          classAtkTableCell,
+                                          "getRowColumnSpan",
+                                          "(IIII)Z;");
+  jboolean jspan = (*jniEnv)->CallBooleanMethod(jniEnv,
+                                                jatk_table_cell,
+                                                jmid,
+                                                (jint)GPOINTER_TO_INT(row),
+                                                (jint)GPOINTER_TO_INT(column),
+                                                (jint)GPOINTER_TO_INT(row_span),
+                                                (jint)GPOINTER_TO_INT(column_span)
+                                                );
+  if (jspan == JNI_TRUE)
     return TRUE;
 
   return FALSE;
