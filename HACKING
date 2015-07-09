@@ -40,7 +40,6 @@ TableCell:
   get_column_header_cells
   get_row_span
   get_row_header_cells
-  get_row_column_span
 
 Deprecated Methods Which Are Implemented
 ----------------------------------------
