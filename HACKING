@@ -38,7 +38,6 @@ Object base class:
 TableCell:
   get_column_span
   get_column_header_cells
-  get_row_span
   get_row_header_cells
 
 Deprecated Methods Which Are Implemented
