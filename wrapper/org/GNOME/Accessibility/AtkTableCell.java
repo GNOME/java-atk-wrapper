@@ -48,5 +48,17 @@ public class AtkTableCell extends AtkTable {
     System.out.println("Get Table: " + acc_table_cell.toString());
     return acc_table_cell;
   }
+
+/**
+ * @param row the row of the accessible table cell
+ * @param column the column of the accessible table cell
+ * @return: whether the accessible index of the table cell is found
+ */
+  public boolean getPosition(int row, int column) {
+    int index = acc_table_cell.getAccessibleIndex(row, column);
+    if (index < 0)
+      return false;
+    return true;
+  }
 }
 
