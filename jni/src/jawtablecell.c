@@ -48,7 +48,7 @@ jaw_table_cell_interface_init (AtkTableCellIface *iface)
   iface->get_table = jaw_table_cell_get_table;
   iface->get_position = jaw_table_cell_get_position;
   iface->get_row_column_span = jaw_table_cell_get_row_column_span;
-  iface->get_row_span=jaw_table_cell_get_row_span;
+  iface->get_row_span = jaw_table_cell_get_row_span;
   iface->get_column_span = jaw_table_cell_get_column_span;
 }
 
