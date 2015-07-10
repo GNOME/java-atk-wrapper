@@ -89,5 +89,14 @@ public class AtkTableCell extends AtkTable {
       return -1;
     return rowSpan;
   }
+
+/**
+ * @return: span of the table_cell column as an int
+ */
+  public int getColumnSpan() {
+    if (columnSpan < 0)
+      return -1;
+    return columnSpan;
+  }
 }
 
