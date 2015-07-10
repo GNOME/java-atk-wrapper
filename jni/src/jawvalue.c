@@ -27,10 +27,9 @@ extern gpointer	jaw_value_data_init (jobject ac);
 extern void	jaw_value_data_finalize (gpointer);
 
 static void jaw_value_get_current_value(AtkValue *obj, GValue *value);
-static void jaw_value_get_maximum_value(AtkValue *obj, GValue *value);
-static void jaw_value_get_minimum_value(AtkValue *obj, GValue *value);
 static gboolean jaw_value_set_current_value(AtkValue *obj, const GValue *value);
 static gdouble jaw_value_get_increment (AtkValue *obj);
+static AtkRange* jaw_value_get_range(AtkValue *obj);
 
 typedef struct _ValueData {
   jobject atk_value;
@@ -40,10 +39,9 @@ void
 jaw_value_interface_init (AtkValueIface *iface)
 {
   iface->get_current_value = jaw_value_get_current_value;
-  iface->get_maximum_value = jaw_value_get_maximum_value;
-  iface->get_minimum_value = jaw_value_get_minimum_value;
   iface->set_current_value = jaw_value_set_current_value;
   iface->get_increment = jaw_value_get_increment;
+  iface->get_range = jaw_value_get_range;
 }
 
 gpointer
@@ -171,64 +169,6 @@ jaw_value_get_current_value (AtkValue *obj, GValue *value)
   get_g_value_from_java_number(jniEnv, jnumber, value);
 }
 
-static void
-jaw_value_get_maximum_value (AtkValue *obj, GValue *value)
-{
-  if (!value)
-  {
-    return;
-  }
-
-  JawObject *jaw_obj = JAW_OBJECT(obj);
-  ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
-  jobject atk_value = data->atk_value;
-
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkValue = (*jniEnv)->FindClass(jniEnv,
-                                              "org/GNOME/Accessibility/AtkValue");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAtkValue,
-                                          "get_maximum_value",
-                                          "()Ljava/lang/Number;");
-  jobject jnumber = (*jniEnv)->CallObjectMethod(jniEnv, atk_value, jmid);
-
-  if (!jnumber)
-  {
-    return;
-  }
-
-  get_g_value_from_java_number(jniEnv, jnumber, value);
-}
-
-static void
-jaw_value_get_minimum_value (AtkValue *obj, GValue *value)
-{
-  if (!value)
-  {
-    return;
-  }
-
-  JawObject *jaw_obj = JAW_OBJECT(obj);
-  ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
-  jobject atk_value = data->atk_value;
-
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkValue = (*jniEnv)->FindClass(jniEnv,
-                                              "org/GNOME/Accessibility/AtkValue");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAtkValue,
-                                          "get_minimum_value",
-                                          "()Ljava/lang/Number;");
-  jobject jnumber = (*jniEnv)->CallObjectMethod(jniEnv, atk_value, jmid);
-
-  if (!jnumber)
-  {
-    return;
-  }
-
-  get_g_value_from_java_number(jniEnv, jnumber, value);
-}
-
 static gboolean
 jaw_value_set_current_value (AtkValue *obj, const GValue *value)
 {
@@ -309,6 +249,23 @@ jaw_value_set_current_value (AtkValue *obj, const GValue *value)
   }
 
   return (jbool == JNI_TRUE) ? TRUE : FALSE;
+}
+
+static AtkRange*
+jaw_value_get_range(AtkValue *obj)
+{
+
+  JawObject *jaw_obj = JAW_OBJECT(obj);
+  ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
+  jobject atk_value = data->atk_value;
+
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");
+  jmethodID jmidMin = (*env)->GetMethodID(env, classAtkValue, "getMinimumValue", "()D;");
+  jmethodID jmidMax = (*env)->GetMethodID(env, classAtkValue, "getMaximumValue", "()D;");
+  return atk_range_new((gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMin),
+		        (gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMax),
+		        NULL); // NULL description
 }
 
 static gdouble

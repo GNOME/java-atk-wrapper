@@ -35,12 +35,12 @@ public class AtkValue {
 		return acc_value.getCurrentAccessibleValue();
 	}
 
-	public Number get_maximum_value () {
-		return acc_value.getMaximumAccessibleValue();
+	public double getMaximumValue () {
+		return acc_value.getMaximumAccessibleValue().doubleValue();
 	}
 
-	public Number get_minimum_value () {
-		return acc_value.getMinimumAccessibleValue();
+	public double getMinimumValue () {
+		return acc_value.getMinimumAccessibleValue().doubleValue();
 	}
 
 	public boolean set_current_value (Number n) {
