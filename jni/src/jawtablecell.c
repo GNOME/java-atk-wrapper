@@ -34,6 +34,7 @@ static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
                                                    gint         *row_span,
                                                    gint         *column_span);
 static gint jaw_table_cell_get_row_span(AtkTableCell *cell);
+static gint jaw_table_cell_get_column_span(AtkTableCell *cell);
 
 typedef struct _TableCellData {
   jobject atk_table_cell;
@@ -48,6 +49,7 @@ jaw_table_cell_interface_init (AtkTableCellIface *iface)
   iface->get_position = jaw_table_cell_get_position;
   iface->get_row_column_span = jaw_table_cell_get_row_column_span;
   iface->get_row_span=jaw_table_cell_get_row_span;
+  iface->get_column_span = jaw_table_cell_get_column_span;
 }
 
 gpointer
@@ -179,6 +181,23 @@ jaw_table_cell_get_row_span(AtkTableCell *cell)
   jmethodID jmid = (*env)->GetMethodID(env,
                                        classAtkTableCell,
                                        "getRowSpan",
+                                       "()I;");
+  return (gint) (*env)->CallIntMethod(env, jatk_table_cell, jmid);
+}
+
+static gint
+jaw_table_cell_get_column_span(AtkTableCell *cell)
+{
+  JawObject *jaw_obj = JAW_OBJECT(cell);
+  TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
+  jobject jatk_table_cell = data->atk_table_cell;
+
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkTableCell = (*env)->FindClass(env,
+                                               "org/GNOME/Accessibility/AtkTableCell");
+  jmethodID jmid = (*env)->GetMethodID(env,
+                                       classAtkTableCell,
+                                       "getColumnSpan",
                                        "()I;");
   return (gint) (*env)->CallIntMethod(env, jatk_table_cell, jmid);
 }
