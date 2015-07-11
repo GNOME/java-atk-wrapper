@@ -193,6 +193,65 @@ public class AtkWrapper {
     }
   }; // Close WindowAdapter brace
 
+
+  final ComponentAdapter componentAdapter = new ComponentAdapter() {
+
+  /**
+  *  componentResized
+   *   *             Invoked when the component's size changes and emits
+  *                  a "bounds-changed" signal.
+  * @param e a ComponentEvent object
+  */
+  public void componentResized(ComponentEvent e) {
+    Object o = e.getSource();
+    if (o instanceof javax.accessibility.Accessible) {
+      AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+      AtkWrapper.boundsChanged(ac);
+    }
+  }
+
+  /**
+  * componentMoved:
+  *                Invoked when the component's position changes and emits
+  *                a "bounds-changed" signal.
+  *
+  * @param e a ComponentEvent object
+  */
+  public void componentMoved(ComponentEvent e){
+    Object o = e.getSource();
+    if (o instanceof javax.accessibility.Accessible) {
+      AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+      AtkWrapper.boundsChanged(ac);
+    }
+  }
+
+  /**
+  *  componentShown
+  * @param e A ComponentEvent object
+  */
+  public void componentShown(ComponentEvent e) {
+    Object o = e.getSource();
+    if (o instanceof javax.accessibility.Accessible) {
+      AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+      AtkWrapper.componentAdded(ac);
+    }
+  }
+
+  /**
+  * componentHidden:
+  *                 Invoked when the component has been made invisible.
+  * @param e A ComponentEvent object
+  */
+  public void componentHidden(ComponentEvent e){
+    Object o = e.getSource();
+    if (o instanceof javax.accessibility.Accessible) {
+      AccessibleContext ac = ((javax.accessibility.Accessible)o).getAccessibleContext();
+      AtkWrapper.componentRemoved(ac);
+    }
+  }
+  };
+
+
  /**
   * isToplevel
   * @param o an instance
@@ -241,21 +300,16 @@ public class AtkWrapper {
           case ContainerEvent.COMPONENT_ADDED:
           {
             java.awt.Component c = ((ContainerEvent)e).getChild();
-            if (c instanceof javax.accessibility.Accessible) {
-              AccessibleContext ac = ((javax.accessibility.Accessible)c).getAccessibleContext();
-              AtkWrapper.componentAdded(ac);
-            }
+            c.addComponentListener(componentAdapter);
             break;
           }
           case ContainerEvent.COMPONENT_REMOVED:
           {
-            java.awt.Component c = ((ContainerEvent)e).getChild();
-            if (c instanceof javax.accessibility.Accessible) {
-              AccessibleContext ac = ((javax.accessibility.Accessible)c).getAccessibleContext();
-              AtkWrapper.componentRemoved(ac);
-            }
+	    java.awt.Component c = ((ContainerEvent)e).getChild();
+            c.addComponentListener(componentAdapter);
             break;
           }
+
         default:
           break;
         }
@@ -599,7 +653,7 @@ public class AtkWrapper {
 
   public native static void componentAdded(javax.accessibility.AccessibleContext ac);
   public native static void componentRemoved(javax.accessibility.AccessibleContext ac);
-
+  public native static void boundsChanged(javax.accessibility.AccessibleContext ac);
   public native static boolean dispatchKeyEvent(AtkKeyEvent e);
 
   public static void printLog(String str) {

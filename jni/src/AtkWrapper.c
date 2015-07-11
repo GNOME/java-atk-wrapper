@@ -1225,6 +1225,68 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(JNIEnv *jniEnv,
   gdk_threads_add_idle(component_removed_handler, para);
 }
 
+/**
+ * Signal is emitted when the position or size of the component changes.
+ */
+static gboolean
+bounds_changed_handler (gpointer p)
+{
+  JNIEnv *jniEnv;
+
+  CallbackPara *para = (CallbackPara*)p;
+  jobject global_ac = para->global_ac;
+  jniEnv = jaw_util_get_jni_env();
+  if (jniEnv == NULL)
+  {
+    if (jaw_debug)
+      g_warning("bounds_changed_handler: env == NULL");
+    free_callback_para(para);
+    return G_SOURCE_REMOVE;
+  }
+
+  if (global_ac == NULL)
+  {
+    if (jaw_debug)
+      g_warning("bounds_changed_handler: global_ac == NULL");
+    free_callback_para(para);
+    return G_SOURCE_REMOVE;
+  }
+
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
+  if (jaw_impl == NULL)
+  {
+    if (jaw_debug)
+      g_warning("bounds_changed_handler: jaw_impl == NULL");
+    free_callback_para(para);
+    return G_SOURCE_REMOVE;
+  }
+
+  AtkObject* atk_obj = ATK_OBJECT(jaw_impl);
+
+  if (atk_obj == NULL)
+  {
+    if (jaw_debug)
+      g_warning("bounds_changed_handler: atk_obj == NULL");
+    free_callback_para(para);
+    return G_SOURCE_REMOVE;
+  }
+ // g_object_notify(G_OBJECT(atk_obj), "ffbounds_changed");
+  g_signal_emit_by_name(atk_obj, "bounds_changed");
+  free_callback_para(para);
+
+  return G_SOURCE_REMOVE;
+}
+
+JNIEXPORT void
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_boundsChanged(JNIEnv *jniEnv,
+                                                              jclass jClass,
+                                                              jobject jAccContext)
+{
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+  CallbackPara *para = alloc_callback_para(global_ac);
+  gdk_threads_add_idle(bounds_changed_handler, para);
+}
+
 static gboolean
 key_dispatch_handler (gpointer p)
 {

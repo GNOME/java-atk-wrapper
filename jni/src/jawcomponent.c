@@ -76,7 +76,6 @@ jaw_component_interface_init (AtkComponentIface *iface)
   iface->set_extents = jaw_component_set_extents;
   iface->set_position = NULL;
   iface->set_size = NULL;
-  iface->bounds_changed = NULL;
 }
 
 gpointer
