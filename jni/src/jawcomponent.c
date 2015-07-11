@@ -54,8 +54,7 @@ static gboolean jaw_component_set_extents(AtkComponent *component,
 
 static gboolean jaw_component_grab_focus(AtkComponent *component);
 static AtkLayer jaw_component_get_layer(AtkComponent *component);
-/*static gint		jaw_component_get_mdi_zorder		(AtkComponent		*component);
-static gdouble		jaw_component_get_alpha			(AtkComponent		*component);*/
+/*static gin jaw_component_get_mdi_zorder(AtkComponent		*component); */
 
 typedef struct _ComponentData {
   jobject atk_component;
@@ -68,14 +67,9 @@ jaw_component_interface_init (AtkComponentIface *iface)
   iface->ref_accessible_at_point = jaw_component_ref_accessible_at_point;
   iface->get_extents = jaw_component_get_extents;
   iface->grab_focus = jaw_component_grab_focus;
-  iface->add_focus_handler = NULL;
-  iface->remove_focus_handler = NULL;
   iface->get_layer = jaw_component_get_layer;
   iface->get_mdi_zorder = NULL; /*jaw_component_get_mdi_zorder;*/
-  iface->get_alpha = NULL; /*jaw_component_get_alpha;*/
   iface->set_extents = jaw_component_set_extents;
-  iface->set_position = NULL;
-  iface->set_size = NULL;
 }
 
 gpointer
