@@ -53,7 +53,6 @@ Text Interface:
   get_text_before_offset -   use get_string_at_offset instead
 
 Value Interface:
-  set_current_value      -   use set_value instead
   get_minimum_increment  -   use get_increment instead
 
 Conventions for Writing Java ATK Wrapper Code
