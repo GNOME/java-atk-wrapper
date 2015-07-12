@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,8 +44,8 @@ public class AtkValue {
 		return acc_value.getMinimumAccessibleValue().doubleValue();
 	}
 
-	public boolean set_current_value (Number n) {
-		return acc_value.setCurrentAccessibleValue(n);
-	}
+  public void setValue (Number n) {
+    acc_value.setCurrentAccessibleValue(n);
+  }
 }
 

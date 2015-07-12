@@ -1,6 +1,7 @@
 /*
  * Java ATK Wrapper for GNOME
  * Copyright (C) 2009 Sun Microsystems Inc.
+ * Copyright (C) 2015 Magdalen Berns <m.berns@thismagpie.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,12 +23,16 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern void	jaw_value_interface_init (AtkValueIface*);
 extern gpointer	jaw_value_data_init (jobject ac);
 extern void	jaw_value_data_finalize (gpointer);
 
 static void jaw_value_get_current_value(AtkValue *obj, GValue *value);
-static gboolean jaw_value_set_current_value(AtkValue *obj, const GValue *value);
+static void    jaw_value_set_value(AtkValue *obj, const gdouble value);
 static gdouble jaw_value_get_increment (AtkValue *obj);
 static AtkRange* jaw_value_get_range(AtkValue *obj);
 
@@ -39,7 +44,7 @@ void
 jaw_value_interface_init (AtkValueIface *iface)
 {
   iface->get_current_value = jaw_value_get_current_value;
-  iface->set_current_value = jaw_value_set_current_value;
+  iface->set_value = jaw_value_set_value;
   iface->get_increment = jaw_value_get_increment;
   iface->get_range = jaw_value_get_range;
 }
@@ -169,86 +174,23 @@ jaw_value_get_current_value (AtkValue *obj, GValue *value)
   get_g_value_from_java_number(jniEnv, jnumber, value);
 }
 
-static gboolean
-jaw_value_set_current_value (AtkValue *obj, const GValue *value)
+static void
+jaw_value_set_value(AtkValue *obj, const gdouble value)
 {
   if (!value)
-  {
-    return FALSE;
-  }
-
-  if (!G_TYPE_IS_FUNDAMENTAL (G_VALUE_TYPE (value)))
-  {
-    return FALSE;
-  }
+    return;
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   jobject atk_value = data->atk_value;
 
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jclass classAtkValue = (*jniEnv)->FindClass(jniEnv,
-                                              "org/GNOME/Accessibility/AtkValue");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAtkValue,
-                                          "set_current_value",
-                                          "(Ljava/lang/Number;)Z");
-
-  jboolean jbool;
-  jclass klass;
-  jmethodID jmidInit;
-  jobject o;
-  switch (value->g_type) {
-    case G_TYPE_CHAR:
-    {
-      gchar c = g_value_get_schar(value);
-      klass = (*jniEnv)->FindClass(jniEnv, "java/lang/Byte");
-      jmidInit = (*jniEnv)->GetMethodID(jniEnv, klass, "<init>", "(B)V");
-      o = (*jniEnv)->NewObject(jniEnv, klass, jmidInit, (jbyte)c);
-      jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_value, jmid, o);
-      break;
-    }
-    case G_TYPE_DOUBLE:
-    {
-      gdouble d = g_value_get_double(value);
-      klass = (*jniEnv)->FindClass(jniEnv, "java/lang/Double");
-      jmidInit = (*jniEnv)->GetMethodID(jniEnv, klass, "<init>", "(D)V");
-      o = (*jniEnv)->NewObject(jniEnv, klass, jmidInit, (jdouble)d);
-      jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_value, jmid, o);
-      break;
-    }
-    case G_TYPE_FLOAT:
-    {
-      gfloat f = g_value_get_float(value);
-      klass = (*jniEnv)->FindClass(jniEnv, "java/lang/Float");
-      jmidInit = (*jniEnv)->GetMethodID(jniEnv, klass, "<init>", "(F)V");
-      o = (*jniEnv)->NewObject(jniEnv, klass, jmidInit, (jfloat)f);
-      jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_value, jmid, o);
-      break;
-    }
-    case G_TYPE_INT:
-    {
-      gint i = g_value_get_int(value);
-      klass = (*jniEnv)->FindClass(jniEnv, "java/lang/Integer");
-      jmidInit = (*jniEnv)->GetMethodID(jniEnv, klass, "<init>", "(I)V");
-      o = (*jniEnv)->NewObject(jniEnv, klass, jmidInit, (jint)i);
-      jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_value, jmid, o);
-      break;
-    }
-    case G_TYPE_INT64:
-    {
-      gint64 i64 = g_value_get_int64(value);
-      klass = (*jniEnv)->FindClass(jniEnv, "java/lang/Long");
-      jmidInit = (*jniEnv)->GetMethodID(jniEnv, klass, "<init>", "(J)V");
-      o = (*jniEnv)->NewObject(jniEnv, klass, jmidInit, (jlong)i64);
-      jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_value, jmid, o);
-      break;
-    }
-    default:
-      return FALSE;
-  }
-
-  return (jbool == JNI_TRUE) ? TRUE : FALSE;
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");
+  jmethodID jmid = (*env)->GetMethodID(env,
+                                       classAtkValue,
+                                          "setValue",
+                                          "(Ljava/lang/Number;)V");
+  (*env)->CallVoidMethod(env, atk_value, jmid,(jdouble)value);
 }
 
 static AtkRange*
@@ -273,4 +215,8 @@ jaw_value_get_increment (AtkValue *obj)
 {
  return atk_value_get_increment(obj);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
