@@ -47,5 +47,9 @@ public class AtkValue {
   public void setValue (Number n) {
     acc_value.setCurrentAccessibleValue(n);
   }
+
+  public double getIncrement() {
+    return Double.MIN_VALUE;
+  }
 }
 

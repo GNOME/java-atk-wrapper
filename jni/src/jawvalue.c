@@ -213,7 +213,13 @@ jaw_value_get_range(AtkValue *obj)
 static gdouble
 jaw_value_get_increment (AtkValue *obj)
 {
- return atk_value_get_increment(obj);
+  JawObject *jaw_obj = JAW_OBJECT(obj);
+  ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
+  jobject atk_value = data->atk_value;
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");
+  jmethodID jmid = (*env)->GetMethodID(env, classAtkValue, "getIncrement", "()D");
+  return (*env)->CallDoubleMethod(env, atk_value, jmid);
 }
 
 #ifdef __cplusplus
