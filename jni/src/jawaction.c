@@ -32,13 +32,13 @@ static const gchar* jaw_action_get_description(AtkAction *action, gint i);
 static const gchar* jaw_action_get_name(AtkAction	*action, gint i);
 static const gchar* jaw_action_get_keybinding (AtkAction *action, gint i);
 static gboolean jaw_action_set_description (AtkAction *action, gint i, const gchar *description);
-/*static const gchar*	jaw_get_localized_name			(AtkAction	*action,
-									 gint		i);*/
+static const gchar* jaw_action_get_localized_name(AtkAction *action, gint i);
 
 typedef struct _ActionData {
   jobject atk_action;
   gchar* action_name;
   jstring jstrActionName;
+  jstring jstrLocalizedName;
   gchar* action_description;
   jstring jstrActionDescription;
   gchar* action_keybinding;
@@ -54,7 +54,7 @@ jaw_action_interface_init (AtkActionIface *iface)
   iface->get_name = jaw_action_get_name;
   iface->get_keybinding = jaw_action_get_keybinding;
   iface->set_description = jaw_action_set_description;
-  iface->get_localized_name = NULL; /*jaw_get_localized_name;*/
+  iface->get_localized_name = jaw_action_get_localized_name;
 }
 
 gpointer
@@ -86,8 +86,14 @@ jaw_action_data_finalize (gpointer p)
       (*jniEnv)->ReleaseStringUTFChars(jniEnv,
                                        data->jstrActionName,
                                        data->action_name);
+      (*jniEnv)->ReleaseStringUTFChars(jniEnv,
+                                       data->jstrLocalizedName,
+                                       data->action_name);
+
       (*jniEnv)->DeleteGlobalRef(jniEnv, data->jstrActionName);
+      (*jniEnv)->DeleteGlobalRef(jniEnv, data->jstrLocalizedName);
       data->jstrActionName = NULL;
+      data->jstrLocalizedName = NULL;
       data->action_name = NULL;
     }
 
@@ -248,6 +254,30 @@ jaw_action_get_name (AtkAction *action, gint i)
                                                            data->jstrActionName,
                                                            NULL);
 
+  return data->action_name;
+}
+
+static const gchar*
+jaw_action_get_localized_name (AtkAction *action, gint i)
+{
+  JawObject *jaw_obj = JAW_OBJECT(action);
+  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
+  jobject atk_action = data->atk_action;
+
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkAction = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkAction");
+  jmethodID jmid = (*env)->GetMethodID(env,
+                                       classAtkAction,
+                                       "getLocalizedName",
+                                       "(I)Ljava/lang/String;");
+  jstring jstr = (*env)->CallObjectMethod(env, atk_action, jmid, (jint)i);
+  if (data->action_name != NULL)
+  {
+    (*env)->ReleaseStringUTFChars(env, data->jstrLocalizedName, data->action_name);
+    (*env)->DeleteGlobalRef(env, data->jstrLocalizedName);
+  }
+  data->jstrLocalizedName = (*env)->NewGlobalRef(env, jstr);
+  data->action_name = (gchar*)(*env)->GetStringUTFChars(env, data->jstrLocalizedName, NULL);
   return data->action_name;
 }
 

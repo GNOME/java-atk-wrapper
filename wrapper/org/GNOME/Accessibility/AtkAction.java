@@ -82,7 +82,32 @@ public class AtkAction {
 
 		return name;
 	}
-	
+
+ /**
+  * @param i an integer holding the index of the name of
+  *          the accessible.
+  * @return  the localized name of the object or otherwise,
+  *          null if the "action" object does not have a
+  *          name (really, java's AccessibleAction class
+  *          does not provide
+  *          a getter for an AccessibleAction
+  *          name so a getter from the AcccessibleContext
+  *          class is one way to work around that)
+  */
+  public String getLocalizedName (int i) {
+    String name        = ac.getAccessibleName();
+    String description = acc_action.getAccessibleActionDescription(i);
+
+    if (description == name && description != null)
+      return description;
+    if (description == null && name != null)
+      return name;
+    else if (description != null)
+      return description;
+
+    return null;
+  }
+
 	private String convertModString (String mods) {
 		if (mods == null || mods.length() == 0) {
 			return "";
