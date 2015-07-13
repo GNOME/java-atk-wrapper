@@ -203,11 +203,11 @@ jaw_value_get_range(AtkValue *obj)
 
   JNIEnv *env = jaw_util_get_jni_env();
   jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");
-  jmethodID jmidMin = (*env)->GetMethodID(env, classAtkValue, "getMinimumValue", "()D;");
-  jmethodID jmidMax = (*env)->GetMethodID(env, classAtkValue, "getMaximumValue", "()D;");
+  jmethodID jmidMin = (*env)->GetMethodID(env, classAtkValue, "getMinimumValue", "()D");
+  jmethodID jmidMax = (*env)->GetMethodID(env, classAtkValue, "getMaximumValue", "()D");
   return atk_range_new((gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMin),
-		        (gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMax),
-		        NULL); // NULL description
+                       (gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMax),
+                       NULL); // NULL description
 }
 
 static gdouble

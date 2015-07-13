@@ -32,7 +32,6 @@ TODO Currently Not fully documented by ATK
 Object base class:
   AtkFunction
   implementor_ref_accessible
-  notify_state_change # AtkWrapper handler
   get_attributes
 
 TableCell:
@@ -51,9 +50,6 @@ Text Interface:
   get_text_after_offset  -   use get_string_at_offset instead
   get_text_at_offset     -   use get_string_at_offset instead
   get_text_before_offset -   use get_string_at_offset instead
-
-Value Interface:
-  get_minimum_increment  -   use get_increment instead
 
 Conventions for Writing Java ATK Wrapper Code
 ---------------------------------------------
