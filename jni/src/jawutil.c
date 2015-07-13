@@ -35,9 +35,6 @@ extern "C" {
 /* AtkUtil */
 static void jaw_util_class_init(JawUtilClass *klass);
 
-static guint jaw_util_add_global_event_listener(GSignalEmissionHook listener,
-                                                const gchar *event_type);
-static void jaw_util_remove_global_event_listener(guint remove_listener);
 static guint jaw_util_add_key_event_listener(AtkKeySnoopFunc listener,
                                              gpointer data);
 static void jaw_util_remove_key_event_listener(guint remove_listener);
@@ -45,12 +42,6 @@ static AtkObject* jaw_util_get_root(void);
 static const gchar* jaw_util_get_toolkit_name(void);
 static const gchar* jaw_util_get_toolkit_version(void);
 
-static void _listener_info_destroy(gpointer data);
-static guint add_listener(GSignalEmissionHook listener,
-                          const gchar         *object_type,
-                          const gchar         *signal,
-                          const gchar         *hook_data);
-static gint listener_idx = 1;
 static GHashTable *key_listener_list = NULL;
 
 JavaVM *cachedJVM;
@@ -191,12 +182,6 @@ static const gchar*
 jaw_util_get_toolkit_version (void)
 {
   return "1.0";
-}
-
-static void
-_listener_info_destroy (gpointer data)
-{
-  g_free (data);
 }
 
 /* static functions */
