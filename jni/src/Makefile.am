@@ -24,10 +24,12 @@ noinst_HEADERS = jawimpl.h \
                  jawutil.h
 
 libatk_wrapper_la_CFLAGS = $(JNI_INCLUDES)\
-                           $(JAW_CFLAGS)
+                           $(JAW_CFLAGS) \
+                           $(PLATFORM_CFLAGS)
 
 libatk_wrapper_la_CPPFLAGS = $(JNI_INCLUDES)\
-                             $(JAW_CFLAGS)
+                             $(JAW_CFLAGS) \
+                             $(PLATFORM_CFLAGS)
 
 libatk_wrapper_la_LDFLAGS = $(LIB_ATK_WRAPPER_LD_FLAGS) \
                             $(LT_VERSION_INFO) \
