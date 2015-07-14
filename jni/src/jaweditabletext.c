@@ -21,6 +21,7 @@
 #include <glib.h>
 #include "jawimpl.h"
 #include "jawutil.h"
+#include "jawobject.h"
 
 extern void jaw_editable_text_interface_init(AtkEditableTextIface*);
 extern gpointer jaw_editable_text_data_init(jobject);
@@ -44,6 +45,11 @@ static void jaw_editable_text_delete_text(AtkEditableText *text,
 static void jaw_editable_text_paste_text(AtkEditableText *text,
                                          gint position);
 
+static gboolean jaw_editable_text_set_run_attributes(AtkEditableText *text,
+                                                                                      AtkAttributeSet  *attrib_set,
+                                                                                      gint                      start_offset,
+                                                                                      gint                 end_offset);
+
 typedef struct _EditableTextData {
   jobject atk_editable_text;
 }EditableTextData;
@@ -57,6 +63,7 @@ jaw_editable_text_interface_init (AtkEditableTextIface *iface)
   iface->cut_text = jaw_editable_text_cut_text;
   iface->delete_text = jaw_editable_text_delete_text;
   iface->paste_text = jaw_editable_text_paste_text;
+  iface->set_run_attributes = jaw_editable_text_set_run_attributes;
 }
 
 gpointer
@@ -231,5 +238,32 @@ jaw_editable_text_paste_text (AtkEditableText *text,
                             atk_editable_text,
                             jmid,
                             (jint)position);
+}
+
+static gboolean
+jaw_editable_text_set_run_attributes(AtkEditableText *text,
+                                                           AtkAttributeSet  *attrib_set,
+                                                           gint                      start_offset,
+                                                           gint                      end_offset)
+{
+  JawObject *jaw_obj = JAW_OBJECT(text);
+  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
+  jobject atk_editable_text = data->atk_editable_text;
+  JNIEnv *env = jaw_util_get_jni_env();
+  jclass classAtkEditableText = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*env)->GetMethodID(env,
+                                                                   classAtkEditableText,
+                                                                   "setRunAttributes",
+                                                                   "(Ljavax/swing/text/AttributeSet;II)Z");
+  jboolean jresult = (*env)->CallBooleanMethod(env,
+                                                                            atk_editable_text,
+                                                                            jmid,
+                                                                            (jobject)attrib_set,
+                                                                            (jint)start_offset,
+                                                                            (jint)end_offset);
+  if (jresult == JNI_TRUE)
+    return TRUE;
+
+  return FALSE;
 }
 
