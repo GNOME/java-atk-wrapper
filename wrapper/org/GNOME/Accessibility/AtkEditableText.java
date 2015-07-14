@@ -78,5 +78,20 @@ public class AtkEditableText extends AtkText {
   public void paste_text (int position) {
     acc_edt_text.paste(position);
   }
+
+ /**
+  * Sets run attributes for the text between two indices.
+  *
+  * @param as the AttributeSet for the text
+  * @param start the start index of the text as an int
+  * @param end the end index for the text as an int
+  * @return whether setRunAttributes was called
+  *              TODO return is a bit presumptious. This should ideally include a check for whether
+  *              attributes were set.
+  */
+  public boolean setRunAttributes(AttributeSet as, int start, int end) {
+    acc_edt_text.setAttributes(start, end, as);
+    return true;
+  }
 }
 
