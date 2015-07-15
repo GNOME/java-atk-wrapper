@@ -41,16 +41,6 @@ public class AtkTable {
 		return null;
 	}
 
-	public int get_index_at (int row, int column) {
-		int index = -1;
-
-		if (acc_table instanceof AccessibleExtendedTable) {
-			index = ((AccessibleExtendedTable)acc_table).getAccessibleIndex(row, column);
-		}
-
-		return index;
-	}
-
 	public int get_column_at_index (int index) {
 		int column = -1;
 

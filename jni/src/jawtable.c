@@ -28,7 +28,6 @@ extern gpointer jaw_table_data_init (jobject ac);
 extern void jaw_table_data_finalize (gpointer);
 
 static AtkObject*   jaw_table_ref_at(AtkTable *table, gint row, gint column);
-static gint         jaw_table_get_index_at(AtkTable *table, gint row, gint column);
 static gint         jaw_table_get_column_at_index(AtkTable *table, gint index);
 static gint         jaw_table_get_row_at_index(AtkTable *table, gint index);
 static gint         jaw_table_get_n_columns(AtkTable *table);
@@ -69,7 +68,6 @@ void
 jaw_table_interface_init (AtkTableIface *iface)
 {
   iface->ref_at = jaw_table_ref_at;
-  iface->get_index_at = jaw_table_get_index_at;
   iface->get_column_at_index = jaw_table_get_column_at_index;
   iface->get_row_at_index = jaw_table_get_row_at_index;
   iface->get_n_columns = jaw_table_get_n_columns;
@@ -160,21 +158,6 @@ jaw_table_ref_at (AtkTable *table, gint	row, gint column)
     g_object_ref(G_OBJECT(jaw_impl));
 
   return ATK_OBJECT(jaw_impl);
-}
-
-static gint
-jaw_table_get_index_at (AtkTable *table, gint row, gint column)
-{
-  JawObject *jaw_obj = JAW_OBJECT(table);
-  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
-  jobject atk_table = data->atk_table;
-
-  JNIEnv *env = jaw_util_get_jni_env();
-  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "get_index_at", "(II)I");
-  jint index = (*env)->CallIntMethod(env, atk_table, jmid, (jint)row, (jint)column);
-
-  return (gint)index;
 }
 
 static gint
