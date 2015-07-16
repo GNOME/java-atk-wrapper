@@ -42,7 +42,6 @@ Deprecated Methods Which Are Implemented
 ----------------------------------------
 
 Table Interface:
-  get_index_at            -   use ref_at instead
   get_column_at_index
   get_row_at_index
 
