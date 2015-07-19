@@ -30,6 +30,7 @@
 #include "jawutil.h"
 #include "jawimpl.h"
 #include "jawtoplevel.h"
+#include "AtkWrapper.h"
 
 #ifdef __cplusplus
 extern "C" {
