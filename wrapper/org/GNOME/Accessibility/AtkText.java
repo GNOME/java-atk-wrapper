@@ -84,23 +84,6 @@ public class AtkText {
 		return str.charAt(0);
 	}
 
-	public StringSequence get_text_after_offset (int offset,
-				int boundary_type) {
-		if (acc_text instanceof AccessibleExtendedText) {
-			AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
-
-			int part = getPartTypeFromBoundary(boundary_type);
-			if (part == -1) {
-				return null;
-			}
-
-			AccessibleTextSequence seq = acc_ext_text.getTextSequenceAfter(part, offset);
-			return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
-		} else {
-			return private_get_text_after_offset(offset, boundary_type);
-		}
-	}
-	
 	public StringSequence get_text_at_offset (int offset,
 				int boundary_type) {
 		if (acc_text instanceof AccessibleExtendedText) {
@@ -119,24 +102,7 @@ public class AtkText {
 			return private_get_text_at_offset(offset, boundary_type);
 		}
 	}
-	
-	public StringSequence get_text_before_offset (int offset,
-				int boundary_type) {
-		if (acc_text instanceof AccessibleExtendedText) {
-			AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
 
-			int part = getPartTypeFromBoundary(boundary_type);
-			if (part == -1) {
-				return null;
-			}
-
-			AccessibleTextSequence seq = acc_ext_text.getTextSequenceBefore(part, offset);
-			return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
-		} else {
-			return private_get_text_before_offset(offset, boundary_type);
-		}
-	}
-	
 	public int get_caret_offset () {
 		return acc_text.getCaretPosition();
 	}
@@ -423,114 +389,6 @@ public class AtkText {
 		return end;
 	}
 
-	private StringSequence private_get_text_after_offset (int offset,
-			int boundary_type) {
-		int char_count = get_character_count();
-		if (offset < 0 || offset >= char_count) {
-			return null;
-		}
-
-		switch (boundary_type) {
-			case AtkTextBoundary.CHAR :
-			{
-				if (offset >= char_count-1) {
-					return null;
-				}
-
-				String str = get_text(offset+1, offset+2);
-				return new StringSequence(str, offset+1, offset+2);
-			}
-			case AtkTextBoundary.WORD_START :
-			{
-				String s = get_text(0, get_character_count());
-				int start = getNextWordStart(offset, s);
-				if (start == BreakIterator.DONE) {
-					return null;
-				}
-
-				int end = getNextWordStart(start, s);
-				if (end == BreakIterator.DONE) {
-					end = s.length();
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.WORD_END :
-			{
-				String s = get_text(0, get_character_count());
-				int start = getNextWordEnd(offset, s);
-				if (start == BreakIterator.DONE) {
-					return null;
-				}
-
-				int end = getNextWordEnd(start, s);
-				if (end == BreakIterator.DONE) {
-					end = s.length();
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.SENTENCE_START :
-			{
-				String s = get_text(0, get_character_count());
-				int start = getNextSentenceStart(offset, s);
-				if (start == BreakIterator.DONE) {
-					return null;
-				}
-
-				int end = getNextSentenceStart(start, s);
-				if (end == BreakIterator.DONE) {
-					end = s.length();
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.SENTENCE_END :
-			{
-				String s = get_text(0, get_character_count());
-				int start = getNextSentenceEnd(offset, s);
-				if (start == BreakIterator.DONE) {
-					return null;
-				}
-
-				int end = getNextSentenceEnd(start, s);
-				if (end == BreakIterator.DONE) {
-					end = s.length();
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.LINE_START :
-			case AtkTextBoundary.LINE_END :
-			{
-				BreakIterator lines = BreakIterator.getLineInstance();
-				String s = get_text(0, get_character_count());
-				lines.setText(s);
-
-				int start = lines.following(offset);
-				if (start == BreakIterator.DONE) {
-					return null;
-				}
-
-				int end = lines.next();
-				if (end == BreakIterator.DONE) {
-					end = s.length();
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			default :
-			{
-				return null;
-			}
-		}
-	}
-
 	private StringSequence private_get_text_at_offset (int offset,
 			int boundary_type) {
 		int char_count = get_character_count();
@@ -634,114 +492,5 @@ public class AtkText {
 			}
 		}
 	}
-
-	private StringSequence private_get_text_before_offset (int offset,
-			int boundary_type) {
-		int char_count = get_character_count();
-		if (offset < 0 || offset >= char_count) {
-			return null;
-		}
-
-		switch (boundary_type) {
-			case AtkTextBoundary.CHAR :
-			{
-				if (offset < 1) {
-					return null;
-				}
-
-				String str = get_text(offset-1, offset);
-				return new StringSequence(str, offset-1, offset);
-			}
-			case AtkTextBoundary.WORD_START :
-			{
-				String s = get_text(0, get_character_count());
-				int end = getPreviousWordStart(offset, s);
-				if (end == BreakIterator.DONE) {
-					return null;
-				}
-
-				int start = getPreviousWordStart(end, s);
-				if (start == BreakIterator.DONE) {
-					start = 0;
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.WORD_END :
-			{
-				String s = get_text(0, get_character_count());
-				int end = getPreviousWordEnd(offset, s);
-				if (end == BreakIterator.DONE) {
-					return null;
-				}
-
-				int start = getPreviousWordEnd(end, s);
-				if (start == BreakIterator.DONE) {
-					start = 0;
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.SENTENCE_START :
-			{
-				String s = get_text(0, get_character_count());
-				int end = getPreviousSentenceStart(offset, s);
-				if (end == BreakIterator.DONE) {
-					return null;
-				}
-
-				int start = getPreviousSentenceStart(end, s);
-				if (start == BreakIterator.DONE) {
-					start = 0;
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.SENTENCE_END :
-			{
-				String s = get_text(0, get_character_count());
-				int end = getPreviousSentenceEnd(offset, s);
-				if (end == BreakIterator.DONE) {
-					return null;
-				}
-
-				int start = getPreviousSentenceEnd(end, s);
-				if (start == BreakIterator.DONE) {
-					start = 0;
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			case AtkTextBoundary.LINE_START :
-			case AtkTextBoundary.LINE_END :
-			{
-				BreakIterator lines = BreakIterator.getLineInstance();
-				String s = get_text(0, get_character_count());
-				lines.setText(s);
-
-				int end = lines.preceding(offset);
-				if (end == BreakIterator.DONE) {
-					return null;
-				}
-
-				int start = lines.preceding(end);
-				if (start == BreakIterator.DONE) {
-					start = 0;
-				}
-
-				String str = get_text(start, end);
-				return new StringSequence(str, start, end);
-			}
-			default :
-			{
-				return null;
-			}
-		}
-	}
-
 }
 
