@@ -48,6 +48,8 @@ extern "C" {
 #define GDK_META_MASK (1 << 28)
 
 typedef enum _SignalType SignalType;
+gboolean jaw_accessibility_init (void);
+void jaw_accessibility_shutdown (void);
 
 gboolean jaw_debug = FALSE;
 
