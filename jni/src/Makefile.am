@@ -26,6 +26,7 @@ noinst_HEADERS = AtkWrapper.h \
 
 libatk_wrapper_la_CFLAGS = $(JNI_INCLUDES)\
                            $(JAW_CFLAGS) \
+                           $(AM_CFLAGS) \
                            $(PLATFORM_CFLAGS)
 
 libatk_wrapper_la_CPPFLAGS = $(JNI_INCLUDES)\

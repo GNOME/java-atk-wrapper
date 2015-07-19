@@ -129,6 +129,15 @@ else
 fi
 AC_SUBST(JAW_CFLAGS)
 
+GNOME_COMPILE_WARNINGS([error])
+case "$WARN_CFLAGS" in
+    *-Werror*)
+        WARN_CFLAGS="$WARN_CFLAGS -Wno-error=deprecated-declarations"
+        ;;
+esac
+AM_CFLAGS="$AM_CFLAGS $WARN_CFLAGS"
+AC_SUBST(AM_CFLAGS)
+
 CHECK_JNI
 
 AC_MSG_CHECKING([JDK version])
@@ -179,4 +188,5 @@ Build configuration:
        JDK src:                                ${JDK_SRC}
        Host OS:                                ${host_os}
        JNI includes:                           ${JNI_INCLUDES}
+       Warn flags:                             ${WARN_CFLAGS}
 "
