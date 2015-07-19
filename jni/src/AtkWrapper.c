@@ -86,8 +86,7 @@ static gpointer jni_loop_callback(void *data)
 }
 
 JNIEXPORT jboolean
-JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv,
-                                                                  jclass jClass)
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary()
 {
   const gchar* debug_env = g_getenv("JAW_DEBUG");
   if (g_strcmp0(debug_env, "1") == 0) {
@@ -113,8 +112,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(JNIEnv *jniEnv
 }
 
 JNIEXPORT void
-JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(JNIEnv *jniEnv,
-                                                              jclass jClass)
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge()
 {
   // Enable ATK Bridge so we can load it now
   g_unsetenv ("NO_AT_BRIDGE");

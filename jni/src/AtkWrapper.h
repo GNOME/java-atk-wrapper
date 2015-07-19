@@ -12,16 +12,14 @@ extern "C" {
  * Method:    initNativeLibrary
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary
-  (JNIEnv *, jclass);
+JNIEXPORT jboolean JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void);
 
 /*
  * Class:     org_GNOME_Accessibility_AtkWrapper
  * Method:    loadAtkBridge
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge
-  (JNIEnv *, jclass);
+JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(void);
 
 /*
  * Class:     org_GNOME_Accessibility_AtkWrapper
