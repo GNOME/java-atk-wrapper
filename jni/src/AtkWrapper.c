@@ -1271,7 +1271,6 @@ bounds_changed_handler (gpointer p)
     free_callback_para(para);
     return G_SOURCE_REMOVE;
   }
- // g_object_notify(G_OBJECT(atk_obj), "ffbounds_changed");
   g_signal_emit_by_name(atk_obj, "bounds_changed");
   free_callback_para(para);
 
