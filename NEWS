@@ -1,3 +1,44 @@
+Changes in version 0.33.3
+=========================
+
+Build:
+  752590: Include --enable-compile-warning option
+  752350: Make with PLATFORM_CFLAGS
+  752095: Remove AC_PROG_RANLIB and AC_ISC_POSIX from configure.ac
+  750533: Don't use hard path for HOME install
+
+JNI:
+  752588: Create AtkWrapper.h and include in AtkWrapper.c
+  751997: Create prototype for access init and shutdown
+  740439: Create jaw_editable_text_set_run_attributes
+  752334: remove jaw_table_get_index_at
+  740542: Create jaw_action_get_localized_name
+  752291: Replace jaw_set_current_value with jaw_value_set_value
+  742499: Implement bounds-changed signal in AtkWrapper
+  752236: Create jaw_value_get_range
+  752190: Create jaw_table_cell_get_column_span
+  752188: Create jaw_table_cell_get_row_span
+  752187: Create jaw_table_cell_get_row_column_span
+  752174: Create jaw_table_cell_get_position
+  751267:  BUGFIX: remove custom implementation of util listeners
+  752346: Fix unused event listener warnings in jaw_util
+
+Wrapper:
+  750937: Emit object:visible-data-changed signals
+  752319: Create java AtkTextGranularity interface
+  740439: Create setRunAttributes in AtkEditableText
+  740542: Create getLocalizedName in AtkAction
+  752190: Create getColumnSpan in AtkTableCell
+  752188: Create getRowSpan in AtkTableCell
+  752187: Create getRowColumnSpan in AtkTableCell
+  752174: Create getPosition for AtkTableCell
+
+Maintainership:
+  Update HACKING
+
+Contributors:
+  Magdalen Berns
+
 Changes in version 0.33.2
 =========================
 

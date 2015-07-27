@@ -1,3 +1,45 @@
+2d362db Wrapper: emit object:visible-data-changed signals
+b7b0017 JNI Remove commented out code
+f50641c Build: fix unused param warning in Atk init functions
+493d3bc JNI: include AtkWrapper.h in AtkWrapper.c
+3a467ab Build: include--enable-compile-warning option
+6085986 JNI: Create AtkWrapper.h
+c0a1dc2 JNI: create prototype for access init and shutdown
+5ec8c43 JNI/Wrapper remove get_text before/after offset
+436034a Wrapper: Create java AtkTextGranularity interface
+3d5190f HACKING: remove get_index_at from AtkTable list
+626b62d JNI/Wrapper: remove jaw_table_get_index_at
+f9665d8 JNI: Create jaw_editable_text_set_run_attributes
+c667c6d Wrapper: Create setRunAttributes in AtkEditableText
+ead4304 UHACKING: remove AtkValue recommendations
+20c4f46 JNI: call AtkValue getIncrement java method
+194b59b Build: make with PLATFORM_CFLAGS
+03e77fa JNI: fix unused event listener warnings in jaw_util
+4cd782c Create jaw_action_get_localized_name & getLocalizedName
+f66c939 HACKING: remove set_current_value recommendation
+56d1017 JNI: replace jaw_set_current_value with jaw_value_set_value
+7e023e7 JNI: clean away deprecated implementors
+dddf8a4 Implement bounds-changed signal in AtkWrapper
+56a9829 JNI: create jaw_value_get_range
+8ae59cf JNI: minor formatting
+2f60526 HACKING: remove get_column_span from AtkTableCell list
+20b6f49 JNI Create jaw_table_cell_get_column_span
+6c6f8f4 Wrapper: Create getColumnSpan in AtkTableCell
+2daa369 HACKING: remove jaw_table_cell_get_row_span
+6e0ad07 JNI: Create jaw_table_cell_get_row_span
+35c961d Wrapper create getRowSpan in AtkTableCell
+55ab1c6 HACKING: remove get_row_column_span
+5e76875 JNI: Create jaw_table_cell_get_row_column_span
+7279fd1 Wrapper: Create getRowColumnSpan in AtkTableCell
+faa9f0a HACKING: remove get_position from AtkTableCell list
+02f847d JNI: Create jaw_table_cell_get_position
+a4e84b3 Wrapper: Create getPosition for AtkTableCell
+a398eb6 JNI: use correct descriptor for getTable methid
+d192274 Build: remove AC_PROG_RANLIB from configure.ac
+e3353d7 JNI: remove custom implementation of util listeners
+213288b Build: don't use hard path for HOME install
+38062ef Build: remove AC_ISC_POSIX from configure.ac
+f527e3a Release 0.33.2
 3272fde Build: set AC_CONFIG_FILES for AC_OUTPUT
 07d38bd Build: set JAVA_HOME before setting J path macros
 d43e0d9 Wrapper: add or remove ColumnSelection return false
