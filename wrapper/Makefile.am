@@ -13,7 +13,8 @@ endif
 
 java_atk_wrapper_DATA = $(JARFILES)
 properties_DATA = accessibility.properties
-EXTRA_DIST = $(properties_DATA)
+EXTRA_DIST = $(properties_DATA) \
+	     manifest.txt
 
 $(JARFILES) : $(DEP_CLASSES)
 	$(JAR) cfm $(JARFILES) manifest.txt org/GNOME/Accessibility/*.class
