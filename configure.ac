@@ -169,6 +169,9 @@ else
 fi
 AC_SUBST(PROPERTIESDIR)
 
+JAW_JAR_NAME=java-atk-wrapper.jar
+AC_SUBST(JAW_JAR_NAME)
+
 AC_CONFIG_FILES([
     Makefile
     jni/Makefile

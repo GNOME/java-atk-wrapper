@@ -1,5 +1,5 @@
 SUBDIRS=org
-JARFILES=java-atk-wrapper.jar
+JARFILES=@JAW_JAR_NAME@
 ALL_CLASSES=org/GNOME/Accessibility/*.class
 DEP_CLASSES=$(wildcard $(ALL_CLASSES))
 
