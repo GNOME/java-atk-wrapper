@@ -59,9 +59,12 @@ AC_ARG_WITH([jdk_auto_detect],
             [],
             [with_jdk_auto_detect=yes])
 if test "x$with_jdk_auto_detect" = "xyes"; then
-  `javac $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
+  `javac -nowarn $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
   JDK_SRC=`java JavaInfo`
-  JAVA_HOME=`java JavaInfo`/jre
+  JAVA_HOME="${JDK_SRC}/jre"
+  if test ! -d ${JAVA_HOME}; then
+    JAVA_HOME="${JDK_SRC}"
+  fi
 else
   if test -z "$JDK_SRC"; then
     AC_MSG_ERROR("You should specify JDK_SRC")
@@ -149,6 +152,22 @@ if test -z "$XPROP"; then
   AC_MSG_ERROR([No xprop found])
 fi
 AC_SUBST(XPROP)
+
+AC_ARG_WITH(jardir, AS_HELP_STRING([--with-jardir=[dirname]],[Directory for installing the java-atk-wrapper.jar file]))
+if test -z "$with_jardir" ; then
+    JARDIR=${JAVA_HOME}/lib
+else
+    JARDIR=$with_jardir
+fi
+AC_SUBST(JARDIR)
+
+AC_ARG_WITH(propertiesdir, AS_HELP_STRING([--with-propertiesdir=[dirname]],[Directory for installing the accessibility.properties file]))
+if test -z "$with_propertiesdir" ; then
+    PROPERTIESDIR=${JAVA_HOME}/conf
+else
+    PROPERTIESDIR=$with_propertiesdir
+fi
+AC_SUBST(PROPERTIESDIR)
 
 AC_CONFIG_FILES([
     Makefile

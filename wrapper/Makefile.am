@@ -3,13 +3,8 @@ JARFILES=java-atk-wrapper.jar
 ALL_CLASSES=org/GNOME/Accessibility/*.class
 DEP_CLASSES=$(wildcard $(ALL_CLASSES))
 
-if USER
-java_atk_wrapperdir = $(JAVA_HOME)/lib/ext
-propertiesdir = $(JAVA_HOME)/lib
-else
-java_atk_wrapperdir = $(HOME)$(JAVA_HOME)/lib/ext
-propertiesdir = $(HOME)$(JAVA_HOME)/lib
-endif
+java_atk_wrapperdir = $(JARDIR)
+propertiesdir = $(PROPERTIESDIR)
 
 java_atk_wrapper_DATA = $(JARFILES)
 properties_DATA = accessibility.properties
