@@ -44,7 +44,7 @@ AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 # java wrapper
 
 AM_CONDITIONAL(USER, test `whoami` = "root")
-JAVA_REQUIRED=1.6
+JAVA_REQUIRED=1.7.0
 JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
