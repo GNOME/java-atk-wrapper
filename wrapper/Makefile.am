@@ -1,4 +1,4 @@
-SUBDIRS=org
+SUBDIRS=org META-INF
 JARFILES=@JAW_JAR_NAME@
 ALL_CLASSES=org/GNOME/Accessibility/*.class
 DEP_CLASSES=$(wildcard $(ALL_CLASSES))
@@ -12,7 +12,7 @@ EXTRA_DIST = $(properties_DATA) \
 	     manifest.txt
 
 $(JARFILES) : $(DEP_CLASSES)
-	$(JAR) cfm $(JARFILES) $(srcdir)/manifest.txt org/GNOME/Accessibility/*.class
+	$(JAR) cfm $(JARFILES) $(srcdir)/manifest.txt org/GNOME/Accessibility/*.class -C $(srcdir) META-INF/services/javax.accessibility.AccessibilityProvider
 
 install-data-local : all-local
 	$(mkinstalldirs) $(DESTDIR)$(propertiesdir) $(DESTDIR)$(java_atk_wrapperdir)
