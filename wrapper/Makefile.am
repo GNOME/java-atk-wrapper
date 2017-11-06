@@ -9,10 +9,13 @@ propertiesdir = $(PROPERTIESDIR)
 java_atk_wrapper_DATA = $(JARFILES)
 properties_DATA = accessibility.properties
 EXTRA_DIST = $(properties_DATA) \
-	     manifest.txt
+	     manifest.txt module-info.java
 
-$(JARFILES) : $(DEP_CLASSES)
-	$(JAR) cfm $(JARFILES) $(srcdir)/manifest.txt org/GNOME/Accessibility/*.class -C $(srcdir) META-INF/services/javax.accessibility.AccessibilityProvider
+module-info.class : $(srcdir)/module-info.java
+	$(JAVAC) -cp $(top_builddir)/wrapper -sourcepath $(top_srcdir)/wrapper:$(top_builddir)/wrapper $(JAVACFLAGS) -d $(top_builddir)/wrapper $<
+
+$(JARFILES) : $(DEP_CLASSES) module-info.class
+	$(JAR) cfm $(JARFILES) $(srcdir)/manifest.txt org/GNOME/Accessibility/*.class module-info.class -C $(srcdir) META-INF/services/javax.accessibility.AccessibilityProvider
 
 install-data-local : all-local
 	$(mkinstalldirs) $(DESTDIR)$(propertiesdir) $(DESTDIR)$(java_atk_wrapperdir)
