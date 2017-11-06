@@ -6,12 +6,8 @@ EXTRA_DIST=$(JAVA_SRC) AtkWrapper.java.in $(srcdir)/*.java
 
 all-local: $(BUILD_CLASSES)
 
-AtkWrapper.java : AtkWrapper.java.in
-	sed -e "s;\@XPROP\@;${XPROP};g" \
-		< $< >$@
-
-%.class : %.java
-	CLASSPATH=$(top_srcdir)/wrapper $(JAVAC) $(JAVACFLAGS) -d $(top_builddir)/wrapper $<
+%.class : %.java AtkWrapper.java
+	$(JAVAC) -cp $(top_builddir)/wrapper -sourcepath $(top_srcdir)/wrapper:$(top_builddir)/wrapper $(JAVACFLAGS) -d $(top_builddir)/wrapper $<
 
 clean-local:
 	$(RM) *.class

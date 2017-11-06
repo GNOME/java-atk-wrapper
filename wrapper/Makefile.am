@@ -12,7 +12,7 @@ EXTRA_DIST = $(properties_DATA) \
 	     manifest.txt
 
 $(JARFILES) : $(DEP_CLASSES)
-	$(JAR) cfm $(JARFILES) manifest.txt org/GNOME/Accessibility/*.class
+	$(JAR) cfm $(JARFILES) $(srcdir)/manifest.txt org/GNOME/Accessibility/*.class
 
 install-data-local : all-local
 	$(mkinstalldirs) $(DESTDIR)$(propertiesdir) $(DESTDIR)$(java_atk_wrapperdir)
@@ -22,4 +22,5 @@ install-data-local : all-local
 all-local : $(DATA) $(JARFILES)
 
 clean-local:
+	$(RM) *.class
 	rm -f $(JARFILES)

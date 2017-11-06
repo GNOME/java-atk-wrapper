@@ -59,7 +59,7 @@ AC_ARG_WITH([jdk_auto_detect],
             [],
             [with_jdk_auto_detect=yes])
 if test "x$with_jdk_auto_detect" = "xyes"; then
-  `javac -nowarn $JAVACFLAGS -classpath $CUR_DIR/wrapper/org/GNOME/Accessibility $CUR_DIR/JavaInfo.java`
+  `javac -nowarn $JAVACFLAGS ${srcdir}/JavaInfo.java -d .`
   JDK_SRC=`java JavaInfo`
   JAVA_HOME="${JDK_SRC}/jre"
   if test ! -d ${JAVA_HOME}; then
@@ -182,6 +182,7 @@ AC_CONFIG_FILES([
     wrapper/Makefile
     wrapper/org/Makefile
     wrapper/org/GNOME/Makefile
+    wrapper/org/GNOME/Accessibility/AtkWrapper.java
     wrapper/org/GNOME/Accessibility/Makefile
 ])
 AC_OUTPUT
