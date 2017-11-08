@@ -32,11 +32,8 @@ PKG_CHECK_MODULES(JAW, [
   dbus-1
   glib-2.0 >= 2.32.0
   gthread-2.0
-  gdk-2.0
-  gdk-3.0
   gobject-2.0
 ])
-AC_SUBST(JAW_LIBS)
 
 LIB_ATK_WRAPPER_LD_FLAGS="-avoid-version -no-undefined"
 AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
@@ -68,6 +65,13 @@ if test "x$with_jdk_auto_detect" = "xyes"; then
 else
   if test -z "$JDK_SRC"; then
     AC_MSG_ERROR("You should specify JDK_SRC")
+  else
+    if test -z "$JAVA_HOME"; then
+      JAVA_HOME="${JDK_SRC}/jre"
+      if test ! -d ${JAVA_HOME}; then
+        JAVA_HOME="${JDK_SRC}"
+	  fi
+	fi
   fi
 fi
 
@@ -77,7 +81,7 @@ AC_SUBST(JAVA_HOME)
 if test -z "$JAVA_HOME"; then
   JAVA_PATH=${PATH}
 else
-  JAVA_PATH=${JAVA_HOME}:${JAVA_HOME}/jre/bin:${JAVA_HOME}/bin:${JAVA_HOME}/../bin:${PATH}
+  JAVA_PATH=${JDK_SRC}:${JDK_SRC}/bin:${PATH}
 fi
 
 AC_PATH_PROG(JAVA,java,,${JAVA_PATH})
@@ -151,7 +155,11 @@ AC_SUBST(XPROP)
 AC_ARG_WITH(jardir, AS_HELP_STRING([--with-jardir=[dirname]],[Directory for installing the java-atk-wrapper.jar file]))
 if test -z "$with_jardir" ; then
     if test -d ${JAVA_HOME}/lib/ext ; then
-        JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib/ext
+	    if test "x$(basename ${JAVA_HOME})" = xjre; then
+            JARDIR=${libdir}/jvm/$(basename ${JDK_SRC})/jre/lib/ext
+		else
+		    JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib/ext
+		fi
     else
         JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib
     fi
@@ -165,7 +173,11 @@ if test -z "$with_propertiesdir" ; then
     if test -d ${JAVA_HOME}/conf ; then
         PROPERTIESDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/conf
     else
-        PROPERTIESDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib
+	    if test "x$(basename ${JAVA_HOME})" = xjre; then
+            PROPERTIESDIR=${libdir}/jvm/$(basename ${JDK_SRC})/jre/lib
+	    else
+            PROPERTIESDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib
+		fi
     fi
 else
     PROPERTIESDIR=$with_propertiesdir
@@ -194,6 +206,7 @@ Build configuration:
        Source code location:                   ${srcdir}
        Compiler:                               ${CC}
        JDK src:                                ${JDK_SRC}
+       JAVA home:                              ${JAVA_HOME}
        Host OS:                                ${host_os}
        JNI includes:                           ${JNI_INCLUDES}
        Warn flags:                             ${WARN_CFLAGS}
