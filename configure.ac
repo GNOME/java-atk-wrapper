@@ -92,12 +92,6 @@ if test -z "$JAVAC"; then
 fi
 AC_SUBST(JAVAC)
 
-AC_PATH_PROG(JAVAH,javah,,${JAVA_PATH})
-if test -z "$JAVAH"; then
-  AC_MSG_ERROR([$JAVA_ERROR_MESSAGE])
-fi
-AC_SUBST(JAVAH)
-
 AC_SUBST(JAVACFLAGS)
 
 AC_PATH_PROG(JAR,jar,,${JAVA_PATH})
