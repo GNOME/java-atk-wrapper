@@ -714,43 +714,12 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowStateChange(JNIEnv *jniEnv
   gdk_threads_add_idle(window_state_change_handler, para);
 }
 
-static gchar
-get_char_value (JNIEnv *jniEnv, jobject o)
-{
-  jclass classByte = (*jniEnv)->FindClass(jniEnv, "java/lang/Byte");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classByte, "byteValue", "()B");
-  return (gchar)(*jniEnv)->CallByteMethod(jniEnv, o, jmid);
-}
-
-static gdouble
-get_double_value (JNIEnv *jniEnv, jobject o)
-{
-  jclass classDouble = (*jniEnv)->FindClass(jniEnv, "java/lang/Double");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classDouble, "doubleValue", "()D");
-  return (gdouble)(*jniEnv)->CallDoubleMethod(jniEnv, o, jmid);
-}
-
-static gfloat
-get_float_value (JNIEnv *jniEnv, jobject o)
-{
-  jclass classFloat = (*jniEnv)->FindClass(jniEnv, "java/lang/Float");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classFloat, "floatValue", "()F");
-  return (gfloat)(*jniEnv)->CallFloatMethod(jniEnv, o, jmid);
-}
-
 static gint
 get_int_value (JNIEnv *jniEnv, jobject o)
 {
   jclass classInteger = (*jniEnv)->FindClass(jniEnv, "java/lang/Integer");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classInteger, "intValue", "()I");
   return (gint)(*jniEnv)->CallIntMethod(jniEnv, o, jmid);
-}
-static gint64
-get_int64_value (JNIEnv *jniEnv, jobject o)
-{
-  jclass classLong = (*jniEnv)->FindClass(jniEnv, "java/lang/Long");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classLong, "longValue", "()J");
-  return (gint64)(*jniEnv)->CallLongMethod(jniEnv, o, jmid);
 }
 
 static gboolean

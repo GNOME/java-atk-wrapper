@@ -104,28 +104,6 @@ jaw_component_data_finalize (gpointer p)
   }
 }
 
-static void
-coord_screen_to_local (JNIEnv *jniEnv, jobject jobj, gint *x, gint *y)
-{
-  jclass classAccessibleComponent = (*jniEnv)->FindClass(jniEnv,
-                                                         "javax/accessibility/AccessibleComponent");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleComponent,
-                                          "getLocationOnScreen",
-                                          "()Ljava/awt/Point;");
-
-  jobject jpoint = (*jniEnv)->CallObjectMethod(jniEnv, jobj, jmid);
-
-  jclass classPoint = (*jniEnv)->FindClass(jniEnv, "java/awt/Point");
-  jfieldID jfidX = (*jniEnv)->GetFieldID(jniEnv, classPoint, "x", "I");
-  jfieldID jfidY = (*jniEnv)->GetFieldID(jniEnv, classPoint, "y", "I");
-  jint jx = (*jniEnv)->GetIntField(jniEnv, jpoint, jfidX);
-  jint jy = (*jniEnv)->GetIntField(jniEnv, jpoint, jfidY);
-
-  (*x) = (*x) - (gint)jx;
-  (*y) = (*y) - (gint)jy;
-}
-
 static gboolean
 jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType coord_type)
 {

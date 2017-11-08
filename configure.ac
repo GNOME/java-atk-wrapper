@@ -118,6 +118,7 @@ GNOME_COMPILE_WARNINGS([error])
 case "$WARN_CFLAGS" in
     *-Werror*)
         WARN_CFLAGS="$WARN_CFLAGS -Wno-error=deprecated-declarations"
+        WARN_CFLAGS="$WARN_CFLAGS -Wno-error=strict-prototypes"
         ;;
 esac
 AM_CFLAGS="$AM_CFLAGS $WARN_CFLAGS"
@@ -155,7 +156,11 @@ AC_SUBST(XPROP)
 
 AC_ARG_WITH(jardir, AS_HELP_STRING([--with-jardir=[dirname]],[Directory for installing the java-atk-wrapper.jar file]))
 if test -z "$with_jardir" ; then
-    JARDIR=${JAVA_HOME}/lib
+    if test -d ${JAVA_HOME}/lib/ext ; then
+        JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib/ext
+    else
+        JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib
+    fi
 else
     JARDIR=$with_jardir
 fi
@@ -163,7 +168,11 @@ AC_SUBST(JARDIR)
 
 AC_ARG_WITH(propertiesdir, AS_HELP_STRING([--with-propertiesdir=[dirname]],[Directory for installing the accessibility.properties file]))
 if test -z "$with_propertiesdir" ; then
-    PROPERTIESDIR=${JAVA_HOME}/conf
+    if test -d ${JAVA_HOME}/conf ; then
+        PROPERTIESDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/conf
+    else
+        PROPERTIESDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib
+    fi
 else
     PROPERTIESDIR=$with_propertiesdir
 fi

@@ -351,29 +351,31 @@ jaw_util_get_jni_env(void)
   if (env != NULL)
     return env;
 
-    switch (res)
-    {
-      case JNI_EDETACHED:
-        args.version = JNI_VERSION_1_6;
-        args.name = g_strdup_printf("NativeThread %d", i++);
-        res = (*cachedJVM)->AttachCurrentThread(cachedJVM, &ptr, NULL);
-        env = (JNIEnv*) ptr;
-        if ((res == JNI_OK) && (env != NULL))
-        {
-          g_free(args.name);
-          return env;
-        }
-        g_printerr("\n *** Attach failed. *** JNIEnv thread is detached.\n");
-        break;
-      case JNI_EVERSION:
-        g_printerr(" *** Version error *** \n");
-        break;
-    }
-    fflush(stderr);
-    exit(2);
+  switch (res)
+  {
+    case JNI_EDETACHED:
+      args.version = JNI_VERSION_1_6;
+      args.name = g_strdup_printf("NativeThread %d", i++);
+      res = (*cachedJVM)->AttachCurrentThread(cachedJVM, &ptr, NULL);
+      env = (JNIEnv*) ptr;
+      if ((res == JNI_OK) && (env != NULL))
+      {
+        g_free(args.name);
+        return env;
+      }
+      g_printerr("\n *** Attach failed. *** JNIEnv thread is detached.\n");
+      break;
+    case JNI_EVERSION:
+      g_printerr(" *** Version error *** \n");
+      break;
+  }
+
+  fflush(stderr);
+  exit(2);
   return NULL;
 }
 
+void jaw_util_detach(void);
 void
 jaw_util_detach(void)
 {
