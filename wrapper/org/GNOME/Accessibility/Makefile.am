@@ -1,4 +1,9 @@
-JAVA_SRC=$(wildcard $(srcdir)/*.java)
+JAVA_SRC=$(filter-out $(srcdir)/AtkProvider.java, $(wildcard $(srcdir)/*.java))
+
+if MODULAR_JAR
+  JAVA_SRC += $(srcdir)/AtkProvider.java
+endif
+
 CLASSES=$(patsubst %.java,%.class,$(JAVA_SRC))
 BUILD_CLASSES=$(patsubst $(srcdir)%,$(builddir)%,$(CLASSES)) $(builddir)/AtkWrapper.class
 

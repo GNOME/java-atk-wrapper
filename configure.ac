@@ -38,11 +38,22 @@ PKG_CHECK_MODULES(JAW, [
 LIB_ATK_WRAPPER_LD_FLAGS="-avoid-version -no-undefined"
 AC_SUBST(LIB_ATK_WRAPPER_LD_FLAGS)
 
+AC_ARG_ENABLE([modular-jar],
+            [AS_HELP_STRING([--enable-modular-jar],
+            [Build modular java-atk-wrapper jar])],
+            [enable_modular_jar="$enableval"],
+            [enable_modular_jar=no])
+AS_IF([test "enable_modular_jar" = "xyes"], [
+  JAVA_REQUIRED=9.0.0
+], [
+  JAVA_REQUIRED=1.7.0
+])
+JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
+AM_CONDITIONAL([MODULAR_JAR], [test "x$enable_modular_jar" = "xyes"])
+
 # java wrapper
 
 AM_CONDITIONAL(USER, test `whoami` = "root")
-JAVA_REQUIRED=9.0.0
-JAVA_ERROR_MESSAGE="Java $JAVA_REQUIRED or later is required to build java-access-bridge"
 
 AC_ARG_VAR([JAVA_HOME],[Java Runtime Environment location])
 AC_ARG_VAR([JDK_SRC],[JDK installation path])
@@ -206,6 +217,7 @@ Build configuration:
 
        Prefix:                                 ${prefix}
        Source code location:                   ${srcdir}
+       Modular jar:                            ${enable_modular_jar}
        Compiler:                               ${CC}
        JDK src:                                ${JDK_SRC}
        JAVA home:                              ${JAVA_HOME}
