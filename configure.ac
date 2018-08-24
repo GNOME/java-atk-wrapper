@@ -43,7 +43,7 @@ AC_ARG_ENABLE([modular-jar],
             [Build modular java-atk-wrapper jar])],
             [enable_modular_jar="$enableval"],
             [enable_modular_jar=no])
-AS_IF([test "enable_modular_jar" = "xyes"], [
+AS_IF([test "x$enable_modular_jar" = "xyes"], [
   JAVA_REQUIRED=9.0.0
 ], [
   JAVA_REQUIRED=1.7.0
