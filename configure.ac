@@ -123,7 +123,7 @@ AC_SUBST(JAR)
 
 
 if test "x$GCC" = xyes; then
-  JAW_CFLAGS=$JAW_CFLAGS $CFLAGS
+  JAW_CFLAGS="$JAW_CFLAGS $CFLAGS"
 else
   AC_MSG_ERROR("You should compile with GCC")
 fi
