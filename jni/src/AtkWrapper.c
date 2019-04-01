@@ -136,6 +136,12 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge()
   }
 }
 
+JNIEXPORT void
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_GC(JNIEnv *jniEnv)
+{
+  object_table_gc(jniEnv);
+}
+
 enum _SignalType {
   Sig_Text_Caret_Moved = 0,
   Sig_Text_Property_Changed_Insert = 1,

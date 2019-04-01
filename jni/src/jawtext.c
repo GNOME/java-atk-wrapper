@@ -118,7 +118,7 @@ jaw_text_data_init (jobject ac)
                                           "<init>",
                                           "(Ljavax/accessibility/AccessibleContext;)V");
   jobject jatk_text = (*jniEnv)->NewObject(jniEnv, classText, jmid, ac);
-  data->atk_text = (*jniEnv)->NewGlobalRef(jniEnv, jatk_text);
+  data->atk_text = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_text);
 
   return data;
 }
@@ -139,7 +139,7 @@ jaw_text_data_finalize (gpointer p)
       data->text = NULL;
     }
 
-    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_text);
+    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_text);
     data->atk_text = NULL;
   }
 }
@@ -164,9 +164,12 @@ jaw_text_get_text (AtkText *text, gint start_offset, gint end_offset)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return NULL;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -179,6 +182,7 @@ jaw_text_get_text (AtkText *text, gint start_offset, gint end_offset)
                                              jmid,
                                              (jint)start_offset,
                                              (jint)end_offset );
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   return jaw_text_get_gtext_from_jstr(jniEnv, data, jstr);
 }
@@ -188,9 +192,12 @@ jaw_text_get_character_at_offset (AtkText *text, gint offset)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return 0;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -200,6 +207,7 @@ jaw_text_get_character_at_offset (AtkText *text, gint offset)
                                                atk_text,
                                                jmid,
                                                (jint)offset );
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   return (gunichar)jcharacter;
 }
@@ -212,9 +220,12 @@ jaw_text_get_text_at_offset (AtkText *text,
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return NULL;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -226,6 +237,7 @@ jaw_text_get_text_at_offset (AtkText *text,
                                                 jmid,
                                                 (jint)offset,
                                                 (jint)boundary_type );
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (jStrSeq == NULL)
   {
@@ -262,9 +274,12 @@ jaw_text_get_caret_offset (AtkText *text)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return 0;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -272,6 +287,7 @@ jaw_text_get_caret_offset (AtkText *text)
                                           "get_caret_offset",
                                           "()I");
   jint joffset = (*jniEnv)->CallIntMethod(jniEnv, atk_text, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   return (gint)joffset;
 }
@@ -284,9 +300,12 @@ jaw_text_get_character_extents (AtkText *text,
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -298,6 +317,7 @@ jaw_text_get_character_extents (AtkText *text,
                                               jmid,
                                               (jint)offset,
                                               (jint)coords);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (jrect == NULL)
   {
@@ -312,9 +332,12 @@ jaw_text_get_character_count (AtkText *text)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return 0;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -322,6 +345,7 @@ jaw_text_get_character_count (AtkText *text)
                                           "get_character_count",
                                           "()I");
   jint jcount = (*jniEnv)->CallIntMethod(jniEnv, atk_text, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   return (gint)jcount;
 }
@@ -331,9 +355,12 @@ jaw_text_get_offset_at_point (AtkText *text, gint x, gint y, AtkCoordType coords
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return 0;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAtkText,
@@ -345,6 +372,7 @@ jaw_text_get_offset_at_point (AtkText *text, gint x, gint y, AtkCoordType coords
                                           (jint)x,
                                           (jint)y,
                                           (jint)coords);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   return (gint)joffset;
 }
@@ -363,9 +391,12 @@ jaw_text_get_range_extents (AtkText *text,
 
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -378,6 +409,7 @@ jaw_text_get_range_extents (AtkText *text,
                                               (jint)start_offset,
                                               (jint)end_offset,
                                               (jint)coord_type);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (!jrect)
   {
@@ -392,9 +424,12 @@ jaw_text_get_n_selections (AtkText *text)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return 0;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -402,6 +437,7 @@ jaw_text_get_n_selections (AtkText *text)
                                           "get_n_selections",
                                           "()I");
   jint jselections = (*jniEnv)->CallIntMethod(jniEnv, atk_text, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   return (gint)jselections;
 }
@@ -411,15 +447,19 @@ jaw_text_get_selection (AtkText *text, gint selection_num, gint *start_offset, g
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return NULL;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAtkText,
                                           "get_selection",
                                           "()Lorg/GNOME/Accessibility/AtkText$StringSequence;");
   jobject jStrSeq = (*jniEnv)->CallObjectMethod(jniEnv, atk_text, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (jStrSeq == NULL)
   {
@@ -453,9 +493,12 @@ jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return FALSE;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                          classAtkText,
@@ -466,6 +509,7 @@ jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
                                                   jmid,
                                                   (jint)start_offset,
                                                   (jint)end_offset);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (jresult == JNI_TRUE)
   {
@@ -480,9 +524,12 @@ jaw_text_remove_selection (AtkText *text, gint selection_num)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return FALSE;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -493,6 +540,7 @@ jaw_text_remove_selection (AtkText *text, gint selection_num)
                                                   atk_text,
                                                   jmid,
                                                   (jint)selection_num);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (jresult == JNI_TRUE)
   {
@@ -507,9 +555,12 @@ jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gi
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return FALSE;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkText, "set_selection", "(III)Z");
   jboolean jresult = (*jniEnv)->CallBooleanMethod(jniEnv,
@@ -518,6 +569,7 @@ jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gi
                                                   (jint)selection_num,
                                                   (jint)start_offset,
                                                   (jint)end_offset);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (jresult == JNI_TRUE) {
     return TRUE;
@@ -531,9 +583,12 @@ jaw_text_set_caret_offset (AtkText *text, gint offset)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
-  jobject atk_text = data->atk_text;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
+  if (!atk_text) {
+    return FALSE;
+  }
+
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
                                              "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -544,6 +599,7 @@ jaw_text_set_caret_offset (AtkText *text, gint offset)
                                                   atk_text,
                                                   jmid,
                                                   (jint)offset);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
   if (jresult == JNI_TRUE)
   {

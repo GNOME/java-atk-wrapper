@@ -26,6 +26,9 @@ import java.beans.*;
 import java.io.*;
 import javax.accessibility.*;
 import java.awt.Toolkit;
+import javax.management.*;
+import java.util.*;
+import java.lang.management.*;
 
 public class AtkWrapper {
   static boolean accessibilityEnabled = false;
@@ -41,6 +44,17 @@ public class AtkWrapper {
             accessibilityEnabled = true;
           break;
         }
+      }
+
+      java.util.List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
+      for (GarbageCollectorMXBean gcbean : gcbeans) {
+	NotificationEmitter emitter = (NotificationEmitter) gcbean;
+	NotificationListener listener = new NotificationListener() {
+	  public void handleNotification(Notification notif, Object handback) {
+	    AtkWrapper.GC();
+	  }
+	};
+	emitter.addNotificationListener(listener, null, null);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -631,6 +645,7 @@ public class AtkWrapper {
 
   public native static boolean initNativeLibrary();
   public native static void loadAtkBridge();
+  public native static void GC();
 
   public native static void focusNotify(javax.accessibility.AccessibleContext ac);
 

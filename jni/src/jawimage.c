@@ -59,7 +59,7 @@ jaw_image_data_init (jobject ac)
 	jclass classImage = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkImage");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classImage, "<init>", "(Ljavax/accessibility/AccessibleContext;)V");
 	jobject jatk_image = (*jniEnv)->NewObject(jniEnv, classImage, jmid, ac);
-	data->atk_image = (*jniEnv)->NewGlobalRef(jniEnv, jatk_image);
+	data->atk_image = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_image);
 
 	return data;
 }
@@ -79,7 +79,7 @@ jaw_image_data_finalize (gpointer p)
 		}
 
 
-		(*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_image);
+		(*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_image);
 		data->atk_image = NULL;
 	}
 }
@@ -90,12 +90,16 @@ jaw_image_get_image_position (AtkImage *image,
 {
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
-	jobject atk_image = data->atk_image;
-
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
+	jobject atk_image = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_image);
+	if (!atk_image) {
+		return;
+	}
+
 	jclass classAtkImage = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkImage");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkImage, "get_image_position", "(I)Ljava/awt/Point;");
 	jobject jpoint = (*jniEnv)->CallObjectMethod(jniEnv, atk_image, jmid, (jint)coord_type);
+	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_image);
 	
 	if (jpoint == NULL) {
 		(*x) = 0;
@@ -118,12 +122,16 @@ jaw_image_get_image_description (AtkImage *image)
 {
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
-	jobject atk_image = data->atk_image;
-
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
+	jobject atk_image = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_image);
+	if (!atk_image) {
+		return NULL;
+	}
+
 	jclass classAtkImage = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkImage");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkImage, "get_image_description", "()Ljava/lang/String;");
 	jstring jstr = (*jniEnv)->CallObjectMethod(jniEnv, atk_image, jmid);
+	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_image);
 	
 	if (data->image_description != NULL) {
 		(*jniEnv)->ReleaseStringUTFChars(jniEnv, data->jstrImageDescription, data->image_description);
@@ -141,12 +149,16 @@ jaw_image_get_image_size (AtkImage *image, gint *width, gint *height)
 {
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
-	jobject atk_image = data->atk_image;
-
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
+	jobject atk_image = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_image);
+	if (!atk_image) {
+		return;
+	}
+
 	jclass classAtkImage = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkImage");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkImage, "get_image_size", "()Ljava/awt/Dimension;");
 	jobject jdimension = (*jniEnv)->CallObjectMethod(jniEnv, atk_image, jmid);
+	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_image);
 
 	if (jdimension == NULL) {
 		(*width) = 0;

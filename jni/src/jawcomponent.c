@@ -86,7 +86,7 @@ jaw_component_data_init (jobject ac)
                                           "(Ljavax/accessibility/AccessibleContext;)V");
 
   jobject jatk_component = (*jniEnv)->NewObject(jniEnv, classComponent, jmid, ac);
-  data->atk_component = (*jniEnv)->NewGlobalRef(jniEnv, jatk_component);
+  data->atk_component = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_component);
 
   return data;
 }
@@ -99,7 +99,7 @@ jaw_component_data_finalize (gpointer p)
 
   if (data && data->atk_component)
   {
-    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_component);
+    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_component);
     data->atk_component = NULL;
   }
 }
@@ -109,9 +109,12 @@ jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType co
 {
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  jobject atk_component = data->atk_component;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
+  if (!atk_component) {
+    return FALSE;
+  }
+
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
 
@@ -126,6 +129,7 @@ jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType co
                                                     (jint)x,
                                                     (jint)y,
                                                     (jint)coord_type);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
   if (jcontains == JNI_TRUE)
   {
@@ -140,9 +144,12 @@ jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, 
 {
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  jobject atk_component = data->atk_component;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
+  if (!atk_component) {
+    return NULL;
+  }
+
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -155,6 +162,7 @@ jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, 
                                                  (jint)x,
                                                  (jint)y,
                                                  (jint)coord_type);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
   JawImpl* jaw_impl = jaw_impl_get_instance( jniEnv, child_ac );
 
@@ -180,9 +188,12 @@ jaw_component_get_extents (AtkComponent *component,
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj,
                                                       INTERFACE_COMPONENT);
-  jobject atk_component = data->atk_component;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
+  if (!atk_component) {
+    return;
+  }
+
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -191,6 +202,7 @@ jaw_component_get_extents (AtkComponent *component,
                                           "()Ljava/awt/Rectangle;");
 
   jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
   if (jrectangle == NULL)
   {
@@ -223,9 +235,12 @@ jaw_component_set_extents (AtkComponent *component,
 
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  jobject atk_component = data->atk_component;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
+  if (!atk_component) {
+    return FALSE;
+  }
+
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
 
@@ -249,6 +264,7 @@ jaw_component_set_extents (AtkComponent *component,
     height = 0;
     x = 0;
     y = 0;
+    (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
     return FALSE;
   }
 
@@ -271,6 +287,7 @@ jaw_component_set_extents (AtkComponent *component,
                                                atk_component,
                                                "height",
                                                "I");
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
   jint jwidth = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidWidth);
   jint jheight = (*jniEnv)->GetIntField(jniEnv, classRectangle, jfidHeight);
@@ -290,9 +307,12 @@ jaw_component_grab_focus (AtkComponent *component)
 {
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  jobject atk_component = data->atk_component;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
+  if (!atk_component) {
+    return FALSE;
+  }
+
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -300,6 +320,7 @@ jaw_component_grab_focus (AtkComponent *component)
                                           "grab_focus",
                                           "()Z");
   jboolean jresult = (*jniEnv)->CallBooleanMethod(jniEnv, atk_component, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
   if (jresult == JNI_TRUE)
   {
@@ -315,9 +336,12 @@ jaw_component_get_layer (AtkComponent *component)
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj,
                                                       INTERFACE_COMPONENT);
-  jobject atk_component = data->atk_component;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
+  if (!atk_component) {
+    return 0;
+  }
+
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -326,6 +350,7 @@ jaw_component_get_layer (AtkComponent *component)
                                           "()I");
 
   jint jlayer = (*jniEnv)->CallIntMethod(jniEnv, atk_component, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
   return (AtkLayer)jlayer;
 }
