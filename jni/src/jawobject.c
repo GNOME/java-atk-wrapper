@@ -486,6 +486,8 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
                                           "getAccessibleStateSet",
                                           "()Ljavax/accessibility/AccessibleStateSet;" );
   jobject jstate_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  if (jstate_set == NULL)
+    return NULL;
 
   jclass classAccessibleStateSet = (*jniEnv)->FindClass(jniEnv,
                                                         "javax/accessibility/AccessibleStateSet" );
