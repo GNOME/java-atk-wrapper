@@ -56,7 +56,6 @@ static AtkRelationSet *jaw_object_ref_relation_set (AtkObject *atk_obj);
 static AtkObject *jaw_object_ref_child(AtkObject *atk_obj, gint i);
 
 static gpointer parent_class = NULL;
-static GHashTable *object_table = NULL;
 static JawObject* jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac);
 
 enum {
@@ -650,7 +649,8 @@ jaw_object_ref_child(AtkObject *atk_obj, gint i)
 static JawObject*
 jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
 {
-  object_table = jaw_impl_get_object_hash_table();
+  GHashTable *object_table = jaw_impl_get_object_hash_table();
+  GMutex *object_table_mutex = jaw_impl_get_object_hash_table_mutex();
   jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -662,7 +662,9 @@ jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
   if (object_table == NULL)
     return NULL;
 
+  g_mutex_lock(object_table_mutex);
   value = g_hash_table_lookup(object_table, GINT_TO_POINTER(hash_key));
+  g_mutex_unlock(object_table_mutex);
   return (JawObject*)value;
 }
 
