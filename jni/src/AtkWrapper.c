@@ -188,7 +188,6 @@ free_callback_para (CallbackPara *para)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if (jniEnv == NULL)
   {
-    free_callback_para(para);
     return;
   }
 
@@ -196,7 +195,6 @@ free_callback_para (CallbackPara *para)
   {
     if (jaw_debug)
       g_warning("free_callback_para: para->global_ac == NULL");
-    free_callback_para(para);
     return;
   }
 
