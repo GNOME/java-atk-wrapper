@@ -95,7 +95,11 @@ public class AtkComponent {
   }
 
   public Rectangle get_extents() {
-    return acc_component.getBounds();
+    Rectangle rect = acc_component.getBounds();
+    Point p = acc_component.getLocationOnScreen();
+    rect.x = p.x;
+    rect.y = p.y;
+    return rect;
   }
 
   public int get_layer () {
