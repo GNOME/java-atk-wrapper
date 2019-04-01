@@ -58,7 +58,8 @@ static gboolean jaw_initialized = FALSE;
 
 gboolean jaw_accessibility_init (void)
 {
-  atk_bridge_adaptor_init (NULL, NULL);
+  if (atk_bridge_adaptor_init (NULL, NULL) < 0)
+    return FALSE;
   if (jaw_debug)
     printf("Atk Bridge Initialized\n");
   return TRUE;
@@ -123,6 +124,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge()
   jaw_initialized = jaw_accessibility_init();
   if (jaw_debug)
     printf("Jaw Initialization STATUS in loadAtkBridge: %d\n", jaw_initialized);
+  if (!jaw_initialized)
+    return;
 
   jni_main_loop = g_main_loop_new (NULL, FALSE); /*main loop NOT running*/
   thread = g_thread_new(message, jni_loop_callback, (void *) jni_main_loop);
