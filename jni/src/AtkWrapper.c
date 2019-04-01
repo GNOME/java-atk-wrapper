@@ -308,10 +308,9 @@ window_open_handler (gpointer p)
     g_signal_emit_by_name(ATK_OBJECT(atk_get_root()),
                           "children-changed::add",
                           n,
-                          atk_obj,
-                          NULL);
+                          atk_obj);
 
-    g_signal_emit_by_name(atk_obj, "create", 0);
+    g_signal_emit_by_name(atk_obj, "create");
   }
 
   queue_free_callback_para(para);
@@ -360,10 +359,9 @@ window_close_handler (gpointer p)
     g_signal_emit_by_name(ATK_OBJECT(atk_get_root()),
                           "children-changed::remove",
                           n,
-                          atk_obj,
-                          NULL);
+                          atk_obj);
 
-    g_signal_emit_by_name(atk_obj, "destroy", 0);
+    g_signal_emit_by_name(atk_obj, "destroy");
   }
 
   queue_free_callback_para(para);
@@ -390,7 +388,7 @@ window_minimize_handler (gpointer p)
   CallbackPara *para = (CallbackPara*)p;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
 
-  g_signal_emit_by_name(atk_obj, "minimize", 0);
+  g_signal_emit_by_name(atk_obj, "minimize");
 
   queue_free_callback_para(para);
 
@@ -414,7 +412,7 @@ window_maximize_handler (gpointer p)
   CallbackPara *para = (CallbackPara*)p;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
 
-  g_signal_emit_by_name(atk_obj, "maximize", 0);
+  g_signal_emit_by_name(atk_obj, "maximize");
 
   queue_free_callback_para(para);
 
@@ -437,7 +435,7 @@ window_restore_handler (gpointer p)
   CallbackPara *para = (CallbackPara*)p;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
 
-  g_signal_emit_by_name(atk_obj, "restore", 0);
+  g_signal_emit_by_name(atk_obj, "restore");
 
   queue_free_callback_para(para);
 
@@ -461,7 +459,7 @@ window_activate_handler (gpointer p)
   CallbackPara *para = (CallbackPara*)p;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
 
-  g_signal_emit_by_name(atk_obj, "activate", 0);
+  g_signal_emit_by_name(atk_obj, "activate");
 
   queue_free_callback_para(para);
 
@@ -484,7 +482,7 @@ window_deactivate_handler (gpointer p)
   CallbackPara *para = (CallbackPara*)p;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
 
-  g_signal_emit_by_name(atk_obj, "deactivate", 0);
+  g_signal_emit_by_name(atk_obj, "deactivate");
 
   queue_free_callback_para(para);
 
@@ -509,7 +507,7 @@ window_state_change_handler (gpointer p)
   CallbackPara *para = (CallbackPara*)p;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
 
-  g_signal_emit_by_name(atk_obj, "state-change", 0);
+  g_signal_emit_by_name(atk_obj, "state-change", 0, 0);
 
   queue_free_callback_para(para);
 
@@ -931,6 +929,7 @@ bounds_changed_handler (gpointer p)
 {
   CallbackPara *para = (CallbackPara*)p;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
+  AtkRectangle rect;
 
   if (atk_obj == NULL)
   {
@@ -939,7 +938,11 @@ bounds_changed_handler (gpointer p)
     queue_free_callback_para(para);
     return G_SOURCE_REMOVE;
   }
-  g_signal_emit_by_name(atk_obj, "bounds_changed");
+  rect.x = -1;
+  rect.y = -1;
+  rect.width = -1;
+  rect.height = -1;
+  g_signal_emit_by_name(atk_obj, "bounds_changed", &rect);
   queue_free_callback_para(para);
 
   return G_SOURCE_REMOVE;
