@@ -208,6 +208,7 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
                                             "()Ljavax/accessibility/AccessibleContext;");
     ac = (*jniEnv)->CallObjectMethod(jniEnv, jObj, jmid);
   } else {
+    (*jniEnv)->DeleteGlobalRef(jniEnv, jObj);
     return 0;
   }
 

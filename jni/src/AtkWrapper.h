@@ -23,6 +23,13 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(voi
 
 /*
  * Class:     org_GNOME_Accessibility_AtkWrapper
+ * Method:    GC
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_GC(JNIEnv *);
+
+/*
+ * Class:     org_GNOME_Accessibility_AtkWrapper
  * Method:    focusNotify
  * Signature: (Ljavax/accessibility/AccessibleContext;)V
  */

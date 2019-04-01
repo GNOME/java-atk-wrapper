@@ -107,9 +107,9 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
                                           classAccessibleContext,
                                           "hashCode",
                                           "()I");
-  gint hash_key = (gint)(*jniEnv)->CallIntMethod(jniEnv, ac, jmid);
+  jaw_impl->hash_key = (gint)(*jniEnv)->CallIntMethod(jniEnv, ac, jmid);
   g_mutex_lock(&objectTableMutex);
-  g_hash_table_insert(objectTable, GINT_TO_POINTER(hash_key), GINT_TO_POINTER(jaw_impl));
+  g_hash_table_insert(objectTable, GINT_TO_POINTER(jaw_impl->hash_key), jaw_impl);
   g_mutex_unlock(&objectTableMutex);
 }
 
@@ -137,19 +137,51 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
 }
 
 static void
-object_table_remove(JNIEnv *jniEnv, jobject ac)
+object_table_remove(JNIEnv *jniEnv, JawImpl *jaw_impl)
 {
-  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "hashCode",
-                                          "()I" );
-  gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
+  g_mutex_lock(&objectTableMutex);
+  g_hash_table_remove(objectTable, GINT_TO_POINTER(jaw_impl->hash_key));
+  g_mutex_unlock(&objectTableMutex);
+}
+
+/* Called on completion of Java GC, take the opportunity to look for stale jaw_impl */
+void
+object_table_gc(JNIEnv *jniEnv)
+{
+  GHashTableIter iter;
+  gpointer key, value;
+  GSList *list = NULL, *cur, *next;
+  int n = 0;
 
   g_mutex_lock(&objectTableMutex);
-  g_hash_table_remove(objectTable, GINT_TO_POINTER(hash_key));
+  if (objectTable)
+  {
+    g_hash_table_iter_init(&iter, objectTable);
+    while (g_hash_table_iter_next(&iter, &key, &value))
+    {
+      n++;
+      JawImpl *jaw_impl = value;
+      if ((*jniEnv)->IsSameObject(jniEnv, jaw_impl->parent.acc_context, NULL))
+      {
+	/* Got garbage-collected, mark for dropping */
+	list = g_slist_prepend(list, jaw_impl);
+      }
+    }
+  }
   g_mutex_unlock(&objectTableMutex);
+  /* fprintf(stderr,"%d objects\n", n); */
+
+  n = 0;
+  for (cur = list; cur != NULL; cur = next)
+  {
+    n++;
+    JawImpl *jaw_impl = cur->data;
+    g_object_unref(G_OBJECT(jaw_impl));
+    next = g_slist_next(cur);
+    g_slist_free_1(cur);
+  }
+  /* fprintf(stderr,"%d dropped\n", n); */
+  (void) n;
 }
 
 GHashTable*
@@ -169,7 +201,7 @@ aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
 {
   JawImpl *jaw_impl = JAW_IMPL(tflag, jaw_obj);
 
-  jobject ac = jaw_obj->acc_context;
+  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
   jaw_impl->ifaceTable = g_hash_table_new(NULL, NULL);
 
   if (tflag & INTERFACE_ACTION)
@@ -271,6 +303,8 @@ aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
                         (gpointer)INTERFACE_TABLE_CELL,
                         (gpointer)info);
   }
+
+  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 }
 
 JawImpl*
@@ -278,6 +312,7 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
   jniEnv = jaw_util_get_jni_env();
+  jobject temp_ref;
 
   if (jniEnv == NULL)
     return NULL;
@@ -291,10 +326,11 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 
   if (jaw_impl == NULL)
   {
-    jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, ac);
-    if (global_ac != NULL)
+    temp_ref = (*jniEnv)->NewGlobalRef(jniEnv, ac);
+    if (temp_ref != NULL)
     {
-      guint tflag = jaw_util_get_tflag_from_jobj(jniEnv, global_ac);
+      jobject weak_ref = (*jniEnv)->NewWeakGlobalRef(jniEnv, temp_ref);
+      guint tflag = jaw_util_get_tflag_from_jobj(jniEnv, temp_ref);
       jaw_impl = (JawImpl*)g_object_new(JAW_TYPE_IMPL(tflag), NULL);
       if (jaw_impl != NULL)
       {
@@ -302,15 +338,17 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 
         if (jaw_obj != NULL)
         {
-          jaw_obj->acc_context = global_ac;
+          jaw_obj->acc_context = weak_ref;
           jaw_obj->storedData = g_hash_table_new(g_str_hash, g_str_equal);
           aggregate_interface(jniEnv, jaw_obj, tflag);
           atk_object_initialize(ATK_OBJECT(jaw_impl), NULL);
-          object_table_insert(jniEnv, global_ac, jaw_impl);
+          object_table_insert(jniEnv, weak_ref, jaw_impl);
         } else
         {
           if (jaw_debug)
             g_warning("jaw_impl_get_instance: jaw_obj == NULL");
+          (*jniEnv)->DeleteGlobalRef(jniEnv, temp_ref);
+          (*jniEnv)->DeleteWeakGlobalRef(jniEnv, weak_ref);
           return NULL;
         }
       } else
@@ -318,6 +356,7 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
         if (jaw_debug)
           g_warning("jaw_impl_get_instance: jaw_impl == NULL");
       }
+      (*jniEnv)->DeleteGlobalRef(jniEnv, temp_ref);
     } else
     {
       if (jaw_debug)
@@ -528,14 +567,12 @@ static void
 jaw_impl_finalize(GObject *gobject)
 {
   JawObject *jaw_obj = JAW_OBJECT(gobject);
-  jobject global_ac = jaw_obj->acc_context;
-
   JawImpl *jaw_impl = (JawImpl*)jaw_obj;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  object_table_remove( jniEnv, global_ac );
+  object_table_remove( jniEnv, jaw_impl );
 
-  (*jniEnv)->DeleteGlobalRef(jniEnv, global_ac);
+  (*jniEnv)->DeleteWeakGlobalRef(jniEnv, jaw_obj->acc_context);
   jaw_obj->acc_context = NULL;
 
   /* Interface finalize */
@@ -583,8 +620,8 @@ jaw_impl_initialize (AtkObject *atk_obj, gpointer data)
   ATK_OBJECT_CLASS(jaw_impl_parent_class)->initialize(atk_obj, data);
 
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
 
   jclass classAtkWrapper = (*jniEnv)->FindClass(jniEnv,
                                                 "org/GNOME/Accessibility/AtkWrapper");
@@ -593,6 +630,7 @@ jaw_impl_initialize (AtkObject *atk_obj, gpointer data)
                                                 "registerPropertyChangeListener",
                                                 "(Ljavax/accessibility/AccessibleContext;)V");
   (*jniEnv)->CallStaticVoidMethod(jniEnv, classAtkWrapper, jmid, ac);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 }
 
 static AtkObject*
@@ -604,8 +642,11 @@ jaw_impl_get_parent (AtkObject *atk_obj)
   }
 
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
+  if (!ac) {
+    return NULL;
+  }
 
   jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
@@ -614,6 +655,7 @@ jaw_impl_get_parent (AtkObject *atk_obj)
                                           "getAccessibleParent",
                                           "()Ljavax/accessibility/Accessible;");
   jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
   if (jparent != NULL )
   {
     jclass classAccessible = (*jniEnv)->FindClass(jniEnv,
@@ -637,8 +679,11 @@ static AtkObject*
 jaw_impl_ref_child (AtkObject *atk_obj, gint i)
 {
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
+  if (!ac) {
+    return NULL;
+  }
 
   jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
@@ -647,6 +692,7 @@ jaw_impl_ref_child (AtkObject *atk_obj, gint i)
                                           "getAccessibleChild",
                                           "(I)Ljavax/accessibility/Accessible;" );
   jobject jchild = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid, i );
+  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
   if (jchild == NULL)
   {
     return NULL;
@@ -767,8 +813,11 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
     return NULL;
 
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  jobject ac = jaw_obj->acc_context;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
+  if (!ac) {
+    return NULL;
+  }
 
   jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
@@ -777,6 +826,7 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
                                           "getAccessibleRelationSet",
                                           "()Ljavax/accessibility/AccessibleRelationSet;" );
   jobject jrel_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   jclass classAccessibleRelationSet = (*jniEnv)->FindClass( jniEnv,
                                                            "javax/accessibility/AccessibleRelationSet");
