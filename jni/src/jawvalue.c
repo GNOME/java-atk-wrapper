@@ -62,7 +62,7 @@ jaw_value_data_init (jobject ac)
                                           "<init>",
                                           "(Ljavax/accessibility/AccessibleContext;)V");
   jobject jatk_value = (*jniEnv)->NewObject(jniEnv, classValue, jmid, ac);
-  data->atk_value = (*jniEnv)->NewGlobalRef(jniEnv, jatk_value);
+  data->atk_value = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_value);
 
   return data;
 }
@@ -75,7 +75,7 @@ jaw_value_data_finalize (gpointer p)
 
   if (data && data->atk_value)
   {
-    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_value);
+    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_value);
     data->atk_value = NULL;
   }
 }
@@ -153,9 +153,12 @@ jaw_value_get_current_value (AtkValue *obj, GValue *value)
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
-  jobject atk_value = data->atk_value;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_value = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_value);
+  if (!atk_value) {
+    return;
+  }
+
   jclass classAtkValue = (*jniEnv)->FindClass(jniEnv,
                                               "org/GNOME/Accessibility/AtkValue");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -165,6 +168,7 @@ jaw_value_get_current_value (AtkValue *obj, GValue *value)
   jobject jnumber = (*jniEnv)->CallObjectMethod(jniEnv,
                                                 atk_value,
                                                 jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_value);
 
   if (!jnumber)
   {
@@ -182,15 +186,19 @@ jaw_value_set_value(AtkValue *obj, const gdouble value)
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
-  jobject atk_value = data->atk_value;
-
   JNIEnv *env = jaw_util_get_jni_env();
+  jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
+  if (!atk_value) {
+    return;
+  }
+
   jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");
   jmethodID jmid = (*env)->GetMethodID(env,
                                        classAtkValue,
                                           "setValue",
                                           "(Ljava/lang/Number;)V");
   (*env)->CallVoidMethod(env, atk_value, jmid,(jdouble)value);
+  (*env)->DeleteGlobalRef(env, atk_value);
 }
 
 static AtkRange*
@@ -199,15 +207,20 @@ jaw_value_get_range(AtkValue *obj)
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
-  jobject atk_value = data->atk_value;
-
   JNIEnv *env = jaw_util_get_jni_env();
+  jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
+  if (!atk_value) {
+    return NULL;
+  }
+
   jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");
   jmethodID jmidMin = (*env)->GetMethodID(env, classAtkValue, "getMinimumValue", "()D");
   jmethodID jmidMax = (*env)->GetMethodID(env, classAtkValue, "getMaximumValue", "()D");
-  return atk_range_new((gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMin),
+  AtkRange *ret = atk_range_new((gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMin),
                        (gdouble)(*env)->CallDoubleMethod(env, atk_value, jmidMax),
                        NULL); // NULL description
+  (*env)->DeleteGlobalRef(env, atk_value);
+  return ret;
 }
 
 static gdouble
@@ -215,11 +228,16 @@ jaw_value_get_increment (AtkValue *obj)
 {
   JawObject *jaw_obj = JAW_OBJECT(obj);
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
-  jobject atk_value = data->atk_value;
   JNIEnv *env = jaw_util_get_jni_env();
+  jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
+  if (!atk_value) {
+    return 0.;
+  }
   jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");
   jmethodID jmid = (*env)->GetMethodID(env, classAtkValue, "getIncrement", "()D");
-  return (*env)->CallDoubleMethod(env, atk_value, jmid);
+  gdouble ret = (*env)->CallDoubleMethod(env, atk_value, jmid);
+  (*env)->DeleteGlobalRef(env, atk_value);
+  return ret;
 }
 
 #ifdef __cplusplus

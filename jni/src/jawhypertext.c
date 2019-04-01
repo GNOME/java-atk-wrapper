@@ -63,7 +63,7 @@ jaw_hypertext_data_init (jobject ac)
 	jclass classHypertext = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkHypertext");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classHypertext, "<init>", "(Ljavax/accessibility/AccessibleContext;)V");
 	jobject jatk_hypertext = (*jniEnv)->NewObject(jniEnv, classHypertext, jmid, ac);
-	data->atk_hypertext = (*jniEnv)->NewGlobalRef(jniEnv, jatk_hypertext);
+	data->atk_hypertext = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_hypertext);
 
 	data->link_table = g_hash_table_new_full(NULL, NULL, NULL, link_destroy_notify);
 
@@ -79,7 +79,7 @@ jaw_hypertext_data_finalize (gpointer p)
 	if (data && data->atk_hypertext) {
 		g_hash_table_remove_all(data->link_table);
 
-		(*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_hypertext);
+		(*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_hypertext);
 		data->atk_hypertext = NULL;
 	}
 }
@@ -89,12 +89,16 @@ jaw_hypertext_get_link (AtkHypertext *hypertext, gint link_index)
 {
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
-	jobject atk_hypertext = data->atk_hypertext;
-	
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
+	jobject atk_hypertext = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_hypertext);
+	if (!atk_hypertext) {
+		return NULL;
+	}
+
 	jclass classAtkHypertext = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkHypertext");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkHypertext, "get_link", "(I)Lorg/GNOME/Accessibility/AtkHyperlink;");
 	jobject jhyperlink = (*jniEnv)->CallObjectMethod(jniEnv, atk_hypertext, jmid, (jint)link_index);
+	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_hypertext);
 
 	if (!jhyperlink) {
 		return NULL;
@@ -111,13 +115,18 @@ jaw_hypertext_get_n_links (AtkHypertext *hypertext)
 {
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
-	jobject atk_hypertext = data->atk_hypertext;
-	
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
+	jobject atk_hypertext = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_hypertext);
+	if (!atk_hypertext) {
+		return 0;
+	}
+
 	jclass classAtkHypertext = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkHypertext");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkHypertext, "get_n_links", "()I");
 	
-	return (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_hypertext, jmid);
+	gint ret = (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_hypertext, jmid);
+	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_hypertext);
+	return ret;
 }
 
 static gint
@@ -125,12 +134,17 @@ jaw_hypertext_get_link_index (AtkHypertext *hypertext, gint char_index)
 {
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
-	jobject atk_hypertext = data->atk_hypertext;
-	
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
+	jobject atk_hypertext = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_hypertext);
+	if (!atk_hypertext) {
+		return 0;
+	}
+
 	jclass classAtkHypertext = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkHypertext");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkHypertext, "get_link_index", "(I)I");
 	
-	return (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_hypertext, jmid, (jint)char_index);
+	gint ret = (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_hypertext, jmid, (jint)char_index);
+	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_hypertext);
+	return ret;
 }
 

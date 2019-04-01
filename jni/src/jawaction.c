@@ -70,7 +70,7 @@ jaw_action_data_init (jobject ac)
                                           "<init>",
                                           "(Ljavax/accessibility/AccessibleContext;)V");
   jobject jatk_action = (*jniEnv)->NewObject(jniEnv, classAction, jmid, ac);
-  data->atk_action = (*jniEnv)->NewGlobalRef(jniEnv, jatk_action);
+  data->atk_action = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_action);
 
   return data;
 }
@@ -115,7 +115,7 @@ jaw_action_data_finalize (gpointer p)
       data->action_keybinding = NULL;
     }
 
-    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_action);
+    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_action);
     data->atk_action = NULL;
   }
 }
@@ -125,9 +125,12 @@ jaw_action_do_action (AtkAction *action, gint i)
 {
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  jobject atk_action = data->atk_action;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
+  if (!atk_action) {
+    return FALSE;
+  }
+
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -138,6 +141,7 @@ jaw_action_do_action (AtkAction *action, gint i)
                                                   atk_action,
                                                   jmid,
                                                   (jint)i);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
 
   if (jresult == JNI_TRUE)
     return TRUE;
@@ -150,16 +154,21 @@ jaw_action_get_n_actions (AtkAction *action)
 {
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  jobject atk_action = data->atk_action;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
+  if (!atk_action) {
+    return 0;
+  }
+
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAtkAction,
                                           "get_n_actions", "()I");
 
-  return (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_action, jmid);
+  gint ret = (gint)(*jniEnv)->CallIntMethod(jniEnv, atk_action, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
+  return ret;
 }
 
 static const gchar*
@@ -167,9 +176,12 @@ jaw_action_get_description (AtkAction *action, gint i)
 {
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  jobject atk_action = data->atk_action;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
+  if (!atk_action) {
+    return NULL;
+  }
+
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -180,6 +192,7 @@ jaw_action_get_description (AtkAction *action, gint i)
                                              atk_action,
                                              jmid,
                                              (jint)i);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
 
   if (data->action_description != NULL)
   {
@@ -202,9 +215,12 @@ jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
 {
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  jobject atk_action = data->atk_action;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
+  if (!atk_action) {
+    return FALSE;
+  }
+
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -216,6 +232,7 @@ jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
                                                  jmid,
                                                  (jint)i,
                                                  (jstring)description);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
 
   if (jisset == JNI_TRUE)
   {
@@ -230,9 +247,12 @@ jaw_action_get_name (AtkAction *action, gint i)
 {
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  jobject atk_action = data->atk_action;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
+  if (!atk_action) {
+    return NULL;
+  }
+
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -240,6 +260,7 @@ jaw_action_get_name (AtkAction *action, gint i)
                                           "get_name",
                                           "(I)Ljava/lang/String;");
   jstring jstr = (*jniEnv)->CallObjectMethod(jniEnv, atk_action, jmid, (jint)i);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
 
   if (data->action_name != NULL)
   {
@@ -262,15 +283,19 @@ jaw_action_get_localized_name (AtkAction *action, gint i)
 {
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  jobject atk_action = data->atk_action;
-
   JNIEnv *env = jaw_util_get_jni_env();
+  jobject atk_action = (*env)->NewGlobalRef(env, data->atk_action);
+  if (!atk_action) {
+    return NULL;
+  }
+
   jclass classAtkAction = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*env)->GetMethodID(env,
                                        classAtkAction,
                                        "getLocalizedName",
                                        "(I)Ljava/lang/String;");
   jstring jstr = (*env)->CallObjectMethod(env, atk_action, jmid, (jint)i);
+  (*env)->DeleteGlobalRef(env, atk_action);
   if (data->action_name != NULL)
   {
     (*env)->ReleaseStringUTFChars(env, data->jstrLocalizedName, data->action_name);
@@ -289,9 +314,12 @@ jaw_action_get_keybinding (AtkAction *action, gint i)
     return NULL;
 
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  jobject atk_action = data->atk_action;
-
   JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
+  if (!atk_action) {
+    return NULL;
+  }
+
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -299,6 +327,7 @@ jaw_action_get_keybinding (AtkAction *action, gint i)
                                           "get_keybinding",
                                           "(I)Ljava/lang/String;");
   jstring jstr = (*jniEnv)->CallObjectMethod(jniEnv, atk_action, jmid, (jint)i);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
 
   if (data->action_keybinding != NULL)
   {
