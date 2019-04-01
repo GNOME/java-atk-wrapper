@@ -296,6 +296,8 @@ jaw_object_get_name (AtkObject *atk_obj)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
+    jaw_obj->jstrName = NULL;
+    atk_obj->name = NULL;
   }
 
   if (jstr != NULL)
@@ -329,6 +331,8 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
+    jaw_obj->jstrName = NULL;
+    atk_obj->name = NULL;
   }
 
   if (jstr != NULL)
