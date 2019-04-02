@@ -306,7 +306,7 @@ public class AtkWrapper {
           case ContainerEvent.COMPONENT_REMOVED:
           {
 	    java.awt.Component c = ((ContainerEvent)e).getChild();
-            c.addComponentListener(componentAdapter);
+            c.removeComponentListener(componentAdapter);
             break;
           }
 
