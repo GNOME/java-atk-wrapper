@@ -92,7 +92,9 @@ typedef struct _JawInterfaceInfo {
 
 static gpointer jaw_impl_parent_class = NULL;
 
+static GMutex typeTableMutex;
 static GHashTable *typeTable = NULL;
+static GMutex objectTableMutex;
 static GHashTable *objectTable = NULL;
 static gboolean jaw_debug = FALSE;
 
@@ -106,7 +108,9 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
                                           "hashCode",
                                           "()I");
   gint hash_key = (gint)(*jniEnv)->CallIntMethod(jniEnv, ac, jmid);
+  g_mutex_lock(&objectTableMutex);
   g_hash_table_insert(objectTable, GINT_TO_POINTER(hash_key), GINT_TO_POINTER(jaw_impl));
+  g_mutex_unlock(&objectTableMutex);
 }
 
 static JawImpl*
@@ -120,10 +124,15 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
                                           "()I" );
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
   gpointer value = NULL;
+  g_mutex_lock(&objectTableMutex);
   if (objectTable==NULL)
+  {
     return NULL;
+    g_mutex_unlock(&objectTableMutex);
+  }
 
   value = g_hash_table_lookup(objectTable, GINT_TO_POINTER(hash_key));
+  g_mutex_unlock(&objectTableMutex);
   return (JawImpl*)value;
 }
 
@@ -138,13 +147,21 @@ object_table_remove(JNIEnv *jniEnv, jobject ac)
                                           "()I" );
   gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
 
+  g_mutex_lock(&objectTableMutex);
   g_hash_table_remove(objectTable, GINT_TO_POINTER(hash_key));
+  g_mutex_unlock(&objectTableMutex);
 }
 
 GHashTable*
 jaw_impl_get_object_hash_table(void)
 {
   return objectTable;
+}
+
+GMutex*
+jaw_impl_get_object_hash_table_mutex(void)
+{
+  return &objectTableMutex;
 }
 
 static void
@@ -265,8 +282,10 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
   if (jniEnv == NULL)
     return NULL;
 
+  g_mutex_lock(&objectTableMutex);
   if (objectTable == NULL)
     objectTable = g_hash_table_new (NULL, NULL);
+  g_mutex_unlock(&objectTableMutex);
 
   jaw_impl = object_table_lookup(jniEnv, ac);
 
@@ -411,11 +430,13 @@ jaw_impl_get_type (guint tflag)
     NULL
   };
 
+  g_mutex_lock(&typeTableMutex);
   if (typeTable == NULL) {
     typeTable = g_hash_table_new( NULL, NULL );
   }
 
   type = GPOINTER_TO_GTYPE(g_hash_table_lookup(typeTable, GUINT_TO_POINTER(tflag)));
+  g_mutex_unlock(&typeTableMutex);
   if (type == 0) {
     GTypeInfo tinfo = {
       sizeof(JawImplClass),
@@ -465,7 +486,9 @@ jaw_impl_get_type (guint tflag)
     if (tflag & INTERFACE_TABLE_CELL)
       g_type_add_interface_static (type, ATK_TYPE_TABLE_CELL, &atk_table_cell_info);
 
+    g_mutex_lock(&typeTableMutex);
     g_hash_table_insert(typeTable, GINT_TO_POINTER(tflag), GTYPE_TO_POINTER(type));
+    g_mutex_unlock(&typeTableMutex);
   }
 
   return type;
@@ -516,19 +539,18 @@ jaw_impl_finalize(GObject *gobject)
   jaw_obj->acc_context = NULL;
 
   /* Interface finalize */
-  GHashTableIter *iter = NULL;
-  gpointer *key = NULL;
-  gpointer *value = NULL;
+  GHashTableIter iter;
+  gpointer value;
 
-  g_hash_table_iter_init(iter, jaw_impl->ifaceTable);
-  while (g_hash_table_iter_next(iter, key, value))
+  g_hash_table_iter_init(&iter, jaw_impl->ifaceTable);
+  while (g_hash_table_iter_next(&iter, NULL, &value))
   {
     JawInterfaceInfo *info = (JawInterfaceInfo*)value;
     info->finalize(info->data);
 
     g_free(info);
 
-    g_hash_table_iter_remove(iter);
+    g_hash_table_iter_remove(&iter);
   }
   if (jaw_impl->ifaceTable != NULL)
   {

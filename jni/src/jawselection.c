@@ -129,6 +129,10 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "ref_selection", "(I)Ljavax/accessibility/Accessible;");
 	jobject jchild = (*jniEnv)->CallObjectMethod(jniEnv, atk_selection, jmid, (jint)i);
+
+	if (!jchild) {
+		return NULL;
+	}
 	
 	jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
 	jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessible, "getAccessibleContext", "()Ljavax/accessibility/AccessibleContext;" );

@@ -56,7 +56,6 @@ static AtkRelationSet *jaw_object_ref_relation_set (AtkObject *atk_obj);
 static AtkObject *jaw_object_ref_child(AtkObject *atk_obj, gint i);
 
 static gpointer parent_class = NULL;
-static GHashTable *object_table = NULL;
 static JawObject* jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac);
 
 enum {
@@ -296,6 +295,8 @@ jaw_object_get_name (AtkObject *atk_obj)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
+    jaw_obj->jstrName = NULL;
+    atk_obj->name = NULL;
   }
 
   if (jstr != NULL)
@@ -329,6 +330,8 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
+    jaw_obj->jstrName = NULL;
+    atk_obj->name = NULL;
   }
 
   if (jstr != NULL)
@@ -486,6 +489,8 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
                                           "getAccessibleStateSet",
                                           "()Ljavax/accessibility/AccessibleStateSet;" );
   jobject jstate_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  if (jstate_set == NULL)
+    return NULL;
 
   jclass classAccessibleStateSet = (*jniEnv)->FindClass(jniEnv,
                                                         "javax/accessibility/AccessibleStateSet" );
@@ -650,7 +655,8 @@ jaw_object_ref_child(AtkObject *atk_obj, gint i)
 static JawObject*
 jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
 {
-  object_table = jaw_impl_get_object_hash_table();
+  GHashTable *object_table = jaw_impl_get_object_hash_table();
+  GMutex *object_table_mutex = jaw_impl_get_object_hash_table_mutex();
   jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
@@ -662,7 +668,9 @@ jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
   if (object_table == NULL)
     return NULL;
 
+  g_mutex_lock(object_table_mutex);
   value = g_hash_table_lookup(object_table, GINT_TO_POINTER(hash_key));
+  g_mutex_unlock(object_table_mutex);
   return (JawObject*)value;
 }
 
