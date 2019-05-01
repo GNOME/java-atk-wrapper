@@ -18,9 +18,9 @@
 
   <maintainer>
     <foaf:Person>
-      <foaf:name>Magdalen Berns</foaf:name>
-      <foaf:mbox rdf:resource="mailto:m.berns@thismagpie.com" />
-      <gnome:userid>mberns</gnome:userid>
+      <foaf:name>Samuel Thibault</foaf:name>
+      <foaf:mbox rdf:resource="mailto:samuel.thibault@ens-lyon.org" />
+      <gnome:userid>sthibaul</gnome:userid>
     </foaf:Person>
   </maintainer>
 

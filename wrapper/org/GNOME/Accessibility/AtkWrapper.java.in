@@ -320,7 +320,7 @@ public class AtkWrapper {
           case ContainerEvent.COMPONENT_REMOVED:
           {
 	    java.awt.Component c = ((ContainerEvent)e).getChild();
-            c.addComponentListener(componentAdapter);
+            c.removeComponentListener(componentAdapter);
             break;
           }
 
@@ -595,7 +595,10 @@ public class AtkWrapper {
         javax.accessibility.AccessibleRole role = ac.getAccessibleRole();
         javax.accessibility.AccessibleRole parent_role = null;
         if (parent != null) {
-          parent_role = parent.getAccessibleContext().getAccessibleRole();
+          AccessibleContext parent_ac = parent.getAccessibleContext();
+	  if (parent_ac != null) {
+	    parent_role = parent_ac.getAccessibleRole();
+	  }
         }
         if (role != null) {
           if (newValue == javax.accessibility.AccessibleState.FOCUSED ||

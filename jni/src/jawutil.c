@@ -357,7 +357,7 @@ jaw_util_get_jni_env(void)
     case JNI_EDETACHED:
       args.version = JNI_VERSION_1_6;
       args.name = g_strdup_printf("NativeThread %d", i++);
-      res = (*cachedJVM)->AttachCurrentThread(cachedJVM, &ptr, NULL);
+      res = (*cachedJVM)->AttachCurrentThreadAsDaemon(cachedJVM, &ptr, NULL);
       env = (JNIEnv*) ptr;
       if ((res == JNI_OK) && (env != NULL))
       {

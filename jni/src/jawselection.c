@@ -141,6 +141,9 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "ref_selection", "(I)Ljavax/accessibility/Accessible;");
 	jobject jchild = (*jniEnv)->CallObjectMethod(jniEnv, atk_selection, jmid, (jint)i);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_selection);
+	if (!jchild) {
+		return NULL;
+	}
 	
 	jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
 	jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessible, "getAccessibleContext", "()Ljavax/accessibility/AccessibleContext;" );

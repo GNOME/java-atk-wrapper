@@ -5,8 +5,8 @@ As a general rule, non-trivial maintainer-submitted patches should be posted to
 gnome-accessibility-devel for comment and informational purpose prior to commit.
 
 Patches are welcome and if there are any suggestions, please send comments
-directly to the current maintainer, Magdalen Berns m.berns@thismagpie.com and
-make sure to cc the gnome-accessibility-devel list too.
+directly to the current maintainer, Samuel Thibault samuel.thibault@ens-lyon.org
+and make sure to cc the gnome-accessibility-devel list too.
 
 To file a bug against java-atk-wrapper:
 

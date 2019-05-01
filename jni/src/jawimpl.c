@@ -576,19 +576,18 @@ jaw_impl_finalize(GObject *gobject)
   jaw_obj->acc_context = NULL;
 
   /* Interface finalize */
-  GHashTableIter *iter = NULL;
-  gpointer *key = NULL;
-  gpointer *value = NULL;
+  GHashTableIter iter;
+  gpointer value;
 
-  g_hash_table_iter_init(iter, jaw_impl->ifaceTable);
-  while (g_hash_table_iter_next(iter, key, value))
+  g_hash_table_iter_init(&iter, jaw_impl->ifaceTable);
+  while (g_hash_table_iter_next(&iter, NULL, &value))
   {
     JawInterfaceInfo *info = (JawInterfaceInfo*)value;
     info->finalize(info->data);
 
     g_free(info);
 
-    g_hash_table_iter_remove(iter);
+    g_hash_table_iter_remove(&iter);
   }
   if (jaw_impl->ifaceTable != NULL)
   {
