@@ -100,7 +100,10 @@ public class AtkTable {
 			acc_table.getAccessibleColumnDescription(column);
 
 		if (accessible != null) {
-			return accessible.getAccessibleContext().getAccessibleDescription();
+			AccessibleContext ac = accessible.getAccessibleContext();
+			if (ac != null) {
+				return ac.getAccessibleDescription();
+			}
 		}
 
 		return "";
@@ -124,7 +127,10 @@ public class AtkTable {
 			acc_table.getAccessibleRowDescription(row);
 
 		if (accessible != null) {
-			return accessible.getAccessibleContext().getAccessibleDescription();
+			AccessibleContext ac = accessible.getAccessibleContext();
+			if (ac != null) {
+				return ac.getAccessibleDescription();
+			}
 		}
 
 		return "";
