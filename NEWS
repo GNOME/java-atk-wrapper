@@ -30,6 +30,7 @@ Wrapper:
   793821: Fix atk event parameters
   775947: Make jaw thread a daemon thread
   793819: Fix freeing objects
+  669029: Fix netbeans crashes
   754748: Fix freemind crashes
   758242: Fix swing threading rules
 
