@@ -1,3 +1,50 @@
+Changes in version 0.35.0pre
+=========================
+
+Build:
+  Distribute manifest.txt
+  783982: Fix build warnings
+  789956: Build cleanups
+  Allow building outside source tree
+  Do not use GTK+
+  Require java 7
+  789959: Provide a java module
+  Bump atk-bridge-2.0 dependency to 2.33.1
+  760227: Filter out AtkWrapper.java from distributed files
+  768824: Replace GNOME_COMPILE_WARNINGS with AX_COMPILER_FLAGS
+
+Wrapper:
+  Provide javax.accessibility.AccessibilityProvider
+  754688, 768347: Fix crashes on accessible context being NULL
+  775609: Fix crashes on accessiblestateset being NULL
+  793544: Fix crashes on ref_selection returning NULL
+  760058: Deliver accessibility events in a separate context
+  766772: Fix crash on unbound recursion
+  770575: Gracefully abort initialization if at-spi fails
+  793620: Fix iterating hash table in jaw_impl_finalize
+  793823: Fix coordinates returned by atkcomponent
+  791970: Fix removing component listener
+  766774: Call jaw_impl_get_instance from the application thread
+  793543: Make sure atk objects exist while processing signals
+  793622: Fix missing reference addition on children_changed::add
+  793821: Fix atk event parameters
+  775947: Make jaw thread a daemon thread
+  793819: Fix freeing objects
+  754748: Fix freemind crashes
+  758242: Fix swing threading rules
+
+Internal:
+  Update HACKING
+  Update bug tracker URL
+  Make Samuel Thibault maintainer
+
+Contributors:
+  Magdalen Berns
+  Federico Mena Quintero
+  Fridrich Štrba
+  Andre Klapper
+
+
 Changes in version 0.33.3
 =========================
 
