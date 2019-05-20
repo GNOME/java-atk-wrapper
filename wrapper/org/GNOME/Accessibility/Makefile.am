@@ -1,4 +1,4 @@
-JAVA_SRC=$(filter-out $(srcdir)/AtkProvider.java, $(wildcard $(srcdir)/*.java))
+JAVA_SRC=$(filter-out $(srcdir)/AtkWrapper.java, $(filter-out $(srcdir)/AtkProvider.java, $(wildcard $(srcdir)/*.java)))
 
 if MODULAR_JAR
   JAVA_SRC += $(srcdir)/AtkProvider.java
@@ -7,7 +7,7 @@ endif
 CLASSES=$(patsubst %.java,%.class,$(JAVA_SRC))
 BUILD_CLASSES=$(patsubst $(srcdir)%,$(builddir)%,$(CLASSES)) $(builddir)/AtkWrapper.class
 
-EXTRA_DIST=$(JAVA_SRC) AtkWrapper.java.in $(srcdir)/*.java
+EXTRA_DIST=$(JAVA_SRC) AtkWrapper.java.in $(srcdir)/AtkProvider.java
 
 all-local: $(BUILD_CLASSES)
 
