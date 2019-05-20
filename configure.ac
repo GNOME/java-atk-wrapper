@@ -123,7 +123,7 @@ else
 fi
 AC_SUBST(JAW_CFLAGS)
 
-GNOME_COMPILE_WARNINGS([error])
+AX_COMPILER_FLAGS()
 case "$WARN_CFLAGS" in
     *-Werror*)
         WARN_CFLAGS="$WARN_CFLAGS -Wno-error=deprecated-declarations"
