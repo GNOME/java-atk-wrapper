@@ -26,6 +26,58 @@ public class AtkSelection {
 	AccessibleContext ac;
 	AccessibleSelection acc_selection;
 
+	private class AddSelectionRunner implements Runnable {
+		private AccessibleSelection acc_selection;
+		private int i;
+
+		public AddSelectionRunner (AccessibleAction acc_selection, int i) {
+			this.acc_selection = acc_selection;
+			this.i = i;
+		}
+
+		public void run () {
+			acc_selection.addAccessibleSelection(i);
+		}
+	}
+
+	private class ClearSelectionRunner implements Runnable {
+		private AccessibleSelection acc_selection;
+
+		public ClearSelectionRunner (AccessibleAction acc_selection) {
+			this.acc_selection = acc_selection;
+		}
+
+		public void run () {
+			acc_selection.clearAccessibleSelection();
+		}
+	}
+
+	private class RemoveSelectionRunner implements Runnable {
+		private AccessibleSelection acc_selection;
+		private int i;
+
+		public RemoveSelectionRunner (AccessibleAction acc_selection, int i) {
+			this.acc_selection = acc_selection;
+			this.i = i;
+		}
+
+		public void run () {
+			acc_selection.clearAccessibleSelection(i);
+		}
+	}
+
+	private class SelectionAllRunner implements Runnable {
+		private AccessibleSelection acc_selection;
+
+		public SelectionAllRunner (AccessibleAction acc_selection) {
+			this.acc_selection = acc_selection;
+		}
+
+		public void run () {
+			acc_selection.selectAllAccessibleSelection();
+		}
+	}
+
 	public AtkSelection (AccessibleContext ac) {
 		super();
 		this.ac = ac;
@@ -33,16 +85,16 @@ public class AtkSelection {
 	}
 
 	public boolean add_selection (int i) {
-		acc_selection.addAccessibleSelection(i);
+		SwingUtilities.invokeLater(new AddSelectionRunner(acc_selection, i));
 		return is_child_selected(i);
 	}
 
 	public boolean clear_selection () {
-		acc_selection.clearAccessibleSelection();
+		SwingUtilities.invokeLater(new ClearSelectionRunner(acc_selection));
 		return true;
 	}
 
-	public javax.accessibility.Accessible ref_selection (int i) {
+	public Accessible ref_selection (int i) {
 		return acc_selection.getAccessibleSelection(i);
 	}
 
@@ -63,7 +115,7 @@ public class AtkSelection {
 	}
 
 	public boolean remove_selection (int i) {
-		acc_selection.removeAccessibleSelection(i);
+		SwingUtilities.invokeLater(new RemoveSelectionRunner(acc_selection, i));
 		return !is_child_selected(i);
 	}
 
@@ -71,11 +123,10 @@ public class AtkSelection {
 		AccessibleStateSet stateSet = ac.getAccessibleStateSet();
 
 		if (stateSet.contains(AccessibleState.MULTISELECTABLE)) {
-			acc_selection.selectAllAccessibleSelection();
+			SwingUtilities.invokeLater(new SelectionAllRunner(acc_selection));
 			return true;
 		}
 
 		return false;
 	}
 }
-

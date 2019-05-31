@@ -27,13 +27,27 @@ public class AtkTable {
 	AccessibleContext ac;
 	AccessibleTable acc_table;
 
-  public AtkTable (AccessibleContext ac) {
-    this.ac = ac;
-    this.acc_table = ac.getAccessibleTable();
-  }
+	private class SetCaptionRunner implements Runnable {
+        private AccessibleTable acc_table;
+        private Accessible a;
+
+        public TextContentsRunner (AccessibleTable acc_table, Accessible a) {
+            this.acc_table = acc_table;
+            this.a = a;
+        }
+
+        public void run () {
+            acc_table.setAccessibleCaption(a);
+        }
+    }
+
+	public AtkTable (AccessibleContext ac) {
+		this.ac = ac;
+		this.acc_table = ac.getAccessibleTable();
+	}
 
 	public AccessibleContext ref_at (int row, int column) {
-		javax.accessibility.Accessible accessible = acc_table.getAccessibleAt(row, column);
+		Accessible accessible = acc_table.getAccessibleAt(row, column);
 		if (accessible != null) {
 			return accessible.getAccessibleContext();
 		}
@@ -92,7 +106,7 @@ public class AtkTable {
      * @param a an Accessible object
      */
     public void setCaption(Accessible a) {
-        acc_table.setAccessibleCaption(a);
+		SwingUtilities.invokeLater(new SetCaptionRunner(acc_edt_text, a));
     }
 
 	public String get_column_description (int column) {
@@ -116,7 +130,7 @@ public class AtkTable {
  *                    specified column of the table
  */
   public void setColumnDescription(int column, String description) {
-    javax.accessibility.Accessible accessible = acc_table.getAccessibleColumnDescription(column);
+    Accessible accessible = acc_table.getAccessibleColumnDescription(column);
     if (description.equals(accessible.toString()) && accessible != null) {
       acc_table.setAccessibleColumnDescription(column, accessible);
     }
@@ -246,4 +260,3 @@ public class AtkTable {
 		return false;
 	}
 }
-
