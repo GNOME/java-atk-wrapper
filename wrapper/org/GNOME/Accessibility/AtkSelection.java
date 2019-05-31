@@ -37,6 +37,7 @@ public class AtkSelection {
 
 		public void run () {
 			acc_selection.addAccessibleSelection(i);
+			return is_child_selected(i);
 		}
 	}
 
@@ -63,6 +64,7 @@ public class AtkSelection {
 
 		public void run () {
 			acc_selection.clearAccessibleSelection(i);
+			return !is_child_selected(i);
 		}
 	}
 
@@ -85,8 +87,16 @@ public class AtkSelection {
 	}
 
 	public boolean add_selection (int i) {
+		RunnableFuture<AddSelectionRunner> wf = new FutureTask<>(() -> getAddSelectionRunnerOnEDT());
+		SwingUtilities.invokeLater(wf);
+	    try {
+	        return wf.get();
+	    } catch (InterruptedException|ExecutionException ex) {
+	        ex.printStackTrace(); // we can do better than this
+	    }
+		/*
 		SwingUtilities.invokeLater(new AddSelectionRunner(acc_selection, i));
-		return is_child_selected(i);
+		return is_child_selected(i);*/
 	}
 
 	public boolean clear_selection () {
@@ -115,8 +125,16 @@ public class AtkSelection {
 	}
 
 	public boolean remove_selection (int i) {
+		RunnableFuture<RemoveSelectionRunner> wf = new FutureTask<>(() -> getRemoveSelectionRunnerOnEDT());
+		SwingUtilities.invokeLater(wf);
+	    try {
+	        return wf.get();
+	    } catch (InterruptedException|ExecutionException ex) {
+	        ex.printStackTrace(); // we can do better than this
+	    }
+		/*
 		SwingUtilities.invokeLater(new RemoveSelectionRunner(acc_selection, i));
-		return !is_child_selected(i);
+		return !is_child_selected(i);*/
 	}
 
 	public boolean select_all_selection () {
