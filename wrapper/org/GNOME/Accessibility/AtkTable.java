@@ -27,94 +27,6 @@ public class AtkTable {
 	AccessibleContext ac;
 	AccessibleTable acc_table;
 
-	private class SetCaptionRunner implements Runnable {
-        private AccessibleTable acc_table;
-        private Accessible a;
-
-        public SetCaptionRunner (AccessibleTable acc_table, Accessible a) {
-            this.acc_table = acc_table;
-            this.a = a;
-        }
-
-        public void run () {
-            acc_table.setAccessibleCaption(a);
-        }
-    }
-
-	private class SetColumnDescriptionRunner implements Runnable {
-        private AccessibleTable acc_table;
-		private int column;
-        private Accessible accessible;
-
-        public SetColumnDescriptionRunner (AccessibleTable acc_table, int column, Accessible accessible) {
-            this.acc_table = acc_table;
-            this.column = column;
-			this.accessible = accessible;
-        }
-
-        public void run () {
-            acc_table.setAccessibleColumnDescription(column, accessible);
-        }
-    }
-
-	private class SetRowDescriptionRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private int row;
-		private Accessible a;
-
-		public SetColumnDescriptionRunner (AccessibleTable acc_table, int row, Accessible accessible) {
-			this.acc_table = acc_table;
-			this.row = row;
-			this.accessible = accessible;
-		}
-
-		public void run () {
-			acc_table.setAccessibleRowDescription(row, accessible);
-		}
-	}
-
-	private class SetColumnHeaderRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private AccessibleTable table;
-
-		public SetColumnHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
-			this.acc_table = acc_table;
-			this.table = table;
-		}
-
-		public void run () {
-			acc_table.setAccessibleColumnHeader(table);
-		}
-	}
-
-	private class SetRowHeaderRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private AccessibleTable table;
-
-		public SetRowHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
-			this.acc_table = acc_table;
-			this.table = table;
-		}
-
-		public void run () {
-			acc_table.setAccessibleRowHeader(table);
-		}
-	}
-
-	private class SetSummaryRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private Accessible a;
-
-		public SetSummaryRunner (AccessibleTable acc_table, Accessible a) {
-			this.acc_table = acc_table;
-			this.a = a;
-		}
-
-		public void run () {
-			acc_table.setAccessibleSummary(a);
-		}
-	}
-
 	public AtkTable (AccessibleContext ac) {
 		this.ac = ac;
 		this.acc_table = ac.getAccessibleTable();
@@ -167,6 +79,19 @@ public class AtkTable {
 		}
 		return null;
 	}
+	private class SetCaptionRunner implements Runnable {
+        private AccessibleTable acc_table;
+        private Accessible a;
+
+        public SetCaptionRunner (AccessibleTable acc_table, Accessible a) {
+            this.acc_table = acc_table;
+            this.a = a;
+        }
+
+        public void run () {
+            acc_table.setAccessibleCaption(a);
+        }
+    }
 
     /**
      *
@@ -185,6 +110,21 @@ public class AtkTable {
 			}
 		}
 		return "";
+	}
+	private class SetColumnDescriptionRunner implements Runnable {
+	    private AccessibleTable acc_table;
+		private int column;
+	    private Accessible accessible;
+
+	    public SetColumnDescriptionRunner (AccessibleTable acc_table, int column, Accessible accessible) {
+	        this.acc_table = acc_table;
+	        this.column = column;
+			this.accessible = accessible;
+	    }
+
+	    public void run () {
+	        acc_table.setAccessibleColumnDescription(column, accessible);
+	    }
 	}
 
 	/**
@@ -209,6 +149,21 @@ public class AtkTable {
 			}
 		}
 		return "";
+	}
+	private class SetRowDescriptionRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private int row;
+		private Accessible a;
+
+		public SetColumnDescriptionRunner (AccessibleTable acc_table, int row, Accessible accessible) {
+			this.acc_table = acc_table;
+			this.row = row;
+			this.accessible = accessible;
+		}
+
+		public void run () {
+			acc_table.setAccessibleRowDescription(row, accessible);
+		}
 	}
 
 	/**
@@ -235,6 +190,20 @@ public class AtkTable {
 		return null;
 	}
 
+	private class SetColumnHeaderRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private AccessibleTable table;
+
+		public SetColumnHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
+			this.acc_table = acc_table;
+			this.table = table;
+		}
+
+		public void run () {
+			acc_table.setAccessibleColumnHeader(table);
+		}
+	}
+
     /**
      *
      * @param column an int representing a column in table
@@ -256,6 +225,20 @@ public class AtkTable {
 		return null;
 	}
 
+	private class SetRowHeaderRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private AccessibleTable table;
+
+		public SetRowHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
+			this.acc_table = acc_table;
+			this.table = table;
+		}
+
+		public void run () {
+			acc_table.setAccessibleRowHeader(table);
+		}
+	}
+
     public void setRowHeader (int row, AccessibleTable table) {
 		//do we need row for anything?
         acc_table.setAccessibleRowHeader(table);
@@ -267,6 +250,20 @@ public class AtkTable {
 			return accessible.getAccessibleContext();
 		}
 		return null;
+	}
+
+	private class SetSummaryRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private Accessible a;
+
+		public SetSummaryRunner (AccessibleTable acc_table, Accessible a) {
+			this.acc_table = acc_table;
+			this.a = a;
+		}
+
+		public void run () {
+			acc_table.setAccessibleSummary(a);
+		}
 	}
 
     /**
