@@ -21,9 +21,9 @@ nbproject/
 Makefile
 Makefile.in
 /aclocal.m4
+/config
 /config.guess
-/config.h
-/config.h.in
+/config.h*
 /config.log
 /config.status
 /config.sub
@@ -33,6 +33,7 @@ Makefile.in
 /install-sh
 /libtool
 /ltmain.sh
+/m4
 /missing
 /mkinstalldirs
 /stamp-h1
