@@ -128,6 +128,7 @@ case "$WARN_CFLAGS" in
     *-Werror*)
         WARN_CFLAGS="$WARN_CFLAGS -Wno-error=deprecated-declarations"
         WARN_CFLAGS="$WARN_CFLAGS -Wno-error=strict-prototypes"
+        WARN_CFLAGS="$WARN_CFLAGS -Wno-error=declaration-after-statement"
         ;;
 esac
 AM_CFLAGS="$AM_CFLAGS $WARN_CFLAGS"
