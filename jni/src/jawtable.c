@@ -61,7 +61,7 @@ typedef struct _TableData {
 } TableData;
 
 void
-jaw_table_interface_init (AtkTableIface *iface)
+jaw_table_interface_init (AtkTableIface *iface, gpointer data)
 {
   iface->ref_at = jaw_table_ref_at;
   iface->get_column_at_index = jaw_table_get_column_at_index;

@@ -39,7 +39,7 @@ typedef struct _SelectionData {
 } SelectionData;
 
 void
-jaw_selection_interface_init (AtkSelectionIface *iface)
+jaw_selection_interface_init (AtkSelectionIface *iface, gpointer data)
 {
 	iface->add_selection = jaw_selection_add_selection;
 	iface->clear_selection = jaw_selection_clear_selection;

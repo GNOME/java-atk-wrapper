@@ -42,7 +42,7 @@ typedef struct _ActionData {
 } ActionData;
 
 void
-jaw_action_interface_init (AtkActionIface *iface)
+jaw_action_interface_init (AtkActionIface *iface, gpointer data)
 {
   iface->do_action = jaw_action_do_action;
   iface->get_n_actions = jaw_action_get_n_actions;

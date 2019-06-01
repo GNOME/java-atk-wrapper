@@ -335,7 +335,7 @@ jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 }
 
 static void
-jaw_impl_class_intern_init (gpointer klass)
+jaw_impl_class_intern_init (gpointer klass, gpointer data)
 {
   if (jaw_impl_parent_class == NULL)
   {

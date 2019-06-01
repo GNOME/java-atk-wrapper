@@ -37,7 +37,7 @@ typedef struct _ValueData {
 } ValueData;
 
 void
-jaw_value_interface_init (AtkValueIface *iface)
+jaw_value_interface_init (AtkValueIface *iface, gpointer data)
 {
   iface->get_current_value = jaw_value_get_current_value;
   iface->set_value = jaw_value_set_value;

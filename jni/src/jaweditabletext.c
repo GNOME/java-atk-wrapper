@@ -51,7 +51,7 @@ typedef struct _EditableTextData {
 }EditableTextData;
 
 void
-jaw_editable_text_interface_init (AtkEditableTextIface *iface)
+jaw_editable_text_interface_init (AtkEditableTextIface *iface, gpointer data)
 {
   iface->set_text_contents = jaw_editable_text_set_text_contents;
   iface->insert_text = jaw_editable_text_insert_text;

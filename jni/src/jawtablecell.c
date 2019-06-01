@@ -39,7 +39,7 @@ typedef struct _TableCellData {
 } TableCellData;
 
 void
-jaw_table_cell_interface_init (AtkTableCellIface *iface)
+jaw_table_cell_interface_init (AtkTableCellIface *iface, gpointer data)
 {
   iface->get_table = jaw_table_cell_get_table;
   iface->get_position = jaw_table_cell_get_position;

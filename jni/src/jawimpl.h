@@ -64,43 +64,43 @@ struct _JawImplClass
 	JawObjectClass parent_class;
 };
 
-extern void jaw_action_interface_init(AtkActionIface*);
+extern void jaw_action_interface_init(AtkActionIface*, gpointer);
 extern gpointer jaw_action_data_init(jobject);
 extern void jaw_action_data_finalize(gpointer);
 
-extern void jaw_component_interface_init(AtkComponentIface*);
+extern void jaw_component_interface_init(AtkComponentIface*, gpointer);
 extern gpointer jaw_component_data_init(jobject);
 extern void jaw_component_data_finalize(gpointer);
 
-extern void jaw_editable_text_interface_init(AtkEditableTextIface*);
+extern void jaw_editable_text_interface_init(AtkEditableTextIface*, gpointer);
 extern gpointer jaw_editable_text_data_init(jobject);
 extern void jaw_editable_text_data_finalize (gpointer);
 
-extern void jaw_hypertext_interface_init(AtkHypertextIface*);
+extern void jaw_hypertext_interface_init(AtkHypertextIface*, gpointer);
 extern gpointer jaw_hypertext_data_init(jobject);
 extern void jaw_hypertext_data_finalize(gpointer);
 
-extern void jaw_image_interface_init(AtkImageIface*);
+extern void jaw_image_interface_init(AtkImageIface*, gpointer);
 extern gpointer jaw_image_data_init(jobject);
 extern void jaw_image_data_finalize(gpointer);
 
-extern void jaw_selection_interface_init(AtkSelectionIface*);
+extern void jaw_selection_interface_init(AtkSelectionIface*, gpointer);
 extern gpointer jaw_selection_data_init(jobject);
 extern void jaw_selection_data_finalize(gpointer);
 
-extern void jaw_table_interface_init (AtkTableIface*);
+extern void jaw_table_interface_init (AtkTableIface*, gpointer);
 extern gpointer jaw_table_data_init (jobject);
 extern void jaw_table_data_finalize (gpointer);
 
-extern void jaw_table_cell_interface_init (AtkTableCellIface*);
+extern void jaw_table_cell_interface_init (AtkTableCellIface*, gpointer);
 extern gpointer jaw_table_cell_data_init (jobject ac);
 extern void jaw_table_cell_data_finalize (gpointer);
 
-extern void jaw_text_interface_init(AtkTextIface*);
+extern void jaw_text_interface_init(AtkTextIface*, gpointer);
 extern gpointer	jaw_text_data_init(jobject);
 extern void jaw_text_data_finalize(gpointer);
 
-extern void jaw_value_interface_init (AtkValueIface*);
+extern void jaw_value_interface_init (AtkValueIface*, gpointer);
 extern gpointer jaw_value_data_init (jobject);
 extern void jaw_value_data_finalize (gpointer);
 

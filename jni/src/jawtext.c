@@ -83,7 +83,7 @@ typedef struct _TextData {
 }TextData;
 
 void
-jaw_text_interface_init (AtkTextIface *iface)
+jaw_text_interface_init (AtkTextIface *iface, gpointer data)
 {
   iface->get_text = jaw_text_get_text;
   iface->get_character_at_offset = jaw_text_get_character_at_offset;

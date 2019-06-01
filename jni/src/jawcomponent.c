@@ -57,7 +57,7 @@ typedef struct _ComponentData {
 } ComponentData;
 
 void
-jaw_component_interface_init (AtkComponentIface *iface)
+jaw_component_interface_init (AtkComponentIface *iface, gpointer data)
 {
   iface->contains = jaw_component_contains;
   iface->ref_accessible_at_point = jaw_component_ref_accessible_at_point;

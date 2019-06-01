@@ -35,7 +35,7 @@ typedef struct _HypertextData {
 } HypertextData;
 
 void
-jaw_hypertext_interface_init (AtkHypertextIface *iface)
+jaw_hypertext_interface_init (AtkHypertextIface *iface, gpointer data)
 {
 	iface->get_link = jaw_hypertext_get_link;
 	iface->get_n_links = jaw_hypertext_get_n_links;

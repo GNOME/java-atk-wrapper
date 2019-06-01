@@ -38,7 +38,7 @@ typedef struct _ImageData {
 } ImageData;
 
 void
-jaw_image_interface_init (AtkImageIface *iface)
+jaw_image_interface_init (AtkImageIface *iface, gpointer data)
 {
 	iface->get_image_position = jaw_image_get_image_position;
 	iface->get_image_description = jaw_image_get_image_description;
