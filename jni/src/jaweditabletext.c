@@ -23,10 +23,6 @@
 #include "jawutil.h"
 #include "jawobject.h"
 
-extern void jaw_editable_text_interface_init(AtkEditableTextIface*);
-extern gpointer jaw_editable_text_data_init(jobject);
-extern void jaw_editable_text_data_finalize(gpointer);
-
 static void jaw_editable_text_set_text_contents(AtkEditableText *text,
                                                 const gchar *string);
 static void jaw_editable_text_insert_text(AtkEditableText *text,

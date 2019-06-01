@@ -45,46 +45,6 @@ static AtkObject* jaw_impl_get_parent(AtkObject *atk_obj);
 static AtkObject* jaw_impl_ref_child (AtkObject *atk_obj, gint i);
 static AtkRelationSet* jaw_impl_ref_relation_set(AtkObject *atk_obj);
 
-extern void jaw_action_interface_init(AtkActionIface*);
-extern gpointer jaw_action_data_init(jobject);
-extern void jaw_action_data_finalize(gpointer);
-
-extern void jaw_component_interface_init(AtkComponentIface*);
-extern gpointer jaw_component_data_init(jobject);
-extern void jaw_component_data_finalize(gpointer);
-
-extern void jaw_text_interface_init(AtkTextIface*);
-extern gpointer	jaw_text_data_init(jobject);
-extern void jaw_text_data_finalize(gpointer);
-
-extern void jaw_editable_text_interface_init(AtkEditableTextIface*);
-extern gpointer jaw_editable_text_data_init(jobject);
-extern void jaw_editable_text_data_finalize (gpointer);
-
-extern void jaw_hypertext_interface_init(AtkHypertextIface*);
-extern gpointer jaw_hypertext_data_init(jobject);
-extern void jaw_hypertext_data_finalize(gpointer);
-
-extern void jaw_image_interface_init(AtkImageIface*);
-extern gpointer jaw_image_data_init(jobject);
-extern void jaw_image_data_finalize(gpointer);
-
-extern void jaw_selection_interface_init(AtkSelectionIface*);
-extern gpointer jaw_selection_data_init(jobject);
-extern void jaw_selection_data_finalize(gpointer);
-
-extern void jaw_value_interface_init (AtkValueIface*);
-extern gpointer jaw_value_data_init (jobject);
-extern void jaw_value_data_finalize (gpointer);
-
-extern void jaw_table_interface_init (AtkTableIface*);
-extern gpointer jaw_table_data_init (jobject);
-extern void jaw_table_data_finalize (gpointer);
-
-extern void jaw_table_cell_interface_init (AtkTableCellIface*);
-extern gpointer jaw_table_cell_data_init (jobject);
-extern void jaw_table_cell_data_finalize (gpointer);
-
 typedef struct _JawInterfaceInfo {
   void (*finalize) (gpointer);
   gpointer data;

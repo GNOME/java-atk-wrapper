@@ -24,10 +24,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void jaw_component_interface_init(AtkComponentIface*);
-extern gpointer jaw_component_data_init(jobject);
-extern void jaw_component_data_finalize(gpointer);
-
 static gboolean jaw_component_contains(AtkComponent *component,
                                        gint         x,
                                        gint         y,

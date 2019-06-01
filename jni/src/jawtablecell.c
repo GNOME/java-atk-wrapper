@@ -22,10 +22,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void jaw_table_cell_interface_init (AtkTableCellIface*);
-extern gpointer jaw_table_cell_data_init (jobject ac);
-extern void jaw_table_cell_data_finalize (gpointer);
-
 static AtkObject *jaw_table_cell_get_table (AtkTableCell *cell);
 static gboolean jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column);
 static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,

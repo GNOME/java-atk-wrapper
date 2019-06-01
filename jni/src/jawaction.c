@@ -22,10 +22,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void	jaw_action_interface_init (AtkActionIface*);
-extern gpointer	jaw_action_data_init (jobject ac);
-extern void	jaw_action_data_finalize (gpointer);
-
 static gboolean jaw_action_do_action(AtkAction *action, gint i);
 static gint jaw_action_get_n_actions(AtkAction *action);
 static const gchar* jaw_action_get_description(AtkAction *action, gint i);

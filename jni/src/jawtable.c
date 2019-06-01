@@ -23,10 +23,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void jaw_table_interface_init (AtkTableIface*);
-extern gpointer jaw_table_data_init (jobject ac);
-extern void jaw_table_data_finalize (gpointer);
-
 static AtkObject*   jaw_table_ref_at(AtkTable *table, gint row, gint column);
 static gint         jaw_table_get_column_at_index(AtkTable *table, gint index);
 static gint         jaw_table_get_row_at_index(AtkTable *table, gint index);

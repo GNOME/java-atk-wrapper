@@ -22,10 +22,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void	jaw_selection_interface_init (AtkSelectionIface*);
-extern gpointer	jaw_selection_data_init (jobject ac);
-extern void	jaw_selection_data_finalize (gpointer);
-
 static gboolean			jaw_selection_add_selection		(AtkSelection	*selection,
 									 gint		i);
 static gboolean			jaw_selection_clear_selection		(AtkSelection	*selection);
