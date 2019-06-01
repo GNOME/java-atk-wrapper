@@ -330,9 +330,10 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
     return;
   }
 
-  /* FIXME: this is not actually using the name parameter */
-
-  atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
+  jstring jstr = NULL;
+  if (name) {
+    jstr = (*jniEnv)->NewStringUTF(jniEnv, name);
+  }
 
   jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
@@ -340,8 +341,7 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
                                           classAccessibleContext,
                                           "setAccessibleName",
                                           "(Ljava/lang/String;)");
-  /* FIXME: this should be CallVoidMethod, and be passed the name */
-  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  (*jniEnv)->CallVoidMethod( jniEnv, ac, jmid, jstr );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   if (atk_obj->name != NULL)
@@ -358,11 +358,6 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
     atk_obj->name = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
                                                          jaw_obj->jstrName,
                                                          NULL);
-  }
-  if (jstr == NULL)
-  {
-    name = "";
-    return;
   }
 }
 
@@ -389,6 +384,7 @@ jaw_object_get_description (AtkObject *atk_obj)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrDescription, atk_obj->description);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
+    jaw_obj->jstrDescription = NULL;
     atk_obj->description = NULL;
   }
 
@@ -412,7 +408,10 @@ static void jaw_object_set_description (AtkObject *atk_obj, const gchar *descrip
     return;
   }
 
-  /* FIXME: this is not actually using the description parameter */
+  jstring jstr = NULL;
+  if (description) {
+    jstr = (*jniEnv)->NewStringUTF(jniEnv, description);
+  }
 
   jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
@@ -420,27 +419,23 @@ static void jaw_object_set_description (AtkObject *atk_obj, const gchar *descrip
                                           classAccessibleContext,
                                           "setAccessibleDescription",
                                           "(Ljava/lang/String;)");
-  /* FIXME: this should be CallVoidMethod, and be passed the description */
-  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  (*jniEnv)->CallVoidMethod( jniEnv, ac, jmid, jstr );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   if (description != NULL)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrDescription, description);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
-    description = NULL;
+    jaw_obj->jstrDescription = NULL;
+    atk_obj->description = NULL;
   }
 
   if (jstr != NULL)
   {
     jaw_obj->jstrDescription = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
-    description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
-                                                       jaw_obj->jstrDescription,
-                                                       NULL);
-  }
-  if (jstr != NULL)
-  {
-    description = "";
+    atk_obj->description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
+                                                                jaw_obj->jstrDescription,
+                                                                NULL);
   }
 }
 
