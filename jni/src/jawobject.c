@@ -29,8 +29,6 @@
 extern "C" {
 #endif
 
-static void jaw_object_class_init(JawObjectClass *klass);
-static void jaw_object_init(JawObject *object);
 static void jaw_object_initialize(AtkObject *jaw_obj, gpointer data);
 static void jaw_object_dispose(GObject *gobject);
 static void jaw_object_finalize(GObject *gobject);
@@ -332,6 +330,8 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
     return;
   }
 
+  /* FIXME: this is not actually using the name parameter */
+
   atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
 
   jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
@@ -340,6 +340,7 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
                                           classAccessibleContext,
                                           "setAccessibleName",
                                           "(Ljava/lang/String;)");
+  /* FIXME: this should be CallVoidMethod, and be passed the name */
   jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
@@ -411,12 +412,15 @@ static void jaw_object_set_description (AtkObject *atk_obj, const gchar *descrip
     return;
   }
 
+  /* FIXME: this is not actually using the description parameter */
+
   jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAccessibleContext,
                                           "setAccessibleDescription",
                                           "(Ljava/lang/String;)");
+  /* FIXME: this should be CallVoidMethod, and be passed the description */
   jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 

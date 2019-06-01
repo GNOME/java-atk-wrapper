@@ -22,7 +22,6 @@
 #include "jawutil.h"
 #include "jawimpl.h"
 
-static void			jaw_hyperlink_class_init		(JawHyperlinkClass	*klass);
 static void			jaw_hyperlink_dispose			(GObject		*gobject);
 static void			jaw_hyperlink_finalize			(GObject		*gobject);
 

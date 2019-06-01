@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 /* AtkUtil */
-static void jaw_util_class_init(JawUtilClass *klass);
+static void jaw_util_class_init(JawUtilClass *klass, void *klass_data);
 
 static guint jaw_util_add_key_event_listener(AtkKeySnoopFunc listener,
                                              gpointer data);
@@ -72,7 +72,7 @@ jaw_util_get_type(void)
 }
 
 static void
-jaw_util_class_init(JawUtilClass *kclass)
+jaw_util_class_init(JawUtilClass *kclass, void *klass_data)
 {
   AtkUtilClass *atk_class;
   gpointer data;
@@ -202,10 +202,10 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
     ac = jObj;
   } else if((*jniEnv)->IsInstanceOf(jniEnv, jObj, classAccessible))
   {
-    jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                            classAccessible,
-                                            "getAccessibleContext",
-                                            "()Ljavax/accessibility/AccessibleContext;");
+    jmid = (*jniEnv)->GetMethodID(jniEnv,
+                                  classAccessible,
+                                  "getAccessibleContext",
+                                  "()Ljavax/accessibility/AccessibleContext;");
     ac = (*jniEnv)->CallObjectMethod(jniEnv, jObj, jmid);
   } else {
     return 0;
@@ -367,6 +367,9 @@ jaw_util_get_jni_env(void)
       break;
     case JNI_EVERSION:
       g_printerr(" *** Version error *** \n");
+      break;
+    default:
+      g_printerr(" *** Unknown result %d *** \n", res);
       break;
   }
 
