@@ -23,6 +23,7 @@ import javax.accessibility.*;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import javax.swing.text.*;
+import javax.swing.*;
 
 public class AtkEditableText extends AtkText {
 
@@ -30,7 +31,8 @@ public class AtkEditableText extends AtkText {
 
     private class CutRunner implements Runnable {
         private AccessibleEditableText acc_edt_text;
-        private int start, int end;
+        private int start;
+        private int end;
 
         public CutRunner (AccessibleEditableText acc_edt_text, int start, int end) {
             this.acc_edt_text = acc_edt_text;
@@ -53,15 +55,16 @@ public class AtkEditableText extends AtkText {
         }
 
         public void run () {
-            acc_edt_text.cut(s);
+            acc_edt_text.setTextContents(s);
         }
     }
 
     private class DeleteRunner implements Runnable {
         private AccessibleEditableText acc_edt_text;
-        private int start, int end;
+        private int start;
+        private int end;
 
-        public TextContentsRunner (AccessibleEditableText acc_edt_text, int start, int end) {
+        public DeleteRunner (AccessibleEditableText acc_edt_text, int start, int end) {
             this.acc_edt_text = acc_edt_text;
             this.start = start;
             this.end = end;
@@ -89,7 +92,8 @@ public class AtkEditableText extends AtkText {
     private class SetAttributesRunner implements Runnable {
         private AccessibleEditableText acc_edt_text;
         AttributeSet as;
-        private int start, int end;
+        private int start;
+        private int end;
 
         public SetAttributesRunner (AccessibleEditableText acc_edt_text, int start, int end, AttributeSet as) {
             this.acc_edt_text = acc_edt_text;

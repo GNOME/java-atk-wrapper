@@ -21,6 +21,7 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import javax.swing.*;
 
 public class AtkTable {
 
@@ -98,7 +99,7 @@ public class AtkTable {
      * @param a an Accessible object
      */
     public void setCaption(Accessible a) {
-		SwingUtilities.invokeLater(new SetCaptionRunner(acc_edt_text, a));
+		SwingUtilities.invokeLater(new SetCaptionRunner(acc_table, a));
     }
 
 	public String get_column_description (int column) {
@@ -136,7 +137,7 @@ public class AtkTable {
 	public void setColumnDescription(int column, String description) {
 		Accessible accessible = acc_table.getAccessibleColumnDescription(column);
 		if (description.equals(accessible.toString()) && accessible != null) {
-			SwingUtilities.invokeLater(new SetColumnDescriptionRunner(acc_edt_text, column, accessible));
+			SwingUtilities.invokeLater(new SetColumnDescriptionRunner(acc_table, column, accessible));
 		}
 	}
 
@@ -153,9 +154,9 @@ public class AtkTable {
 	private class SetRowDescriptionRunner implements Runnable {
 		private AccessibleTable acc_table;
 		private int row;
-		private Accessible a;
+		private Accessible accessible;
 
-		public SetColumnDescriptionRunner (AccessibleTable acc_table, int row, Accessible accessible) {
+		public SetRowDescriptionRunner (AccessibleTable acc_table, int row, Accessible accessible) {
 			this.acc_table = acc_table;
 			this.row = row;
 			this.accessible = accessible;
@@ -175,7 +176,7 @@ public class AtkTable {
 	public void setRowDescription(int row, String description) {
 		Accessible accessible = acc_table.getAccessibleRowDescription(row);
 		if (description.equals(accessible.toString()) && accessible != null) {
-			SwingUtilities.invokeLater(new SetRowDescriptionRunner(acc_edt_text, row, accessible));
+			SwingUtilities.invokeLater(new SetRowDescriptionRunner(acc_table, row, accessible));
 		}
 	}
 
@@ -211,7 +212,7 @@ public class AtkTable {
      */
     public void setColumnHeader (int column, AccessibleTable table) {
 		//do we need column for anything?
-		SwingUtilities.invokeLater(new SetColumnHeaderRunner(acc_edt_text, table));
+		SwingUtilities.invokeLater(new SetColumnHeaderRunner(acc_table, table));
     }
 
 	public AccessibleContext get_row_header (int row) {
@@ -271,7 +272,7 @@ public class AtkTable {
      * @param a the Accessible object to set summary for
      */
     public void setSummary(Accessible a) {
-		SwingUtilities.invokeLater(new SetSummaryRunner(acc_edt_text, a));
+		SwingUtilities.invokeLater(new SetSummaryRunner(acc_table, a));
     }
 
 	public int[] get_selected_columns () {

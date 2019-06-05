@@ -20,6 +20,8 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import javax.swing.*;
+import java.util.concurrent.*;
 
 public class AtkSelection {
 
@@ -33,15 +35,16 @@ public class AtkSelection {
 	}
 
 	public boolean add_selection (int i) {
-		RunnableFuture<RemoveSelectionRunner> wf = new FutureTask<>( () ->
+		RunnableFuture<Boolean> wf = new FutureTask<>( () -> {
 			acc_selection.addAccessibleSelection(i);
-			return is_child_selected(i);
-		);
+			return new Boolean(is_child_selected(i));
+		});
 		SwingUtilities.invokeLater(wf);
 	    try {
-	        return wf.get();
+	        return wf.get().booleanValue();
 	    } catch (InterruptedException|ExecutionException ex) {
 	        ex.printStackTrace(); // we can do better than this
+			return false;
 	    }
 	}
 
@@ -49,7 +52,7 @@ public class AtkSelection {
 	private class ClearSelectionRunner implements Runnable {
 		private AccessibleSelection acc_selection;
 
-		public ClearSelectionRunner (AccessibleAction acc_selection) {
+		public ClearSelectionRunner (AccessibleSelection acc_selection) {
 			this.acc_selection = acc_selection;
 		}
 
@@ -84,22 +87,23 @@ public class AtkSelection {
 	}
 
 	public boolean remove_selection (int i) {
-		RunnableFuture<RemoveSelectionRunner> wf = new FutureTask<>( () ->
+		RunnableFuture<Boolean> wf = new FutureTask<>( () -> {
 			acc_selection.addAccessibleSelection(i);
-			return !is_child_selected(i);
-		);
+			return new Boolean(!is_child_selected(i));
+		});
 		SwingUtilities.invokeLater(wf);
 	    try {
-	        return wf.get();
+	        return wf.get().booleanValue();
 	    } catch (InterruptedException|ExecutionException ex) {
 	        ex.printStackTrace(); // we can do better than this
+			return false;
 	    }
 	}
 
 	private class SelectionAllRunner implements Runnable {
 		private AccessibleSelection acc_selection;
 
-		public SelectionAllRunner (AccessibleAction acc_selection) {
+		public SelectionAllRunner (AccessibleSelection acc_selection) {
 			this.acc_selection = acc_selection;
 		}
 
