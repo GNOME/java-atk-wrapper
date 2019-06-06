@@ -42,7 +42,7 @@ public class AtkSelection {
 		return true;
 	}
 
-	public javax.accessibility.Accessible ref_selection (int i) {
+	public Accessible ref_selection (int i) {
 		return acc_selection.getAccessibleSelection(i);
 	}
 
@@ -78,4 +78,3 @@ public class AtkSelection {
 		return false;
 	}
 }
-
