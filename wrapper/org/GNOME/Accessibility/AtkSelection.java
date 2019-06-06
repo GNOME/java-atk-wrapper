@@ -38,7 +38,7 @@ public class AtkSelection {
 		RunnableFuture<Boolean> wf = new FutureTask<>(() -> {
 			acc_selection.addAccessibleSelection(i);
 			return new Boolean(is_child_selected(i));
-		}
+		});
 		SwingUtilities.invokeLater(wf);
 	    try {
 	        return wf.get().booleanValue();
@@ -87,9 +87,9 @@ public class AtkSelection {
 
 	public boolean remove_selection (int i) {
 		RunnableFuture<Boolean> wf = new FutureTask<>(() -> {
-			acc_selection.clearAccessibleSelection(i);
+			acc_selection.removeAccessibleSelection(i);
 			return new Boolean(!is_child_selected(i));
-		}
+		});
 		SwingUtilities.invokeLater(wf);
 	    try {
 	        return  wf.get().booleanValue();
