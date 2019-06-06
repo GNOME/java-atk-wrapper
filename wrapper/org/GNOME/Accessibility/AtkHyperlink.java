@@ -43,7 +43,7 @@ public class AtkHyperlink {
 	public Object get_object (int i) {
 		Object o = null;
 		Object anchor = acc_hyperlink.getAccessibleActionAnchor(i);
-		if (anchor instanceof javax.accessibility.Accessible) {
+		if (anchor instanceof Accessible) {
 			o = anchor;
 		}
 
@@ -66,4 +66,3 @@ public class AtkHyperlink {
 		return acc_hyperlink.getAccessibleActionCount();
 	}
 }
-

@@ -33,7 +33,7 @@ public class AtkTable {
   }
 
 	public AccessibleContext ref_at (int row, int column) {
-		javax.accessibility.Accessible accessible = acc_table.getAccessibleAt(row, column);
+		Accessible accessible = acc_table.getAccessibleAt(row, column);
 		if (accessible != null) {
 			return accessible.getAccessibleContext();
 		}
@@ -78,7 +78,7 @@ public class AtkTable {
 	}
 
 	public AccessibleContext get_caption () {
-		javax.accessibility.Accessible accessible = acc_table.getAccessibleCaption();
+		Accessible accessible = acc_table.getAccessibleCaption();
 
 		if (accessible != null) {
 			return accessible.getAccessibleContext();
@@ -96,7 +96,7 @@ public class AtkTable {
     }
 
 	public String get_column_description (int column) {
-		javax.accessibility.Accessible accessible =
+		Accessible accessible =
 			acc_table.getAccessibleColumnDescription(column);
 
 		if (accessible != null) {
@@ -116,14 +116,14 @@ public class AtkTable {
  *                    specified column of the table
  */
   public void setColumnDescription(int column, String description) {
-    javax.accessibility.Accessible accessible = acc_table.getAccessibleColumnDescription(column);
+    Accessible accessible = acc_table.getAccessibleColumnDescription(column);
     if (description.equals(accessible.toString()) && accessible != null) {
       acc_table.setAccessibleColumnDescription(column, accessible);
     }
   }
 
 	public String get_row_description (int row) {
-		javax.accessibility.Accessible accessible =
+		Accessible accessible =
 			acc_table.getAccessibleRowDescription(row);
 
 		if (accessible != null) {
@@ -143,7 +143,7 @@ public class AtkTable {
   *                    specified row of the table
   */
   public void setRowDescription(int row, String description) {
-    javax.accessibility.Accessible accessible = acc_table.getAccessibleRowDescription(row);
+    Accessible accessible = acc_table.getAccessibleRowDescription(row);
     if (description.equals(accessible.toString()) && accessible != null) {
       acc_table.setAccessibleRowDescription(row, accessible);
     }
@@ -154,7 +154,7 @@ public class AtkTable {
 			acc_table.getAccessibleColumnHeader();
 
 		if (accessibleTable != null) {
-			javax.accessibility.Accessible accessible = accessibleTable.getAccessibleAt(0, column);
+			Accessible accessible = accessibleTable.getAccessibleAt(0, column);
 
 			if (accessible != null) {
 				return accessible.getAccessibleContext();
@@ -170,6 +170,7 @@ public class AtkTable {
      * @param table an AccessibleTable object
      */
     public void setColumnHeader (int column, AccessibleTable table) {
+	// FIXME: this isn't using column for anything
         acc_table.setAccessibleColumnHeader(table);
     }
 
@@ -178,7 +179,7 @@ public class AtkTable {
 			acc_table.getAccessibleRowHeader();
 
 		if (accessibleTable != null) {
-			javax.accessibility.Accessible accessible = accessibleTable.getAccessibleAt(row, 0);
+			Accessible accessible = accessibleTable.getAccessibleAt(row, 0);
 
 			if (accessible != null) {
 				return accessible.getAccessibleContext();
@@ -193,7 +194,7 @@ public class AtkTable {
     }
 
 	public AccessibleContext get_summary () {
-		javax.accessibility.Accessible accessible = acc_table.getAccessibleSummary();
+		Accessible accessible = acc_table.getAccessibleSummary();
 
 		if (accessible != null) {
 			return accessible.getAccessibleContext();
@@ -246,4 +247,3 @@ public class AtkTable {
 		return false;
 	}
 }
-

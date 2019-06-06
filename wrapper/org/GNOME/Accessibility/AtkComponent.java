@@ -55,7 +55,7 @@ public class AtkComponent {
       this.y -= p.y;
     }
 
-    javax.accessibility.Accessible accessible = acc_component.getAccessibleAt(new Point(x, y));
+    Accessible accessible = acc_component.getAccessibleAt(new Point(x, y));
     if (accessible == null) {
       return null;
     }
@@ -132,4 +132,3 @@ public class AtkComponent {
     return AtkLayer.WIDGET;
   }
 }
-

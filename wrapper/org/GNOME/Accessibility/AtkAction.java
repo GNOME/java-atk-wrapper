@@ -52,7 +52,7 @@ public class AtkAction {
 			acc_action.doAccessibleAction(index);
 		}
 	}
-	
+
 	public boolean do_action (int i) {
 		SwingUtilities.invokeLater(new ActionRunner(acc_action, i));
 		return true;
@@ -62,6 +62,7 @@ public class AtkAction {
 		return acc_action.getAccessibleActionCount();
 	}
 
+	// FIXME: get and set methods seem wrong
 	public String get_description (int i) {
 		String description = "<description>";
 		return description;
@@ -77,7 +78,7 @@ public class AtkAction {
 	public String get_name (int i) {
 		String name = acc_action.getAccessibleActionDescription(i);
 		if (name == null) {
-			name = " ";
+			name = "";
 		}
 
 		return name;
@@ -105,7 +106,7 @@ public class AtkAction {
     else if (description != null)
       return description;
 
-    return null;
+	return "";
   }
 
 	private String convertModString (String mods) {
@@ -118,7 +119,7 @@ public class AtkAction {
 		for (int i = 0; i < modStrs.length; i++) {
 			newModString += "<" + modStrs[i] + ">";
 		}
-		
+
 		return newModString;
 	}
 
@@ -126,7 +127,7 @@ public class AtkAction {
 		// TODO: improve/fix conversion to strings, concatenate,
 		//       and follow our formatting convention for the role of
 		//       various keybindings (i.e. global, transient, etc.)
-		
+
 		//
 		// Presently, JAA doesn't define a relationship between the index used
 		// and the action associated. As such, all keybindings are only
@@ -135,10 +136,10 @@ public class AtkAction {
 		if (index > 0) {
 			return "";
 		}
-		
+
 		if(acc_ext_component != null) {
 			AccessibleKeyBinding akb = acc_ext_component.getAccessibleKeyBinding();
-			
+
 			if (akb != null && akb.getAccessibleKeyBindingCount() > 0) {
 				String  rVal = "";
 				int     i;
@@ -162,16 +163,16 @@ public class AtkAction {
 				// Since only the first three are relevant, ignore others
 				for (i = 0;( i < akb.getAccessibleKeyBindingCount() && i < 3); i++) {
 					Object o = akb.getAccessibleKeyBinding(i);
-					
+
 					if ( i > 0 ) {
 						rVal += ";";
 					}
-					
-					if (o instanceof javax.swing.KeyStroke) {
-						javax.swing.KeyStroke keyStroke = (javax.swing.KeyStroke)o;
+
+					if (o instanceof KeyStroke) {
+						KeyStroke keyStroke = (KeyStroke)o;
 						String modString = KeyEvent.getKeyModifiersText(keyStroke.getModifiers());
 						String keyString = KeyEvent.getKeyText(keyStroke.getKeyCode());
-						
+
 						if ( keyString != null ) {
 							if ( modString != null && modString.length() > 0 ) {
 								rVal += convertModString(modString) + keyString;
@@ -179,16 +180,16 @@ public class AtkAction {
 								rVal += keyString;
 							}
 						}
-					} else if (o instanceof javax.swing.KeyStroke[]) {
-						javax.swing.KeyStroke[] keyStroke = (javax.swing.KeyStroke[])o;
+					} else if (o instanceof KeyStroke[]) {
+						KeyStroke[] keyStroke = (KeyStroke[])o;
 						for ( int j = 0; j < keyStroke.length; j++ ) {
 							String modString = KeyEvent.getKeyModifiersText(keyStroke[j].getModifiers());
 							String keyString = KeyEvent.getKeyText(keyStroke[j].getKeyCode());
-							
+
 							if (j > 0) {
 								rVal += ":";
 							}
-							
+
 							if ( keyString != null ) {
 								if (modString != null && modString.length() > 0) {
 									rVal += convertModString(modString) + keyString;
@@ -199,15 +200,14 @@ public class AtkAction {
 						}
 					}
 				}
-				
+
 				if ( i < 2 ) rVal += ";";
 				if ( i < 3 ) rVal += ";";
-				
+
 				return rVal;
 			}
 		}
-		
+
 		return "";
 	}
 }
-
