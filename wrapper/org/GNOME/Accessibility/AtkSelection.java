@@ -34,18 +34,34 @@ public class AtkSelection {
 		this.acc_selection = ac.getAccessibleSelection();
 	}
 
-	public boolean add_selection (int i) {
-		RunnableFuture<Boolean> wf = new FutureTask<>(() -> {
-			acc_selection.addAccessibleSelection(i);
-			return new Boolean(is_child_selected(i));
-		});
+	private <T> T wrapRunnabeFuture(Callable function, T d){
+		RunnableFuture<T> wf = new FutureTask<>(function);
 		SwingUtilities.invokeLater(wf);
 	    try {
-	        return wf.get().booleanValue();
+	        return wf.get();
 	    } catch (InterruptedException|ExecutionException ex) {
 	        ex.printStackTrace(); // we can do better than this
-			return false;
+			return d;
 	    }
+	}
+
+	private class AddSelectionRunner implements Callable<Boolean> {
+		private AccessibleSelection acc_selection;
+		private int i;
+
+		public AddSelectionRunner (AccessibleSelection acc_selection, int i) {
+			this.acc_selection = acc_selection;
+			this.i = i;
+		}
+
+		public Boolean call () {
+			acc_selection.addAccessibleSelection(i);
+			return is_child_selected(i);
+		}
+	}
+
+	public boolean add_selection (int i) {
+		return wrapRunnabeFuture(new AddSelectionRunner(acc_selection, i), false);
 	}
 
 	private class ClearSelectionRunner implements Runnable {
@@ -85,18 +101,23 @@ public class AtkSelection {
 		return acc_selection.isAccessibleChildSelected(i);
 	}
 
-	public boolean remove_selection (int i) {
-		RunnableFuture<Boolean> wf = new FutureTask<>(() -> {
+	private class RemoveSelectionRunner implements Callable<Boolean> {
+		private AccessibleSelection acc_selection;
+		private int i;
+
+		public RemoveSelectionRunner (AccessibleSelection acc_selection, int i) {
+			this.acc_selection = acc_selection;
+			this.i = i;
+		}
+
+		public Boolean call() {
 			acc_selection.removeAccessibleSelection(i);
-			return new Boolean(!is_child_selected(i));
-		});
-		SwingUtilities.invokeLater(wf);
-	    try {
-	        return  wf.get().booleanValue();
-	    } catch (InterruptedException|ExecutionException ex) {
-	        ex.printStackTrace(); // we can do better than this
-			return false;
-	    }
+			return !is_child_selected(i);
+		}
+	}
+
+	public boolean remove_selection (int i) {
+		return wrapRunnabeFuture(new RemoveSelectionRunner(acc_selection, i), false);
 	}
 
 	private class SelectionAllRunner implements Runnable {
