@@ -39,22 +39,8 @@ public class AtkAction {
 		}
 	}
 
-	private class ActionRunner implements Runnable {
-		private AccessibleAction acc_action;
-		private int index;
-
-		public ActionRunner (AccessibleAction acc_action, int index) {
-			this.acc_action = acc_action;
-			this.index = index;
-		}
-
-		public void run () {
-			acc_action.doAccessibleAction(index);
-		}
-	}
-
 	public boolean do_action (int i) {
-		SwingUtilities.invokeLater(new ActionRunner(acc_action, i));
+		AtkUtil.wrapSwingUtilities( () -> { acc_action.doAccessibleAction(i); });
 		return true;
 	}
 

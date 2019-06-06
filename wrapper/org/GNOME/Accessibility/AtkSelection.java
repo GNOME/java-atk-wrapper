@@ -20,8 +20,6 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
-import javax.swing.*;
-import java.util.concurrent.*;
 
 public class AtkSelection {
 
@@ -34,38 +32,15 @@ public class AtkSelection {
 		this.acc_selection = ac.getAccessibleSelection();
 	}
 
-	private <T> T wrapRunnabeFuture(Callable function, T d){
-		RunnableFuture<T> wf = new FutureTask<>(function);
-		SwingUtilities.invokeLater(wf);
-	    try {
-	        return wf.get();
-	    } catch (InterruptedException|ExecutionException ex) {
-	        ex.printStackTrace(); // we can do better than this
-			return d;
-	    }
-	}
-
 	public boolean add_selection (int i) {
-		return wrapRunnabeFuture( () -> {
+		return AtkUtil.wrapRunnabeFuture( () -> {
 			acc_selection.addAccessibleSelection(i);
 			return is_child_selected(i);
 		}, false);
 	}
 
-	private class ClearSelectionRunner implements Runnable {
-		private AccessibleSelection acc_selection;
-
-		public ClearSelectionRunner (AccessibleSelection acc_selection) {
-			this.acc_selection = acc_selection;
-		}
-
-		public void run () {
-			acc_selection.clearAccessibleSelection();
-		}
-	}
-
 	public boolean clear_selection () {
-		SwingUtilities.invokeLater(new ClearSelectionRunner(acc_selection));
+		AtkUtil.wrapSwingUtilities( () -> { acc_selection.clearAccessibleSelection(); });
 		return true;
 	}
 
@@ -90,29 +65,17 @@ public class AtkSelection {
 	}
 
 	public boolean remove_selection (int i) {
-		return wrapRunnabeFuture( () -> {
+		return AtkUtil.wrapRunnabeFuture( () -> {
 			acc_selection.removeAccessibleSelection(i);
 			return !is_child_selected(i);
 		}, false);
-	}
-
-	private class SelectionAllRunner implements Runnable {
-		private AccessibleSelection acc_selection;
-
-		public SelectionAllRunner (AccessibleSelection acc_selection) {
-			this.acc_selection = acc_selection;
-		}
-
-		public void run () {
-			acc_selection.selectAllAccessibleSelection();
-		}
 	}
 
 	public boolean select_all_selection () {
 		AccessibleStateSet stateSet = ac.getAccessibleStateSet();
 
 		if (stateSet.contains(AccessibleState.MULTISELECTABLE)) {
-			SwingUtilities.invokeLater(new SelectionAllRunner(acc_selection));
+			AtkUtil.wrapSwingUtilities( () -> { acc_selection.selectAllAccessibleSelection(); });
 			return true;
 		}
 
