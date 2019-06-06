@@ -70,11 +70,11 @@ jaw_editable_text_data_init (jobject ac)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jclass classEditableText = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv,
                                           classEditableText,
-                                          "<init>",
-                                          "(Ljavax/accessibility/AccessibleContext;)V");
-  jobject jatk_editable_text = (*jniEnv)->NewObject(jniEnv,
+                                          "createAtkEditableText",
+                                          "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkEditableText;");
+  jobject jatk_editable_text = (*jniEnv)->CallStaticObjectMethod(jniEnv,
                                                     classEditableText,
                                                     jmid,
                                                     ac);
@@ -290,4 +290,3 @@ jaw_editable_text_set_run_attributes(AtkEditableText *text,
 
   return FALSE;
 }
-

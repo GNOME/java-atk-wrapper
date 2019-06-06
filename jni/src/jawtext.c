@@ -109,11 +109,11 @@ jaw_text_data_init (jobject ac)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jclass classText = (*jniEnv)->FindClass(jniEnv,
                                           "org/GNOME/Accessibility/AtkText");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv,
                                           classText,
-                                          "<init>",
-                                          "(Ljavax/accessibility/AccessibleContext;)V");
-  jobject jatk_text = (*jniEnv)->NewObject(jniEnv, classText, jmid, ac);
+                                          "createAtkText",
+                                          "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkText;");
+  jobject jatk_text = (*jniEnv)->CallStaticObjectMethod(jniEnv, classText, jmid, ac);
   data->atk_text = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_text);
 
   return data;
@@ -604,4 +604,3 @@ jaw_text_set_caret_offset (AtkText *text, gint offset)
     return FALSE;
   }
 }
-

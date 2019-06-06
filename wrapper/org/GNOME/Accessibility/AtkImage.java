@@ -33,41 +33,42 @@ public class AtkImage {
 		this.ac = ac;
 		this.acc_icons = ac.getAccessibleIcon();
 	}
-	
+
+	public static AtkImage createAtkImage(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkImage(ac); }, null);
+    }
+
 	public Point get_image_position (int coord_type) {
-		AccessibleComponent acc_component = ac.getAccessibleComponent();
-		if (acc_component == null) {
-			return null;
-		}
-
-		if (coord_type == AtkCoordType.SCREEN) {
-			return acc_component.getLocationOnScreen();
-		}
-
-		return acc_component.getLocation();
+		return AtkUtil.invokeInSwing ( () -> {
+			AccessibleComponent acc_component = ac.getAccessibleComponent();
+			if (acc_component == null)
+				return null;
+			if (coord_type == AtkCoordType.SCREEN)
+				return acc_component.getLocationOnScreen();
+			return acc_component.getLocation();
+		}, null);
 	}
 
 	public String get_image_description () {
-		String desc = "";
-		if (acc_icons != null && acc_icons.length > 0) {
-			desc = acc_icons[0].getAccessibleIconDescription();
-
-			if (desc == null) {
-				desc = "";
+		return AtkUtil.invokeInSwing ( () -> {
+			String desc = "";
+			if (acc_icons != null && acc_icons.length > 0) {
+				desc = acc_icons[0].getAccessibleIconDescription();
+				if (desc == null)
+					desc = "";
 			}
-		}
-
-		return desc;
+			return desc;
+		}, "");
 	}
 
 	public Dimension get_image_size () {
 		Dimension d = new Dimension(0, 0);
-		if (acc_icons != null && acc_icons.length > 0) {
-			d.height = acc_icons[0].getAccessibleIconHeight();
-			d.width = acc_icons[0].getAccessibleIconWidth();
-		}
-
-		return d;
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_icons != null && acc_icons.length > 0) {
+				d.height = acc_icons[0].getAccessibleIconHeight();
+				d.width = acc_icons[0].getAccessibleIconWidth();
+			}
+			return d;
+		},d);
 	}
 }
-

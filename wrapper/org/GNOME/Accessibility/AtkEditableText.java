@@ -33,68 +33,73 @@ public class AtkEditableText extends AtkText {
     acc_edt_text = ac.getAccessibleEditableText();
   }
 
+  public static AtkEditableText createAtkEditableText(AccessibleContext ac){
+      return AtkUtil.invokeInSwing ( () -> { return new AtkEditableText(ac); }, null);
+  }
+
   public void set_text_contents (String s) {
-    if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
-      System.out.println("** WARNING: setting text contents outside from EDT, this will *break* applications which do not support thread safety");
-    }
-    acc_edt_text.setTextContents(s);
+      if (!javax.swing.SwingUtilities.isEventDispatchThread())
+        System.out.println("It would be unsafe to call setTextContents here");
+      AtkUtil.invokeInSwing( () -> {
+          acc_edt_text.setTextContents(s);
+      });
   }
 
-  public void insert_text (String s, int position) {
-    if (position < 0) {
-      position = 0;
-    }
-
-    acc_edt_text.insertTextAtIndex(position, s);
-  }
-
-  public void copy_text (int start, int end) {
-    int n = acc_edt_text.getCharCount();
-
-    if (start < 0) {
-      start = 0;
+    public void insert_text (String s, int position) {
+        if (position < 0)
+            position = 0;
+        final int rightPosition = position;
+        AtkUtil.invokeInSwing( () -> { acc_edt_text.insertTextAtIndex(rightPosition, s); });
     }
 
-    if (end > n || end == -1) {
-      end = n;
-    } else if (end < -1) {
-      end = 0;
+    public void copy_text (int start, int end) {
+        int n = acc_edt_text.getCharCount();
+        if (start < 0) {
+            start = 0;
+        }
+        if (end > n || end == -1) {
+            end = n;
+        } else if (end < -1) {
+            end = 0;
+        }
+        final int rightStart = start;
+        final int rightEnd = end;
+        AtkUtil.invokeInSwing ( () -> {
+            String s = acc_edt_text.getTextRange(rightStart, rightEnd);
+            if (s != null) {
+                StringSelection stringSel = new StringSelection(s);
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSel, stringSel);
+            }
+        });
     }
 
-    String s = acc_edt_text.getTextRange(start, end);
-    if (s != null) {
-      StringSelection stringSel = new StringSelection(s);
-      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSel,
-                                                                   stringSel
-                                                                   );
+    public void cut_text (int start, int end) {
+        AtkUtil.invokeInSwing( () -> { acc_edt_text.cut(start, end); });
     }
-  }
 
-  public void cut_text (int start, int end) {
-    acc_edt_text.cut(start, end);
-  }
+    public void delete_text (int start, int end) {
+        AtkUtil.invokeInSwing( () -> { acc_edt_text.delete(start, end); });
+    }
 
-  public void delete_text (int start, int end) {
-    acc_edt_text.delete(start, end);
-  }
+    public void paste_text (int position) {
+        AtkUtil.invokeInSwing( () -> { acc_edt_text.paste(position); });
+    }
 
-  public void paste_text (int position) {
-    acc_edt_text.paste(position);
-  }
+    /**
+    * Sets run attributes for the text between two indices.
+    *
+    * @param as the AttributeSet for the text
+    * @param start the start index of the text as an int
+    * @param end the end index for the text as an int
+    * @return whether setRunAttributes was called
+    * TODO return is a bit presumptious. This should ideally include a check for whether
+    *      attributes were set.
+    */
+    public boolean setRunAttributes(AttributeSet as, int start, int end) {
+        return AtkUtil.invokeInSwing( () -> {
+            acc_edt_text.setAttributes(start, end, as);
+            return true;
+        }, false);
+    }
 
- /**
-  * Sets run attributes for the text between two indices.
-  *
-  * @param as the AttributeSet for the text
-  * @param start the start index of the text as an int
-  * @param end the end index for the text as an int
-  * @return whether setRunAttributes was called
-  *              TODO return is a bit presumptious. This should ideally include a check for whether
-  *              attributes were set.
-  */
-  public boolean setRunAttributes(AttributeSet as, int start, int end) {
-    acc_edt_text.setAttributes(start, end, as);
-    return true;
-  }
 }
-

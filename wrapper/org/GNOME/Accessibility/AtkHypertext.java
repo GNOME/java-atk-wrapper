@@ -36,35 +36,34 @@ public class AtkHypertext extends AtkText {
 		}
 	}
 
-	public AtkHyperlink get_link (int link_index) {
-		if (acc_hyper_text != null) {
-			AccessibleHyperlink link = acc_hyper_text.getLink(link_index);
-			if (link != null) {
-				return new AtkHyperlink(link);
-			}
-		}
+	public static AtkHypertext createAtkHypertext(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkHypertext(ac); }, null);
+    }
 
-		return null;
+	public AtkHyperlink get_link (int link_index) {
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_hyper_text != null) {
+				AccessibleHyperlink link = acc_hyper_text.getLink(link_index);
+				if (link != null)
+					return new AtkHyperlink(link);
+			}
+			return null;
+		}, null);
 	}
 
 	public int get_n_links () {
-		int nLinks = 0;
-
-		if (acc_hyper_text != null) {
-			nLinks = acc_hyper_text.getLinkCount();
-		}
-
-		return nLinks;
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_hyper_text != null)
+				return acc_hyper_text.getLinkCount();
+			return 0;
+		}, 0);
 	}
 
 	public int get_link_index (int char_index) {
-		int index = 0;
-
-		if (acc_hyper_text != null) {
-			index = acc_hyper_text.getLinkIndex(char_index);
-		}
-
-		return index;
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_hyper_text != null)
+				return acc_hyper_text.getLinkIndex(char_index);
+			return 0;
+		}, 0);
 	}
 }
-
