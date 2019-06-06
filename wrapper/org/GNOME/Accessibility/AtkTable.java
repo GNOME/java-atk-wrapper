@@ -170,9 +170,9 @@ public class AtkTable {
 	private class SetRowDescriptionRunner implements Runnable {
 		private AccessibleTable acc_table;
 		private int row;
-		private Accessible a;
+		private Accessible accessible;
 
-		public SetColumnDescriptionRunner (AccessibleTable acc_table, int row, Accessible accessible) {
+		public SetRowDescriptionRunner (AccessibleTable acc_table, int row, Accessible accessible) {
 			this.acc_table = acc_table;
 			this.row = row;
 			this.accessible = accessible;
