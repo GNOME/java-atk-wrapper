@@ -45,23 +45,11 @@ public class AtkSelection {
 	    }
 	}
 
-	private class AddSelectionRunner implements Callable<Boolean> {
-		private AccessibleSelection acc_selection;
-		private int i;
-
-		public AddSelectionRunner (AccessibleSelection acc_selection, int i) {
-			this.acc_selection = acc_selection;
-			this.i = i;
-		}
-
-		public Boolean call () {
+	public boolean add_selection (int i) {
+		return wrapRunnabeFuture( () -> {
 			acc_selection.addAccessibleSelection(i);
 			return is_child_selected(i);
-		}
-	}
-
-	public boolean add_selection (int i) {
-		return wrapRunnabeFuture(new AddSelectionRunner(acc_selection, i), false);
+		}, false);
 	}
 
 	private class ClearSelectionRunner implements Runnable {
@@ -101,23 +89,11 @@ public class AtkSelection {
 		return acc_selection.isAccessibleChildSelected(i);
 	}
 
-	private class RemoveSelectionRunner implements Callable<Boolean> {
-		private AccessibleSelection acc_selection;
-		private int i;
-
-		public RemoveSelectionRunner (AccessibleSelection acc_selection, int i) {
-			this.acc_selection = acc_selection;
-			this.i = i;
-		}
-
-		public Boolean call() {
+	public boolean remove_selection (int i) {
+		return wrapRunnabeFuture( () -> {
 			acc_selection.removeAccessibleSelection(i);
 			return !is_child_selected(i);
-		}
-	}
-
-	public boolean remove_selection (int i) {
-		return wrapRunnabeFuture(new RemoveSelectionRunner(acc_selection, i), false);
+		}, false);
 	}
 
 	private class SelectionAllRunner implements Runnable {
