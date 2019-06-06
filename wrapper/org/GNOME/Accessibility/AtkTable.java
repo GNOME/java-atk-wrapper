@@ -21,6 +21,7 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import javax.swing.*;
 
 public class AtkTable {
 
@@ -87,12 +88,26 @@ public class AtkTable {
 		return null;
 	}
 
+	private class SetCaptionRunner implements Runnable {
+        private AccessibleTable acc_table;
+        private Accessible a;
+
+        public SetCaptionRunner (AccessibleTable acc_table, Accessible a) {
+            this.acc_table = acc_table;
+            this.a = a;
+        }
+
+        public void run () {
+            acc_table.setAccessibleCaption(a);
+        }
+    }
+
     /**
      *
      * @param a an Accessible object
      */
     public void setCaption(Accessible a) {
-        acc_table.setAccessibleCaption(a);
+        SwingUtilities.invokeLater(new SetCaptionRunner(acc_table, a));
     }
 
 	public String get_column_description (int column) {
@@ -109,6 +124,22 @@ public class AtkTable {
 		return "";
 	}
 
+	private class SetColumnDescriptionRunner implements Runnable {
+        private AccessibleTable acc_table;
+		private int column;
+        private Accessible accessible;
+
+        public SetColumnDescriptionRunner (AccessibleTable acc_table, int column, Accessible accessible) {
+            this.acc_table = acc_table;
+            this.column = column;
+			this.accessible = accessible;
+        }
+
+        public void run () {
+            acc_table.setAccessibleColumnDescription(column, accessible);
+        }
+    }
+
 /**
  *
  * @param column an int representing a column in table
@@ -118,7 +149,7 @@ public class AtkTable {
   public void setColumnDescription(int column, String description) {
     Accessible accessible = acc_table.getAccessibleColumnDescription(column);
     if (description.equals(accessible.toString()) && accessible != null) {
-      acc_table.setAccessibleColumnDescription(column, accessible);
+      SwingUtilities.invokeLater(new SetColumnDescriptionRunner(acc_table, column, accessible));
     }
   }
 
@@ -136,6 +167,22 @@ public class AtkTable {
 		return "";
 	}
 
+	private class SetRowDescriptionRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private int row;
+		private Accessible a;
+
+		public SetColumnDescriptionRunner (AccessibleTable acc_table, int row, Accessible accessible) {
+			this.acc_table = acc_table;
+			this.row = row;
+			this.accessible = accessible;
+		}
+
+		public void run () {
+			acc_table.setAccessibleRowDescription(row, accessible);
+		}
+	}
+
  /**
   *
   * @param row an int representing a row in table
@@ -145,7 +192,7 @@ public class AtkTable {
   public void setRowDescription(int row, String description) {
     Accessible accessible = acc_table.getAccessibleRowDescription(row);
     if (description.equals(accessible.toString()) && accessible != null) {
-      acc_table.setAccessibleRowDescription(row, accessible);
+      SwingUtilities.invokeLater(new SetRowDescriptionRunner(acc_table, row, accessible));
     }
   }
 
@@ -164,6 +211,20 @@ public class AtkTable {
 		return null;
 	}
 
+	private class SetColumnHeaderRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private AccessibleTable table;
+
+		public SetColumnHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
+			this.acc_table = acc_table;
+			this.table = table;
+		}
+
+		public void run () {
+			acc_table.setAccessibleColumnHeader(table);
+		}
+	}
+
     /**
      *
      * @param column an int representing a column in table
@@ -171,7 +232,7 @@ public class AtkTable {
      */
     public void setColumnHeader (int column, AccessibleTable table) {
 		//do we need column for anything?
-        acc_table.setAccessibleColumnHeader(table);
+        SwingUtilities.invokeLater(new SetColumnHeaderRunner(acc_table, table));
     }
 
 	public AccessibleContext get_row_header (int row) {
@@ -189,8 +250,22 @@ public class AtkTable {
 		return null;
 	}
 
+	private class SetRowHeaderRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private AccessibleTable table;
+
+		public SetRowHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
+			this.acc_table = acc_table;
+			this.table = table;
+		}
+
+		public void run () {
+			acc_table.setAccessibleRowHeader(table);
+		}
+	}
+
     public void setRowHeader (int row, AccessibleTable table) {
-        acc_table.setAccessibleRowHeader(table);
+        SwingUtilities.invokeLater(new SetRowHeaderRunner(acc_table, table));
     }
 
 	public AccessibleContext get_summary () {
@@ -203,12 +278,26 @@ public class AtkTable {
 		return null;
 	}
 
+	private class SetSummaryRunner implements Runnable {
+		private AccessibleTable acc_table;
+		private Accessible a;
+
+		public SetSummaryRunner (AccessibleTable acc_table, Accessible a) {
+			this.acc_table = acc_table;
+			this.a = a;
+		}
+
+		public void run () {
+			acc_table.setAccessibleSummary(a);
+		}
+	}
+
     /**
      *
      * @param a the Accessible object to set summary for
      */
     public void setSummary(Accessible a) {
-        acc_table.setAccessibleSummary(a);
+        SwingUtilities.invokeLater(new SetSummaryRunner(acc_table, a));
     }
 
 	public int[] get_selected_columns () {
@@ -231,6 +320,7 @@ public class AtkTable {
 		return acc_table.isAccessibleSelected(row, column);
 	}
 
+  //I think this method are not implemented.
   public boolean addColumnSelection (int column) {
     return false;
   }

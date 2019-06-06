@@ -48,7 +48,6 @@ public class AtkTableCell extends AtkTable {
  *          AccessibleTable instance.
  */
   public AccessibleTable getTable() {
-    System.out.println("Get Table: " + acc_table_cell.toString());
     return acc_table_cell;
   }
 
@@ -99,4 +98,3 @@ public class AtkTableCell extends AtkTable {
     return columnSpan;
   }
 }
-

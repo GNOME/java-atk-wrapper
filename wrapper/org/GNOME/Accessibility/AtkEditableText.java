@@ -33,16 +33,46 @@ public class AtkEditableText extends AtkText {
     acc_edt_text = ac.getAccessibleEditableText();
   }
 
+    private class TextContentsRunner implements Runnable {
+       private AccessibleEditableText acc_edt_text;
+       private String s;
+
+       public TextContentsRunner (AccessibleEditableText acc_edt_text, String s) {
+           this.acc_edt_text = acc_edt_text;
+           this.s = s;
+       }
+
+       public void run () {
+           acc_edt_text.setTextContents(s);
+       }
+   }
+
   public void set_text_contents (String s) {
-    acc_edt_text.setTextContents(s);
+     SwingUtilities.invokeLater(new TextContentsRunner(acc_edt_text, s));
   }
+
+    private class insertTextAtIndexRunner implements Runnable {
+        private AccessibleEditableText acc_edt_text;
+        private int position;
+        private String s;
+
+        public insertTextAtIndexRunner (AccessibleEditableText acc_edt_text, int position, String s) {
+            this.acc_edt_text = acc_edt_text;
+            this.position = position;
+            this.s = s;
+        }
+
+        public void run () {
+            acc_edt_text.insertTextAtIndex(position, s);
+        }
+    }
 
   public void insert_text (String s, int position) {
     if (position < 0) {
       position = 0;
     }
 
-    acc_edt_text.insertTextAtIndex(position, s);
+    SwingUtilities.invokeLater(new insertTextAtIndexRunner(acc_edt_text, position, s));
   }
 
   public void copy_text (int start, int end) {
@@ -67,17 +97,79 @@ public class AtkEditableText extends AtkText {
     }
   }
 
+    private class CutRunner implements Runnable {
+        private AccessibleEditableText acc_edt_text;
+        private int start;
+        private int end;
+
+        public CutRunner (AccessibleEditableText acc_edt_text, int start, int end) {
+            this.acc_edt_text = acc_edt_text;
+            this.start = start;
+            this.end = end;
+        }
+
+        public void run () {
+            acc_edt_text.cut(start, end);
+        }
+    }
+
   public void cut_text (int start, int end) {
-    acc_edt_text.cut(start, end);
+    SwingUtilities.invokeLater(new CutRunner(acc_edt_text, start, end));
   }
+
+    private class DeleteRunner implements Runnable {
+        private AccessibleEditableText acc_edt_text;
+        private int start, int end;
+
+        public TextContentsRunner (AccessibleEditableText acc_edt_text, int start, int end) {
+            this.acc_edt_text = acc_edt_text;
+            this.start = start;
+            this.end = end;
+        }
+
+        public void run () {
+            acc_edt_text.delete(start, end);
+        }
+    }
 
   public void delete_text (int start, int end) {
-    acc_edt_text.delete(start, end);
+    SwingUtilities.invokeLater(new DeleteRunner(acc_edt_text, start, end));
   }
 
+    private class PasteRunner implements Runnable {
+        private AccessibleEditableText acc_edt_text;
+        private int position;
+
+        public PasteRunner (AccessibleEditableText acc_edt_text, int position) {
+            this.acc_edt_text = acc_edt_text;
+            this.position = position;
+        }
+
+        public void run () {
+            acc_edt_text.paste(position);
+        }
+    }
+
   public void paste_text (int position) {
-    acc_edt_text.paste(position);
+    SwingUtilities.invokeLater(new PasteRunner(acc_edt_text, position));
   }
+
+    private class SetAttributesRunner implements Runnable {
+       private AccessibleEditableText acc_edt_text;
+       AttributeSet as;
+       private int start, int end;
+
+       public SetAttributesRunner (AccessibleEditableText acc_edt_text, int start, int end, AttributeSet as) {
+           this.acc_edt_text = acc_edt_text;
+           this.start = start;
+           this.end = end;
+           this.as = as;
+       }
+
+       public void run () {
+           acc_edt_text.setAttributes(start, end, as);
+       }
+   }
 
  /**
   * Sets run attributes for the text between two indices.
@@ -90,8 +182,7 @@ public class AtkEditableText extends AtkText {
   *              attributes were set.
   */
   public boolean setRunAttributes(AttributeSet as, int start, int end) {
-    acc_edt_text.setAttributes(start, end, as);
+    SwingUtilities.invokeLater(new SetAttributesRunner(acc_edt_text, start, end, as));
     return true;
   }
 }
-
