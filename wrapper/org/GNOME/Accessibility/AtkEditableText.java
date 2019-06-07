@@ -34,7 +34,13 @@ public class AtkEditableText extends AtkText {
   }
 
   public void set_text_contents (String s) {
-      AtkUtil.invokeInEDT( () -> { acc_edt_text.setTextContents(s); });
+      if (!javax.swing.SwingUtilities.isEventDispatchThread())
+        System.out.println("** WARNING: setting text contents outside from EDT, this will *break* applications which do not support thread safety");
+      AtkUtil.invokeInEDT( () -> {
+          if (javax.swing.SwingUtilities.isEventDispatchThread())
+              System.out.println("We have solve the EDT problem");
+          acc_edt_text.setTextContents(s);
+        });
   }
 
   public void insert_text (String s, int position) {
