@@ -34,15 +34,14 @@ public class AtkEditableText extends AtkText {
   }
 
   public void set_text_contents (String s) {
-      AtkUtil.wrapSwingUtilities( () -> { acc_edt_text.setTextContents(s); });
+      AtkUtil.invokeInEDT( () -> { acc_edt_text.setTextContents(s); });
   }
 
   public void insert_text (String s, int position) {
     if (position < 0)
-        AtkUtil.wrapSwingUtilities( () -> { acc_edt_text.insertTextAtIndex(0, s); });
-    else
-        AtkUtil.wrapSwingUtilities( () -> { acc_edt_text.insertTextAtIndex(position, s); });
-
+        position = 0;
+    final int rightPosition = position;
+    AtkUtil.invokeInEDT( () -> { acc_edt_text.insertTextAtIndex(rightPosition, s); });
   }
 
   public void copy_text (int start, int end) {
@@ -68,15 +67,15 @@ public class AtkEditableText extends AtkText {
   }
 
   public void cut_text (int start, int end) {
-      AtkUtil.wrapSwingUtilities( () -> { acc_edt_text.cut(start, end); });
+      AtkUtil.invokeInEDT( () -> { acc_edt_text.cut(start, end); });
   }
 
   public void delete_text (int start, int end) {
-      AtkUtil.wrapSwingUtilities( () -> { acc_edt_text.delete(start, end); });
+      AtkUtil.invokeInEDT( () -> { acc_edt_text.delete(start, end); });
   }
 
   public void paste_text (int position) {
-      AtkUtil.wrapSwingUtilities( () -> { acc_edt_text.paste(position); });
+      AtkUtil.invokeInEDT( () -> { acc_edt_text.paste(position); });
   }
 
  /**
@@ -90,7 +89,7 @@ public class AtkEditableText extends AtkText {
   *              attributes were set.
   */
   public boolean setRunAttributes(AttributeSet as, int start, int end) {
-    AtkUtil.wrapSwingUtilities( () -> { acc_edt_text.setAttributes(start, end, as); });
+    AtkUtil.invokeInEDT( () -> { acc_edt_text.setAttributes(start, end, as); });
     return true;
   }
 }

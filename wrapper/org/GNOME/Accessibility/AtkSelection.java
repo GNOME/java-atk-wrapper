@@ -33,14 +33,14 @@ public class AtkSelection {
 	}
 
 	public boolean add_selection (int i) {
-		return AtkUtil.wrapRunnabeFuture( () -> {
+		return AtkUtil.invokeInEDT( () -> {
 			acc_selection.addAccessibleSelection(i);
 			return is_child_selected(i);
 		}, false);
 	}
 
 	public boolean clear_selection () {
-		AtkUtil.wrapSwingUtilities( () -> { acc_selection.clearAccessibleSelection(); });
+		AtkUtil.invokeInEDT( () -> { acc_selection.clearAccessibleSelection(); });
 		return true;
 	}
 
@@ -65,7 +65,7 @@ public class AtkSelection {
 	}
 
 	public boolean remove_selection (int i) {
-		return AtkUtil.wrapRunnabeFuture( () -> {
+		return AtkUtil.invokeInEDT( () -> {
 			acc_selection.removeAccessibleSelection(i);
 			return !is_child_selected(i);
 		}, false);
@@ -75,7 +75,7 @@ public class AtkSelection {
 		AccessibleStateSet stateSet = ac.getAccessibleStateSet();
 
 		if (stateSet.contains(AccessibleState.MULTISELECTABLE)) {
-			AtkUtil.wrapSwingUtilities( () -> { acc_selection.selectAllAccessibleSelection(); });
+			AtkUtil.invokeInEDT( () -> { acc_selection.selectAllAccessibleSelection(); });
 			return true;
 		}
 

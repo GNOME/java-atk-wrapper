@@ -40,7 +40,7 @@ public class AtkAction {
 	}
 
 	public boolean do_action (int i) {
-		AtkUtil.wrapSwingUtilities( () -> { acc_action.doAccessibleAction(i); });
+		AtkUtil.invokeInEDT( () -> { acc_action.doAccessibleAction(i); });
 		return true;
 	}
 

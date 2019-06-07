@@ -92,7 +92,7 @@ public class AtkTable {
      * @param a an Accessible object
      */
     public void setCaption(Accessible a) {
-        AtkUtil.wrapSwingUtilities( () -> { acc_table.setAccessibleCaption(a); });
+        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleCaption(a); });
     }
 
 	public String get_column_description (int column) {
@@ -118,7 +118,7 @@ public class AtkTable {
   public void setColumnDescription(int column, String description) {
     Accessible accessible = acc_table.getAccessibleColumnDescription(column);
     if (description.equals(accessible.toString()) && accessible != null) {
-      AtkUtil.wrapSwingUtilities( () -> { acc_table.setAccessibleColumnDescription(column, accessible); });
+      AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleColumnDescription(column, accessible); });
     }
   }
 
@@ -145,7 +145,7 @@ public class AtkTable {
   public void setRowDescription(int row, String description) {
     Accessible accessible = acc_table.getAccessibleRowDescription(row);
     if (description.equals(accessible.toString()) && accessible != null) {
-      AtkUtil.wrapSwingUtilities( () -> { acc_table.setAccessibleRowDescription(row, accessible); });
+      AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleRowDescription(row, accessible); });
     }
   }
 
@@ -170,8 +170,7 @@ public class AtkTable {
      * @param table an AccessibleTable object
      */
     public void setColumnHeader (int column, AccessibleTable table) {
-		//do we need column for anything?
-        AtkUtil.wrapSwingUtilities( () -> { acc_table.setAccessibleColumnHeader(table); });
+        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleColumnHeader(table); });
     }
 
 	public AccessibleContext get_row_header (int row) {
@@ -190,8 +189,7 @@ public class AtkTable {
 	}
 
     public void setRowHeader (int row, AccessibleTable table) {
-		//do we need row for anything?
-        AtkUtil.wrapSwingUtilities( () -> { acc_table.setAccessibleRowHeader(table); });
+        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleRowHeader(table); });
     }
 
 	public AccessibleContext get_summary () {
@@ -209,7 +207,7 @@ public class AtkTable {
      * @param a the Accessible object to set summary for
      */
     public void setSummary(Accessible a) {
-        AtkUtil.wrapSwingUtilities( () -> { acc_table.setAccessibleSummary(a); });
+        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleSummary(a); });
     }
 
 	public int[] get_selected_columns () {
