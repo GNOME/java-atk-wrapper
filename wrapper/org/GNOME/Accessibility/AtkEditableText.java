@@ -34,6 +34,9 @@ public class AtkEditableText extends AtkText {
   }
 
   public void set_text_contents (String s) {
+    if (!javax.swing.SwingUtilities.isEventDispatchThread())
+      System.out.println("** WARNING: setting text contents outside from EDT, this will *break* applications which do not support thread safety");
+    }
     acc_edt_text.setTextContents(s);
   }
 
