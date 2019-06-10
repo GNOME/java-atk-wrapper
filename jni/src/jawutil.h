@@ -74,6 +74,8 @@ void jaw_util_get_rect_info(JNIEnv *jniEnv,
                             gint *height);
 gboolean jaw_util_dispatch_key_event (AtkKeyEventStruct *event);
 
+void jaw_util_detach(void);
+
 G_END_DECLS
 
 #endif

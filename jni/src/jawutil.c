@@ -378,7 +378,7 @@ jaw_util_get_jni_env(void)
   return NULL;
 }
 
-void jaw_util_detach(void);
+/* Currently unused: our thread lives forever until application termination.  */
 void
 jaw_util_detach(void)
 {
