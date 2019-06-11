@@ -33,15 +33,15 @@ public class AtkValue {
 	}
 
 	public Number get_current_value () {
-		return acc_value.getCurrentAccessibleValue();
+		return AtkUtil.invokeInSwing ( () -> { return acc_value.getCurrentAccessibleValue(); }, 0.0);
 	}
 
 	public double getMaximumValue () {
-		return acc_value.getMaximumAccessibleValue().doubleValue();
+		return AtkUtil.invokeInSwing ( () -> { return acc_value.getMaximumAccessibleValue().doubleValue(); }, 0.0);
 	}
 
 	public double getMinimumValue () {
-		return acc_value.getMinimumAccessibleValue().doubleValue();
+		return AtkUtil.invokeInSwing ( () -> { return acc_value.getMinimumAccessibleValue().doubleValue(); }, 0.0);
 	}
 
   public void setValue (Number n) {

@@ -31,13 +31,12 @@ public class AtkHyperlink {
 	}
 
 	public String get_uri (int i) {
-		String s = "";
 		return AtkUtil.invokeInSwing ( () -> {
 			Object o = acc_hyperlink.getAccessibleActionObject(i);
 			if (o != null)
-				s = o.toString();
-			return s;
-		}, s);
+				return o.toString();
+			return "";
+		}, "");
 	}
 
 	public Object get_object (int i) {
@@ -47,20 +46,21 @@ public class AtkHyperlink {
 				return anchor;
 			return null;
 		}, null);
+	}
 
 	public int get_end_index () {
-		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.getEndIndex(); }, 0);
+		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.getEndIndex(); }, 0);
 	}
 
 	public int get_start_index () {
-		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.getStartIndex(); }, 0);
+		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.getStartIndex(); }, 0);
 	}
 
 	public boolean is_valid () {
-		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.isValid(); }, false);
+		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.isValid(); }, false);
 	}
 
 	public int get_n_anchors () {
-		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.getAccessibleActionCount(); }, 0);
+		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.getAccessibleActionCount(); }, 0);
 	}
 }

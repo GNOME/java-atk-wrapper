@@ -48,7 +48,7 @@ public class AtkTableCell extends AtkTable {
     *          AccessibleTable instance.
     */
     public AccessibleTable getTable() {
-        return AtkUtil.invokeInSwing ( () -> { acc_table_cell; }, null);
+        return AtkUtil.invokeInSwing ( () -> { return acc_table_cell; }, null);
     }
 
   /**
@@ -74,12 +74,12 @@ public class AtkTableCell extends AtkTable {
     */
     public boolean getRowColumnSpan(int row, int column, int rowSpan, int columnSpan) {
         return AtkUtil.invokeInSwing ( () -> {
-            if (rowSpan < 0 && columnSpan < 0)
-                return false;
             this.rowSpan = rowSpan;
             this.columnSpan = columnSpan;
-            rowSpan = acc_table.getAccessibleRowExtentAt(row, column);
-            columnSpan = acc_table.getAccessibleColumnExtentAt(row, column);
+            int chekRowSpan = acc_table.getAccessibleRowExtentAt(row, column);
+            int checkColumnSpan = acc_table.getAccessibleColumnExtentAt(row, column);
+            if (chekRowSpan < 0 && checkColumnSpan < 0)
+                return false;
             return true;
         }, false);
     }
@@ -105,5 +105,5 @@ public class AtkTableCell extends AtkTable {
             return columnSpan;
         }, -1);
     }
-    
+
 }

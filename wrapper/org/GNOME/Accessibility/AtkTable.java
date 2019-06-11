@@ -60,19 +60,19 @@ public class AtkTable {
 	}
 
 	public int get_n_columns () {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleColumnCount(); }, 0);
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.getAccessibleColumnCount(); }, 0);
 	}
 
 	public int get_n_rows () {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleRowCount(); }, 0);
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.getAccessibleRowCount(); }, 0);
 	}
 
 	public int get_column_extent_at (int row, int column) {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleColumnExtentAt(row, column); }, 0);
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.getAccessibleColumnExtentAt(row, column); }, 0);
 	}
 
 	public int get_row_extent_at (int row, int column) {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleRowExtentAt(row, column); }, 0);
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.getAccessibleRowExtentAt(row, column); }, 0);
 	}
 
 	public AccessibleContext get_caption () {
@@ -195,23 +195,25 @@ public class AtkTable {
     }
 
 	public int[] get_selected_columns () {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.getSelectedAccessibleColumns(); }, 0);
+		int[] d = new int[1];
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.getSelectedAccessibleColumns(); }, d);
 	}
 
 	public int[] get_selected_rows () {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.getSelectedAccessibleRows(); }, 0);
+		int[] d = new int[1];
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.getSelectedAccessibleRows(); }, d);
 	}
 
 	public boolean is_column_selected (int column) {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.isAccessibleColumnSelected(column); }, false);
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.isAccessibleColumnSelected(column); }, false);
 	}
 
 	public boolean is_row_selected (int row) {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.isAccessibleRowSelected(row); }, false);
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.isAccessibleRowSelected(row); }, false);
 	}
 
 	public boolean is_selected (int row, int column) {
-		return AtkUtil.invokeInSwing ( () -> { acc_table.isAccessibleSelected(row, column); } ,false);
+		return AtkUtil.invokeInSwing ( () -> { return acc_table.isAccessibleSelected(row, column); } ,false);
 	}
 
   public boolean addColumnSelection (int column) {

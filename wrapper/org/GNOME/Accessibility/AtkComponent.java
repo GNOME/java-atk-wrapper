@@ -61,6 +61,7 @@ public class AtkComponent {
               return null;
           return accessible.getAccessibleContext();
       }, null);
+  }
 
     public boolean grab_focus () {
         return AtkUtil.invokeInSwing ( () -> {
@@ -81,12 +82,13 @@ public class AtkComponent {
 
     public Rectangle set_extents(int x, int y, int width, int height, int coord_type) {
         return AtkUtil.invokeInSwing ( () -> {
+            Point p;
             this.width  = (int)acc_component.getSize().getWidth();
             this.height = (int)acc_component.getSize().getHeight();
             if (coord_type == AtkCoordType.SCREEN)
-                Point p = acc_component.getLocationOnScreen();
+                p = acc_component.getLocationOnScreen();
             else {
-                Point p = acc_component.getLocation();
+                p = acc_component.getLocation();
                 this.x -= p.x;
                 this.y -= p.y;
             }

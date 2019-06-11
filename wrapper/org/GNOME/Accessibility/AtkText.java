@@ -49,194 +49,174 @@ public class AtkText {
 
 	/* Return string from start, up to, but not including end */
 	public String get_text (int start, int end) {
-		int count = acc_text.getCharCount();
-		if (start < 0)
-			start = 0;
-
-		if (end > count || end ==-1)
-			end = count;
-		if (end < -1)
-			end = 0;
-
-		if (acc_text instanceof AccessibleExtendedText) {
-			AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
-			return acc_ext_text.getTextRange(start, end);
-		}
-
-		StringBuffer buf = new StringBuffer();
-		for (int i = start; i <= end-1; i++) {
-			String str = acc_text.getAtIndex(
-					AccessibleText.CHARACTER, i);
-			buf.append(str);
-		}
-
-		return buf.toString();
+		return AtkUtil.invokeInSwing ( () -> {
+			int count = acc_text.getCharCount();
+			final int rightStart;
+			if (start < 0)
+				rightStart = 0;
+			else
+				rightStart = start;
+			final int rightEnd;
+			if (end > count || end ==-1)
+				rightEnd = count;
+			else if (end < -1)
+				rightEnd = 0;
+				else
+				rightEnd = end;
+			if (acc_text instanceof AccessibleExtendedText) {
+				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
+				return acc_ext_text.getTextRange(rightStart, rightEnd);
+			}
+			StringBuffer buf = new StringBuffer();
+			for (int i = rightStart; i <= rightEnd-1; i++) {
+				String str = acc_text.getAtIndex(AccessibleText.CHARACTER, i);
+				buf.append(str);
+			}
+			return buf.toString();
+		}, null);
 	}
 
 	public char get_character_at_offset (int offset) {
-		String str =  acc_text.getAtIndex(
-				AccessibleText.CHARACTER, offset);
-
-		if (str == null || str.length() == 0) {
-			return 0;
-		}
-
-		return str.charAt(0);
+		return AtkUtil.invokeInSwing ( () -> {
+			String str =  acc_text.getAtIndex(AccessibleText.CHARACTER, offset);
+			if (str == null || str.length() == 0)
+				return ' ';
+			return str.charAt(0);
+		}, ' ');
 	}
 
-	public StringSequence get_text_at_offset (int offset,
-				int boundary_type) {
-		if (acc_text instanceof AccessibleExtendedText) {
-			AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
-
-			int part = getPartTypeFromBoundary(boundary_type);
-			if (part == -1) {
-				return null;
+	public StringSequence get_text_at_offset (int offset,int boundary_type) {
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_text instanceof AccessibleExtendedText) {
+				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
+				int part = getPartTypeFromBoundary(boundary_type);
+				if (part == -1)
+					return null;
+				AccessibleTextSequence seq = acc_ext_text.getTextSequenceAt(part, offset);
+				return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
+			} else {
+				return private_get_text_at_offset(offset, boundary_type);
 			}
-
-			AccessibleTextSequence seq = acc_ext_text.getTextSequenceAt(part, offset);
-			return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
-
-
-		} else {
-			return private_get_text_at_offset(offset, boundary_type);
-		}
+		}, null);
 	}
 
 	public int get_caret_offset () {
-		return acc_text.getCaretPosition();
+		return AtkUtil.invokeInSwing ( () -> { return acc_text.getCaretPosition(); }, 0);
 	}
 
 	public Rectangle get_character_extents (int offset, int coord_type) {
-		Rectangle rect = acc_text.getCharacterBounds(offset);
-		if (rect == null) {
-			return null;
-		}
-
-		if (coord_type == AtkCoordType.SCREEN) {
-			AccessibleComponent component = ac.getAccessibleComponent();
-			if (component == null) {
+		return AtkUtil.invokeInSwing ( () -> {
+			Rectangle rect = acc_text.getCharacterBounds(offset);
+			if (rect == null)
 				return null;
-			}
-
-			Point p = component.getLocationOnScreen();
-			rect.x += p.x;
-			rect.y += p.y;
-		}
-
-		return rect;
-	}
-
-	public int get_character_count () {
-		return acc_text.getCharCount();
-	}
-
-	public int get_offset_at_point (int x, int y,
-				int coord_type) {
-		if (coord_type == AtkCoordType.SCREEN) {
-			AccessibleComponent component = ac.getAccessibleComponent();
-			if (component == null) {
-				return -1;
-			}
-
-			Point p = component.getLocationOnScreen();
-			x -= p.x;
-			y -= p.y;
-		}
-
-		return acc_text.getIndexAtPoint(new Point(x, y));
-	}
-
-	public Rectangle get_range_extents (int start, int end,
-					int coord_type) {
-		if (acc_text instanceof AccessibleExtendedText) {
-			AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
-			Rectangle rect = acc_ext_text.getTextBounds(start, end-1);
-			if (rect == null) {
-				return null;
-			}
-
 			if (coord_type == AtkCoordType.SCREEN) {
 				AccessibleComponent component = ac.getAccessibleComponent();
-				if (component == null) {
+				if (component == null)
 					return null;
-				}
-
 				Point p = component.getLocationOnScreen();
 				rect.x += p.x;
 				rect.y += p.y;
 			}
-
 			return rect;
-		} else {
+		}, null);
+	}
+
+	public int get_character_count () {
+		return AtkUtil.invokeInSwing ( () -> { return acc_text.getCharCount(); }, 0);
+	}
+
+	public int get_offset_at_point (int x, int y, int coord_type) {
+		return AtkUtil.invokeInSwing ( () -> {
+			if (coord_type == AtkCoordType.SCREEN) {
+				AccessibleComponent component = ac.getAccessibleComponent();
+				if (component == null)
+					return -1;
+				Point p = component.getLocationOnScreen();
+				return acc_text.getIndexAtPoint(new Point(x-p.x, y-p.y));
+			}
+			return acc_text.getIndexAtPoint(new Point(x, y));
+		}, -1);
+	}
+
+	public Rectangle get_range_extents (int start, int end, int coord_type) {
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_text instanceof AccessibleExtendedText) {
+				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
+				Rectangle rect = acc_ext_text.getTextBounds(start, end-1);
+				if (rect == null)
+					return null;
+				if (coord_type == AtkCoordType.SCREEN) {
+					AccessibleComponent component = ac.getAccessibleComponent();
+					if (component == null)
+						return null;
+					Point p = component.getLocationOnScreen();
+					rect.x += p.x;
+					rect.y += p.y;
+				}
+				return rect;
+			}
 			return null;
-		}
+		}, null);
 	}
 
 	public int get_n_selections () {
-		String str = acc_text.getSelectedText();
-
-		if (str != null && str.length() > 0) {
-			return 1;
-		} else {
+		return AtkUtil.invokeInSwing ( () -> {
+			String str = acc_text.getSelectedText();
+			if (str != null && str.length() > 0)
+				return 1;
 			return 0;
-		}
+		}, 0);
 	}
 
 	public StringSequence get_selection () {
-		int start = acc_text.getSelectionStart();
-		int end = acc_text.getSelectionEnd() + 1;
-		String text = acc_text.getSelectedText();
-
-		if (text == null) {
-			return null;
-		}
-
-		return new StringSequence(text, start, end);
+		return AtkUtil.invokeInSwing ( () -> {
+			int start = acc_text.getSelectionStart();
+			int end = acc_text.getSelectionEnd() + 1;
+			String text = acc_text.getSelectedText();
+			if (text == null)
+				return null;
+			return new StringSequence(text, start, end);
+		}, null);
 	}
 
 	public boolean add_selection (int start, int end) {
-		AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
-
-		if (acc_edt_text == null || get_n_selections() > 0) {
-			return false;
-		}
-
-		return set_selection(0, start, end);
+		return AtkUtil.invokeInSwing ( () -> {
+			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
+			if (acc_edt_text == null || get_n_selections() > 0)
+				return false;
+			return set_selection(0, start, end);
+		}, false);
 	}
 
 	public boolean remove_selection(int selection_num) {
-		AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
-
-		if (acc_edt_text == null || selection_num > 0) {
-			return false;
-		}
-
-		acc_edt_text.selectText(0, 0);
-		return true;
+		return AtkUtil.invokeInSwing ( () -> {
+			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
+			if (acc_edt_text == null || selection_num > 0)
+				return false;
+			acc_edt_text.selectText(0, 0);
+			return true;
+		}, false);
 	}
 
-	public boolean set_selection (int selection_num,
-			int start, int end) {
-		AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
-
-		if (acc_edt_text == null || selection_num > 0) {
-			return false;
-		}
-
-		acc_edt_text.selectText(start, end-1);
-		return true;
+	public boolean set_selection (int selection_num, int start, int end) {
+		return AtkUtil.invokeInSwing ( () -> {
+			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
+			if (acc_edt_text == null || selection_num > 0)
+				return false;
+			acc_edt_text.selectText(start, end-1);
+			return true;
+		}, false);
 	}
 
 	public boolean set_caret_offset (int offset) {
-		AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
-
-		if (acc_edt_text != null) {
-			acc_edt_text.selectText(offset, offset);
-			return true;
-		}
-
-		return false;
+		return AtkUtil.invokeInSwing ( () -> {
+			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
+			if (acc_edt_text != null) {
+				acc_edt_text.selectText(offset, offset);
+				return true;
+			}
+			return false;
+		}, false);
 	}
 
 	private int getPartTypeFromBoundary (int boundary_type) {
@@ -493,4 +473,3 @@ public class AtkText {
 		}
 	}
 }
-

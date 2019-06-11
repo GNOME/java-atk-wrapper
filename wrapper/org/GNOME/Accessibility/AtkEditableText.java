@@ -60,8 +60,10 @@ public class AtkEditableText extends AtkText {
         } else if (end < -1) {
             end = 0;
         }
+        final int rightStart = start;
+        final int rightEnd = end;
         AtkUtil.invokeInSwing ( () -> {
-            String s = acc_edt_text.getTextRange(start, end);
+            String s = acc_edt_text.getTextRange(rightStart, rightEnd);
             if (s != null) {
                 StringSelection stringSel = new StringSelection(s);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSel, stringSel);
@@ -91,7 +93,7 @@ public class AtkEditableText extends AtkText {
     * TODO return is a bit presumptious. This should ideally include a check for whether
     *      attributes were set.
     */
-    public boolean setRunAttributes(AttributeSet as, int start, int end) {4
+    public boolean setRunAttributes(AttributeSet as, int start, int end) {
         return AtkUtil.invokeInSwing( () -> {
             acc_edt_text.setAttributes(start, end, as);
             return true;

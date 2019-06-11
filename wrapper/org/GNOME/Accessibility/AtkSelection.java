@@ -45,7 +45,7 @@ public class AtkSelection {
 	}
 
 	public Accessible ref_selection (int i) {
-		return AtkUtil.invokeInSwing ( () -> { acc_selection.getAccessibleSelection(i); }, null);
+		return AtkUtil.invokeInSwing ( () -> { return acc_selection.getAccessibleSelection(i); }, null);
 	}
 
 	public int get_selection_count () {
@@ -62,7 +62,7 @@ public class AtkSelection {
 	}
 
 	public boolean is_child_selected (int i) {
-		return AtkUtil.invokeInSwing ( () -> { acc_selection.isAccessibleChildSelected(i); }, false);
+		return AtkUtil.invokeInSwing ( () -> { return acc_selection.isAccessibleChildSelected(i); }, false);
 	}
 
 	public boolean remove_selection (int i) {
