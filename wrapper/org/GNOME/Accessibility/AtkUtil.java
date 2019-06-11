@@ -37,7 +37,7 @@ import java.util.concurrent.*;
 public class AtkUtil{
 
     /**
-    * invokeInEDT:
+    * invokeInSwing:
     *   Invoked when we need to make an asynchronous callback on
     *   a Java object and this callback has a return value.
     *   this method doesn't launch any exception because in case
@@ -51,7 +51,7 @@ public class AtkUtil{
     *       this will automatically wrapped from java in the
     *       corresponding object
     */
-    public static <T> T invokeInEDT (Callable <T> function, T d){
+    public static <T> T invokeInSwing (Callable <T> function, T d){
         RunnableFuture<T> wf = new FutureTask<>(function);
         SwingUtilities.invokeLater(wf);
         try {
@@ -63,13 +63,13 @@ public class AtkUtil{
     }
 
     /**
-    * invokeInEDT:
+    * invokeInSwing:
     *   Invoked when we need to make an asynchronous callback on
     *   some Java object and this callback hasn't a return value.
     *
     * @param function A Runnable object that doesn't return some value
     */
-    public static void invokeInEDT (Runnable function){
+    public static void invokeInSwing (Runnable function){
         SwingUtilities.invokeLater(function);
     }
 

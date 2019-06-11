@@ -33,39 +33,40 @@ public class AtkSelection {
 	}
 
 	public boolean add_selection (int i) {
-		return AtkUtil.invokeInEDT( () -> {
+		return AtkUtil.invokeInSwing( () -> {
 			acc_selection.addAccessibleSelection(i);
 			return is_child_selected(i);
 		}, false);
 	}
 
 	public boolean clear_selection () {
-		AtkUtil.invokeInEDT( () -> { acc_selection.clearAccessibleSelection(); });
+		AtkUtil.invokeInSwing( () -> { acc_selection.clearAccessibleSelection(); });
 		return true;
 	}
 
 	public Accessible ref_selection (int i) {
-		return acc_selection.getAccessibleSelection(i);
+		return AtkUtil.invokeInSwing ( () -> { acc_selection.getAccessibleSelection(i); }, null);
 	}
 
 	public int get_selection_count () {
-		int count = 0;
-		for(int i = 0; i < ac.getAccessibleChildrenCount(); i++) {
-			if (acc_selection.isAccessibleChildSelected(i))
-				count++;
-		}
-
-		return count;
+		return AtkUtil.invokeInSwing ( () -> {
+			int count = 0;
+			for(int i = 0; i < ac.getAccessibleChildrenCount(); i++) {
+				if (acc_selection.isAccessibleChildSelected(i))
+					count++;
+			}
+			return count;
+		}, 0);
 		//A bug in AccessibleJMenu??
 		//return acc_selection.getAccessibleSelectionCount();
 	}
 
 	public boolean is_child_selected (int i) {
-		return acc_selection.isAccessibleChildSelected(i);
+		return AtkUtil.invokeInSwing ( () -> { acc_selection.isAccessibleChildSelected(i); }, false);
 	}
 
 	public boolean remove_selection (int i) {
-		return AtkUtil.invokeInEDT( () -> {
+		return AtkUtil.invokeInSwing( () -> {
 			acc_selection.removeAccessibleSelection(i);
 			return !is_child_selected(i);
 		}, false);
@@ -73,12 +74,12 @@ public class AtkSelection {
 
 	public boolean select_all_selection () {
 		AccessibleStateSet stateSet = ac.getAccessibleStateSet();
-
-		if (stateSet.contains(AccessibleState.MULTISELECTABLE)) {
-			AtkUtil.invokeInEDT( () -> { acc_selection.selectAllAccessibleSelection(); });
-			return true;
-		}
-
-		return false;
+		return AtkUtil.invokeInSwing ( () -> {
+			if (stateSet.contains(AccessibleState.MULTISELECTABLE)) {
+				acc_selection.selectAllAccessibleSelection();
+				return true;
+			}
+			return false;
+		}, false);
 	}
 }

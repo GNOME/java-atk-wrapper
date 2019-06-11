@@ -40,12 +40,12 @@ public class AtkAction {
 	}
 
 	public boolean do_action (int i) {
-		AtkUtil.invokeInEDT( () -> { acc_action.doAccessibleAction(i); });
+		AtkUtil.invokeInSwing( () -> { acc_action.doAccessibleAction(i); });
 		return true;
 	}
 
 	public int get_n_actions () {
-		return acc_action.getAccessibleActionCount();
+		return AtkUtil.invokeInSwing( () -> { return acc_action.getAccessibleActionCount(); }, 0);
 	}
 
     //maybe get and set methods are wrong
@@ -81,20 +81,19 @@ public class AtkAction {
   *          name so a getter from the AcccessibleContext
   *          class is one way to work around that)
   */
-  public String getLocalizedName (int i) {
-    String name        = ac.getAccessibleName();
-    String description = acc_action.getAccessibleActionDescription(i);
-
-    if (description == name && description != null)
-      return description;
-    if (description == null && name != null)
-      return name;
-    else if (description != null)
-      return description;
-
-	//I think is better to always return empty string
-  	return "";
-  }
+  	public String getLocalizedName (int i) {
+		return AtkUtil.invokeInSwing ( () -> {
+			String name        = ac.getAccessibleName();
+			String description = acc_action.getAccessibleActionDescription(i);
+			if (description == name && description != null)
+				return description;
+			if (description == null && name != null)
+				return name;
+			if (description != null)
+				return description;
+			return "";
+		}, null);
+	}
 
 	private String convertModString (String mods) {
 		if (mods == null || mods.length() == 0) {

@@ -33,58 +33,55 @@ public class AtkTable {
   }
 
 	public AccessibleContext ref_at (int row, int column) {
-		Accessible accessible = acc_table.getAccessibleAt(row, column);
-		if (accessible != null) {
-			return accessible.getAccessibleContext();
-		}
-
-		return null;
+		return AtkUtil.invokeInSwing ( () -> {
+			Accessible accessible = acc_table.getAccessibleAt(row, column);
+			if (accessible != null)
+				return accessible.getAccessibleContext();
+			return null;
+		}, null);
 	}
 
 	public int get_column_at_index (int index) {
-		int column = -1;
-
-		if (acc_table instanceof AccessibleExtendedTable) {
-			column = ((AccessibleExtendedTable)acc_table).getAccessibleColumn(index);
-		}
-
-		return column;
+		return AtkUtil.invokeInSwing ( () -> {
+			int column = -1;
+			if (acc_table instanceof AccessibleExtendedTable)
+				column = ( (AccessibleExtendedTable) acc_table).getAccessibleColumn(index);
+			return column;
+		}, -1);
 	}
 
 	public int get_row_at_index (int index) {
-		int row = -1;
-
-		if (acc_table instanceof AccessibleExtendedTable) {
-			row = ((AccessibleExtendedTable)acc_table).getAccessibleRow(index);
-		}
-
-		return row;
+		return AtkUtil.invokeInSwing ( () -> {
+			int row = -1;
+			if (acc_table instanceof AccessibleExtendedTable)
+				row = ( (AccessibleExtendedTable) acc_table).getAccessibleRow(index);
+			return row;
+		}, -1);
 	}
 
 	public int get_n_columns () {
-		return acc_table.getAccessibleColumnCount();
+		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleColumnCount(); }, 0);
 	}
 
 	public int get_n_rows () {
-		return acc_table.getAccessibleRowCount();
+		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleRowCount(); }, 0);
 	}
 
 	public int get_column_extent_at (int row, int column) {
-		return acc_table.getAccessibleColumnExtentAt(row, column);
+		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleColumnExtentAt(row, column); }, 0);
 	}
 
 	public int get_row_extent_at (int row, int column) {
-		return acc_table.getAccessibleRowExtentAt(row, column);
+		return AtkUtil.invokeInSwing ( () -> { acc_table.getAccessibleRowExtentAt(row, column); }, 0);
 	}
 
 	public AccessibleContext get_caption () {
-		Accessible accessible = acc_table.getAccessibleCaption();
-
-		if (accessible != null) {
-			return accessible.getAccessibleContext();
-		}
-
-		return null;
+		return AtkUtil.invokeInSwing ( () -> {
+			Accessible accessible = acc_table.getAccessibleCaption();
+			if (accessible != null)
+				return accessible.getAccessibleContext();
+			return null;
+		}, null);
 	}
 
     /**
@@ -92,76 +89,67 @@ public class AtkTable {
      * @param a an Accessible object
      */
     public void setCaption(Accessible a) {
-        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleCaption(a); });
+        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleCaption(a); });
     }
 
 	public String get_column_description (int column) {
-		Accessible accessible =
-			acc_table.getAccessibleColumnDescription(column);
-
-		if (accessible != null) {
-			AccessibleContext ac = accessible.getAccessibleContext();
-			if (ac != null) {
-				return ac.getAccessibleDescription();
+		return AtkUtil.invokeInSwing ( () -> {
+			Accessible accessible = acc_table.getAccessibleColumnDescription(column);
+			if (accessible != null) {
+				AccessibleContext ac = accessible.getAccessibleContext();
+				if (ac != null)
+					return ac.getAccessibleDescription();
 			}
-		}
-
-		return "";
+			return "";
+		}, "");
 	}
 
-/**
- *
- * @param column an int representing a column in table
- * @param description a String object representing the description text to set for the
- *                    specified column of the table
- */
-  public void setColumnDescription(int column, String description) {
-    Accessible accessible = acc_table.getAccessibleColumnDescription(column);
-    if (description.equals(accessible.toString()) && accessible != null) {
-      AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleColumnDescription(column, accessible); });
-    }
-  }
+	/**
+ 	*
+ 	* @param column an int representing a column in table
+ 	* @param description a String object representing the description text to set for the
+ 	*                    specified column of the table
+ 	*/
+	public void setColumnDescription(int column, String description) {
+		Accessible accessible = acc_table.getAccessibleColumnDescription(column);
+		if (description.equals(accessible.toString()) && accessible != null)
+			AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleColumnDescription(column, accessible); });
+	}
 
 	public String get_row_description (int row) {
-		Accessible accessible =
-			acc_table.getAccessibleRowDescription(row);
-
-		if (accessible != null) {
-			AccessibleContext ac = accessible.getAccessibleContext();
-			if (ac != null) {
-				return ac.getAccessibleDescription();
+		return AtkUtil.invokeInSwing ( () -> {
+			Accessible accessible = acc_table.getAccessibleRowDescription(row);
+			if (accessible != null) {
+				AccessibleContext ac = accessible.getAccessibleContext();
+				if (ac != null)
+					return ac.getAccessibleDescription();
 			}
-		}
-
-		return "";
+			return "";
+		}, "");
 	}
 
- /**
-  *
-  * @param row an int representing a row in table
-  * @param description a String object representing the description text to set for the
-  *                    specified row of the table
-  */
-  public void setRowDescription(int row, String description) {
-    Accessible accessible = acc_table.getAccessibleRowDescription(row);
-    if (description.equals(accessible.toString()) && accessible != null) {
-      AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleRowDescription(row, accessible); });
-    }
-  }
+	/**
+ 	*
+	* @param row an int representing a row in table
+	* @param description a String object representing the description text to set for the
+	*                    specified row of the table
+	*/
+	public void setRowDescription(int row, String description) {
+		Accessible accessible = acc_table.getAccessibleRowDescription(row);
+		if (description.equals(accessible.toString()) && accessible != null)
+			AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleRowDescription(row, accessible); });
+	}
 
 	public AccessibleContext get_column_header (int column) {
-		AccessibleTable accessibleTable =
-			acc_table.getAccessibleColumnHeader();
-
-		if (accessibleTable != null) {
-			Accessible accessible = accessibleTable.getAccessibleAt(0, column);
-
-			if (accessible != null) {
-				return accessible.getAccessibleContext();
+		return AtkUtil.invokeInSwing ( () -> {
+			AccessibleTable accessibleTable = acc_table.getAccessibleColumnHeader();
+			if (accessibleTable != null) {
+				Accessible accessible = accessibleTable.getAccessibleAt(0, column);
+				if (accessible != null)
+					return accessible.getAccessibleContext();
 			}
-		}
-
-		return null;
+			return null;
+		}, null);
 	}
 
     /**
@@ -170,36 +158,32 @@ public class AtkTable {
      * @param table an AccessibleTable object
      */
     public void setColumnHeader (int column, AccessibleTable table) {
-        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleColumnHeader(table); });
+        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleColumnHeader(table); });
     }
 
 	public AccessibleContext get_row_header (int row) {
-		AccessibleTable accessibleTable =
-			acc_table.getAccessibleRowHeader();
-
-		if (accessibleTable != null) {
-			Accessible accessible = accessibleTable.getAccessibleAt(row, 0);
-
-			if (accessible != null) {
-				return accessible.getAccessibleContext();
+		return AtkUtil.invokeInSwing ( () -> {
+			AccessibleTable accessibleTable = acc_table.getAccessibleRowHeader();
+			if (accessibleTable != null) {
+				Accessible accessible = accessibleTable.getAccessibleAt(row, 0);
+				if (accessible != null)
+					return accessible.getAccessibleContext();
 			}
-		}
-
-		return null;
+			return null;
+		}, null);
 	}
 
     public void setRowHeader (int row, AccessibleTable table) {
-        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleRowHeader(table); });
+        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleRowHeader(table); });
     }
 
 	public AccessibleContext get_summary () {
-		Accessible accessible = acc_table.getAccessibleSummary();
-
-		if (accessible != null) {
-			return accessible.getAccessibleContext();
-		}
-
-		return null;
+		return AtkUtil.invokeInSwing ( () -> {
+			Accessible accessible = acc_table.getAccessibleSummary();
+			if (accessible != null)
+				return accessible.getAccessibleContext();
+			return null;
+		}, null);
 	}
 
     /**
@@ -207,30 +191,29 @@ public class AtkTable {
      * @param a the Accessible object to set summary for
      */
     public void setSummary(Accessible a) {
-        AtkUtil.invokeInEDT( () -> { acc_table.setAccessibleSummary(a); });
+        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleSummary(a); });
     }
 
 	public int[] get_selected_columns () {
-		return acc_table.getSelectedAccessibleColumns();
+		return AtkUtil.invokeInSwing ( () -> { acc_table.getSelectedAccessibleColumns(); }, 0);
 	}
 
 	public int[] get_selected_rows () {
-		return acc_table.getSelectedAccessibleRows();
+		return AtkUtil.invokeInSwing ( () -> { acc_table.getSelectedAccessibleRows(); }, 0);
 	}
 
 	public boolean is_column_selected (int column) {
-		return acc_table.isAccessibleColumnSelected(column);
+		return AtkUtil.invokeInSwing ( () -> { acc_table.isAccessibleColumnSelected(column); }, false);
 	}
 
 	public boolean is_row_selected (int row) {
-		return acc_table.isAccessibleRowSelected(row);
+		return AtkUtil.invokeInSwing ( () -> { acc_table.isAccessibleRowSelected(row); }, false);
 	}
 
 	public boolean is_selected (int row, int column) {
-		return acc_table.isAccessibleSelected(row, column);
+		return AtkUtil.invokeInSwing ( () -> { acc_table.isAccessibleSelected(row, column); } ,false);
 	}
 
-  //I think this method are not implemented.
   public boolean addColumnSelection (int column) {
     return false;
   }

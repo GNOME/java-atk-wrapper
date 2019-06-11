@@ -32,37 +32,35 @@ public class AtkHyperlink {
 
 	public String get_uri (int i) {
 		String s = "";
-		Object o = acc_hyperlink.getAccessibleActionObject(i);
-		if (o != null) {
-			s = o.toString();
-		}
-
-		return s;
+		return AtkUtil.invokeInSwing ( () -> {
+			Object o = acc_hyperlink.getAccessibleActionObject(i);
+			if (o != null)
+				s = o.toString();
+			return s;
+		}, s);
 	}
 
 	public Object get_object (int i) {
-		Object o = null;
-		Object anchor = acc_hyperlink.getAccessibleActionAnchor(i);
-		if (anchor instanceof Accessible) {
-			o = anchor;
-		}
-
-		return o;
-	}
+		return AtkUtil.invokeInSwing ( () -> {
+			Object anchor = acc_hyperlink.getAccessibleActionAnchor(i);
+			if (anchor instanceof Accessible)
+				return anchor;
+			return null;
+		}, null);
 
 	public int get_end_index () {
-		return acc_hyperlink.getEndIndex();
+		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.getEndIndex(); }, 0);
 	}
 
 	public int get_start_index () {
-		return acc_hyperlink.getStartIndex();
+		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.getStartIndex(); }, 0);
 	}
 
 	public boolean is_valid () {
-		return acc_hyperlink.isValid();
+		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.isValid(); }, false);
 	}
 
 	public int get_n_anchors () {
-		return acc_hyperlink.getAccessibleActionCount();
+		return AtkUtil.invokeInSwing ( () -> { acc_hyperlink.getAccessibleActionCount(); }, 0);
 	}
 }
