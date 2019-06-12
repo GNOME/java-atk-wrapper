@@ -32,6 +32,10 @@ public class AtkSelection {
 		this.acc_selection = ac.getAccessibleSelection();
 	}
 
+	public AtkSelection createAtkSelection(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkSelection(ac); }, null);
+    }
+
 	public boolean add_selection (int i) {
 		return AtkUtil.invokeInSwing( () -> {
 			acc_selection.addAccessibleSelection(i);

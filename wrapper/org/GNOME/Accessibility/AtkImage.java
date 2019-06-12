@@ -34,6 +34,10 @@ public class AtkImage {
 		this.acc_icons = ac.getAccessibleIcon();
 	}
 
+	public AtkImage createAtkImage(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkImage(ac); }, null);
+    }
+
 	public Point get_image_position (int coord_type) {
 		return AtkUtil.invokeInSwing ( () -> {
 			AccessibleComponent acc_component = ac.getAccessibleComponent();

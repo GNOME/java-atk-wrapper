@@ -47,6 +47,10 @@ public class AtkText {
 		this.acc_text = ac.getAccessibleText();
 	}
 
+	public AtkText createAtkText(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkText(ac); }, null);
+    }
+
 	/* Return string from start, up to, but not including end */
 	public String get_text (int start, int end) {
 		return AtkUtil.invokeInSwing ( () -> {

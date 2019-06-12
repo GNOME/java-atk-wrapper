@@ -33,6 +33,10 @@ public class AtkEditableText extends AtkText {
     acc_edt_text = ac.getAccessibleEditableText();
   }
 
+  public AtkEditableText createAtkEditableText(AccessibleContext ac){
+      return AtkUtil.invokeInSwing ( () -> { return new AtkEditableText(ac); }, null);
+  }
+
   public void set_text_contents (String s) {
       if (!javax.swing.SwingUtilities.isEventDispatchThread())
         System.out.println("It would be unsafe to call setTextContents here");

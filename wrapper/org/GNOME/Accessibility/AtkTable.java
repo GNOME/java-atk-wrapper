@@ -32,6 +32,10 @@ public class AtkTable {
     this.acc_table = ac.getAccessibleTable();
   }
 
+	public AtkTable createAtkTable(AccessibleContext ac){
+		return AtkUtil.invokeInSwing ( () -> { return new AtkTable(ac); }, null);
+	}
+
 	public AccessibleContext ref_at (int row, int column) {
 		return AtkUtil.invokeInSwing ( () -> {
 			Accessible accessible = acc_table.getAccessibleAt(row, column);
@@ -111,9 +115,11 @@ public class AtkTable {
  	*                    specified column of the table
  	*/
 	public void setColumnDescription(int column, String description) {
-		Accessible accessible = acc_table.getAccessibleColumnDescription(column);
-		if (description.equals(accessible.toString()) && accessible != null)
-			AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleColumnDescription(column, accessible); });
+		AtkUtil.invokeInSwing( () -> {
+			Accessible accessible = acc_table.getAccessibleColumnDescription(column);
+			if (description.equals(accessible.toString()) && accessible != null)
+				acc_table.setAccessibleColumnDescription(column, accessible);
+		});
 	}
 
 	public String get_row_description (int row) {
@@ -135,9 +141,11 @@ public class AtkTable {
 	*                    specified row of the table
 	*/
 	public void setRowDescription(int row, String description) {
-		Accessible accessible = acc_table.getAccessibleRowDescription(row);
-		if (description.equals(accessible.toString()) && accessible != null)
-			AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleRowDescription(row, accessible); });
+		AtkUtil.invokeInSwing( () -> {
+			Accessible accessible = acc_table.getAccessibleRowDescription(row);
+			if (description.equals(accessible.toString()) && accessible != null)
+				acc_table.setAccessibleRowDescription(row, accessible);
+		});
 	}
 
 	public AccessibleContext get_column_header (int column) {

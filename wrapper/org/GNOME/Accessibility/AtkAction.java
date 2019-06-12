@@ -39,6 +39,10 @@ public class AtkAction {
 		}
 	}
 
+	public AtkAction createAtkAction(AccessibleContext ac){
+		return AtkUtil.invokeInSwing ( () -> { return new AtkAction(ac); }, null);
+	}
+
 	public boolean do_action (int i) {
 		AtkUtil.invokeInSwing( () -> { acc_action.doAccessibleAction(i); });
 		return true;

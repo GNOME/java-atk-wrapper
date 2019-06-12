@@ -32,6 +32,10 @@ public class AtkValue {
 		this.acc_value = ac.getAccessibleValue();
 	}
 
+	public AtkValue createAtkValue(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkValue(ac); }, null);
+    }
+
 	public Number get_current_value () {
 		return AtkUtil.invokeInSwing ( () -> { return acc_value.getCurrentAccessibleValue(); }, 0.0);
 	}

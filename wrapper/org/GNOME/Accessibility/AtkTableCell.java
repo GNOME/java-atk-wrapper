@@ -42,6 +42,10 @@ public class AtkTableCell extends AtkTable {
     columnSpan = 0;
   }
 
+  public AtkTableCell createAtkTableCell(AccessibleContext ac){
+      return AtkUtil.invokeInSwing ( () -> { return new AtkTableCell(ac); }, null);
+  }
+
     /**
     * getTable
     * @return: Reference to the accessible of the containing table as an

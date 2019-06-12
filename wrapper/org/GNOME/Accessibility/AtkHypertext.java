@@ -36,6 +36,10 @@ public class AtkHypertext extends AtkText {
 		}
 	}
 
+	public AtkHypertext createAtkHypertext(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkHypertext(ac); }, null);
+    }
+
 	public AtkHyperlink get_link (int link_index) {
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_hyper_text != null) {

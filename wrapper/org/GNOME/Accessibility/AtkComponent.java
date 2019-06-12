@@ -38,6 +38,10 @@ public class AtkComponent {
     this.acc_component = ac.getAccessibleComponent();
   }
 
+  public AtkComponent createAtkComponent(AccessibleContext ac){
+      return AtkUtil.invokeInSwing ( () -> { return new AtkComponent(ac); }, null);
+  }
+
   public boolean contains (int x, int y, int coord_type) {
       return AtkUtil.invokeInSwing ( () -> {
           if (coord_type == AtkCoordType.SCREEN) {

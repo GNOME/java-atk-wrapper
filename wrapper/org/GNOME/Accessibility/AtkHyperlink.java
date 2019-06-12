@@ -30,6 +30,10 @@ public class AtkHyperlink {
 		acc_hyperlink = hl;
 	}
 
+	public AtkHyperlink createAtkHyperlink(AccessibleHyperlink hl){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkHyperlink(hl); }, null);
+    }
+
 	public String get_uri (int i) {
 		return AtkUtil.invokeInSwing ( () -> {
 			Object o = acc_hyperlink.getAccessibleActionObject(i);
