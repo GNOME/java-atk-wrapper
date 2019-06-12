@@ -82,10 +82,10 @@ jaw_component_data_init (jobject ac)
                                                "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classComponent,
-                                          "<init>",
-                                          "(Ljavax/accessibility/AccessibleContext;)V");
+                                          "createAtkComponent",
+                                          "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkComponent");
 
-  jobject jatk_component = (*jniEnv)->NewObject(jniEnv, classComponent, jmid, ac);
+  jobject jatk_component = (*jniEnv)->CallObjectMethod(jniEnv, classComponent, jmid, ac);
   data->atk_component = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_component);
 
   return data;
@@ -354,4 +354,3 @@ jaw_component_get_layer (AtkComponent *component)
 
   return (AtkLayer)jlayer;
 }
-
