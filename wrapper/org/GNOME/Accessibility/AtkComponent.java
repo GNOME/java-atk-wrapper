@@ -38,7 +38,7 @@ public class AtkComponent {
     this.acc_component = ac.getAccessibleComponent();
   }
 
-  public AtkComponent createAtkComponent(AccessibleContext ac){
+  public static AtkComponent createAtkComponent(AccessibleContext ac){
       return AtkUtil.invokeInSwing ( () -> { return new AtkComponent(ac); }, null);
   }
 

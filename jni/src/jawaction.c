@@ -65,11 +65,11 @@ jaw_action_data_init (jobject ac)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jclass classAction = (*jniEnv)->FindClass(jniEnv,
                                             "org/GNOME/Accessibility/AtkAction");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv,
                                           classAction,
                                           "createAtkAction",
-                                          "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkAction");
-  jobject jatk_action = (*jniEnv)->CallObjectMethod(jniEnv, classAction, jmid, ac);
+                                          "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkAction;");
+  jobject jatk_action = (*jniEnv)->CallStaticObjectMethod(jniEnv, classAction, jmid, ac);
   data->atk_action = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_action);
 
   return data;

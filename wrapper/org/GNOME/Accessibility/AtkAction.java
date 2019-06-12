@@ -39,7 +39,7 @@ public class AtkAction {
 		}
 	}
 
-	public AtkAction createAtkAction(AccessibleContext ac){
+	public static AtkAction createAtkAction(AccessibleContext ac){
 		return AtkUtil.invokeInSwing ( () -> { return new AtkAction(ac); }, null);
 	}
 

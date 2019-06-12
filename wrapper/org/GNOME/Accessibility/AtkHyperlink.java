@@ -30,7 +30,7 @@ public class AtkHyperlink {
 		acc_hyperlink = hl;
 	}
 
-	public AtkHyperlink createAtkHyperlink(AccessibleHyperlink hl){
+	public static AtkHyperlink createAtkHyperlink(AccessibleHyperlink hl){
         return AtkUtil.invokeInSwing ( () -> { return new AtkHyperlink(hl); }, null);
     }
 

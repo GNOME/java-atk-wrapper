@@ -57,8 +57,8 @@ jaw_image_data_init (jobject ac)
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jclass classImage = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkImage");
-	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classImage, "createAtkImage", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkImage");
-	jobject jatk_image = (*jniEnv)->CallObjectMethod(jniEnv, classImage, jmid, ac);
+	jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, classImage, "createAtkImage", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkImage;");
+	jobject jatk_image = (*jniEnv)->CallStaticObjectMethod(jniEnv, classImage, jmid, ac);
 	data->atk_image = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_image);
 
 	return data;

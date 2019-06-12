@@ -47,7 +47,7 @@ public class AtkText {
 		this.acc_text = ac.getAccessibleText();
 	}
 
-	public AtkText createAtkText(AccessibleContext ac){
+	public static AtkText createAtkText(AccessibleContext ac){
         return AtkUtil.invokeInSwing ( () -> { return new AtkText(ac); }, null);
     }
 

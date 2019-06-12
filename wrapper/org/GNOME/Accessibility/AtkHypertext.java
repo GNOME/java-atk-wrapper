@@ -36,7 +36,7 @@ public class AtkHypertext extends AtkText {
 		}
 	}
 
-	public AtkHypertext createAtkHypertext(AccessibleContext ac){
+	public static AtkHypertext createAtkHypertext(AccessibleContext ac){
         return AtkUtil.invokeInSwing ( () -> { return new AtkHypertext(ac); }, null);
     }
 

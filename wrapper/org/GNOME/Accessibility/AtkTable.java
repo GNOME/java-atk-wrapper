@@ -32,7 +32,7 @@ public class AtkTable {
     this.acc_table = ac.getAccessibleTable();
   }
 
-	public AtkTable createAtkTable(AccessibleContext ac){
+	public static AtkTable createAtkTable(AccessibleContext ac){
 		return AtkUtil.invokeInSwing ( () -> { return new AtkTable(ac); }, null);
 	}
 

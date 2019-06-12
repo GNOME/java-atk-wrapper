@@ -33,7 +33,7 @@ public class AtkEditableText extends AtkText {
     acc_edt_text = ac.getAccessibleEditableText();
   }
 
-  public AtkEditableText createAtkEditableText(AccessibleContext ac){
+  public static AtkEditableText createAtkEditableText(AccessibleContext ac){
       return AtkUtil.invokeInSwing ( () -> { return new AtkEditableText(ac); }, null);
   }
 

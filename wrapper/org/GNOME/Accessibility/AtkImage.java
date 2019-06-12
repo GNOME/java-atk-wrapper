@@ -34,7 +34,7 @@ public class AtkImage {
 		this.acc_icons = ac.getAccessibleIcon();
 	}
 
-	public AtkImage createAtkImage(AccessibleContext ac){
+	public static AtkImage createAtkImage(AccessibleContext ac){
         return AtkUtil.invokeInSwing ( () -> { return new AtkImage(ac); }, null);
     }
 

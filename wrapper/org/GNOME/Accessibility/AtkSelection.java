@@ -32,7 +32,7 @@ public class AtkSelection {
 		this.acc_selection = ac.getAccessibleSelection();
 	}
 
-	public AtkSelection createAtkSelection(AccessibleContext ac){
+	public static AtkSelection createAtkSelection(AccessibleContext ac){
         return AtkUtil.invokeInSwing ( () -> { return new AtkSelection(ac); }, null);
     }
 
