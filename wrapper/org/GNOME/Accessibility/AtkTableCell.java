@@ -77,21 +77,72 @@ public class AtkTableCell extends AtkTable {
         return true;
     }
 
+  public static AtkTableCell createAtkTableCell(AccessibleContext ac){
+      return AtkUtil.invokeInSwing ( () -> { return new AtkTableCell(ac); }, null);
+  }
+
+    /**
+    * getTable
+    * @return: Reference to the accessible of the containing table as an
+    *          AccessibleTable instance.
+    */
+    public AccessibleTable getTable() {
+        return AtkUtil.invokeInSwing ( () -> { return acc_table_cell; }, null);
+    }
+
+  /**
+  * @param row the row of the accessible table cell
+  * @param column the column of the accessible table cell
+  * @return: whether the accessible index of the table cell is found
+  */
+    public boolean getPosition(int row, int column) {
+        return AtkUtil.invokeInSwing ( () -> {
+            int index = acc_table_cell.getAccessibleIndex(row, column);
+            if (index < 0)
+                return false;
+            return true;
+        }, false);
+    }
+
+    /**
+    * @param row the row of the accessible table cell
+    * @param column the column of the accessible table cell
+    * @param rowSpan the row span of the accessible table cell the
+    * @param columnSpan the column span of the accessible table cell
+    * @return: whether the column and row span was retrieved
+    */
+    public boolean getRowColumnSpan(int row, int column, int rowSpan, int columnSpan) {
+        return AtkUtil.invokeInSwing ( () -> {
+            this.rowSpan = rowSpan;
+            this.columnSpan = columnSpan;
+            int chekRowSpan = acc_table.getAccessibleRowExtentAt(row, column);
+            int checkColumnSpan = acc_table.getAccessibleColumnExtentAt(row, column);
+            if (chekRowSpan < 0 && checkColumnSpan < 0)
+                return false;
+            return true;
+        }, false);
+    }
+
     /**
     * @return: span of the table_cell row as an int
     */
     public int getRowSpan() {
-        if (rowSpan < 0)
-            return -1;
-        return rowSpan;
+        return AtkUtil.invokeInSwing ( () -> {
+            if (rowSpan < 0)
+                return -1;
+            return rowSpan;
+        }, -1);
     }
 
     /**
     * @return: span of the table_cell column as an int
     */
     public int getColumnSpan() {
-        if (columnSpan < 0)
-            return -1;
-        return columnSpan;
+        return AtkUtil.invokeInSwing ( () -> {
+            if (columnSpan < 0)
+                return -1;
+            return columnSpan;
+        }, -1);
     }
+
 }

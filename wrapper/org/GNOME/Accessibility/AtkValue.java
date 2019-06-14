@@ -32,24 +32,27 @@ public class AtkValue {
 		this.acc_value = ac.getAccessibleValue();
 	}
 
+	public static AtkValue createAtkValue(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkValue(ac); }, null);
+    }
+
 	public Number get_current_value () {
-		return acc_value.getCurrentAccessibleValue();
+		return AtkUtil.invokeInSwing ( () -> { return acc_value.getCurrentAccessibleValue(); }, 0.0);
 	}
 
 	public double getMaximumValue () {
-		return acc_value.getMaximumAccessibleValue().doubleValue();
+		return AtkUtil.invokeInSwing ( () -> { return acc_value.getMaximumAccessibleValue().doubleValue(); }, 0.0);
 	}
 
 	public double getMinimumValue () {
-		return acc_value.getMinimumAccessibleValue().doubleValue();
+		return AtkUtil.invokeInSwing ( () -> { return acc_value.getMinimumAccessibleValue().doubleValue(); }, 0.0);
 	}
 
   public void setValue (Number n) {
-    acc_value.setCurrentAccessibleValue(n);
+	  AtkUtil.invokeInSwing( () -> { acc_value.setCurrentAccessibleValue(n); });
   }
 
   public double getIncrement() {
     return Double.MIN_VALUE;
   }
 }
-

@@ -39,30 +39,20 @@ public class AtkAction {
 		}
 	}
 
-	private class ActionRunner implements Runnable {
-		private AccessibleAction acc_action;
-		private int index;
-
-		public ActionRunner (AccessibleAction acc_action, int index) {
-			this.acc_action = acc_action;
-			this.index = index;
-		}
-
-		public void run () {
-			acc_action.doAccessibleAction(index);
-		}
+	public static AtkAction createAtkAction(AccessibleContext ac){
+		return AtkUtil.invokeInSwing ( () -> { return new AtkAction(ac); }, null);
 	}
 
 	public boolean do_action (int i) {
-		SwingUtilities.invokeLater(new ActionRunner(acc_action, i));
+		AtkUtil.invokeInSwing( () -> { acc_action.doAccessibleAction(i); });
 		return true;
 	}
 
 	public int get_n_actions () {
-		return acc_action.getAccessibleActionCount();
+		return AtkUtil.invokeInSwing( () -> { return acc_action.getAccessibleActionCount(); }, 0);
 	}
 
-	//maybe get and set methods are wrong
+    //maybe get and set methods are wrong
 	public String get_description (int i) {
 		String description = "<description>";
 		return description;
@@ -82,28 +72,29 @@ public class AtkAction {
 		return name;
 	}
 
-	/**
-	* @param i an integer holding the index of the name of
-	*          the accessible.
-	* @return  the localized name of the object or otherwise,
-	*          null if the "action" object does not have a
-	*          name (really, java's AccessibleAction class
-	*          does not provide
-	*          a getter for an AccessibleAction
-	*          name so a getter from the AcccessibleContext
-	*          class is one way to work around that)
-	*/
-	public String getLocalizedName (int i) {
-		String name = ac.getAccessibleName();
-		String description = acc_action.getAccessibleActionDescription(i);
-		if (description == name && description != null)
-			return description;
-		if (description == null && name != null)
-			return name;
-		if (description != null)
-			return description;
-		//I think is better to always return empty string
-		return "";
+ /**
+  * @param i an integer holding the index of the name of
+  *          the accessible.
+  * @return  the localized name of the object or otherwise,
+  *          null if the "action" object does not have a
+  *          name (really, java's AccessibleAction class
+  *          does not provide
+  *          a getter for an AccessibleAction
+  *          name so a getter from the AcccessibleContext
+  *          class is one way to work around that)
+  */
+  	public String getLocalizedName (int i) {
+		return AtkUtil.invokeInSwing ( () -> {
+			String name        = ac.getAccessibleName();
+			String description = acc_action.getAccessibleActionDescription(i);
+			if (description == name && description != null)
+				return description;
+			if (description == null && name != null)
+				return name;
+			if (description != null)
+				return description;
+			return "";
+		}, null);
 	}
 
 	private String convertModString (String mods) {
