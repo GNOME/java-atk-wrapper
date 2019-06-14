@@ -38,14 +38,16 @@ public class AtkEditableText extends AtkText {
       return AtkUtil.invokeInSwing ( () -> { return new AtkEditableText(ac); }, null);
   }
 
+  public static AtkEditableText createAtkEditableText(AccessibleContext ac){
+      return AtkUtil.invokeInSwing ( () -> { return new AtkEditableText(ac); }, null);
+  }
+
   public void set_text_contents (String s) {
       if (!javax.swing.SwingUtilities.isEventDispatchThread())
         System.out.println("It would be unsafe to call setTextContents here");
       AtkUtil.invokeInSwing( () -> {
-          if (javax.swing.SwingUtilities.isEventDispatchThread())
-              System.out.println("We have solve the EDT problem");
           acc_edt_text.setTextContents(s);
-        });
+      });
   }
 
     public void insert_text (String s, int position) {

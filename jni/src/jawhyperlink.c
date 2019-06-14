@@ -22,7 +22,6 @@
 #include "jawutil.h"
 #include "jawimpl.h"
 
-static void			jaw_hyperlink_class_init		(JawHyperlinkClass	*klass);
 static void			jaw_hyperlink_dispose			(GObject		*gobject);
 static void			jaw_hyperlink_finalize			(GObject		*gobject);
 
@@ -128,18 +127,14 @@ jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
 	}
 
 	jclass classAtkHyperlink = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkHyperlink");
-	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkHyperlink, "get_object", "(I)Ljava/lang/String;");
-	jobject jobj = (*jniEnv)->CallObjectMethod(jniEnv, jhyperlink, jmid, (jint)i);
+	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkHyperlink, "get_object", "(I)Ljavax/accessibility/AccessibleContext;");
+	jobject ac = (*jniEnv)->CallObjectMethod(jniEnv, jhyperlink, jmid, (jint)i);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, jhyperlink);
-	if (jobj == NULL) {
+	if (ac == NULL) {
 		return NULL;
 	}
 
-	jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
-	jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessible, "getAccessibleContext", "()Ljavax/accessibility/AccessibleContext;" );
-	jobject ac = (*jniEnv)->CallObjectMethod( jniEnv, jobj, jmid );
-
-	AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, ac );
+	AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, ac );
 
 	return obj;
 }

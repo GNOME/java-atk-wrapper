@@ -22,10 +22,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void	jaw_image_interface_init (AtkImageIface*);
-extern gpointer	jaw_image_data_init (jobject ac);
-extern void	jaw_image_data_finalize (gpointer);
-
 static void			jaw_image_get_image_position		(AtkImage	*image,
 									 gint		*x,
 									 gint		*y,
@@ -42,7 +38,7 @@ typedef struct _ImageData {
 } ImageData;
 
 void
-jaw_image_interface_init (AtkImageIface *iface)
+jaw_image_interface_init (AtkImageIface *iface, gpointer data)
 {
 	iface->get_image_position = jaw_image_get_image_position;
 	iface->get_image_description = jaw_image_get_image_description;

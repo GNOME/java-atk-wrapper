@@ -63,8 +63,8 @@ public class AtkSelection {
 		return true;
 	}
 
-	public Accessible ref_selection (int i) {
-		return AtkUtil.invokeInSwing ( () -> { return acc_selection.getAccessibleSelection(i); }, null);
+	public AccessibleContext ref_selection (int i) {
+		return AtkUtil.invokeInSwing ( () -> { return acc_selection.getAccessibleSelection(i).getAccessibleContext(); }, null);
 	}
 
 	public int get_selection_count () {
@@ -89,18 +89,6 @@ public class AtkSelection {
 			acc_selection.removeAccessibleSelection(i);
 			return !is_child_selected(i);
 		}, false);
-	}
-
-	private class SelectionAllRunner implements Runnable {
-		private AccessibleSelection acc_selection;
-
-		public SelectionAllRunner (AccessibleSelection acc_selection) {
-			this.acc_selection = acc_selection;
-		}
-
-		public void run () {
-			acc_selection.selectAllAccessibleSelection();
-		}
 	}
 
 	public boolean select_all_selection () {

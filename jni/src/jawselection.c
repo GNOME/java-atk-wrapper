@@ -22,10 +22,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void	jaw_selection_interface_init (AtkSelectionIface*);
-extern gpointer	jaw_selection_data_init (jobject ac);
-extern void	jaw_selection_data_finalize (gpointer);
-
 static gboolean			jaw_selection_add_selection		(AtkSelection	*selection,
 									 gint		i);
 static gboolean			jaw_selection_clear_selection		(AtkSelection	*selection);
@@ -43,7 +39,7 @@ typedef struct _SelectionData {
 } SelectionData;
 
 void
-jaw_selection_interface_init (AtkSelectionIface *iface)
+jaw_selection_interface_init (AtkSelectionIface *iface, gpointer data)
 {
 	iface->add_selection = jaw_selection_add_selection;
 	iface->clear_selection = jaw_selection_clear_selection;
@@ -138,18 +134,14 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
 	}
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
-	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "ref_selection", "(I)Ljavax/accessibility/Accessible;");
-	jobject jchild = (*jniEnv)->CallObjectMethod(jniEnv, atk_selection, jmid, (jint)i);
+	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "ref_selection", "(I)Ljavax/accessibility/AccessibleContext;");
+	jobject child_ac = (*jniEnv)->CallObjectMethod(jniEnv, atk_selection, jmid, (jint)i);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_selection);
-	if (!jchild) {
+	if (!child_ac) {
 		return NULL;
 	}
 
-	jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
-	jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessible, "getAccessibleContext", "()Ljavax/accessibility/AccessibleContext;" );
-	jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
-
-	AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
+	AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
 	g_object_ref (G_OBJECT(obj));
 
 	return obj;

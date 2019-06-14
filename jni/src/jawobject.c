@@ -29,8 +29,6 @@
 extern "C" {
 #endif
 
-static void jaw_object_class_init(JawObjectClass *klass);
-static void jaw_object_init(JawObject *object);
 static void jaw_object_initialize(AtkObject *jaw_obj, gpointer data);
 static void jaw_object_dispose(GObject *gobject);
 static void jaw_object_finalize(GObject *gobject);
@@ -332,7 +330,10 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
     return;
   }
 
-  atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
+  jstring jstr = NULL;
+  if (name) {
+    jstr = (*jniEnv)->NewStringUTF(jniEnv, name);
+  }
 
   jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
@@ -340,7 +341,7 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
                                           classAccessibleContext,
                                           "setAccessibleName",
                                           "(Ljava/lang/String;)");
-  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  (*jniEnv)->CallVoidMethod( jniEnv, ac, jmid, jstr );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   if (atk_obj->name != NULL)
@@ -357,11 +358,6 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
     atk_obj->name = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
                                                          jaw_obj->jstrName,
                                                          NULL);
-  }
-  if (jstr == NULL)
-  {
-    name = "";
-    return;
   }
 }
 
@@ -388,6 +384,7 @@ jaw_object_get_description (AtkObject *atk_obj)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrDescription, atk_obj->description);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
+    jaw_obj->jstrDescription = NULL;
     atk_obj->description = NULL;
   }
 
@@ -411,32 +408,34 @@ static void jaw_object_set_description (AtkObject *atk_obj, const gchar *descrip
     return;
   }
 
+  jstring jstr = NULL;
+  if (description) {
+    jstr = (*jniEnv)->NewStringUTF(jniEnv, description);
+  }
+
   jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
                                                        "javax/accessibility/AccessibleContext" );
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAccessibleContext,
                                           "setAccessibleDescription",
                                           "(Ljava/lang/String;)");
-  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  (*jniEnv)->CallVoidMethod( jniEnv, ac, jmid, jstr );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   if (description != NULL)
   {
     (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrDescription, description);
     (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrDescription);
-    description = NULL;
+    jaw_obj->jstrDescription = NULL;
+    atk_obj->description = NULL;
   }
 
   if (jstr != NULL)
   {
     jaw_obj->jstrDescription = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
-    description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
-                                                       jaw_obj->jstrDescription,
-                                                       NULL);
-  }
-  if (jstr != NULL)
-  {
-    description = "";
+    atk_obj->description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
+                                                                jaw_obj->jstrDescription,
+                                                                NULL);
   }
 }
 
@@ -580,7 +579,7 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
                                           "()Ljavax/accessibility/AccessibleContext;");
   jobject locale = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  JawImpl *target_obj = jaw_impl_get_instance(jniEnv, locale);
+  JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, locale);
   if(target_obj == NULL)
     return NULL;
 
@@ -655,7 +654,7 @@ jaw_object_ref_relation_set (AtkObject *atk_obj)
                                       "()Ljavax/accessibility/AccessibleContext;");
         jobject target_ac = (*jniEnv)->CallObjectMethod(jniEnv, jtarget, jmid);
 
-        JawImpl *target_obj = jaw_impl_get_instance(jniEnv, target_ac);
+        JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, target_ac);
         if(target_obj == NULL)
           return NULL;
         atk_object_add_relationship(atk_obj, rel_type, ATK_OBJECT(target_obj));
@@ -700,7 +699,7 @@ jaw_object_ref_child(AtkObject *atk_obj, gint i)
                                 "()Ljavax/accessibility/AccessibleContext;" );
   jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
 
-  AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
+  AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
   if (G_OBJECT(obj) != NULL)
     g_object_ref(G_OBJECT(obj));
 

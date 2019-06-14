@@ -88,19 +88,6 @@ public class AtkTable {
 			return null;
 		}, null);
 	}
-	private class SetCaptionRunner implements Runnable {
-        private AccessibleTable acc_table;
-        private Accessible a;
-
-        public SetCaptionRunner (AccessibleTable acc_table, Accessible a) {
-            this.acc_table = acc_table;
-            this.a = a;
-        }
-
-        public void run () {
-            acc_table.setAccessibleCaption(a);
-        }
-    }
 
     /**
      *
@@ -182,26 +169,13 @@ public class AtkTable {
 		}, null);
 	}
 
-	private class SetColumnHeaderRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private AccessibleTable table;
-
-		public SetColumnHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
-			this.acc_table = acc_table;
-			this.table = table;
-		}
-
-		public void run () {
-			acc_table.setAccessibleColumnHeader(table);
-		}
-	}
-
     /**
      *
      * @param column an int representing a column in table
      * @param table an AccessibleTable object
      */
     public void setColumnHeader (int column, AccessibleTable table) {
+	// FIXME: this isn't using column for anything
         AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleColumnHeader(table); });
     }
 
@@ -217,20 +191,6 @@ public class AtkTable {
 		}, null);
 	}
 
-	private class SetRowHeaderRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private AccessibleTable table;
-
-		public SetRowHeaderRunner (AccessibleTable acc_table, AccessibleTable table) {
-			this.acc_table = acc_table;
-			this.table = table;
-		}
-
-		public void run () {
-			acc_table.setAccessibleRowHeader(table);
-		}
-	}
-
     public void setRowHeader (int row, AccessibleTable table) {
         AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleRowHeader(table); });
     }
@@ -244,20 +204,6 @@ public class AtkTable {
 		}, null);
 	}
 
-	private class SetSummaryRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private Accessible a;
-
-		public SetSummaryRunner (AccessibleTable acc_table, Accessible a) {
-			this.acc_table = acc_table;
-			this.a = a;
-		}
-
-		public void run () {
-			acc_table.setAccessibleSummary(a);
-		}
-	}
-
     /**
      *
      * @param a the Accessible object to set summary for
@@ -267,12 +213,12 @@ public class AtkTable {
     }
 
 	public int[] get_selected_columns () {
-		int[] d = new int[1];
+		int[] d = new int[0];
 		return AtkUtil.invokeInSwing ( () -> { return acc_table.getSelectedAccessibleColumns(); }, d);
 	}
 
 	public int[] get_selected_rows () {
-		int[] d = new int[1];
+		int[] d = new int[0];
 		return AtkUtil.invokeInSwing ( () -> { return acc_table.getSelectedAccessibleRows(); }, d);
 	}
 

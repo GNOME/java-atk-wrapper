@@ -85,7 +85,7 @@ static gpointer jni_loop_callback(void *data)
 }
 
 JNIEXPORT jboolean
-JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary()
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
 {
   const gchar* debug_env = g_getenv("JAW_DEBUG");
   if (g_strcmp0(debug_env, "1") == 0) {
@@ -125,14 +125,14 @@ jni_main_idle_add(GSourceFunc    function, gpointer       data)
 }
 
 JNIEXPORT void
-JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge()
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(void)
 {
   // Enable ATK Bridge so we can load it now
   g_unsetenv ("NO_AT_BRIDGE");
 
   GThread *thread;
   GError *err;
-  char * message;
+  const char * message;
   message = "JNI main loop";
   err = NULL;
 
@@ -145,7 +145,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge()
   jni_main_context = g_main_context_new();
   jni_main_loop = g_main_loop_new (jni_main_context, FALSE); /*main loop NOT running*/
   atk_bridge_set_event_context(jni_main_context);
-  thread = g_thread_new(message, jni_loop_callback, (void *) jni_main_loop);
+  thread = g_thread_try_new(message, jni_loop_callback, (void *) jni_main_loop, &err);
   if(thread == NULL)
   {
     if (jaw_debug)
@@ -802,7 +802,7 @@ signal_emit_handler (gpointer p)
       gint curCount = atk_text_get_character_count(ATK_TEXT(jaw_obj));
 
       g_hash_table_insert(jaw_obj->storedData,
-                          "Previous_Count",
+                          (gpointer) "Previous_Count",
                           GINT_TO_POINTER(curCount));
 
       if (curCount > prevCount)
@@ -821,6 +821,8 @@ signal_emit_handler (gpointer p)
       }
       break;
     }
+    case Sig_Text_Property_Changed_Replace:
+      // TODO
     default:
       break;
   }
@@ -868,6 +870,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
     case Sig_Object_Property_Change_Accessible_Table_Row_Description:
     case Sig_Table_Model_Changed:
     case Sig_Text_Property_Changed:
+    default:
       break;
     case Sig_Object_Children_Changed_Add:
     {
@@ -1182,6 +1185,14 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
   key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;
 
   return key_consumed;
+}
+
+JNIEXPORT jlong
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_getInstance(JNIEnv *jniEnv,
+                                                            jclass jClass,
+                                                            jobject ac)
+{
+  return jaw_impl_get_instance(jniEnv, ac);
 }
 
 #ifdef __cplusplus

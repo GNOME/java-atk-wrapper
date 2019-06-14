@@ -27,10 +27,6 @@
 extern "C" {
 #endif
 
-extern void	jaw_value_interface_init (AtkValueIface*);
-extern gpointer	jaw_value_data_init (jobject ac);
-extern void	jaw_value_data_finalize (gpointer);
-
 static void jaw_value_get_current_value(AtkValue *obj, GValue *value);
 static void    jaw_value_set_value(AtkValue *obj, const gdouble value);
 static gdouble jaw_value_get_increment (AtkValue *obj);
@@ -41,7 +37,7 @@ typedef struct _ValueData {
 } ValueData;
 
 void
-jaw_value_interface_init (AtkValueIface *iface)
+jaw_value_interface_init (AtkValueIface *iface, gpointer data)
 {
   iface->get_current_value = jaw_value_get_current_value;
   iface->set_value = jaw_value_set_value;

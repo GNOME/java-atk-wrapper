@@ -23,9 +23,6 @@
 #include <glib.h>
 #include "jawtoplevel.h"
 
-static void jaw_toplevel_class_init(JawToplevelClass *klass);
-static void jaw_toplevel_init(JawToplevel *toplevel);
-
 static void jaw_toplevel_initialize(AtkObject *accessible, gpointer data);
 static void jaw_toplevel_object_finalize(GObject *obj);
 

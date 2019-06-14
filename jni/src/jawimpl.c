@@ -45,46 +45,6 @@ static AtkObject* jaw_impl_get_parent(AtkObject *atk_obj);
 static AtkObject* jaw_impl_ref_child (AtkObject *atk_obj, gint i);
 static AtkRelationSet* jaw_impl_ref_relation_set(AtkObject *atk_obj);
 
-extern void jaw_action_interface_init(AtkActionIface*);
-extern gpointer jaw_action_data_init(jobject);
-extern void jaw_action_data_finalize(gpointer);
-
-extern void jaw_component_interface_init(AtkComponentIface*);
-extern gpointer jaw_component_data_init(jobject);
-extern void jaw_component_data_finalize(gpointer);
-
-extern void jaw_text_interface_init(AtkTextIface*);
-extern gpointer	jaw_text_data_init(jobject);
-extern void jaw_text_data_finalize(gpointer);
-
-extern void jaw_editable_text_interface_init(AtkEditableTextIface*);
-extern gpointer jaw_editable_text_data_init(jobject);
-extern void jaw_editable_text_data_finalize (gpointer);
-
-extern void jaw_hypertext_interface_init(AtkHypertextIface*);
-extern gpointer jaw_hypertext_data_init(jobject);
-extern void jaw_hypertext_data_finalize(gpointer);
-
-extern void jaw_image_interface_init(AtkImageIface*);
-extern gpointer jaw_image_data_init(jobject);
-extern void jaw_image_data_finalize(gpointer);
-
-extern void jaw_selection_interface_init(AtkSelectionIface*);
-extern gpointer jaw_selection_data_init(jobject);
-extern void jaw_selection_data_finalize(gpointer);
-
-extern void jaw_value_interface_init (AtkValueIface*);
-extern gpointer jaw_value_data_init (jobject);
-extern void jaw_value_data_finalize (gpointer);
-
-extern void jaw_table_interface_init (AtkTableIface*);
-extern gpointer jaw_table_data_init (jobject);
-extern void jaw_table_data_finalize (gpointer);
-
-extern void jaw_table_cell_interface_init (AtkTableCellIface*);
-extern gpointer jaw_table_cell_data_init (jobject);
-extern void jaw_table_cell_data_finalize (gpointer);
-
 typedef struct _JawInterfaceInfo {
   void (*finalize) (gpointer);
   gpointer data;
@@ -359,6 +319,15 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 }
 
 JawImpl*
+jaw_impl_get_instance_from_jaw (JNIEnv *jniEnv, jobject ac)
+{
+  jclass classWrapper = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkWrapper");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, classWrapper, "getInstanceFromSwing", "(Ljavax/accessibility/AccessibleContext;)J");
+  jlong ptr = (*jniEnv)->CallStaticObjectMethod(jniEnv, classWrapper, jmid, ac);
+  return ptr;
+}
+
+JawImpl*
 jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 {
   JawImpl *jaw_impl;
@@ -375,7 +344,7 @@ jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 }
 
 static void
-jaw_impl_class_intern_init (gpointer klass)
+jaw_impl_class_intern_init (gpointer klass, gpointer data)
 {
   if (jaw_impl_parent_class == NULL)
   {
@@ -696,7 +665,7 @@ jaw_impl_ref_child (AtkObject *atk_obj, gint i)
                                 "()Ljavax/accessibility/AccessibleContext;" );
   jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
 
-  AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
+  AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
   if (G_OBJECT(obj) != NULL)
     g_object_ref(G_OBJECT(obj));
 
@@ -862,7 +831,7 @@ jaw_impl_ref_relation_set (AtkObject *atk_obj)
                                       "()Ljavax/accessibility/AccessibleContext;");
         jobject target_ac = (*jniEnv)->CallObjectMethod(jniEnv, jtarget, jmid);
 
-        JawImpl *target_obj = jaw_impl_get_instance(jniEnv, target_ac);
+        JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, target_ac);
         if(target_obj == NULL)
           return NULL;
         atk_object_add_relationship(atk_obj, rel_type, (AtkObject*) target_obj);

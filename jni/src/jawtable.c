@@ -23,10 +23,6 @@
 #include "jawimpl.h"
 #include "jawutil.h"
 
-extern void jaw_table_interface_init (AtkTableIface*);
-extern gpointer jaw_table_data_init (jobject ac);
-extern void jaw_table_data_finalize (gpointer);
-
 static AtkObject*   jaw_table_ref_at(AtkTable *table, gint row, gint column);
 static gint         jaw_table_get_column_at_index(AtkTable *table, gint index);
 static gint         jaw_table_get_row_at_index(AtkTable *table, gint index);
@@ -65,7 +61,7 @@ typedef struct _TableData {
 } TableData;
 
 void
-jaw_table_interface_init (AtkTableIface *iface)
+jaw_table_interface_init (AtkTableIface *iface, gpointer data)
 {
   iface->ref_at = jaw_table_ref_at;
   iface->get_column_at_index = jaw_table_get_column_at_index;
@@ -156,7 +152,7 @@ jaw_table_ref_at (AtkTable *table, gint	row, gint column)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   if (G_OBJECT(jaw_impl) != NULL)
     g_object_ref(G_OBJECT(jaw_impl));
@@ -301,7 +297,7 @@ jaw_table_get_caption (AtkTable	*table)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -381,7 +377,7 @@ jaw_table_get_column_header (AtkTable *table, gint column)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -405,7 +401,7 @@ jaw_table_get_row_header (AtkTable *table, gint row)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -429,7 +425,7 @@ jaw_table_get_summary (AtkTable *table)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }

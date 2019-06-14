@@ -23,10 +23,6 @@
 #include "jawutil.h"
 #include "jawhyperlink.h"
 
-extern void	jaw_hypertext_interface_init	(AtkHypertextIface*);
-extern gpointer	jaw_hypertext_data_init		(jobject);
-extern void	jaw_hypertext_data_finalize	(gpointer);
-
 static AtkHyperlink* 		jaw_hypertext_get_link		(AtkHypertext *hypertext,
 								 gint link_index);
 static gint			jaw_hypertext_get_n_links	(AtkHypertext *hypertext);
@@ -39,7 +35,7 @@ typedef struct _HypertextData {
 } HypertextData;
 
 void
-jaw_hypertext_interface_init (AtkHypertextIface *iface)
+jaw_hypertext_interface_init (AtkHypertextIface *iface, gpointer data)
 {
 	iface->get_link = jaw_hypertext_get_link;
 	iface->get_n_links = jaw_hypertext_get_n_links;
