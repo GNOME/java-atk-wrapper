@@ -52,6 +52,16 @@ public class AtkUtil{
     *       corresponding object
     */
     public static <T> T invokeInSwing (Callable <T> function, T d){
+        if (SwingUtilities.isEventDispatchThread()) {
+          // We are already running in the EDT, we can call it directly
+          try {
+            return function.call();
+          } catch (Exception ex) {
+            ex.printStackTrace(); // we can do better than this
+            return d;
+          }
+        }
+
         RunnableFuture<T> wf = new FutureTask<>(function);
         SwingUtilities.invokeLater(wf);
         try {
@@ -70,6 +80,12 @@ public class AtkUtil{
     * @param function A Runnable object that doesn't return some value
     */
     public static void invokeInSwing (Runnable function){
+        if (SwingUtilities.isEventDispatchThread()) {
+          // We are already running in the EDT, we can call it directly
+          function.run();
+          return;
+        }
+
         SwingUtilities.invokeLater(function);
     }
 
