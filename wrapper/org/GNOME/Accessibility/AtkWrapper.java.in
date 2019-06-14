@@ -674,6 +674,7 @@ public class AtkWrapper {
   public native static void componentRemoved(AccessibleContext ac);
   public native static void boundsChanged(AccessibleContext ac);
   public native static boolean dispatchKeyEvent(AtkKeyEvent e);
+  public native static long getInstance(AccessibleContext ac);
 
   public static void printLog(String str) {
     System.out.println(str);
@@ -716,6 +717,10 @@ public class AtkWrapper {
         super.dispatchEvent(e);
       }
     });
+  }
+
+  public static long getInstanceFromSwing(AccessibleContext ac) {
+    return AtkUtil.invokeInSwing( () -> { return getInstance(ac); }, 0l);
   }
 
   public static void main(String args[]) {

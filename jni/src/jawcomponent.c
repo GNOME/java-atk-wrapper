@@ -160,7 +160,7 @@ jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, 
                                                  (jint)coord_type);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( jniEnv, child_ac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
 
   g_object_ref( G_OBJECT(jaw_impl) );
 

@@ -1187,6 +1187,14 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
   return key_consumed;
 }
 
+JNIEXPORT jlong
+JNICALL Java_org_GNOME_Accessibility_AtkWrapper_getInstance(JNIEnv *jniEnv,
+                                                            jclass jClass,
+                                                            jobject ac)
+{
+  return jaw_impl_get_instance(jniEnv, ac);
+}
+
 #ifdef __cplusplus
 }
 #endif

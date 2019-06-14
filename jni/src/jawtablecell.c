@@ -106,7 +106,7 @@ jaw_table_cell_get_table(AtkTableCell *cell)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, jac);
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw(jniEnv, jac);
 
   return ATK_OBJECT(jaw_impl);
 }

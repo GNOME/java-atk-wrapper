@@ -145,7 +145,7 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
 	jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessible, "getAccessibleContext", "()Ljavax/accessibility/AccessibleContext;" );
 	jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
 
-	AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
+	AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
 	g_object_ref (G_OBJECT(obj));
 
 	return obj;

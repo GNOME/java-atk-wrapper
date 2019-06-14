@@ -138,7 +138,7 @@ jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
 	jmid = (*jniEnv)->GetMethodID( jniEnv, classAccessible, "getAccessibleContext", "()Ljavax/accessibility/AccessibleContext;" );
 	jobject ac = (*jniEnv)->CallObjectMethod( jniEnv, jobj, jmid );
 
-	AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, ac );
+	AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, ac );
 
 	return obj;
 }

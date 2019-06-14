@@ -51,6 +51,7 @@ struct _JawImpl
 };
 
 JawImpl* jaw_impl_get_instance(JNIEnv*, jobject);
+JawImpl* jaw_impl_get_instance_from_jaw(JNIEnv*, jobject);
 JawImpl* jaw_impl_find_instance(JNIEnv*, jobject);
 GHashTable* jaw_impl_get_object_hash_table(void);
 GMutex* jaw_impl_get_object_hash_table_mutex(void);

@@ -579,7 +579,7 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
                                           "()Ljavax/accessibility/AccessibleContext;");
   jobject locale = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  JawImpl *target_obj = jaw_impl_get_instance(jniEnv, locale);
+  JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, locale);
   if(target_obj == NULL)
     return NULL;
 
@@ -654,7 +654,7 @@ jaw_object_ref_relation_set (AtkObject *atk_obj)
                                       "()Ljavax/accessibility/AccessibleContext;");
         jobject target_ac = (*jniEnv)->CallObjectMethod(jniEnv, jtarget, jmid);
 
-        JawImpl *target_obj = jaw_impl_get_instance(jniEnv, target_ac);
+        JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, target_ac);
         if(target_obj == NULL)
           return NULL;
         atk_object_add_relationship(atk_obj, rel_type, ATK_OBJECT(target_obj));
@@ -699,7 +699,7 @@ jaw_object_ref_child(AtkObject *atk_obj, gint i)
                                 "()Ljavax/accessibility/AccessibleContext;" );
   jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
 
-  AtkObject *obj = (AtkObject*) jaw_impl_get_instance( jniEnv, child_ac );
+  AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
   if (G_OBJECT(obj) != NULL)
     g_object_ref(G_OBJECT(obj));
 

@@ -152,7 +152,7 @@ jaw_table_ref_at (AtkTable *table, gint	row, gint column)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   if (G_OBJECT(jaw_impl) != NULL)
     g_object_ref(G_OBJECT(jaw_impl));
@@ -297,7 +297,7 @@ jaw_table_get_caption (AtkTable	*table)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -377,7 +377,7 @@ jaw_table_get_column_header (AtkTable *table, gint column)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -401,7 +401,7 @@ jaw_table_get_row_header (AtkTable *table, gint row)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -425,7 +425,7 @@ jaw_table_get_summary (AtkTable *table)
   if (!jac)
     return NULL;
 
-  JawImpl* jaw_impl = jaw_impl_get_instance( env, jac );
+  JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
 
   return ATK_OBJECT(jaw_impl);
 }
