@@ -48,8 +48,8 @@ public class AtkSelection {
 		return true;
 	}
 
-	public Accessible ref_selection (int i) {
-		return AtkUtil.invokeInSwing ( () -> { return acc_selection.getAccessibleSelection(i); }, null);
+	public AccessibleContext ref_selection (int i) {
+		return AtkUtil.invokeInSwing ( () -> { return acc_selection.getAccessibleSelection(i).getAccessibleContext(); }, null);
 	}
 
 	public int get_selection_count () {
