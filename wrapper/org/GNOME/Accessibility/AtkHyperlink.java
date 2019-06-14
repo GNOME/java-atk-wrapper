@@ -43,7 +43,7 @@ public class AtkHyperlink {
 		}, "");
 	}
 
-	public Object get_object (int i) {
+	public AccessibleContext get_object (int i) {
 		return AtkUtil.invokeInSwing ( () -> {
 			Object anchor = acc_hyperlink.getAccessibleActionAnchor(i);
 			if (anchor instanceof Accessible)
