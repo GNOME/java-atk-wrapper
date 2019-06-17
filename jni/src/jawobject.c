@@ -48,6 +48,7 @@ static AtkObject* jaw_object_get_parent(AtkObject *obj);
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
 static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
+static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
 static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj);
 static AtkRelationSet *jaw_object_ref_relation_set (AtkObject *atk_obj);
 static AtkObject *jaw_object_ref_child(AtkObject *atk_obj, gint i);
@@ -104,6 +105,7 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_role = jaw_object_get_role;
   atk_class->get_parent = jaw_object_get_parent;
   atk_class->set_parent = jaw_object_set_parent;
+  atk_class->set_role = jaw_object_set_role;
   atk_class->get_object_locale = jaw_object_get_object_locale;
   atk_class->ref_relation_set = jaw_object_ref_relation_set;
   atk_class->ref_child = jaw_object_ref_child;
