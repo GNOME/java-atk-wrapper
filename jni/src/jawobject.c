@@ -711,13 +711,9 @@ jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
 {
   GHashTable *object_table = jaw_impl_get_object_hash_table();
   GMutex *object_table_mutex = jaw_impl_get_object_hash_table_mutex();
-  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "hashCode",
-                                          "()I" );
-  gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
+  gint hash_key = (gint)(*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
   gpointer value = NULL;
   if (object_table == NULL)
     return NULL;
@@ -731,4 +727,3 @@ jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
 #ifdef __cplusplus
 }
 #endif
-

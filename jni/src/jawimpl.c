@@ -58,13 +58,9 @@ static gboolean jaw_debug = FALSE;
 static void
 object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
 {
-  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
-                                                       "javax/accessibility/AccessibleContext");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "hashCode",
-                                          "()I");
-  jaw_impl->hash_key = (gint)(*jniEnv)->CallIntMethod(jniEnv, ac, jmid);
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv,"org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
+  jaw_impl->hash_key = (gint)(*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
   g_mutex_lock(&objectTableMutex);
   g_hash_table_insert(objectTable, GINT_TO_POINTER(jaw_impl->hash_key), jaw_impl);
   g_mutex_unlock(&objectTableMutex);
@@ -73,21 +69,16 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
 static JawImpl*
 object_table_lookup (JNIEnv *jniEnv, jobject ac)
 {
-  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "hashCode",
-                                          "()I" );
-  gint hash_key = (gint)(*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv,"org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
+  gint hash_key = (gint)(*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
   gpointer value = NULL;
   g_mutex_lock(&objectTableMutex);
   if (objectTable==NULL)
   {
-    return NULL;
     g_mutex_unlock(&objectTableMutex);
+    return NULL;
   }
-
   value = g_hash_table_lookup(objectTable, GINT_TO_POINTER(hash_key));
   g_mutex_unlock(&objectTableMutex);
   return (JawImpl*)value;
