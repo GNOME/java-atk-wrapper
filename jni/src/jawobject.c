@@ -436,10 +436,9 @@ jaw_object_get_role (AtkObject *atk_obj)
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return 0;
-  }
-  atk_obj->role = jaw_util_get_atk_role_from_jobj(ac);
+  if (!ac)
+    return ATK_ROLE_INVALID;
+  atk_obj->role = jaw_util_get_atk_role_from_AccessibleContext(ac);
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
   return atk_obj->role;
 }

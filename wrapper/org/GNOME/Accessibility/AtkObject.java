@@ -71,6 +71,15 @@ public class AtkObject{
         return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleIndexInParent(); }, -1);
     }
 
+    public static AccessibleRole getAccessibleRole(AccessibleContext ac){
+        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleRole(); }, AccessibleRole.UNKNOWN);
+    }
+
+    public static boolean equalsIgnoreCaseLocaleWithRole(AccessibleRole role){
+        String displayString = role.toDisplayString(Locale.US);
+        return displayString.equalsIgnoreCase("paragraph");
+    }
+
     public static int hashCode(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
     }
