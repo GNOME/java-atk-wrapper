@@ -94,6 +94,16 @@ public class AtkObject{
         return AtkUtil.invokeInSwing( () -> { return ac.getLocale(); }, null);
     }
 
+    public static AccessibleContext getAccessibleChild(AccessibleContext ac, int i){
+        return AtkUtil.invokeInSwing( () -> {
+            Accessible child = ac.getAccessibleChild(i);
+            if (child == null)
+                return null;
+            else
+                return child.getAccessibleContext();
+        }, null);
+    }
+
     public static int hashCode(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
     }

@@ -607,25 +607,10 @@ jaw_object_ref_child(AtkObject *atk_obj, gint i)
     return NULL;
   }
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleChild",
-                                          "(I)Ljavax/accessibility/Accessible;" );
-  jobject jchild = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid, i );
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleChild", "(Ljavax/accessibility/AccessibleContext;I)Ljavax/accessibility/AccessibleContext;" );
+  jobject child_ac = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac, i);
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  if (jchild == NULL)
-  {
-    return NULL;
-  }
-
-  jclass classAccessible = (*jniEnv)->FindClass( jniEnv, "javax/accessibility/Accessible" );
-  jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                classAccessible,
-                                "getAccessibleContext",
-                                "()Ljavax/accessibility/AccessibleContext;" );
-  jobject child_ac = (*jniEnv)->CallObjectMethod( jniEnv, jchild, jmid );
 
   AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
   if (G_OBJECT(obj) != NULL)
