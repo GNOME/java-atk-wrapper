@@ -466,25 +466,14 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
   if (!ac) {
     return NULL;
   }
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleStateSet",
-                                          "()Ljavax/accessibility/AccessibleStateSet;" );
-  jobject jstate_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getArrayAccessibleState", "(Ljavax/accessibility/AccessibleContext;)[Ljavax/accessibility/AccessibleState;");
+  jobject jstate_arr = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
+
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  if (jstate_set == NULL)
+  if (jstate_arr == NULL)
     return NULL;
-
-  jclass classAccessibleStateSet = (*jniEnv)->FindClass(jniEnv,
-                                                        "javax/accessibility/AccessibleStateSet" );
-  jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                classAccessibleStateSet,
-                                "toArray",
-                                "()[Ljavax/accessibility/AccessibleState;");
-
-  jobjectArray jstate_arr = (*jniEnv)->CallObjectMethod( jniEnv, jstate_set, jmid );
 
   jsize jarr_size = (*jniEnv)->GetArrayLength(jniEnv, jstate_arr);
   jsize i;
@@ -499,8 +488,7 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
     }
   }
 
-  if (G_OBJECT(state_set) != NULL)
-    g_object_ref(G_OBJECT(state_set));
+  g_object_ref(G_OBJECT(state_set));
 
   return state_set;
 }

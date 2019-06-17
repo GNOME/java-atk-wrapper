@@ -80,6 +80,16 @@ public class AtkObject{
         return displayString.equalsIgnoreCase("paragraph");
     }
 
+    public static AccessibleState[] getArrayAccessibleState(AccessibleContext ac){
+        return AtkUtil.invokeInSwing( () -> {
+            AccessibleStateSet stateSet = ac.getAccessibleStateSet();
+            if (stateSet == null)
+                return null;
+            else
+                return stateSet.toArray();
+        }, null);
+    }
+
     public static int hashCode(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
     }
