@@ -48,7 +48,6 @@ static AtkObject* jaw_object_get_parent(AtkObject *obj);
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name);
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description);
 static void jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent);
-static void jaw_object_set_role (AtkObject *atk_obj, AtkRole role);
 static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj);
 static AtkRelationSet *jaw_object_ref_relation_set (AtkObject *atk_obj);
 static AtkObject *jaw_object_ref_child(AtkObject *atk_obj, gint i);
@@ -105,7 +104,6 @@ jaw_object_class_init (JawObjectClass *klass)
   atk_class->get_role = jaw_object_get_role;
   atk_class->get_parent = jaw_object_get_parent;
   atk_class->set_parent = jaw_object_set_parent;
-  atk_class->set_role = jaw_object_set_role;
   atk_class->get_object_locale = jaw_object_get_object_locale;
   atk_class->ref_relation_set = jaw_object_ref_relation_set;
   atk_class->ref_child = jaw_object_ref_child;
@@ -433,22 +431,25 @@ jaw_object_get_index_in_parent (AtkObject *atk_obj)
 static AtkRole
 jaw_object_get_role (AtkObject *atk_obj)
 {
+  if (atk_obj->role != ATK_ROLE_INVALID
+   && atk_obj->role != ATK_ROLE_UNKNOWN) {
+    return atk_obj->role;
+  }
+
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
   if (!ac)
     return ATK_ROLE_INVALID;
-  atk_obj->role = jaw_util_get_atk_role_from_AccessibleContext(ac);
+  AtkRole role = jaw_util_get_atk_role_from_AccessibleContext(ac);
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  return atk_obj->role;
+  return role;
 }
 
 static void
 jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
 {
   atk_obj->role = role;
-  if (atk_obj != NULL && atk_obj->role)
-    atk_object_set_role(atk_obj, atk_obj->role);
 }
 
 static AtkStateSet*
