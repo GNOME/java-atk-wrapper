@@ -323,30 +323,11 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
     jstr = (*jniEnv)->NewStringUTF(jniEnv, name);
   }
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "setAccessibleName",
-                                          "(Ljava/lang/String;)");
-  (*jniEnv)->CallVoidMethod( jniEnv, ac, jmid, jstr );
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "setAccessibleName", "(Ljavax/accessibility/AccessibleContext;Ljava/lang/String;)V");
+  (*jniEnv)->CallStaticVoidMethod (jniEnv, atkObject, jmid, ac, jstr);
+
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-
-  if (atk_obj->name != NULL)
-  {
-    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrName, atk_obj->name);
-    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrName);
-    jaw_obj->jstrName = NULL;
-    atk_obj->name = NULL;
-  }
-
-  if (jstr != NULL)
-  {
-    jaw_obj->jstrName = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
-    atk_obj->name = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
-                                                         jaw_obj->jstrName,
-                                                         NULL);
-  }
 }
 
 static const gchar*
