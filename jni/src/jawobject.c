@@ -212,9 +212,13 @@ jaw_object_get_parent(AtkObject *atk_obj)
   jobject jparent = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
   (*jniEnv)->DeleteGlobalRef (jniEnv, ac);
 
-  AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup (jniEnv, jparent);
-  if (parent_obj != NULL )
-    return parent_obj;
+  if (jparent != NULL)
+  {
+    AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup (jniEnv, jparent);
+
+    if (parent_obj != NULL )
+      return parent_obj;
+  }
 
   // FIXME: Should we rather return null?
   return ATK_OBJECT(atk_get_root());
