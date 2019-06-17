@@ -421,13 +421,10 @@ jaw_object_get_index_in_parent (AtkObject *atk_obj)
     return 0;
   }
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleIndexInParent",
-                                          "()I");
-  jint index = (*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleIndexInParent", "(Ljavax/accessibility/AccessibleContext;)I");
+  jint index = (*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
+
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   return (gint)index;
