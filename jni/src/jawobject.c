@@ -214,7 +214,7 @@ static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAccessibleContext,
                                           "getAccessibleParent",
-                                          "()Ljavax/accessibility/AccessibleContext;");
+                                          "()Ljavax/accessibility/Accessible;");
   jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
   if (jparent != NULL )
