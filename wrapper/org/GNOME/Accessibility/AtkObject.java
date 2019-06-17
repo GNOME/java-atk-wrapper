@@ -90,6 +90,10 @@ public class AtkObject{
         }, null);
     }
 
+    public static Locale getLocale(AccessibleContext ac){
+        return AtkUtil.invokeInSwing( () -> { return ac.getLocale(); }, null);
+    }
+
     public static int hashCode(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
     }
