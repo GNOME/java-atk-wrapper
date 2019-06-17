@@ -47,6 +47,10 @@ public class AtkObject{
         }, null);
     }
 
+    public static void setAccessibleParent(AccessibleContext ac, Accessible father){
+        AtkUtil.invokeInSwing( () -> { ac.setAccessibleParent(father); } );
+    }
+
     public static String getAccessibleName(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleName(); }, "");
     }
