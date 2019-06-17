@@ -397,13 +397,10 @@ jaw_object_get_n_children (AtkObject *atk_obj)
     return 0;
   }
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleChildrenCount",
-                                          "()I");
-  jint count = (*jniEnv)->CallIntMethod( jniEnv, ac, jmid );
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleChildrenCount", "(Ljavax/accessibility/AccessibleContext;)I");
+  jint count = (*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
+
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   return (gint)count;

@@ -63,6 +63,10 @@ public class AtkObject{
         AtkUtil.invokeInSwing( () -> { ac.setAccessibleDescription(description); } );
     }
 
+    public static int getAccessibleChildrenCount(AccessibleContext ac){
+        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleChildrenCount(); }, 0);
+    }
+
     public static int hashCode(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
     }
