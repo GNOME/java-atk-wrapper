@@ -55,6 +55,10 @@ public class AtkObject{
         AtkUtil.invokeInSwing( () -> { ac.setAccessibleName(name); } );
     }
 
+    public static String getAccessibleDescription(AccessibleContext ac){
+        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleDescription(); }, "");
+    }
+
     public static int hashCode(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
     }

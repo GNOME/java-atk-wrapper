@@ -340,13 +340,10 @@ jaw_object_get_description (AtkObject *atk_obj)
     return NULL;
   }
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass( jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleDescription",
-                                          "()Ljava/lang/String;");
-  jstring jstr = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  jclass atkObject = (*jniEnv)->FindClass ( jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleDescription", "(Ljavax/accessibility/AccessibleContext;)Ljava/lang/String;");
+  jstring jstr = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
+
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
   if (atk_obj->description != NULL)
