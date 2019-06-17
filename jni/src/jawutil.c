@@ -327,7 +327,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserve)
   return JNI_VERSION_1_6;
 }
 
-JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserve) {
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserve)
+{
+  g_warning("JNI_OnUnload() called but this is not supported yet\n");
 }
 
 JNIEnv*
