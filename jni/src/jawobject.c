@@ -195,41 +195,28 @@ jaw_object_finalize (GObject *gobject)
   }
 }
 
-static AtkObject* jaw_object_get_parent(AtkObject *atk_obj)
+static AtkObject*
+jaw_object_get_parent(AtkObject *atk_obj)
 {
   if (jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj) != -1)
-  {
     return ATK_OBJECT(atk_get_root());
-  }
 
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
+  if (!ac)
     return NULL;
-  }
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleParent",
-                                          "()Ljavax/accessibility/Accessible;");
-  jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  if (jparent != NULL )
-  {
-    jclass classAccessible = (*jniEnv)->FindClass(jniEnv,
-                                                  "javax/accessibility/Accessible" );
-    jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                  classAccessible,
-                                  "getAccessibleContext",
-                                  "()Ljavax/accessibility/AccessibleContext;");
-    jobject parent_ac = (*jniEnv)->CallObjectMethod(jniEnv, jparent, jmid);
-    AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup( jniEnv, parent_ac );
-    if (parent_obj != NULL )
-       return parent_obj;
-  }
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv,"org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleParent", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleContext;");
+  jobject jparent = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
+  (*jniEnv)->DeleteGlobalRef (jniEnv, ac);
+
+  AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup (jniEnv, jparent);
+  if (parent_obj != NULL )
+    return parent_obj;
+
+  // FIXME: Should we rather return null?
   return ATK_OBJECT(atk_get_root());
 }
 

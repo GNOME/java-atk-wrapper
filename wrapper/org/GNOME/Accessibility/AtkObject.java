@@ -37,6 +37,16 @@ import java.util.Locale;
 */
 public class AtkObject{
 
+    public static AccessibleContext getAccessibleParent(AccessibleContext ac){
+        return AtkUtil.invokeInSwing( () -> {
+            Accessible father = ac.getAccessibleParent();
+            if (father != null)
+                return father.getAccessibleContext();
+            else
+                return null;
+        }, null);
+    }
+
     public static int hashCode(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
     }
