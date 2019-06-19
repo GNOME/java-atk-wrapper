@@ -37,6 +37,60 @@ import java.util.Locale;
 */
 public class AtkObject{
 
+    public static final int INTERFACE_ACTION = 0x00000001;
+    public static final int INTERFACE_COMPONENT = 0x00000002;
+    public static final int INTERFACE_DOCUMENT = 0x00000004;
+    public static final int INTERFACE_EDITABLE_TEXT = 0x00000008;
+    public static final int INTERFACE_HYPERLINK = 0x00000010;
+    public static final int INTERFACE_HYPERTEXT = 0x00000020;
+    public static final int INTERFACE_IMAGE = 0x00000040;
+    public static final int INTERFACE_SELECTION = 0x00000080;
+    public static final int INTERFACE_STREAMABLE_CONTENT = 0x00000100;
+    public static final int INTERFACE_TABLE = 0x00000200;
+    public static final int INTERFACE_TABLE_CELL = 0x00000400;
+    public static final int INTERFACE_TEXT = 0x00000800;
+    public static final int INTERFACE_VALUE = 0x00001000;
+
+    public static int getTFlagFromObj(Object o){
+      return AtkUtil.invokeInSwing( () -> {
+        int flags = 0;
+        AccessibleContext ac;
+
+        if (o instanceof AccessibleContext)
+            ac = (AccessibleContext) o;
+        else if (o instanceof Accessible)
+            ac = ( (Accessible) o).getAccessibleContext();
+        else
+            return flags;
+
+        if (ac.getAccessibleAction() != null)
+            flags |= AtkObject.INTERFACE_ACTION;
+        if (ac.getAccessibleComponent() != null)
+            flags |= AtkObject.INTERFACE_COMPONENT;
+        AccessibleText text = ac.getAccessibleText();
+        if (text != null){
+            flags |= AtkObject.INTERFACE_TEXT;
+            if (text instanceof AccessibleHypertext)
+                flags |= AtkObject.INTERFACE_HYPERTEXT;
+	    if (ac.getAccessibleEditableText() != null)
+		flags |= AtkObject.INTERFACE_EDITABLE_TEXT;
+        }
+        if (ac.getAccessibleIcon() != null)
+            flags |= AtkObject.INTERFACE_IMAGE;
+        if (ac.getAccessibleSelection() != null)
+            flags |= AtkObject.INTERFACE_SELECTION;
+        AccessibleTable table = ac.getAccessibleTable();
+        if (table != null){
+            flags |= AtkObject.INTERFACE_TABLE;
+            if (table instanceof AccessibleExtendedTable)
+                flags |= AtkObject.INTERFACE_TABLE_CELL;
+        }
+        if (ac.getAccessibleValue() != null)
+            flags |= AtkObject.INTERFACE_VALUE;
+        return flags;
+      }, 0);
+    }
+
     public static AccessibleContext getAccessibleParent(AccessibleContext ac){
         return AtkUtil.invokeInSwing( () -> {
             Accessible father = ac.getAccessibleParent();
