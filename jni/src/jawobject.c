@@ -503,7 +503,7 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
   }
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
-  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getLocale", "(javax/accessibility/AccessibleContext;)Ljavax/accessibility/Locale;");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getLocale", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/Locale;");
   jobject locale = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
 
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
