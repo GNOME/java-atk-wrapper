@@ -234,28 +234,18 @@ jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
   if (!ac) {
     return;
   }
-
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "setAccessibleParent",
-                                          "(Ljavax/accessibility/AccessibleContext;)");
-  jobject jparent = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
-  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  if (jparent != NULL )
-  {
-    jclass classAccessible = (*jniEnv)->FindClass(jniEnv,
-                                                  "javax/accessibility/Accessible" );
-    jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                  classAccessible,
-                                  "getAccessibleContext",
-                                  "()Ljavax/accessibility/AccessibleContext;");
-    jobject parent_ac = (*jniEnv)->CallObjectMethod(jniEnv, jparent, jmid);
-    AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup( jniEnv, parent_ac );
-    if (parent_obj == NULL)
+  JawObject *jaw_par = JAW_OBJECT(parent);
+  jobject pa = (*jniEnv)->NewGlobalRef(jniEnv, jaw_par->acc_context);
+  if (!pa) {
       return;
   }
+
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "setAccessibleParent", "(Ljavax/accessibility/AccessibleContext;Ljavax/accessibility/AccessibleContext;)V");
+  (*jniEnv)->CallStaticVoidMethod (jniEnv, atkObject, jmid, ac, pa);
+  //FIXME do we need to emit the signal 'children-changed::add'?
+  (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, pa);
 }
 
 static const gchar*
