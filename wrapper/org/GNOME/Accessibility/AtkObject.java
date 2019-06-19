@@ -103,6 +103,42 @@ public class AtkObject{
         return AtkUtil.invokeInSwing( () -> { return ac.getLocale(); }, null);
     }
 
+    public static class WrapKeyAndTarget{
+        private String key;
+        private AccessibleContext[] relations;
+
+        public WrapKeyAndTarget(String key, AccessibleContext[] relations){
+            this.key = key;
+            this.relations = relations;
+        }
+    }
+
+    public static WrapKeyAndTarget[] getArrayAccessibleRelation(AccessibleContext ac){
+        WrapKeyAndTarget[] d = new WrapKeyAndTarget[0];
+        return AtkUtil.invokeInSwing( () -> {
+            AccessibleRelationSet relationSet = ac.getAccessibleRelationSet();
+            if (relationSet == null)
+                return d;
+            else {
+                AccessibleRelation[] array = relationSet.toArray();
+                WrapKeyAndTarget[] result = new WrapKeyAndTarget[array.length];
+                for(int i = 0; i < array.length; i++) {
+                    String key = array[i].getKey();
+                    Object[] objs = array[i].getTarget();
+                    AccessibleContext[] contexts = new AccessibleContext[objs.length];
+                    for(int j = 0; j < objs.length; j++) {
+                        if (objs[i] instanceof Accessible)
+                            contexts[i] = ( (Accessible) objs[i]).getAccessibleContext();
+                        else
+                            contexts[i] = null;
+                    }
+                    result[i] = new WrapKeyAndTarget(key, contexts);
+                }
+                return result;
+            }
+        }, d);
+    }
+
     public static AccessibleContext getAccessibleChild(AccessibleContext ac, int i){
         return AtkUtil.invokeInSwing( () -> {
             Accessible child = ac.getAccessibleChild(i);

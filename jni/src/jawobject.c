@@ -521,65 +521,37 @@ jaw_object_ref_relation_set (AtkObject *atk_obj)
     return NULL;
   }
 
-  jclass classAccessibleContext = (*jniEnv)->FindClass(jniEnv,
-                                                       "javax/accessibility/AccessibleContext" );
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAccessibleContext,
-                                          "getAccessibleRelationSet",
-                                          "()Ljavax/accessibility/AccessibleRelationSet;" );
-  jobject jrel_set = (*jniEnv)->CallObjectMethod( jniEnv, ac, jmid );
+  jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getArrayAccessibleRelation", "(Ljavax/accessibility/AccessibleContext;)[Lorg/GNOME/Accessibility/AtkObject$WrapKeyAndTarget;");
+  jobject jwrap_key_target_arr = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 
-  jclass classAccessibleRelationSet = (*jniEnv)->FindClass( jniEnv,
-                                                           "javax/accessibility/AccessibleRelationSet");
-  jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                classAccessibleRelationSet,
-                                "toArray",
-                                "()[Ljavax/accessibility/AccessibleRelation;");
-  jobjectArray jrel_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel_set, jmid);
-  jsize jarr_size = (*jniEnv)->GetArrayLength(jniEnv, jrel_arr);
+  jsize jarr_size = (*jniEnv)->GetArrayLength(jniEnv, jwrap_key_target_arr);
+  jclass wrapKeyTarget = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject$WrapKeyAndTarget");
+  jfieldID fIdRelations = (*jniEnv)->GetFieldID (jniEnv, wrapKeyTarget, "relations", "[Ljavax/accessibility/AccessibleContext;");
+  jfieldID fIdKey = (*jniEnv)->GetFieldID (jniEnv, wrapKeyTarget, "key", "Ljava/lang/String;");
 
   jsize i;
   for (i = 0; i < jarr_size; i++)
   {
-    jobject jrel = (*jniEnv)->GetObjectArrayElement(jniEnv, jrel_arr, i);
-    jclass classAccessibleRelation = (*jniEnv)->FindClass(jniEnv,
-                                                          "javax/accessibility/AccessibleRelation");
-    jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                  classAccessibleRelation,
-                                  "getKey",
-                                  "()Ljava/lang/String;");
-    jstring jrel_key = (*jniEnv)->CallObjectMethod( jniEnv, jrel, jmid );
-    AtkRelationType rel_type = jaw_impl_get_atk_relation_type(jniEnv, jrel_key);
-
-    jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                  classAccessibleRelation,
-                                  "getTarget",
-                                  "()[Ljava/lang/Object;");
-    jobjectArray jtarget_arr = (*jniEnv)->CallObjectMethod(jniEnv, jrel, jmid);
-    jsize jtarget_size = (*jniEnv)->GetArrayLength(jniEnv, jtarget_arr);
+    jobject jwrap_key_target = (*jniEnv)->GetObjectArrayElement (jniEnv, jwrap_key_target_arr, i);
+    jstring jrel_key = (*jniEnv)->GetObjectField (jniEnv, jwrap_key_target, fIdKey);
+    AtkRelationType rel_type = jaw_impl_get_atk_relation_type (jniEnv, jrel_key);
+    jobjectArray jtarget_arr = (*jniEnv)->GetObjectField (jniEnv, jwrap_key_target, fIdRelations);
+    jsize jtarget_size = (*jniEnv)->GetArrayLength (jniEnv, jtarget_arr);
 
     jsize j;
     for (j = 0; j < jtarget_size; j++)
     {
       jobject jtarget = (*jniEnv)->GetObjectArrayElement(jniEnv, jtarget_arr, j);
-      jclass classAccessible = (*jniEnv)->FindClass( jniEnv,
-                                                    "javax/accessibility/Accessible");
-      if ((*jniEnv)->IsInstanceOf(jniEnv, jtarget, classAccessible))
-      {
-        jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                      classAccessible,
-                                      "getAccessibleContext",
-                                      "()Ljavax/accessibility/AccessibleContext;");
-        jobject target_ac = (*jniEnv)->CallObjectMethod(jniEnv, jtarget, jmid);
-
-        JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, target_ac);
-        if(target_obj == NULL)
-          return NULL;
-        atk_object_add_relationship(atk_obj, rel_type, ATK_OBJECT(target_obj));
-      }
+      JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, jtarget);
+      if(target_obj == NULL)
+	g_warning("jaw_object_ref_relation_set: target_obj == NULL occurs\n");
+      else
+	atk_object_add_relationship(atk_obj, rel_type, ATK_OBJECT(target_obj));
     }
   }
+
   if(atk_obj->relation_set == NULL)
     return NULL;
   if (G_OBJECT(atk_obj->relation_set) != NULL)
