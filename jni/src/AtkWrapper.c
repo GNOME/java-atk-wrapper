@@ -1192,6 +1192,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_getInstance(JNIEnv *jniEnv,
                                                             jclass jClass,
                                                             jobject ac)
 {
+  if (!ac)
+    return NULL;
+
   return jaw_impl_get_instance(jniEnv, ac);
 }
 

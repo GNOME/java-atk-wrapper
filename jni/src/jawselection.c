@@ -142,7 +142,8 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
 	}
 
 	AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, child_ac );
-	g_object_ref (G_OBJECT(obj));
+	if (obj)
+	  g_object_ref (G_OBJECT(obj));
 
 	return obj;
 }
