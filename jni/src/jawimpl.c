@@ -100,6 +100,8 @@ object_table_gc(JNIEnv *jniEnv)
   gpointer key, value;
   GSList *list = NULL, *cur, *next;
 
+  unsigned count[2*INTERFACE_VALUE] = { 0, };
+
   g_mutex_lock(&objectTableMutex);
   if (objectTable)
   {
@@ -112,9 +114,20 @@ object_table_gc(JNIEnv *jniEnv)
 	/* Got garbage-collected, mark for dropping */
 	list = g_slist_prepend(list, jaw_impl);
       }
+      else
+      {
+	count[jaw_impl->tflag]++;
+      }
     }
   }
   g_mutex_unlock(&objectTableMutex);
+
+  unsigned i;
+  for (i = 0; i < 2*INTERFACE_VALUE; i++) {
+    if (count[i] != 0) {
+      fprintf(stderr,"%x: %d\n", i, count[i]);
+    }
+  }
 
   for (cur = list; cur != NULL; cur = next)
   {
@@ -141,6 +154,7 @@ static void
 aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
 {
   JawImpl *jaw_impl = JAW_IMPL(tflag, jaw_obj);
+  jaw_impl->tflag = tflag;
 
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
   jaw_impl->ifaceTable = g_hash_table_new(NULL, NULL);
