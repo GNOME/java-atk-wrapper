@@ -109,7 +109,7 @@ object_table_gc(JNIEnv *jniEnv)
     while (g_hash_table_iter_next(&iter, &key, &value))
     {
       JawImpl *jaw_impl = value;
-      if ((*jniEnv)->IsSameObject(jniEnv, jaw_impl->parent.acc_context, NULL))
+      if ((*jniEnv)->IsSameObject(jniEnv, jaw_impl->parent->acc_context, NULL))
       {
 	/* Got garbage-collected, mark for dropping */
 	list = g_slist_prepend(list, jaw_impl);
@@ -382,7 +382,7 @@ jaw_impl_get_type (guint tflag)
     NULL
   };
 
-  static const GInterfaceInfo atk_editable_text_info = 
+  static const GInterfaceInfo atk_editable_text_info =
   {
     (GInterfaceInitFunc) jaw_editable_text_interface_init,
     (GInterfaceFinalizeFunc) NULL,
@@ -686,4 +686,3 @@ jaw_impl_get_atk_relation_type(JNIEnv *env, jstring jrel_key)
 #ifdef __cplusplus
 }
 #endif
-
