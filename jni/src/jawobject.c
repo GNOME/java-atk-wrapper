@@ -220,9 +220,8 @@ jaw_object_get_parent(AtkObject *atk_obj)
       return parent_obj;
   }
 
-  // FIXME: Should we rather return null?
-  g_warning("didn't find parent, returning root");
-  return ATK_OBJECT(atk_get_root());
+  g_warning("didn't find parent, returning null");
+  return NULL;
 }
 
 static void
