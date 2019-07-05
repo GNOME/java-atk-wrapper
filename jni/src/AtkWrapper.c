@@ -29,6 +29,9 @@
 #include "jawtoplevel.h"
 #include "AtkWrapper.h"
 
+gboolean jaw_debug = TRUE;
+FILE *log_file;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,8 +51,6 @@ extern "C" {
 typedef enum _SignalType SignalType;
 gboolean jaw_accessibility_init (void);
 void jaw_accessibility_shutdown (void);
-
-gboolean jaw_debug = FALSE;
 
 static gint key_dispatch_result;
 static GMainLoop* jni_main_loop;
@@ -87,10 +88,16 @@ static gpointer jni_loop_callback(void *data)
 JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
 {
-  const gchar* debug_env = g_getenv("JAW_DEBUG");
-  if (g_strcmp0(debug_env, "1") == 0) {
-    jaw_debug = TRUE;
-  }
+    if (jaw_debug)
+    {
+        log_file = fopen("log_file.txt","w+");
+        if (!log_file)
+        {
+            printf("Error open log file\n");
+            exit(1);
+        }
+    }
+    JAW_DEBUG("%s()",__func__);
 
   if (jaw_initialized)
     return JNI_TRUE;
@@ -1201,4 +1208,3 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_getInstance(JNIEnv *jniEnv,
 #ifdef __cplusplus
 }
 #endif
-
