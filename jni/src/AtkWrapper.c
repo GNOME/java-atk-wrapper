@@ -105,7 +105,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
             exit(1);
         }
     }
-    JAW_DEBUG("%s()",__func__);
+    JAW_DEBUG("%s()", __func__);
 
   if (jaw_initialized)
     return JNI_TRUE;
