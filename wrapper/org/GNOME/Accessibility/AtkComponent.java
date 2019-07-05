@@ -29,8 +29,6 @@ public class AtkComponent {
 
   AccessibleContext ac;
   AccessibleComponent acc_component;
-  private int x, y, width, height;
-  private Rectangle extents;
 
   public AtkComponent (AccessibleContext ac) {
     super();
@@ -44,23 +42,35 @@ public class AtkComponent {
 
   public boolean contains (int x, int y, int coord_type) {
       return AtkUtil.invokeInSwing ( () -> {
+          final int rightX;
+          final int rightY;
           if (coord_type == AtkCoordType.SCREEN) {
               Point p = acc_component.getLocationOnScreen();
-              this.x -= p.x;
-              this.y -= p.y;
+              rightX = x - p.x;
+              rightY = y - p.y;
           }
-          return acc_component.contains(new Point(x, y));
+          else{
+              rightX = x;
+              rightY = y;
+          }
+          return acc_component.contains(new Point(rightX, rightY));
       }, false);
   }
 
   public AccessibleContext get_accessible_at_point (int x, int y, int coord_type) {
       return AtkUtil.invokeInSwing ( () -> {
+          final int rightX;
+          final int rightY;
           if (coord_type == AtkCoordType.SCREEN) {
               Point p = acc_component.getLocationOnScreen();
-              this.x -= p.x;
-              this.y -= p.y;
+              rightX = x - p.x;
+              rightY = y - p.y;
           }
-          Accessible accessible = acc_component.getAccessibleAt(new Point(x, y));
+          else{
+              rightX = x;
+              rightY = y;
+          }
+          Accessible accessible = acc_component.getAccessibleAt(new Point(rightX, rightY));
           if (accessible == null)
               return null;
           return accessible.getAccessibleContext();
@@ -84,20 +94,22 @@ public class AtkComponent {
         }, null);
     }
 
-    public Rectangle set_extents(int x, int y, int width, int height, int coord_type) {
-        return AtkUtil.invokeInSwing ( () -> {
-            Point p;
-            this.width  = (int)acc_component.getSize().getWidth();
-            this.height = (int)acc_component.getSize().getHeight();
-            if (coord_type == AtkCoordType.SCREEN)
-                p = acc_component.getLocationOnScreen();
-            else {
-                p = acc_component.getLocation();
-                this.x -= p.x;
-                this.y -= p.y;
+    //FIXME I made it again, check it
+    public void set_extents(int x, int y, int width, int height, int coord_type) {
+        AtkUtil.invokeInSwing( () -> {
+            final int rightX;
+            final int rightY;
+            if (coord_type == AtkCoordType.SCREEN) {
+                Point p = acc_component.getLocationOnScreen();
+                rightX = x - p.x;
+                rightY = y - p.y;
             }
-            return new Rectangle(x, y, width, height);
-        }, null);
+            else{
+                rightX = x;
+                rightY = y;
+            }
+            acc_component.setBounds(new Rectangle(rightX, rightY, width, height));
+        });
     }
 
     public Rectangle get_extents() {
