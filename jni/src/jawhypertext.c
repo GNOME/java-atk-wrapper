@@ -45,6 +45,7 @@ jaw_hypertext_interface_init (AtkHypertextIface *iface, gpointer data)
 static void
 link_destroy_notify (gpointer p)
 {
+	JAW_DEBUG("%s(%p)", __func__, p);
 	JawHyperlink* jaw_hyperlink = (JawHyperlink*)p;
 	if(G_OBJECT(jaw_hyperlink) != NULL)
 		g_object_unref(G_OBJECT(jaw_hyperlink));
@@ -53,6 +54,7 @@ link_destroy_notify (gpointer p)
 gpointer
 jaw_hypertext_data_init (jobject ac)
 {
+	JAW_DEBUG("%s(%p)", __func__, ac);
 	HypertextData *data = g_new0(HypertextData, 1);
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -69,6 +71,7 @@ jaw_hypertext_data_init (jobject ac)
 void
 jaw_hypertext_data_finalize (gpointer p)
 {
+	JAW_DEBUG("%s(%p)", __func__, p);
 	HypertextData *data = (HypertextData*)p;
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -83,6 +86,7 @@ jaw_hypertext_data_finalize (gpointer p)
 static AtkHyperlink*
 jaw_hypertext_get_link (AtkHypertext *hypertext, gint link_index)
 {
+	JAW_DEBUG("%s(%p, %d)", __func__, hypertext, link_index);
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -109,6 +113,7 @@ jaw_hypertext_get_link (AtkHypertext *hypertext, gint link_index)
 static gint
 jaw_hypertext_get_n_links (AtkHypertext *hypertext)
 {
+	JAW_DEBUG("%s(%p)", __func__, hypertext);
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -128,6 +133,7 @@ jaw_hypertext_get_n_links (AtkHypertext *hypertext)
 static gint
 jaw_hypertext_get_link_index (AtkHypertext *hypertext, gint char_index)
 {
+	JAW_DEBUG("%s(%p, %d)", __func__, hypertext, char_index);
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
