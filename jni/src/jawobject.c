@@ -76,6 +76,7 @@ G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT);
 static guint
 jaw_window_add_signal (const gchar *name, JawObjectClass *klass)
 {
+    JAW_DEBUG("%s(%s, %p)", __func__, name, klass);
   return g_signal_new (name,
                        G_TYPE_FROM_CLASS(klass),
                        G_SIGNAL_RUN_LAST,
@@ -89,6 +90,7 @@ jaw_window_add_signal (const gchar *name, JawObjectClass *klass)
 static void
 jaw_object_class_init (JawObjectClass *klass)
 {
+    JAW_DEBUG("%s(%p)", __func__, klass);
   GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
   gobject_class->dispose = jaw_object_dispose;
   gobject_class->finalize = jaw_object_finalize;
@@ -129,6 +131,7 @@ jaw_object_class_init (JawObjectClass *klass)
 static void
 jaw_object_initialize(AtkObject *atk_obj, gpointer data)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, atk_obj, data);
   ATK_OBJECT_CLASS (jaw_object_parent_class)->initialize(atk_obj, data);
 }
 
@@ -145,6 +148,7 @@ jaw_object_get_interface_data (JawObject *jaw_obj, guint iface)
 static void
 jaw_object_init (JawObject *object)
 {
+    JAW_DEBUG("%s(%p)", __func__, object);
   AtkObject *atk_obj = ATK_OBJECT(object);
   atk_obj->description = NULL;
 
@@ -154,6 +158,7 @@ jaw_object_init (JawObject *object)
 static void
 jaw_object_dispose (GObject *gobject)
 {
+    JAW_DEBUG("%s(%p)", __func__, gobject);
   /* Customized dispose code */
 
   /* Chain up to parent's dispose method */
@@ -163,6 +168,7 @@ jaw_object_dispose (GObject *gobject)
 static void
 jaw_object_finalize (GObject *gobject)
 {
+    JAW_DEBUG("%s(%p)", __func__, gobject);
   /* Customized finalize code */
   JawObject *jaw_obj = JAW_OBJECT(gobject);
   AtkObject *atk_obj = ATK_OBJECT(gobject);
@@ -198,6 +204,7 @@ jaw_object_finalize (GObject *gobject)
 static AtkObject*
 jaw_object_get_parent(AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   if (jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj) != -1)
     return ATK_OBJECT(atk_get_root());
 
@@ -227,6 +234,7 @@ jaw_object_get_parent(AtkObject *atk_obj)
 static void
 jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, atk_obj, parent);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
@@ -250,6 +258,7 @@ jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
 static const gchar*
 jaw_object_get_name (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -301,6 +310,7 @@ jaw_object_get_name (AtkObject *atk_obj)
 
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
 {
+    JAW_DEBUG("%s(%p, %s)", __func__, atk_obj, name);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
@@ -323,6 +333,7 @@ static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
 static const gchar*
 jaw_object_get_description (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
@@ -357,6 +368,7 @@ jaw_object_get_description (AtkObject *atk_obj)
 
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description)
 {
+    JAW_DEBUG("%s(%p, %s)", __func__, atk_obj, description);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
@@ -380,6 +392,7 @@ static void jaw_object_set_description (AtkObject *atk_obj, const gchar *descrip
 static gint
 jaw_object_get_n_children (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
@@ -399,6 +412,7 @@ jaw_object_get_n_children (AtkObject *atk_obj)
 static gint
 jaw_object_get_index_in_parent (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   if (jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj) != -1)
   {
     return jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj);
@@ -423,6 +437,7 @@ jaw_object_get_index_in_parent (AtkObject *atk_obj)
 static AtkRole
 jaw_object_get_role (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   if (atk_obj->role != ATK_ROLE_INVALID
    && atk_obj->role != ATK_ROLE_UNKNOWN) {
     return atk_obj->role;
@@ -441,12 +456,14 @@ jaw_object_get_role (AtkObject *atk_obj)
 static void
 jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, atk_obj, role);
   atk_obj->role = role;
 }
 
 static AtkStateSet*
 jaw_object_ref_state_set (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   AtkStateSet* state_set = jaw_obj->state_set;
   atk_state_set_clear_states( state_set );
@@ -485,6 +502,7 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
 
 static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
@@ -507,6 +525,7 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
 static AtkRelationSet*
 jaw_object_ref_relation_set (AtkObject *atk_obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, atk_obj);
   if (atk_obj->relation_set)
     g_object_unref(G_OBJECT(atk_obj->relation_set));
   atk_obj->relation_set = atk_relation_set_new();
@@ -562,6 +581,7 @@ jaw_object_ref_relation_set (AtkObject *atk_obj)
 static AtkObject*
 jaw_object_ref_child(AtkObject *atk_obj, gint i)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, atk_obj, i);
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
@@ -584,6 +604,7 @@ jaw_object_ref_child(AtkObject *atk_obj, gint i)
 static JawObject*
 jaw_object_table_lookup (JNIEnv *jniEnv, jobject ac)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, jniEnv, ac);
   GHashTable *object_table = jaw_impl_get_object_hash_table();
   GMutex *object_table_mutex = jaw_impl_get_object_hash_table_mutex();
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
