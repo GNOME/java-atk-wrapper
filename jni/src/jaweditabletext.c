@@ -130,7 +130,7 @@ jaw_editable_text_insert_text (AtkEditableText *text,
                                gint length,
                                gint *position)
 {
-    JAW_DEBUG("%s(%p, %s, %d, %d)", __func__, text, string, lenght, position);
+    JAW_DEBUG("%s(%p, %s, %d, %d)", __func__, text, string, length, position);
   JawObject *jaw_obj = JAW_OBJECT(text);
   EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();

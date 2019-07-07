@@ -121,7 +121,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
 static guint
 jni_main_idle_add(GSourceFunc    function, gpointer       data)
 {
-    JAW_DEBUG("%s(%p, %p)", __func__, fuction, data);
+    JAW_DEBUG("%s(%p, %p)", __func__, function, data);
   GSource *source;
   guint id;
 

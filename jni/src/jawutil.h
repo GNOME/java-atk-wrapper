@@ -22,6 +22,7 @@
 
 #include <jni.h>
 #include <atk/atk.h>
+#include <unistd.h>
 #include <time.h>
 
 extern gboolean jaw_debug;
