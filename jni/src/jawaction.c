@@ -56,6 +56,7 @@ jaw_action_interface_init (AtkActionIface *iface, gpointer data)
 gpointer
 jaw_action_data_init (jobject ac)
 {
+    JAW_DEBUG("%s(%p)", __func__, ac);
   ActionData *data = g_new0(ActionData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -74,6 +75,7 @@ jaw_action_data_init (jobject ac)
 void
 jaw_action_data_finalize (gpointer p)
 {
+    JAW_DEBUG("%s(%p)", __func__, p);
   ActionData *data = (ActionData*)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -119,6 +121,7 @@ jaw_action_data_finalize (gpointer p)
 static gboolean
 jaw_action_do_action (AtkAction *action, gint i)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -148,6 +151,7 @@ jaw_action_do_action (AtkAction *action, gint i)
 static gint
 jaw_action_get_n_actions (AtkAction *action)
 {
+    JAW_DEBUG("%s(%p)", __func__, action);
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -170,6 +174,7 @@ jaw_action_get_n_actions (AtkAction *action)
 static const gchar*
 jaw_action_get_description (AtkAction *action, gint i)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -209,6 +214,7 @@ jaw_action_get_description (AtkAction *action, gint i)
 static gboolean
 jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
 {
+    JAW_DEBUG("%s(%p, %d, %s)", __func__, action, i, description);
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -241,6 +247,7 @@ jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
 static const gchar*
 jaw_action_get_name (AtkAction *action, gint i)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -277,6 +284,7 @@ jaw_action_get_name (AtkAction *action, gint i)
 static const gchar*
 jaw_action_get_localized_name (AtkAction *action, gint i)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -305,6 +313,7 @@ jaw_action_get_localized_name (AtkAction *action, gint i)
 static const gchar*
 jaw_action_get_keybinding (AtkAction *action, gint i)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
   if (jaw_obj == NULL)
     return NULL;
