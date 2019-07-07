@@ -49,6 +49,7 @@ jaw_image_interface_init (AtkImageIface *iface, gpointer data)
 gpointer
 jaw_image_data_init (jobject ac)
 {
+	JAW_DEBUG("%s(%p)", __func__, ac);
 	ImageData *data = g_new0(ImageData, 1);
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -63,6 +64,7 @@ jaw_image_data_init (jobject ac)
 void
 jaw_image_data_finalize (gpointer p)
 {
+	JAW_DEBUG("%s(%p)", __func__, p);
 	ImageData *data = (ImageData*)p;
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -84,6 +86,7 @@ static void
 jaw_image_get_image_position (AtkImage *image,
 		gint *x, gint *y, AtkCoordType coord_type)
 {
+	JAW_DEBUG("%s(%p, %d, %d, %d)", __func__, x, y, coord_type);
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -116,6 +119,7 @@ jaw_image_get_image_position (AtkImage *image,
 static const gchar*
 jaw_image_get_image_description (AtkImage *image)
 {
+	JAW_DEBUG("%s(%p)", __func__, image);
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -143,6 +147,7 @@ jaw_image_get_image_description (AtkImage *image)
 static void
 jaw_image_get_image_size (AtkImage *image, gint *width, gint *height)
 {
+	JAW_DEBUG("%s(%p, %d, %d)", __func__, image, width, height);
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
