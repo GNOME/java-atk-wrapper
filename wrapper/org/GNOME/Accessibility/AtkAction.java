@@ -52,26 +52,8 @@ public class AtkAction {
 		return AtkUtil.invokeInSwing( () -> { return acc_action.getAccessibleActionCount(); }, 0);
 	}
 
-	// FIXME: get and set methods seem wrong
 	public String get_description (int i) {
-		String description = "<description>";
-		return description;
-	}
-
-        public boolean setDescription(int i, String description) {
-               if (description ==  acc_action.getAccessibleActionDescription(i) &&
-                   description != null)
-                     return true;
-               return false;
-        }
-
-	public String get_name (int i) {
-		String name = acc_action.getAccessibleActionDescription(i);
-		if (name == null) {
-			name = "";
-		}
-
-		return name;
+		return AtkUtil.invokeInSwing( () -> { return acc_action.getAccessibleActionDescription(); }, "");
 	}
 
  /**
