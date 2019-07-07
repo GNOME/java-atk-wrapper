@@ -53,6 +53,7 @@ jaw_selection_interface_init (AtkSelectionIface *iface, gpointer data)
 gpointer
 jaw_selection_data_init (jobject ac)
 {
+	JAW_DEBUG("%s(%p)", __func__, ac);
 	SelectionData *data = g_new0(SelectionData, 1);
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -67,6 +68,7 @@ jaw_selection_data_init (jobject ac)
 void
 jaw_selection_data_finalize (gpointer p)
 {
+	JAW_DEBUG("%s(%p)", __func__, p);
 	SelectionData *data = (SelectionData*)p;
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -79,6 +81,7 @@ jaw_selection_data_finalize (gpointer p)
 static gboolean
 jaw_selection_add_selection (AtkSelection *selection, gint i)
 {
+	JAW_DEBUG("%s(%p, %d)", __func__, selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -102,6 +105,7 @@ jaw_selection_add_selection (AtkSelection *selection, gint i)
 static gboolean
 jaw_selection_clear_selection (AtkSelection *selection)
 {
+	JAW_DEBUG("%s(%p)", __func__, selection);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -125,6 +129,7 @@ jaw_selection_clear_selection (AtkSelection *selection)
 static AtkObject*
 jaw_selection_ref_selection (AtkSelection *selection, gint i)
 {
+	JAW_DEBUG("%s(%p, %d)", __func__, selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -151,6 +156,7 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
 static gint
 jaw_selection_get_selection_count (AtkSelection *selection)
 {
+	JAW_DEBUG("%s(%p)", __func__, selection);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -170,6 +176,7 @@ jaw_selection_get_selection_count (AtkSelection *selection)
 static gboolean
 jaw_selection_is_child_selected (AtkSelection *selection, gint i)
 {
+	JAW_DEBUG("%s(%p, %d)", __func__, selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -193,6 +200,7 @@ jaw_selection_is_child_selected (AtkSelection *selection, gint i)
 static gboolean
 jaw_selection_remove_selection (AtkSelection *selection, gint i)
 {
+	JAW_DEBUG("%s(%p, %d)", __func__, selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -216,6 +224,7 @@ jaw_selection_remove_selection (AtkSelection *selection, gint i)
 static gboolean
 jaw_selection_select_all_selection (AtkSelection *selection)
 {
+	JAW_DEBUG("%s(%p)", __func__, selection);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
