@@ -23,8 +23,6 @@
 #include <jni.h>
 #include <atk/atk.h>
 #include <time.h>
-#include <unistd.h>
-#include <string.h>
 
 extern gboolean jaw_debug;
 extern FILE *log_file;

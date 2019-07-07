@@ -90,15 +90,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
 {
     if (jaw_debug)
     {
-        char cwd[PATH_MAX];
-        if (!getcwd(cwd, sizeof(cwd)))
-        {
-            printf("getcwd() error\n");
-            exit(1);
-        }
-        strcat(cwd,"/log_file.txt");
-        printf("Log file destination: %s\n", cwd);
-        log_file = fopen(cwd,"w+");
+        log_file = fopen("log_file.txt","w+");
         if (!log_file)
         {
             printf("Error open log file\n");
