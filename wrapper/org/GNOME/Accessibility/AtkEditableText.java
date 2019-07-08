@@ -29,13 +29,9 @@ public class AtkEditableText extends AtkText {
 
     AccessibleEditableText acc_edt_text;
 
-    private class CutRunner implements Runnable {
-        private AccessibleEditableText acc_edt_text;
-        private int start;
-        private int end;
-
-  public static AtkEditableText createAtkEditableText(AccessibleContext ac){
-      return AtkUtil.invokeInSwing ( () -> { return new AtkEditableText(ac); }, null);
+  public AtkEditableText (AccessibleContext ac) {
+    super(ac);
+    acc_edt_text = ac.getAccessibleEditableText();
   }
 
   public static AtkEditableText createAtkEditableText(AccessibleContext ac){

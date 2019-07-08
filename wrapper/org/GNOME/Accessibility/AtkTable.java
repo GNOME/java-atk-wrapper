@@ -122,10 +122,6 @@ public class AtkTable {
 				acc_table.setAccessibleColumnDescription(column, accessible);
 		});
 	}
-	private class SetColumnDescriptionRunner implements Runnable {
-	    private AccessibleTable acc_table;
-		private int column;
-	    private Accessible accessible;
 
 	public String get_row_description (int row) {
 		return AtkUtil.invokeInSwing ( () -> {
@@ -152,11 +148,7 @@ public class AtkTable {
 				acc_table.setAccessibleRowDescription(row, accessible);
 		});
 	}
-	private class SetRowDescriptionRunner implements Runnable {
-		private AccessibleTable acc_table;
-		private int row;
-		private Accessible accessible;
-
+	
 	public AccessibleContext get_column_header (int column) {
 		return AtkUtil.invokeInSwing ( () -> {
 			AccessibleTable accessibleTable = acc_table.getAccessibleColumnHeader();
