@@ -127,12 +127,7 @@ jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType co
                                                     (jint)coord_type);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
-  if (jcontains == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+  return jcontains;
 }
 
 static AtkObject*
