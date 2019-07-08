@@ -21,6 +21,7 @@
 #define _JAW_TOPLEVEL_H_
 
 #include <atk/atk.h>
+#include "jawutil.h"
 
 G_BEGIN_DECLS
 
@@ -55,4 +56,3 @@ gint jaw_toplevel_get_child_index(JawToplevel*, AtkObject*);
 G_END_DECLS
 
 #endif
-
