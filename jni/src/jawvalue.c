@@ -48,6 +48,7 @@ jaw_value_interface_init (AtkValueIface *iface, gpointer data)
 gpointer
 jaw_value_data_init (jobject ac)
 {
+    JAW_DEBUG("%s(%p)", __func__, ac);
   ValueData *data = g_new0(ValueData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -66,6 +67,7 @@ jaw_value_data_init (jobject ac)
 void
 jaw_value_data_finalize (gpointer p)
 {
+    JAW_DEBUG("%s(%p)", __func__, p);
   ValueData *data = (ValueData*)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -79,6 +81,7 @@ jaw_value_data_finalize (gpointer p)
 static void
 get_g_value_from_java_number (JNIEnv *jniEnv, jobject jnumber, GValue *value)
 {
+    JAW_DEBUG("%s(%p, %p, %p)", __func__, jniEnv, jnumber, value);
   jclass classByte = (*jniEnv)->FindClass(jniEnv, "java/lang/Byte");
   jclass classDouble = (*jniEnv)->FindClass(jniEnv, "java/lang/Double");
   jclass classFloat = (*jniEnv)->FindClass(jniEnv, "java/lang/Float");
@@ -142,6 +145,7 @@ get_g_value_from_java_number (JNIEnv *jniEnv, jobject jnumber, GValue *value)
 static void
 jaw_value_get_current_value (AtkValue *obj, GValue *value)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, obj, value);
   if (!value)
   {
     return;
@@ -177,6 +181,7 @@ jaw_value_get_current_value (AtkValue *obj, GValue *value)
 static void
 jaw_value_set_value(AtkValue *obj, const gdouble value)
 {
+    JAW_DEBUG("%s(%p, %lf)", __func__, obj, value);
   if (!value)
     return;
 
@@ -200,7 +205,7 @@ jaw_value_set_value(AtkValue *obj, const gdouble value)
 static AtkRange*
 jaw_value_get_range(AtkValue *obj)
 {
-
+    JAW_DEBUG("%s(%p)", __func__, obj);
   JawObject *jaw_obj = JAW_OBJECT(obj);
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -222,6 +227,7 @@ jaw_value_get_range(AtkValue *obj)
 static gdouble
 jaw_value_get_increment (AtkValue *obj)
 {
+    JAW_DEBUG("%s(%p)", __func__, obj);
   JawObject *jaw_obj = JAW_OBJECT(obj);
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
