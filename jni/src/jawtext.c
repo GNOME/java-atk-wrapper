@@ -141,7 +141,7 @@ jaw_text_data_finalize (gpointer p)
 }
 
 static gchar*
-jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, TextData *data, jstring jstr)
+jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, jstring jstr)
 {
   if (jstr == NULL)
   {
@@ -180,7 +180,7 @@ jaw_text_get_text (AtkText *text, gint start_offset, gint end_offset)
                                              (jint)end_offset );
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
-  return jaw_text_get_gtext_from_jstr(jniEnv, data, jstr);
+  return jaw_text_get_gtext_from_jstr(jniEnv, jstr);
 }
 
 static gunichar
@@ -262,7 +262,7 @@ jaw_text_get_text_at_offset (AtkText *text,
   (*start_offset) = (gint)jStart;
   (*end_offset) = (gint)jEnd;
 
-  return jaw_text_get_gtext_from_jstr(jniEnv, data, jStr);
+  return jaw_text_get_gtext_from_jstr(jniEnv, jStr);
 }
 
 static gint
@@ -481,7 +481,7 @@ jaw_text_get_selection (AtkText *text, gint selection_num, gint *start_offset, g
   *start_offset = (gint)(*jniEnv)->GetIntField(jniEnv, jStrSeq, jfidStart);
   *end_offset = (gint)(*jniEnv)->GetIntField(jniEnv, jStrSeq, jfidEnd);
 
-  return jaw_text_get_gtext_from_jstr(jniEnv, data, jStr);
+  return jaw_text_get_gtext_from_jstr(jniEnv, jStr);
 }
 
 static gboolean
