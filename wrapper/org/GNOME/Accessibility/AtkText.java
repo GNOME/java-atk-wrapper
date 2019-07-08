@@ -28,6 +28,7 @@ public class AtkText {
 
 	AccessibleContext ac;
 	AccessibleText acc_text;
+	AccessibleEditableText acc_edt_text;
 
 	public class StringSequence {
 
@@ -45,6 +46,7 @@ public class AtkText {
 		super();
 		this.ac = ac;
 		this.acc_text = ac.getAccessibleText();
+		this.acc_edt_text = ac.getAccessibleEditableText();
 	}
 
 	public static AtkText createAtkText(AccessibleContext ac){
@@ -185,7 +187,6 @@ public class AtkText {
 
 	public boolean add_selection (int start, int end) {
 		return AtkUtil.invokeInSwing ( () -> {
-			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
 			if (acc_edt_text == null || get_n_selections() > 0)
 				return false;
 			return set_selection(0, start, end);
@@ -194,7 +195,6 @@ public class AtkText {
 
 	public boolean remove_selection(int selection_num) {
 		return AtkUtil.invokeInSwing ( () -> {
-			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
 			if (acc_edt_text == null || selection_num > 0)
 				return false;
 			acc_edt_text.selectText(0, 0);
@@ -204,7 +204,6 @@ public class AtkText {
 
 	public boolean set_selection (int selection_num, int start, int end) {
 		return AtkUtil.invokeInSwing ( () -> {
-			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
 			if (acc_edt_text == null || selection_num > 0)
 				return false;
 			acc_edt_text.selectText(start, end-1);
@@ -214,7 +213,6 @@ public class AtkText {
 
 	public boolean set_caret_offset (int offset) {
 		return AtkUtil.invokeInSwing ( () -> {
-			AccessibleEditableText acc_edt_text = ac.getAccessibleEditableText();
 			if (acc_edt_text != null) {
 				acc_edt_text.selectText(offset, offset);
 				return true;
