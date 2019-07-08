@@ -78,104 +78,29 @@ jaw_value_data_finalize (gpointer p)
   }
 }
 
-static void
-get_g_value_from_java_number (JNIEnv *jniEnv, jobject jnumber, GValue *value)
-{
-    JAW_DEBUG("%s(%p, %p, %p)", __func__, jniEnv, jnumber, value);
-  jclass classByte = (*jniEnv)->FindClass(jniEnv, "java/lang/Byte");
-  jclass classDouble = (*jniEnv)->FindClass(jniEnv, "java/lang/Double");
-  jclass classFloat = (*jniEnv)->FindClass(jniEnv, "java/lang/Float");
-  jclass classInteger = (*jniEnv)->FindClass(jniEnv, "java/lang/Integer");
-  jclass classLong = (*jniEnv)->FindClass(jniEnv, "java/lang/Long");
-  jclass classShort = (*jniEnv)->FindClass(jniEnv, "java/lang/Short");
-
-  jmethodID jmid;
-
-  if ((*jniEnv)->IsInstanceOf(jniEnv, jnumber, classByte))
-  {
-    jmid = (*jniEnv)->GetMethodID(jniEnv, classByte, "byteValue", "()B");
-    g_value_init(value, G_TYPE_CHAR);
-    g_value_set_schar(value,
-                      (gchar)(*jniEnv)->CallByteMethod(jniEnv, jnumber, jmid));
-
-    return;
-  }
-
-  if ((*jniEnv)->IsInstanceOf(jniEnv, jnumber, classDouble))
-  {
-    jmid = (*jniEnv)->GetMethodID(jniEnv, classDouble, "doubleValue", "()D");
-    g_value_init(value, G_TYPE_DOUBLE);
-    g_value_set_double(value,
-                       (gdouble)(*jniEnv)->CallDoubleMethod(jniEnv, jnumber, jmid));
-
-    return;
-  }
-
-  if ((*jniEnv)->IsInstanceOf(jniEnv, jnumber, classFloat))
-  {
-    jmid = (*jniEnv)->GetMethodID(jniEnv, classFloat, "floatValue", "()F");
-    g_value_init(value, G_TYPE_FLOAT);
-    g_value_set_float(value,
-                      (gfloat)(*jniEnv)->CallFloatMethod(jniEnv, jnumber, jmid));
-
-    return;
-  }
-
-  if ((*jniEnv)->IsInstanceOf(jniEnv, jnumber, classInteger)
-    || (*jniEnv)->IsInstanceOf(jniEnv, jnumber, classShort))
-    {
-    jmid = (*jniEnv)->GetMethodID(jniEnv, classInteger, "intValue", "()I");
-    g_value_init(value, G_TYPE_INT);
-    g_value_set_int(value,
-                    (gint)(*jniEnv)->CallIntMethod(jniEnv, jnumber, jmid));
-
-    return;
-  }
-
-  if ((*jniEnv)->IsInstanceOf(jniEnv, jnumber, classLong)) {
-    jmid = (*jniEnv)->GetMethodID(jniEnv, classLong, "longValue", "()J");
-    g_value_init(value, G_TYPE_INT64);
-    g_value_set_int64(value,
-                      (gint64)(*jniEnv)->CallLongMethod(jniEnv, jnumber, jmid));
-
-    return;
-  }
-}
-
+//FIXME getMaximumValue(), getIncrement() and getMinimumValue() are return double it is better to cast everithing
 static void
 jaw_value_get_current_value (AtkValue *obj, GValue *value)
 {
     JAW_DEBUG("%s(%p, %p)", __func__, obj, value);
-  if (!value)
-  {
-    return;
-  }
-
-  JawObject *jaw_obj = JAW_OBJECT(obj);
-  ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_value = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_value);
-  if (!atk_value) {
-    return;
-  }
-
-  jclass classAtkValue = (*jniEnv)->FindClass(jniEnv,
-                                              "org/GNOME/Accessibility/AtkValue");
-  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
-                                          classAtkValue,
-                                          "get_current_value",
-                                          "()Ljava/lang/Number;");
-  jobject jnumber = (*jniEnv)->CallObjectMethod(jniEnv,
-                                                atk_value,
-                                                jmid);
-  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_value);
-
-  if (!jnumber)
-  {
-    return;
-  }
-
-  get_g_value_from_java_number(jniEnv, jnumber, value);
+    if (!value)
+        return;
+    JawObject *jaw_obj = JAW_OBJECT(obj);
+    if(!jaw_obj)
+        return;
+    ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
+    JNIEnv *jniEnv = jaw_util_get_jni_env();
+    jobject atk_value = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_value);
+    if (!atk_value)
+        return;
+    jclass classAtkValue = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkValue");
+    jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkValue, "get_current_value", "()D");
+    jdouble jnumber = (*jniEnv)->CallDoubleMethod(jniEnv, atk_value, jmid);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, atk_value);
+    if (!jnumber)
+        return;
+    g_value_init(value, G_TYPE_DOUBLE);
+    g_value_set_double(value, (gdouble)jnumber);
 }
 
 static void
@@ -197,7 +122,7 @@ jaw_value_set_value(AtkValue *obj, const gdouble value)
   jmethodID jmid = (*env)->GetMethodID(env,
                                        classAtkValue,
                                           "setValue",
-                                          "(Ljava/lang/Number;)V");
+                                          "(D)V");
   (*env)->CallVoidMethod(env, atk_value, jmid,(jdouble)value);
   (*env)->DeleteGlobalRef(env, atk_value);
 }
