@@ -51,6 +51,7 @@ jaw_table_cell_interface_init (AtkTableCellIface *iface, gpointer data)
 gpointer
 jaw_table_cell_data_init (jobject ac)
 {
+    JAW_DEBUG("%s(%p)", __func__, ac);
   TableCellData *data = g_new0(TableCellData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -65,6 +66,7 @@ jaw_table_cell_data_init (jobject ac)
 void
 jaw_table_cell_data_finalize (gpointer p)
 {
+    JAW_DEBUG("%s(%p)", __func__, p);
   TableCellData *data = (TableCellData*)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -86,6 +88,7 @@ jaw_table_cell_data_finalize (gpointer p)
 static AtkObject*
 jaw_table_cell_get_table(AtkTableCell *cell)
 {
+    JAW_DEBUG("%s(%p)", __func__, cell);
   JawObject *jaw_obj = JAW_OBJECT(cell);
   TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -114,6 +117,7 @@ jaw_table_cell_get_table(AtkTableCell *cell)
 static gboolean
 jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column)
 {
+    JAW_DEBUG("%s(%p, %d, %d)", __func__, cell, row, column);
   JawObject *jaw_obj = JAW_OBJECT(cell);
   TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -147,6 +151,7 @@ static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
                                                    gint         *row_span,
                                                    gint         *column_span)
 {
+    JAW_DEBUG("%s(%p, %d, %d, %d, %d)", __func__, cell, row, column, row_span, column_span);
   JawObject *jaw_obj = JAW_OBJECT(cell);
   TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -179,6 +184,7 @@ static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
 static gint
 jaw_table_cell_get_row_span(AtkTableCell *cell)
 {
+    JAW_DEBUG("%s(%p)", __func__, cell);
   JawObject *jaw_obj = JAW_OBJECT(cell);
   TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -201,6 +207,7 @@ jaw_table_cell_get_row_span(AtkTableCell *cell)
 static gint
 jaw_table_cell_get_column_span(AtkTableCell *cell)
 {
+    JAW_DEBUG("%s(%p)", __func__, cell);
   JawObject *jaw_obj = JAW_OBJECT(cell);
   TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
   JNIEnv *env = jaw_util_get_jni_env();
