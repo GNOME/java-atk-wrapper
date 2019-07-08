@@ -93,7 +93,7 @@ public class AtkComponent {
     }
 
     public boolean set_extents(int x, int y, int width, int height, int coord_type) {
-        AtkUtil.invokeInSwing( () -> {
+        return AtkUtil.invokeInSwing( () -> {
             if(acc_component.isVisible()){
                 final int rightX;
                 final int rightY;
