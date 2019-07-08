@@ -129,13 +129,7 @@ jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType co
                                                     (jint)y,
                                                     (jint)coord_type);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
-
-  if (jcontains == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+    return jcontains;
 }
 
 static AtkObject*
@@ -181,12 +175,8 @@ jaw_component_get_extents (AtkComponent *component,
                            AtkCoordType coord_type)
 {
     JAW_DEBUG("%s(%p, %d, %d, %d, %d, %d)", __func__, component, x, y, width, height, coord_type);
-  if (x == NULL || y == NULL || width == NULL || height == NULL)
-    return;
-
-  if (component == NULL)
-    return;
-
+    if (component == NULL || x == NULL || y == NULL || width == NULL || height == NULL)
+        return;
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj,
                                                       INTERFACE_COMPONENT);
@@ -244,10 +234,10 @@ jaw_component_set_extents (AtkComponent *component,
     if (!atk_component)
         return FALSE;
     jclass classAtkComponent = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkComponent");
-    jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv, classAtkComponent, "set_extents", "(IIIII)V");
-    (*jniEnv)->CallVoidMethod (jniEnv, atk_component, jmid, (jint)x, (jint)y, (jint)width, (jint)height, (jint)coord_type);
+    jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv, classAtkComponent, "set_extents", "(IIIII)Z");
+    jboolean assigned = (*jniEnv)->CallBooleanMethod (jniEnv, atk_component, jmid, (jint)x, (jint)y, (jint)width, (jint)height, (jint)coord_type);
     (*jniEnv)->DeleteGlobalRef (jniEnv, atk_component);
-    return TRUE;
+    return assigned;
 }
 
 static gboolean
