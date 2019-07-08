@@ -94,6 +94,7 @@ jaw_table_interface_init (AtkTableIface *iface, gpointer data)
 gpointer
 jaw_table_data_init (jobject ac)
 {
+    JAW_DEBUG("%s(%p)", __func__, ac);
   TableData *data = g_new0(TableData, 1);
 
   JNIEnv *env = jaw_util_get_jni_env();
@@ -112,6 +113,7 @@ jaw_table_data_init (jobject ac)
 void
 jaw_table_data_finalize (gpointer p)
 {
+    JAW_DEBUG("%s(%p)", __func__, p);
   TableData *data = (TableData*)p;
   JNIEnv *env = jaw_util_get_jni_env();
 
@@ -133,6 +135,7 @@ jaw_table_data_finalize (gpointer p)
 static AtkObject*
 jaw_table_ref_at (AtkTable *table, gint	row, gint column)
 {
+    JAW_DEBUG("%s(%p, %d, %d)", __func__, table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -163,6 +166,7 @@ jaw_table_ref_at (AtkTable *table, gint	row, gint column)
 static gint
 jaw_table_get_column_at_index (AtkTable *table, gint index)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, index);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -182,6 +186,7 @@ jaw_table_get_column_at_index (AtkTable *table, gint index)
 static gint
 jaw_table_get_row_at_index (AtkTable *table, gint index)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, index);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -201,6 +206,7 @@ jaw_table_get_row_at_index (AtkTable *table, gint index)
 static gint
 jaw_table_get_n_columns	(AtkTable *table)
 {
+    JAW_DEBUG("%s(%p)", __func__, table);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -220,6 +226,7 @@ jaw_table_get_n_columns	(AtkTable *table)
 static gint
 jaw_table_get_n_rows (AtkTable *table)
 {
+    JAW_DEBUG("%s(%p)", __func__, table);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -239,6 +246,7 @@ jaw_table_get_n_rows (AtkTable *table)
 static gint
 jaw_table_get_column_extent_at (AtkTable *table, gint row, gint	column)
 {
+    JAW_DEBUG("%s(%p, %d, %d)", __func__, table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -258,6 +266,7 @@ jaw_table_get_column_extent_at (AtkTable *table, gint row, gint	column)
 static gint
 jaw_table_get_row_extent_at (AtkTable *table, gint row, gint column)
 {
+    JAW_DEBUG("%s(%p, %d, %d)", __func__, table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -277,6 +286,7 @@ jaw_table_get_row_extent_at (AtkTable *table, gint row, gint column)
 static AtkObject*
 jaw_table_get_caption (AtkTable	*table)
 {
+    JAW_DEBUG("%s(%p)", __func__, table);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -305,6 +315,7 @@ jaw_table_get_caption (AtkTable	*table)
 static const gchar*
 jaw_table_get_column_description (AtkTable *table, gint	column)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -333,6 +344,7 @@ jaw_table_get_column_description (AtkTable *table, gint	column)
 static const gchar*
 jaw_table_get_row_description (AtkTable *table, gint row)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -361,6 +373,7 @@ jaw_table_get_row_description (AtkTable *table, gint row)
 static AtkObject*
 jaw_table_get_column_header (AtkTable *table, gint column)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -385,6 +398,7 @@ jaw_table_get_column_header (AtkTable *table, gint column)
 static AtkObject*
 jaw_table_get_row_header (AtkTable *table, gint row)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -409,6 +423,7 @@ jaw_table_get_row_header (AtkTable *table, gint row)
 static AtkObject*
 jaw_table_get_summary (AtkTable *table)
 {
+    JAW_DEBUG("%s(%p)", __func__, table);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -433,6 +448,7 @@ jaw_table_get_summary (AtkTable *table)
 static gint
 jaw_table_get_selected_columns (AtkTable *table, gint **selected)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, selected);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -466,6 +482,7 @@ jaw_table_get_selected_columns (AtkTable *table, gint **selected)
 static gint
 jaw_table_get_selected_rows (AtkTable *table, gint **selected)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, selected);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -499,6 +516,7 @@ jaw_table_get_selected_rows (AtkTable *table, gint **selected)
 static gboolean
 jaw_table_is_column_selected (AtkTable *table, gint column)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -521,6 +539,7 @@ jaw_table_is_column_selected (AtkTable *table, gint column)
 static gboolean
 jaw_table_is_row_selected (AtkTable *table, gint row)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -543,6 +562,7 @@ jaw_table_is_row_selected (AtkTable *table, gint row)
 static gboolean
 jaw_table_is_selected (AtkTable *table, gint row, gint column)
 {
+    JAW_DEBUG("%s(%p, %d, %d)", __func__, table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -565,6 +585,7 @@ jaw_table_is_selected (AtkTable *table, gint row, gint column)
 static gboolean
 jaw_table_add_row_selection(AtkTable *table, gint row)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -587,6 +608,7 @@ jaw_table_add_row_selection(AtkTable *table, gint row)
 static gboolean
 jaw_table_add_column_selection(AtkTable *table, gint column)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, table, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -609,6 +631,7 @@ jaw_table_add_column_selection(AtkTable *table, gint column)
 static void
 jaw_table_set_row_description(AtkTable *table, gint row, const gchar *description)
 {
+    JAW_DEBUG("%s(%p, %d, %s)", __func__, table, row, description);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -630,6 +653,7 @@ jaw_table_set_row_description(AtkTable *table, gint row, const gchar *descriptio
 static void
 jaw_table_set_column_description(AtkTable *table, gint column, const gchar *description)
 {
+    JAW_DEBUG("%s(%p, %d, %s)", __func__, table, column, description);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -651,6 +675,7 @@ jaw_table_set_column_description(AtkTable *table, gint column, const gchar *desc
 static void
 jaw_table_set_row_header(AtkTable *table, gint row, AtkObject *header)
 {
+    JAW_DEBUG("%s(%p, %d, %p)", __func__, table, row, header);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -671,6 +696,7 @@ jaw_table_set_row_header(AtkTable *table, gint row, AtkObject *header)
 static void
 jaw_table_set_column_header(AtkTable *table, gint column, AtkObject *header)
 {
+    JAW_DEBUG("%s(%p, %d, %p)", __func__, table, column, header);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -691,6 +717,7 @@ jaw_table_set_column_header(AtkTable *table, gint column, AtkObject *header)
 static void
 jaw_table_set_caption(AtkTable *table, AtkObject *caption)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, table, caption);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
@@ -711,6 +738,7 @@ jaw_table_set_caption(AtkTable *table, AtkObject *caption)
 static void
 jaw_table_set_summary(AtkTable *table, AtkObject *summary)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, table, summary);
   JawObject *jaw_obj = JAW_OBJECT(table);
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
