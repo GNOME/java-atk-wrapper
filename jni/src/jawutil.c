@@ -74,6 +74,7 @@ jaw_util_get_type(void)
 static void
 jaw_util_class_init(JawUtilClass *kclass, void *klass_data)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, kclass, klass_data);
   AtkUtilClass *atk_class;
   gpointer data;
 
@@ -95,6 +96,7 @@ typedef struct _JawKeyListenerInfo{
 static gboolean
 notify_hf (gpointer key, gpointer value, gpointer data)
 {
+    JAW_DEBUG("%s(%p, %p, %p)", __func__, key, value, data);
   JawKeyListenerInfo *info = (JawKeyListenerInfo*)value;
   AtkKeyEventStruct *key_event = (AtkKeyEventStruct*)data;
 
@@ -107,6 +109,7 @@ notify_hf (gpointer key, gpointer value, gpointer data)
 static void
 insert_hf (gpointer key, gpointer value, gpointer data)
 {
+    JAW_DEBUG("%s(%p, %p, %p)", __func__, key, value, data);
   GHashTable *new_table = (GHashTable *) data;
   g_hash_table_insert (new_table, key, value);
 }
@@ -114,6 +117,7 @@ insert_hf (gpointer key, gpointer value, gpointer data)
 gboolean
 jaw_util_dispatch_key_event (AtkKeyEventStruct *event)
 {
+    JAW_DEBUG("%s(%p)", __func__, event);
   gint consumed = 0;
   if (key_listener_list) {
     GHashTable *new_hash = g_hash_table_new(NULL, NULL);
@@ -128,6 +132,7 @@ jaw_util_dispatch_key_event (AtkKeyEventStruct *event)
 static guint
 jaw_util_add_key_event_listener (AtkKeySnoopFunc listener, gpointer data)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, listener, data);
   static guint key = 0;
 
   if (!listener) {
@@ -151,6 +156,7 @@ jaw_util_add_key_event_listener (AtkKeySnoopFunc listener, gpointer data)
 static void
 jaw_util_remove_key_event_listener (guint remove_listener)
 {
+    JAW_DEBUG("%s(%p)", __func__, remove_listener);
   gpointer *value = g_hash_table_lookup(key_listener_list,
                                         GUINT_TO_POINTER(remove_listener));
   if (value)
@@ -162,6 +168,7 @@ jaw_util_remove_key_event_listener (guint remove_listener)
 static AtkObject*
 jaw_util_get_root (void)
 {
+    JAW_DEBUG("%s()", __func__);
   static JawToplevel *root = NULL;
 
   if (!root) {
@@ -175,12 +182,14 @@ jaw_util_get_root (void)
 static const gchar*
 jaw_util_get_toolkit_name (void)
 {
+    JAW_DEBUG("%s()", __func__);
   return "J2SE-access-bridge";
 }
 
 static const gchar*
 jaw_util_get_toolkit_version (void)
 {
+    JAW_DEBUG("%s()", __func__);
   return "1.0";
 }
 
@@ -188,6 +197,7 @@ jaw_util_get_toolkit_version (void)
 guint
 jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, jniEnv, jObj);
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, atkObject, "getTFlagFromObj", "(Ljava/lang/Object;)I");
   return (guint) (*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, jObj);
@@ -196,6 +206,7 @@ jaw_util_get_tflag_from_jobj(JNIEnv *jniEnv, jobject jObj)
 gboolean
 jaw_util_is_same_jobject(gconstpointer a, gconstpointer b)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, a, b);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   if ( (*jniEnv)->IsSameObject(jniEnv, (jobject)a, (jobject)b) ) {
     return TRUE;
@@ -206,8 +217,10 @@ jaw_util_is_same_jobject(gconstpointer a, gconstpointer b)
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserve)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, jvm, reserve);
   if (jvm == NULL)
   {
+      JAW_DEBUG("%s: JavaVM pointer was NULL when initializing library", __func__);
     g_error("JavaVM pointer was NULL when initializing library");
     return JNI_ERR;
   }
@@ -217,12 +230,14 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserve)
 
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserve)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, jvm, reserve);
   g_warning("JNI_OnUnload() called but this is not supported yet\n");
 }
 
 JNIEnv*
 jaw_util_get_jni_env(void)
 {
+    JAW_DEBUG("%s()", __func__);
   JNIEnv *env;
   env  = NULL;
   static int i;
@@ -280,6 +295,7 @@ jaw_util_detach(void)
 static jobject
 jaw_util_get_java_acc_role (JNIEnv *jniEnv, const gchar* roleName)
 {
+    JAW_DEBUG("%s(%p, %s)", __func__, jniEnv, roleName);
   jclass classAccessibleRole = (*jniEnv)->FindClass(jniEnv,
                                                     "javax/accessibility/AccessibleRole");
   jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv,
@@ -294,6 +310,7 @@ jaw_util_get_java_acc_role (JNIEnv *jniEnv, const gchar* roleName)
 static gboolean
 jaw_util_is_java_acc_role (JNIEnv *jniEnv, jobject acc_role, const gchar* roleName)
 {
+    JAW_DEBUG("%s(%p, %p, %s)", __func__, jniEnv, acc_role, roleName);
   jobject jrole = jaw_util_get_java_acc_role (jniEnv, roleName);
 
   if ((*jniEnv)->IsSameObject(jniEnv, acc_role, jrole))
@@ -307,6 +324,7 @@ jaw_util_is_java_acc_role (JNIEnv *jniEnv, jobject acc_role, const gchar* roleNa
 AtkRole
 jaw_util_get_atk_role_from_AccessibleContext (jobject jAccessibleContext)
 {
+    JAW_DEBUG("%s(%p)", __func__, jAccessibleContext);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmidgar = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleRole", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleRole;");
@@ -531,6 +549,7 @@ jaw_util_get_atk_role_from_AccessibleContext (jobject jAccessibleContext)
 static gboolean
 is_same_java_state (JNIEnv *jniEnv, jobject jobj, const gchar* strState)
 {
+    JAW_DEBUG("%s(%p, %p, %s)", __func__, jniEnv, jobj, strState);
   jclass classAccessibleState = (*jniEnv)->FindClass(jniEnv,
                                                      "javax/accessibility/AccessibleState");
   jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv,
@@ -549,6 +568,7 @@ is_same_java_state (JNIEnv *jniEnv, jobject jobj, const gchar* strState)
 AtkStateType
 jaw_util_get_atk_state_type_from_java_state (JNIEnv *jniEnv, jobject jobj)
 {
+    JAW_DEBUG("%s(%p, %p)", __func__, jniEnv, jobj);
   if (is_same_java_state( jniEnv, jobj, "ACTIVE" ))
     return ATK_STATE_ACTIVE;
 
@@ -647,6 +667,7 @@ jaw_util_get_rect_info (JNIEnv *jniEnv,
                         gint *width,
                         gint *height)
 {
+    JAW_DEBUG("%s(%p, %p, %d, %d, %d, %d)", __func__, jniEnv, jrect, x, y, width, height);
   jclass classRectangle = (*jniEnv)->FindClass(jniEnv, "java/awt/Rectangle");
   jfieldID jfidX = (*jniEnv)->GetFieldID(jniEnv, classRectangle, "x", "I");
   jfieldID jfidY = (*jniEnv)->GetFieldID(jniEnv, classRectangle, "y", "I");
