@@ -31,6 +31,7 @@ extern FILE *log_file;
 #define JAW_DEBUG(fmt, ...) do { \
     if (jaw_debug) { \
         fprintf(log_file, "TIME:[%lu] PID:{%d} " fmt "\n", (unsigned long) time(NULL), (int)getpid(), ##__VA_ARGS__); \
+        fflush(log_file); \
     } \
 } while (0)
 
