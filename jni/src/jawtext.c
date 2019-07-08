@@ -104,6 +104,7 @@ jaw_text_interface_init (AtkTextIface *iface, gpointer data)
 gpointer
 jaw_text_data_init (jobject ac)
 {
+    JAW_DEBUG("%s(%p)", __func__, ac);
   TextData *data = g_new0(TextData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -122,6 +123,7 @@ jaw_text_data_init (jobject ac)
 void
 jaw_text_data_finalize (gpointer p)
 {
+    JAW_DEBUG("%s(%p)", __func__, p);
   TextData *data = (TextData*)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -143,6 +145,7 @@ jaw_text_data_finalize (gpointer p)
 static gchar*
 jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, TextData *data, jstring jstr)
 {
+    JAW_DEBUG("%s(%p, %p, %p)", __func__, jniEnv, data, jstr);
   if (jstr == NULL)
   {
     return NULL;
@@ -158,6 +161,7 @@ jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, TextData *data, jstring jstr)
 static gchar*
 jaw_text_get_text (AtkText *text, gint start_offset, gint end_offset)
 {
+    JAW_DEBUG("%s(%p, %d, %d)", __func__, text, start_offset, end_offset);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -186,6 +190,7 @@ jaw_text_get_text (AtkText *text, gint start_offset, gint end_offset)
 static gunichar
 jaw_text_get_character_at_offset (AtkText *text, gint offset)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, text, offset);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -214,6 +219,7 @@ jaw_text_get_text_at_offset (AtkText *text,
                              AtkTextBoundary boundary_type,
                              gint *start_offset, gint *end_offset)
 {
+    JAW_DEBUG("%s(%p, %d, %d, %d, %d)", __func__, text, offset, boundary_type, start_offset, end_offset);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -268,6 +274,7 @@ jaw_text_get_text_at_offset (AtkText *text,
 static gint
 jaw_text_get_caret_offset (AtkText *text)
 {
+    JAW_DEBUG("%s(%p)", __func__, text);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -294,6 +301,7 @@ jaw_text_get_character_extents (AtkText *text,
                                 gint *width, gint *height,
                                 AtkCoordType coords)
 {
+    JAW_DEBUG("%s(%p, %d, %d, %d, %d, %d, %d)", __func__, text, offset, x, y, width, height, coords);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -326,6 +334,7 @@ jaw_text_get_character_extents (AtkText *text,
 static gint
 jaw_text_get_character_count (AtkText *text)
 {
+    JAW_DEBUG("%s(%p)", __func__, text);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -349,6 +358,7 @@ jaw_text_get_character_count (AtkText *text)
 static gint
 jaw_text_get_offset_at_point (AtkText *text, gint x, gint y, AtkCoordType coords)
 {
+    JAW_DEBUG("%s(%p, %d, %d, %d)", __func__, text, x, y, coords);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -380,6 +390,7 @@ jaw_text_get_range_extents (AtkText *text,
                             AtkCoordType coord_type,
                             AtkTextRectangle *rect)
 {
+    JAW_DEBUG("%s(%p, %d, %d, %d, %p)", __func__, text, start_offset, end_offset, coord_type, rect);
   if (rect == NULL)
   {
     return;
@@ -418,6 +429,7 @@ jaw_text_get_range_extents (AtkText *text,
 static gint
 jaw_text_get_n_selections (AtkText *text)
 {
+    JAW_DEBUG("%s(%p)", __func__, text);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -441,6 +453,7 @@ jaw_text_get_n_selections (AtkText *text)
 static gchar*
 jaw_text_get_selection (AtkText *text, gint selection_num, gint *start_offset, gint *end_offset)
 {
+    JAW_DEBUG("%s(%p, %d, %d, %d)", __func__, text, selection_num, start_offset, end_offset);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -487,6 +500,7 @@ jaw_text_get_selection (AtkText *text, gint selection_num, gint *start_offset, g
 static gboolean
 jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
 {
+    JAW_DEBUG("%s(%p, %d, %d)", __func__, text, start_offset, end_offset);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -518,6 +532,7 @@ jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
 static gboolean
 jaw_text_remove_selection (AtkText *text, gint selection_num)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, text, selection_num);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -549,6 +564,7 @@ jaw_text_remove_selection (AtkText *text, gint selection_num)
 static gboolean
 jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gint end_offset)
 {
+    JAW_DEBUG("%s(%p, %d, %d, %d)", __func__, text, selection_num, start_offset, end_offset);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -577,6 +593,7 @@ jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gi
 static gboolean
 jaw_text_set_caret_offset (AtkText *text, gint offset)
 {
+    JAW_DEBUG("%s(%p, %d)", __func__, text, offset);
   JawObject *jaw_obj = JAW_OBJECT(text);
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
