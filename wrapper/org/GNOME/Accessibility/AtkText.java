@@ -63,12 +63,13 @@ public class AtkText {
 			else
 				rightStart = start;
 			final int rightEnd;
-			if (end > count || end ==-1)
-				rightEnd = count;
-			else if (end < -1)
-				rightEnd = 0;
+			if (end < -1)
+				end = rightStart;
+			else
+				if (end > count || end ==-1)
+					rightEnd = count;
 				else
-				rightEnd = end;
+					rightEnd = end;
 			if (acc_text instanceof AccessibleExtendedText) {
 				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
 				return acc_ext_text.getTextRange(rightStart, rightEnd);
