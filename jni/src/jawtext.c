@@ -82,6 +82,7 @@ typedef struct _TextData {
   jstring jstrText;
 }TextData;
 
+//FIXME we need to include atk_text_get_string_at_offset()
 void
 jaw_text_interface_init (AtkTextIface *iface, gpointer data)
 {
