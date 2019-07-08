@@ -64,7 +64,7 @@ public class AtkText {
 				rightStart = start;
 			final int rightEnd;
 			if (end < -1)
-				end = rightStart;
+				rightEnd = rightStart;
 			else
 				if (end > count || end ==-1)
 					rightEnd = count;
