@@ -29,7 +29,7 @@
 #include "jawtoplevel.h"
 #include "AtkWrapper.h"
 
-gboolean jaw_debug = TRUE;
+gboolean jaw_debug = FALSE;
 FILE *log_file;
 
 #ifdef __cplusplus
@@ -88,16 +88,20 @@ static gpointer jni_loop_callback(void *data)
 JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
 {
-    if (jaw_debug)
+  const gchar* debug_env = g_getenv("JAW_DEBUG");
+  if (g_strcmp0(debug_env, "1") == 0) {
+    jaw_debug = TRUE;
+  }
+  if (jaw_debug)
+  {
+    log_file = fopen("log_file.txt","w+");
+    if (!log_file)
     {
-        log_file = fopen("log_file.txt","w+");
-        if (!log_file)
-        {
-            printf("Error open log file\n");
-            exit(1);
-        }
+      fprintf(stderr, "Error opening log file log_file.txt\n");
+      exit(1);
     }
-    JAW_DEBUG("%s()",__func__);
+  }
+  JAW_DEBUG("%s()",__func__);
 
   if (jaw_initialized)
     return JNI_TRUE;
