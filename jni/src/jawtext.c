@@ -82,6 +82,7 @@ typedef struct _TextData {
   jstring jstrText;
 }TextData;
 
+//FIXME we need to include atk_text_get_string_at_offset()
 void
 jaw_text_interface_init (AtkTextIface *iface, gpointer data)
 {
@@ -143,19 +144,15 @@ jaw_text_data_finalize (gpointer p)
 }
 
 static gchar*
-jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, TextData *data, jstring jstr)
+jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, jstring jstr)
 {
-    JAW_DEBUG("%s(%p, %p, %p)", __func__, jniEnv, data, jstr);
-  if (jstr == NULL)
-  {
-    return NULL;
-  }
-
-  gchar* tmp_text = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv, jstr, NULL);
-  gchar* text = g_strdup(tmp_text);
-  (*jniEnv)->ReleaseStringUTFChars(jniEnv, jstr, tmp_text);
-
-  return text;
+    JAW_DEBUG("%s(%p, %p)", __func__, jniEnv, jstr);
+    if (!jstr)
+        return NULL;
+    const char* tmp_text = (*jniEnv)->GetStringUTFChars(jniEnv, jstr, NULL);
+    gchar* text = g_strdup (tmp_text);
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jstr, tmp_text);
+    return text;
 }
 
 static gchar*
@@ -520,13 +517,7 @@ jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
                                                   (jint)start_offset,
                                                   (jint)end_offset);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
-
-  if (jresult == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+    return jresult;
 }
 
 static gboolean
@@ -552,13 +543,7 @@ jaw_text_remove_selection (AtkText *text, gint selection_num)
                                                   jmid,
                                                   (jint)selection_num);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
-
-  if (jresult == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+    return jresult;
 }
 
 static gboolean
@@ -582,12 +567,7 @@ jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gi
                                                   (jint)start_offset,
                                                   (jint)end_offset);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
-
-  if (jresult == JNI_TRUE) {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+    return jresult;
 }
 
 static gboolean
@@ -613,11 +593,5 @@ jaw_text_set_caret_offset (AtkText *text, gint offset)
                                                   jmid,
                                                   (jint)offset);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
-
-  if (jresult == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+    return jresult;
 }
