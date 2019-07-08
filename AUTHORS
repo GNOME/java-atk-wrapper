@@ -1,9 +1,10 @@
 Authors:  Ke Wang (ke.wang@sun.com)
           Li Yuan (lee.yuan@oracle.com)
           Magdalen Berns (m.berns@thismagpie.com)
+          Samuel Thibault (samuel.thibault@ens-lyon.org)
+          Giuseppe Capaldo (gcapaldo@redhat.com)
 
 Contains inspiration and possibly a little code from java-access-bridge, written
 by:
           Bill Haneman (bill.haneman@sun.com)
           Louise Miller
-

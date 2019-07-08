@@ -609,13 +609,9 @@ public class AtkWrapper {
   };
 
   public static void registerPropertyChangeListener(AccessibleContext ac) {
-    if (ac != null) {
-      try {
-        ac.addPropertyChangeListener(propertyChangeListener);
-      } catch (Exception e){
-        e.printStackTrace();
-      }
-    }
+        if (ac != null) {
+            AtkUtil.invokeInSwing( () -> { ac.addPropertyChangeListener(propertyChangeListener); } );
+        }
   }
 
   public native static boolean initNativeLibrary();
