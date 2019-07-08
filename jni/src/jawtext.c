@@ -507,12 +507,7 @@ jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
                                                   (jint)end_offset);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
-  if (jresult == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+  return jresult;
 }
 
 static gboolean
@@ -538,12 +533,7 @@ jaw_text_remove_selection (AtkText *text, gint selection_num)
                                                   (jint)selection_num);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
-  if (jresult == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+  return jresult;
 }
 
 static gboolean
@@ -567,11 +557,7 @@ jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gi
                                                   (jint)end_offset);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
-  if (jresult == JNI_TRUE) {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+  return jresult;
 }
 
 static gboolean
@@ -597,10 +583,5 @@ jaw_text_set_caret_offset (AtkText *text, gint offset)
                                                   (jint)offset);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_text);
 
-  if (jresult == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+  return jresult;
 }
