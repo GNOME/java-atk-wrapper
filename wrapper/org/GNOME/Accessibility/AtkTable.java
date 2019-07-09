@@ -160,16 +160,6 @@ public class AtkTable {
 		}, null);
 	}
 
-	/**
-	 *
-	 * @param column an int representing a column in table
-	 * @param table an AccessibleTable object
-	 */
-	public void setColumnHeader (int column, AccessibleTable table) {
-		// FIXME: this isn't using column for anything
-		AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleColumnHeader(table); });
-	}
-
 	public AccessibleContext get_row_header (int row) {
 		return AtkUtil.invokeInSwing ( () -> {
 			AccessibleTable accessibleTable = acc_table.getAccessibleRowHeader();
@@ -180,10 +170,6 @@ public class AtkTable {
 			}
 			return null;
 		}, null);
-	}
-
-	public void setRowHeader (int row, AccessibleTable table) {
-		AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleRowHeader(table); });
 	}
 
 	public AccessibleContext get_summary () {
@@ -223,21 +209,5 @@ public class AtkTable {
 
 	public boolean is_selected (int row, int column) {
 		return AtkUtil.invokeInSwing ( () -> { return acc_table.isAccessibleSelected(row, column); } ,false);
-	}
-
-	public boolean addColumnSelection (int column) {
-		return false;
-	}
-
-	public boolean addRowSelection (int row) {
-		return false;
-	}
-
-	public boolean remove_column_selection (int column) {
-		return false;
-	}
-
-	public boolean remove_row_selection (int row) {
-		return false;
 	}
 }
