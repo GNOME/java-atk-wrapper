@@ -652,42 +652,14 @@ static void
 jaw_table_set_row_header(AtkTable *table, gint row, AtkObject *header)
 {
     JAW_DEBUG("%s(%p, %d, %p)", __func__, table, row, header);
-  JawObject *jaw_obj = JAW_OBJECT(table);
-  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
-  if (!atk_table) {
-    return;
-  }
-
-  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env,
-                                       classAtkTable,
-                                       "setRowHeader",
-                                       "(ILjavax/accessibility/AccessibleTable;)V");
-  (*env)->CallVoidMethod(env, atk_table, jmid, (jint)row, (jobject)header);
-  (*env)->DeleteGlobalRef(env, atk_table);
+    g_warning("It is impossible to set a single row header on AccessibleTable Java Object");
 }
 
 static void
 jaw_table_set_column_header(AtkTable *table, gint column, AtkObject *header)
 {
     JAW_DEBUG("%s(%p, %d, %p)", __func__, table, column, header);
-  JawObject *jaw_obj = JAW_OBJECT(table);
-  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
-  if (!atk_table) {
-    return;
-  }
-
-  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env,
-                                       classAtkTable,
-                                       "setColumnHeader",
-                                       "(ILjavax/accessibility/AccessibleTable;)V");
-  (*env)->CallVoidMethod(env, atk_table, jmid, (jint)column, (jobject)header);
-  (*env)->DeleteGlobalRef(env, atk_table);
+    g_warning("It is impossible to set a single column header on AccessibleTable Java Object");
 }
 
 static void
@@ -697,17 +669,19 @@ jaw_table_set_caption(AtkTable *table, AtkObject *caption)
     JawObject *jaw_obj = JAW_OBJECT(table);
     if (!jaw_obj)
         return;
-    JawObject *jcaption = JAW_OBJECT(caption);
+    jobject *jcaption = (jobject)caption;
     if (!jcaption)
         return;
     TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
     JNIEnv *env = jaw_util_get_jni_env();
+    jobject obj;
+    jclass accesssible = (*env)->FindClass (env, "javax/accessibility/Accessible");
+    if ( (*env)->IsInstanceof(env, jcaption, accessible) )
+        obj = (*env)->NewGlobalRef(env, jcaption);
+    else
+        return;
     jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
     if (!atk_table)
-        return;
-    //FIXME I don't think it is perfect because obj is an AccessibleContext and not an Accessible
-    jobject obj = (*env)->NewGlobalRef(env, jcaption->acc_context);
-    if (!obj)
         return;
     jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
     jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "setCaption", "(Ljavax/accessibility/Accessible;)V");
@@ -723,17 +697,19 @@ jaw_table_set_summary(AtkTable *table, AtkObject *summary)
     JawObject *jaw_obj = JAW_OBJECT(table);
     if (!jaw_obj)
         return;
-    JawObject *jsummary = JAW_OBJECT(summary);
+    jobject *jsummary = (jobject)summary;
     if (!jsummary)
         return;
     TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
     JNIEnv *env = jaw_util_get_jni_env();
+    jobject obj;
+    jclass accesssible = (*env)->FindClass (env, "javax/accessibility/Accessible");
+    if ( (*env)->IsInstanceof(env, jsummary, accessible) )
+        obj = (*env)->NewGlobalRef(env, jcaption);
+    else
+        return;
     jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
     if (!atk_table)
-        return;
-    //FIXME I don't think it is perfect because obj is an AccessibleContext and not an Accessible
-    jobject obj = (*env)->NewGlobalRef(env, jsummary->acc_context);
-    if (!obj)
         return;
     jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
     jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "setSummary", "(Ljavax/accessibility/Accessible;)V");
