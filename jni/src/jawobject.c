@@ -236,6 +236,7 @@ jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
   JawObject *jaw_par = JAW_OBJECT(parent);
   jobject pa = (*jniEnv)->NewGlobalRef(jniEnv, jaw_par->acc_context);
   if (!pa) {
+      (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
       return;
   }
 
