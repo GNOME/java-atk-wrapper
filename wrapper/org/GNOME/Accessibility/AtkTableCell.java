@@ -22,12 +22,8 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 
 public class AtkTableCell extends AtkTable {
-    AccessibleContext ac;
-    AccessibleExtendedTable acc_table_cell;
-    private int rowSpan, columnSpan;
 
     AccessibleContext ac;
-
     AccessibleExtendedTable acc_table_cell;
     private int rowSpan, columnSpan;
 
