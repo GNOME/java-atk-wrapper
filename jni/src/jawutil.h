@@ -22,6 +22,18 @@
 
 #include <jni.h>
 #include <atk/atk.h>
+#include <unistd.h>
+#include <time.h>
+
+extern gboolean jaw_debug;
+extern FILE *log_file;
+
+#define JAW_DEBUG(fmt, ...) do { \
+    if (jaw_debug) { \
+        fprintf(log_file, "TIME:[%lu] PID:{%d} " fmt "\n", (unsigned long) time(NULL), (int)getpid(), ##__VA_ARGS__); \
+        fflush(log_file); \
+    } \
+} while (0)
 
 G_BEGIN_DECLS
 
@@ -79,4 +91,3 @@ void jaw_util_detach(void);
 G_END_DECLS
 
 #endif
-

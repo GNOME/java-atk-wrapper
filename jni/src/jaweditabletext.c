@@ -42,9 +42,9 @@ static void jaw_editable_text_paste_text(AtkEditableText *text,
                                          gint position);
 
 static gboolean jaw_editable_text_set_run_attributes(AtkEditableText *text,
-                                                                                      AtkAttributeSet  *attrib_set,
-                                                                                      gint                      start_offset,
-                                                                                      gint                 end_offset);
+                                                     AtkAttributeSet *attrib_set,
+                                                     gint             start_offset,
+                                                     gint             end_offset);
 
 typedef struct _EditableTextData {
   jobject atk_editable_text;
@@ -262,9 +262,9 @@ jaw_editable_text_paste_text (AtkEditableText *text,
 
 static gboolean
 jaw_editable_text_set_run_attributes(AtkEditableText *text,
-                                                           AtkAttributeSet  *attrib_set,
-                                                           gint                      start_offset,
-                                                           gint                      end_offset)
+                                     AtkAttributeSet *attrib_set,
+                                     gint             start_offset,
+                                     gint             end_offset)
 {
   JawObject *jaw_obj = JAW_OBJECT(text);
   EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
@@ -275,15 +275,15 @@ jaw_editable_text_set_run_attributes(AtkEditableText *text,
   }
   jclass classAtkEditableText = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkEditableText");
   jmethodID jmid = (*env)->GetMethodID(env,
-                                                                   classAtkEditableText,
-                                                                   "setRunAttributes",
-                                                                   "(Ljavax/swing/text/AttributeSet;II)Z");
+                                       classAtkEditableText,
+                                       "setRunAttributes",
+                                       "(Ljavax/swing/text/AttributeSet;II)Z");
   jboolean jresult = (*env)->CallBooleanMethod(env,
-                                                                            atk_editable_text,
-                                                                            jmid,
-                                                                            (jobject)attrib_set,
-                                                                            (jint)start_offset,
-                                                                            (jint)end_offset);
+                                               atk_editable_text,
+                                               jmid,
+                                               (jobject)attrib_set,
+                                               (jint)start_offset,
+                                               (jint)end_offset);
   (*env)->DeleteGlobalRef(env, atk_editable_text);
   if (jresult == JNI_TRUE)
     return TRUE;

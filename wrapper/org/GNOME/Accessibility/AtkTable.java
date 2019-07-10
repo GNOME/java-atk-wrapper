@@ -89,13 +89,13 @@ public class AtkTable {
 		}, null);
 	}
 
-    /**
-     *
-     * @param a an Accessible object
-     */
-    public void setCaption(Accessible a) {
-        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleCaption(a); });
-    }
+	/**
+	 *
+	 * @param a an Accessible object
+	 */
+	public void setCaption(Accessible a) {
+	    AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleCaption(a); });
+	}
 
 	public String get_column_description (int column) {
 		return AtkUtil.invokeInSwing ( () -> {
@@ -148,7 +148,7 @@ public class AtkTable {
 				acc_table.setAccessibleRowDescription(row, accessible);
 		});
 	}
-	
+
 	public AccessibleContext get_column_header (int column) {
 		return AtkUtil.invokeInSwing ( () -> {
 			AccessibleTable accessibleTable = acc_table.getAccessibleColumnHeader();
@@ -160,16 +160,6 @@ public class AtkTable {
 			return null;
 		}, null);
 	}
-
-    /**
-     *
-     * @param column an int representing a column in table
-     * @param table an AccessibleTable object
-     */
-    public void setColumnHeader (int column, AccessibleTable table) {
-	// FIXME: this isn't using column for anything
-        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleColumnHeader(table); });
-    }
 
 	public AccessibleContext get_row_header (int row) {
 		return AtkUtil.invokeInSwing ( () -> {
@@ -183,10 +173,6 @@ public class AtkTable {
 		}, null);
 	}
 
-    public void setRowHeader (int row, AccessibleTable table) {
-        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleRowHeader(table); });
-    }
-
 	public AccessibleContext get_summary () {
 		return AtkUtil.invokeInSwing ( () -> {
 			Accessible accessible = acc_table.getAccessibleSummary();
@@ -196,13 +182,13 @@ public class AtkTable {
 		}, null);
 	}
 
-    /**
-     *
-     * @param a the Accessible object to set summary for
-     */
-    public void setSummary(Accessible a) {
-        AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleSummary(a); });
-    }
+	/**
+	 *
+	 * @param a the Accessible object to set summary for
+	 */
+	public void setSummary(Accessible a) {
+		AtkUtil.invokeInSwing( () -> { acc_table.setAccessibleSummary(a); });
+	}
 
 	public int[] get_selected_columns () {
 		int[] d = new int[0];
@@ -224,21 +210,5 @@ public class AtkTable {
 
 	public boolean is_selected (int row, int column) {
 		return AtkUtil.invokeInSwing ( () -> { return acc_table.isAccessibleSelected(row, column); } ,false);
-	}
-//I think this method are not implemented.
-  public boolean addColumnSelection (int column) {
-    return false;
-  }
-
-  public boolean addRowSelection (int row) {
-    return false;
-  }
-
-	public boolean remove_column_selection (int column) {
-		return false;
-	}
-
-	public boolean remove_row_selection (int row) {
-		return false;
 	}
 }

@@ -131,7 +131,7 @@ case "$WARN_CFLAGS" in
         WARN_CFLAGS="$WARN_CFLAGS -Wno-error=declaration-after-statement"
         ;;
 esac
-AM_CFLAGS="$AM_CFLAGS $WARN_CFLAGS"
+AM_CFLAGS="$AM_CFLAGS $WARN_CFLAGS -Wno-declaration-after-statement"
 AC_SUBST(AM_CFLAGS)
 
 CHECK_JNI

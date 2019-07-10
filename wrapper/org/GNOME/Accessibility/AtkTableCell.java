@@ -26,10 +26,16 @@ public class AtkTableCell extends AtkTable {
     AccessibleExtendedTable acc_table_cell;
     private int rowSpan, columnSpan;
 
+    AccessibleContext ac;
+
+    AccessibleExtendedTable acc_table_cell;
+    private int rowSpan, columnSpan;
+
     public AtkTableCell (AccessibleContext ac) {
         super(ac);
         this.ac = ac;
         AccessibleTable acc_table = ac.getAccessibleTable();
+
         if (acc_table instanceof AccessibleExtendedTable) {
             acc_table_cell = (AccessibleExtendedTable)acc_table;
         } else {
@@ -39,9 +45,9 @@ public class AtkTableCell extends AtkTable {
         columnSpan = 0;
     }
 
-  public static AtkTableCell createAtkTableCell(AccessibleContext ac){
-      return AtkUtil.invokeInSwing ( () -> { return new AtkTableCell(ac); }, null);
-  }
+    public static AtkTableCell createAtkTableCell(AccessibleContext ac){
+        return AtkUtil.invokeInSwing ( () -> { return new AtkTableCell(ac); }, null);
+    }
 
     /**
     * getTable
@@ -52,11 +58,11 @@ public class AtkTableCell extends AtkTable {
         return AtkUtil.invokeInSwing ( () -> { return acc_table_cell; }, null);
     }
 
-  /**
-  * @param row the row of the accessible table cell
-  * @param column the column of the accessible table cell
-  * @return: whether the accessible index of the table cell is found
-  */
+    /**
+    * @param row the row of the accessible table cell
+    * @param column the column of the accessible table cell
+    * @return: whether the accessible index of the table cell is found
+    */
     public boolean getPosition(int row, int column) {
         return AtkUtil.invokeInSwing ( () -> {
             int index = acc_table_cell.getAccessibleIndex(row, column);

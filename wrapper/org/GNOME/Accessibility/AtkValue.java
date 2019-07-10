@@ -33,8 +33,8 @@ public class AtkValue {
 	}
 
 	public static AtkValue createAtkValue(AccessibleContext ac){
-        return AtkUtil.invokeInSwing ( () -> { return new AtkValue(ac); }, null);
-    }
+		return AtkUtil.invokeInSwing ( () -> { return new AtkValue(ac); }, null);
+	}
 
 	public Number get_current_value () {
 		return AtkUtil.invokeInSwing ( () -> { return acc_value.getCurrentAccessibleValue(); }, 0.0);
@@ -48,11 +48,11 @@ public class AtkValue {
 		return AtkUtil.invokeInSwing ( () -> { return acc_value.getMinimumAccessibleValue().doubleValue(); }, 0.0);
 	}
 
-  public void setValue (Number n) {
-	  AtkUtil.invokeInSwing( () -> { acc_value.setCurrentAccessibleValue(n); });
-  }
+	public void setValue (Number n) {
+		AtkUtil.invokeInSwing( () -> { acc_value.setCurrentAccessibleValue(n); });
+	}
 
-  public double getIncrement() {
-    return Double.MIN_VALUE;
-  }
+	public double getIncrement() {
+		return Double.MIN_VALUE;
+	}
 }
