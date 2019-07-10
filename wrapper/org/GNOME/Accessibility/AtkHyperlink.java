@@ -31,8 +31,8 @@ public class AtkHyperlink {
 	}
 
 	public static AtkHyperlink createAtkHyperlink(AccessibleHyperlink hl){
-        return AtkUtil.invokeInSwing ( () -> { return new AtkHyperlink(hl); }, null);
-    }
+		return AtkUtil.invokeInSwing ( () -> { return new AtkHyperlink(hl); }, null);
+	}
 
 	public String get_uri (int i) {
 		return AtkUtil.invokeInSwing ( () -> {

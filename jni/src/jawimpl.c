@@ -53,7 +53,6 @@ static GMutex typeTableMutex;
 static GHashTable *typeTable = NULL;
 static GMutex objectTableMutex;
 static GHashTable *objectTable = NULL;
-static gboolean jaw_debug = FALSE;
 
 static void
 object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
@@ -326,7 +325,7 @@ jaw_impl_get_instance_from_jaw (JNIEnv *jniEnv, jobject ac)
   jclass classWrapper = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkWrapper");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, classWrapper, "getInstanceFromSwing", "(Ljavax/accessibility/AccessibleContext;)J");
   jlong ptr = (*jniEnv)->CallStaticLongMethod(jniEnv, classWrapper, jmid, ac);
-  return ptr;
+  return (JawImpl*) ptr;
 }
 
 JawImpl*
@@ -382,7 +381,7 @@ jaw_impl_get_type (guint tflag)
     NULL
   };
 
-  static const GInterfaceInfo atk_editable_text_info = 
+  static const GInterfaceInfo atk_editable_text_info =
   {
     (GInterfaceInitFunc) jaw_editable_text_interface_init,
     (GInterfaceFinalizeFunc) NULL,
@@ -686,4 +685,3 @@ jaw_impl_get_atk_relation_type(JNIEnv *env, jstring jrel_key)
 #ifdef __cplusplus
 }
 #endif
-

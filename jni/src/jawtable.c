@@ -42,7 +42,9 @@ static gboolean     jaw_table_is_column_selected(AtkTable *table, gint column);
 static gboolean     jaw_table_is_row_selected(AtkTable *table, gint row);
 static gboolean     jaw_table_is_selected(AtkTable *table,gint row, gint column);
 static gboolean     jaw_table_add_row_selection(AtkTable *table, gint row);
+static gboolean     jaw_table_remove_row_selection (AtkTable *table, gint row);
 static gboolean     jaw_table_add_column_selection(AtkTable *table, gint column);
+static gboolean     jaw_table_remove_column_selection (AtkTable *table, gint column);
 static void         jaw_table_set_row_description(AtkTable *table,
                                                   gint row,
                                                   const gchar *description);
@@ -82,7 +84,9 @@ jaw_table_interface_init (AtkTableIface *iface, gpointer data)
   iface->is_row_selected = jaw_table_is_row_selected;
   iface->is_selected = jaw_table_is_selected;
   iface->add_row_selection = jaw_table_add_row_selection;
+  iface->remove_row_selection = jaw_table_remove_row_selection;
   iface->add_column_selection = jaw_table_add_column_selection;
+  iface->remove_column_selection = jaw_table_remove_column_selection;
   iface->set_row_description = jaw_table_set_row_description;
   iface->set_column_description = jaw_table_set_column_description;
   iface->set_row_header = jaw_table_set_row_header;
@@ -168,7 +172,7 @@ jaw_table_get_column_at_index (AtkTable *table, gint index)
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
-    return 0;
+    return -1;
   }
 
   jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
@@ -187,7 +191,7 @@ jaw_table_get_row_at_index (AtkTable *table, gint index)
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
-    return 0;
+    return -1;
   }
 
   jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
@@ -511,11 +515,7 @@ jaw_table_is_column_selected (AtkTable *table, gint column)
   jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "is_column_selected", "(I)Z");
   jboolean jselected = (*env)->CallBooleanMethod(env, atk_table, jmid, (jint)column);
   (*env)->DeleteGlobalRef(env, atk_table);
-
-  if (jselected == JNI_TRUE)
-    return TRUE;
-
-  return FALSE;
+  return jselected;
 }
 
 static gboolean
@@ -533,11 +533,7 @@ jaw_table_is_row_selected (AtkTable *table, gint row)
   jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "is_row_selected", "(I)Z");
   jboolean jselected = (*env)->CallBooleanMethod(env, atk_table, jmid, (jint)row);
   (*env)->DeleteGlobalRef(env, atk_table);
-
-  if (jselected == JNI_TRUE)
-    return TRUE;
-
-  return FALSE;
+  return jselected;
 }
 
 static gboolean
@@ -556,53 +552,34 @@ jaw_table_is_selected (AtkTable *table, gint row, gint column)
   jboolean jselected = (*env)->CallBooleanMethod(env, atk_table, jmid, (jint)row, (jint)column);
   (*env)->DeleteGlobalRef(env, atk_table);
 
-  if (jselected == JNI_TRUE)
-    return TRUE;
-
-  return FALSE;
+  return jselected;
 }
 
 static gboolean
 jaw_table_add_row_selection(AtkTable *table, gint row)
 {
-  JawObject *jaw_obj = JAW_OBJECT(table);
-  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
-  if (!atk_table) {
-    return FALSE;
-  }
+  g_warning("It is impossible to add row selection on AccessibleTable Java Object");
+  return FALSE;
+}
 
-  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "addRowSelection", "(I)Z");
-  jboolean jselected = (*env)->CallBooleanMethod(env, atk_table, jmid, (jint)row);
-  (*env)->DeleteGlobalRef(env, atk_table);
-
-  if (jselected == JNI_TRUE)
-    return TRUE;
-
+static gboolean
+jaw_table_remove_row_selection (AtkTable *table, gint row)
+{
+  g_warning("It is impossible to remove row selection on AccessibleTable Java Object");
   return FALSE;
 }
 
 static gboolean
 jaw_table_add_column_selection(AtkTable *table, gint column)
 {
-  JawObject *jaw_obj = JAW_OBJECT(table);
-  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
-  if (!atk_table) {
-    return FALSE;
-  }
+  g_warning("It is impossible to add column selection on AccessibleTable Java Object");
+  return FALSE;
+}
 
-  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "addColumnSelection", "(I)Z");
-  jboolean jselected = (*env)->CallBooleanMethod(env, atk_table, jmid, (jint)column);
-  (*env)->DeleteGlobalRef(env, atk_table);
-
-  if (jselected == JNI_TRUE)
-    return TRUE;
-
+static gboolean
+jaw_table_remove_column_selection (AtkTable *table, gint column)
+{
+  g_warning("It is impossible to remove column selection on AccessibleTable Java Object");
   return FALSE;
 }
 
@@ -651,60 +628,41 @@ jaw_table_set_column_description(AtkTable *table, gint column, const gchar *desc
 static void
 jaw_table_set_row_header(AtkTable *table, gint row, AtkObject *header)
 {
-  JawObject *jaw_obj = JAW_OBJECT(table);
-  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
-  if (!atk_table) {
-    return;
-  }
-
-  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env,
-                                       classAtkTable,
-                                       "setRowHeader",
-                                       "(ILjavax/accessibility/AccessibleTable;)V");
-  (*env)->CallVoidMethod(env, atk_table, jmid, (jint)row, (jobject)header);
-  (*env)->DeleteGlobalRef(env, atk_table);
+  g_warning("It is impossible to set a single row header on AccessibleTable Java Object");
 }
 
 static void
 jaw_table_set_column_header(AtkTable *table, gint column, AtkObject *header)
 {
-  JawObject *jaw_obj = JAW_OBJECT(table);
-  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
-  if (!atk_table) {
-    return;
-  }
-
-  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env,
-                                       classAtkTable,
-                                       "setColumnHeader",
-                                       "(ILjavax/accessibility/AccessibleTable;)V");
-  (*env)->CallVoidMethod(env, atk_table, jmid, (jint)column, (jobject)header);
-  (*env)->DeleteGlobalRef(env, atk_table);
+  g_warning("It is impossible to set a single column header on AccessibleTable Java Object");
 }
 
 static void
 jaw_table_set_caption(AtkTable *table, AtkObject *caption)
 {
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj)
+    return;
+  JawObject *jcaption = JAW_OBJECT(caption);
+  if (!jcaption)
+    return;
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
+  jclass accessible = (*env)->FindClass (env, "javax/accessibility/Accessible");
+  if ( !((*env)->IsInstanceOf(env, jcaption->acc_context, accessible)) )
+    return;
+  jobject obj = (*env)->NewGlobalRef(env, jcaption->acc_context);
+  if (!obj)
+    return;
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    (*env)->DeleteGlobalRef(env, obj);
     return;
   }
-
   jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env,
-                                       classAtkTable,
-                                       "setCaption",
-                                       "(Ljavax/accessibility/Accessible;)V");
-  (*env)->CallVoidMethod(env, atk_table, jmid, (jobject)caption);
+  jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "setCaption", "(Ljavax/accessibility/Accessible;)V");
+  (*env)->CallVoidMethod(env, atk_table, jmid, obj);
+  (*env)->DeleteGlobalRef(env, obj);
   (*env)->DeleteGlobalRef(env, atk_table);
 }
 
@@ -712,18 +670,26 @@ static void
 jaw_table_set_summary(AtkTable *table, AtkObject *summary)
 {
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj)
+    return;
+  JawObject *jsummary = JAW_OBJECT(summary);
+  if (!jsummary)
+    return;
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
+  jclass accessible = (*env)->FindClass (env, "javax/accessibility/Accessible");
+  if ( !((*env)->IsInstanceOf(env, jsummary->acc_context, accessible)) )
+    return;
+  jobject obj = (*env)->NewGlobalRef(env, jsummary->acc_context);
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    (*env)->DeleteGlobalRef(env, obj);
     return;
   }
 
   jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
-  jmethodID jmid = (*env)->GetMethodID(env,
-                                       classAtkTable,
-                                       "setSummary",
-                                       "(Ljavax/accessibility/Accessible;)V");
-  (*env)->CallVoidMethod(env, atk_table, jmid, (jobject)summary);
+  jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "setSummary", "(Ljavax/accessibility/Accessible;)V");
+  (*env)->CallVoidMethod(env, atk_table, jmid, obj);
+  (*env)->DeleteGlobalRef(env, obj);
   (*env)->DeleteGlobalRef(env, atk_table);
 }
