@@ -681,6 +681,8 @@ jaw_table_set_summary(AtkTable *table, AtkObject *summary)
   if ( !((*env)->IsInstanceOf(env, jsummary->acc_context, accessible)) )
     return;
   jobject obj = (*env)->NewGlobalRef(env, jsummary->acc_context);
+  if (!obj)
+    return;
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
     (*env)->DeleteGlobalRef(env, obj);

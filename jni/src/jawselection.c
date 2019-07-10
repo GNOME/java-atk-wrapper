@@ -92,11 +92,7 @@ jaw_selection_add_selection (AtkSelection *selection, gint i)
 	jboolean jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_selection, jmid, (jint)i);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_selection);
 
-	if (jbool == JNI_TRUE) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return jbool;
 }
 
 static gboolean
@@ -115,11 +111,7 @@ jaw_selection_clear_selection (AtkSelection *selection)
 	jboolean jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_selection, jmid);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_selection);
 
-	if (jbool == JNI_TRUE) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return jbool;
 }
 
 static AtkObject*
@@ -183,11 +175,7 @@ jaw_selection_is_child_selected (AtkSelection *selection, gint i)
 	jboolean jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_selection, jmid, (jint)i);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_selection);
 
-	if (jbool == JNI_TRUE) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return jbool;
 }
 
 static gboolean
@@ -206,11 +194,7 @@ jaw_selection_remove_selection (AtkSelection *selection, gint i)
 	jboolean jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_selection, jmid, (jint)i);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_selection);
 
-	if (jbool == JNI_TRUE) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return jbool;
 }
 
 static gboolean
@@ -229,9 +213,5 @@ jaw_selection_select_all_selection (AtkSelection *selection)
 	jboolean jbool = (*jniEnv)->CallBooleanMethod(jniEnv, atk_selection, jmid);
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_selection);
 
-	if (jbool == JNI_TRUE) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return jbool;
 }
