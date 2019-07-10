@@ -264,7 +264,9 @@ jaw_object_get_name (AtkObject *atk_obj)
       AtkObject *child = atk_selection_ref_selection(selection, 0);
       if (child != NULL)
       {
-        return atk_object_get_name(child);
+        const gchar* name = atk_object_get_name(child);
+        g_object_unref(child);
+        return name;
       }
     }
   }
