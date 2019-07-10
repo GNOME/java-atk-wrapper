@@ -664,31 +664,31 @@ signal_emit_handler (gpointer p)
                             "children_changed::add",
                             child_index,
                             para->child_impl);
-        if (G_OBJECT(atk_obj) != NULL)
-          g_object_ref(G_OBJECT(atk_obj));
+      if (G_OBJECT(atk_obj) != NULL)
+        g_object_ref(G_OBJECT(atk_obj));
+      break;
+    }
+    case Sig_Object_Children_Changed_Remove:
+    {
+      gint child_index = get_int_value(jniEnv,
+                                       (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
+      jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
+      JawImpl *child_impl = jaw_impl_find_instance(jniEnv, child_ac);
+      if (!child_impl)
+      {
         break;
       }
-      case Sig_Object_Children_Changed_Remove:
-      {
-        gint child_index = get_int_value(jniEnv,
-                                         (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-        jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
-        JawImpl *child_impl = jaw_impl_find_instance(jniEnv, child_ac);
-        if (!child_impl)
-        {
-          break;
-        }
 
-        g_signal_emit_by_name(atk_obj,
-                              "children_changed::remove",
-                              child_index,
-                              child_impl);
-        if (G_OBJECT(atk_obj) != NULL)
-          g_object_unref(G_OBJECT(atk_obj));
-        break;
-      }
-      case Sig_Object_Active_Descendant_Changed:
-      {
+      g_signal_emit_by_name(atk_obj,
+                            "children_changed::remove",
+                            child_index,
+                            child_impl);
+      if (G_OBJECT(atk_obj) != NULL)
+        g_object_unref(G_OBJECT(atk_obj));
+      break;
+    }
+    case Sig_Object_Active_Descendant_Changed:
+    {
       g_signal_emit_by_name(atk_obj,
                             "active_descendant_changed",
                             para->child_impl);
