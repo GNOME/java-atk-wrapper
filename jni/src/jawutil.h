@@ -25,12 +25,17 @@
 #include <unistd.h>
 #include <time.h>
 
-extern gboolean jaw_debug;
+extern int jaw_debug;
 extern FILE *log_file;
 
-#define JAW_DEBUG(fmt, ...) do { \
+#define JAW_DEBUG_F(lvl, msg, ...) JAW_DEBUG("%s(" msg ")", __func__, ##__VA_ARGS__)
+
+#define JAW_DEBUG_I(1, msg, ...) JAW_DEBUG("%s: " msg , __func__, ##__VA_ARGS__)
+
+#define JAW_DEBUG(lvl, fmt, ...) do { \
     if (jaw_debug) { \
-        fprintf(log_file, "TIME:[%lu] PID:{%d} " fmt "\n", (unsigned long) time(NULL), (int)getpid(), ##__VA_ARGS__); \
+        if (lvl <= jaw_debug) \
+            fprintf(log_file, "TIME:[%lu] PID:{%d} " fmt "\n", (unsigned long) time(NULL), (int)getpid(), ##__VA_ARGS__); \
     } \
 } while (0)
 
