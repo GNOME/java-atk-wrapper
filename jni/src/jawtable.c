@@ -669,15 +669,15 @@ jaw_table_set_caption(AtkTable *table, AtkObject *caption)
     JawObject *jaw_obj = JAW_OBJECT(table);
     if (!jaw_obj)
         return;
-    jobject *jcaption = (jobject)caption;
+    JawObject *jcaption = JAW_OBJECT(caption);
     if (!jcaption)
         return;
     TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
     JNIEnv *env = jaw_util_get_jni_env();
     jobject obj;
     jclass accesssible = (*env)->FindClass (env, "javax/accessibility/Accessible");
-    if ( (*env)->IsInstanceof(env, jcaption, accessible) )
-        obj = (*env)->NewGlobalRef(env, jcaption);
+    if ( (*env)->IsInstanceof(env, jcaption->acc_context, accessible) )
+        obj = (*env)->NewGlobalRef(env, jcaption->acc_context);
     else
         return;
     jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
@@ -697,15 +697,15 @@ jaw_table_set_summary(AtkTable *table, AtkObject *summary)
     JawObject *jaw_obj = JAW_OBJECT(table);
     if (!jaw_obj)
         return;
-    jobject *jsummary = (jobject)summary;
+    JawObject *jsummary = JAW_OBJECT(summary);
     if (!jsummary)
         return;
     TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
     JNIEnv *env = jaw_util_get_jni_env();
     jobject obj;
     jclass accesssible = (*env)->FindClass (env, "javax/accessibility/Accessible");
-    if ( (*env)->IsInstanceof(env, jsummary, accessible) )
-        obj = (*env)->NewGlobalRef(env, jcaption);
+    if ( (*env)->IsInstanceof(env, jsummary->acc_context, accessible) )
+        obj = (*env)->NewGlobalRef(env, jsummary->acc_context);
     else
         return;
     jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
