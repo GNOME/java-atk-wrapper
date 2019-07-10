@@ -28,16 +28,22 @@
 extern int jaw_debug;
 extern FILE *log_file;
 
-#define JAW_DEBUG_F(lvl, msg, ...) JAW_DEBUG("%s(" msg ")", __func__, ##__VA_ARGS__)
-
-#define JAW_DEBUG_I(1, msg, ...) JAW_DEBUG("%s: " msg , __func__, ##__VA_ARGS__)
-
 #define JAW_DEBUG(lvl, fmt, ...) do { \
     if (jaw_debug) { \
         if (lvl <= jaw_debug) \
             fprintf(log_file, "TIME:[%lu] PID:{%d} " fmt "\n", (unsigned long) time(NULL), (int)getpid(), ##__VA_ARGS__); \
     } \
 } while (0)
+
+#define JAW_DEBUG_I(msg, ...) JAW_DEBUG(1, "%s: " msg , __func__, ##__VA_ARGS__)
+
+#define JAW_DEBUG_F(lvl, msg, ...) JAW_DEBUG(lvl, "%s(" msg ")", __func__, ##__VA_ARGS__)
+
+#define JAW_DEBUG_JNI(msg, ...) JAW_DEBUG_F(2, msg, ##__VA_ARGS__)
+
+#define JAW_DEBUG_C(msg, ...) JAW_DEBUG_F(3, msg, ##__VA_ARGS__)
+
+#define JAW_DEBUG_ALL(msg, ...) JAW_DEBUG_F(4, msg, ##__VA_ARGS__)
 
 G_BEGIN_DECLS
 
