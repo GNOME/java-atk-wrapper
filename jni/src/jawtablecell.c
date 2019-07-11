@@ -134,11 +134,7 @@ jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column)
                                                    (jint)GPOINTER_TO_INT(row),
                                                    (jint)GPOINTER_TO_INT(column));
   (*jniEnv)->DeleteGlobalRef(jniEnv, jatk_table_cell);
-
-  if (jposition == JNI_TRUE)
-    return TRUE;
-
-  return FALSE;
+  return jposition;
 }
 
 static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
@@ -170,10 +166,7 @@ static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
                                                 (jint)GPOINTER_TO_INT(column_span)
                                                 );
   (*jniEnv)->DeleteGlobalRef(jniEnv, jatk_table_cell);
-  if (jspan == JNI_TRUE)
-    return TRUE;
-
-  return FALSE;
+  return jspan;
 }
 
 static gint

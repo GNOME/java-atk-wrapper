@@ -36,9 +36,6 @@ FILE *log_file;
 extern "C" {
 #endif
 
-#define JNI_FALSE 0
-#define JNI_TRUE 1
-
 #define KEY_DISPATCH_NOT_DISPATCHED 0
 #define KEY_DISPATCH_CONSUMED 1
 #define KEY_DISPATCH_NOT_CONSUMED 2
@@ -377,7 +374,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowOpen(JNIEnv *jniEnv,
   jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
   CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
-  para->is_toplevel = (jIsToplevel == JNI_TRUE) ? TRUE : FALSE;
+  para->is_toplevel = jIsToplevel;
   jni_main_idle_add(window_open_handler, para);
 }
 
@@ -432,7 +429,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowClose(JNIEnv *jniEnv,
   jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
   CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
-  para->is_toplevel = (jIsToplevel == JNI_TRUE) ? TRUE : FALSE;
+  para->is_toplevel = jIsToplevel;
   jni_main_idle_add(window_close_handler, para);
 }
 
@@ -950,11 +947,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_objectStateChange(JNIEnv *jniEnv
   CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
   AtkStateType state_type = jaw_util_get_atk_state_type_from_java_state( jniEnv, state );
   para->atk_state = state_type;
-  if (value == JNI_TRUE) {
-    para->state_value = TRUE;
-  } else {
-    para->state_value = FALSE;
-  }
+  para->state_value = value;
   jni_main_idle_add(object_state_change_handler, para);
 }
 
@@ -1120,25 +1113,25 @@ key_dispatch_handler (gpointer p)
   // state
   jfieldID jfidShift = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "isShiftKeyDown", "Z");
   jboolean jShiftKeyDown = (*jniEnv)->GetBooleanField(jniEnv, jAtkKeyEvent, jfidShift);
-  if (jShiftKeyDown == JNI_TRUE) {
+  if (jShiftKeyDown) {
     event->state |= GDK_SHIFT_MASK;
   }
 
   jfieldID jfidCtrl = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "isCtrlKeyDown", "Z");
   jboolean jCtrlKeyDown = (*jniEnv)->GetBooleanField(jniEnv, jAtkKeyEvent, jfidCtrl);
-  if (jCtrlKeyDown == JNI_TRUE) {
+  if (jCtrlKeyDown) {
     event->state |= GDK_CONTROL_MASK;
   }
 
   jfieldID jfidAlt = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "isAltKeyDown", "Z");
   jboolean jAltKeyDown = (*jniEnv)->GetBooleanField(jniEnv, jAtkKeyEvent, jfidAlt);
-  if (jAltKeyDown == JNI_TRUE) {
+  if (jAltKeyDown) {
     event->state |= GDK_MOD1_MASK;
   }
 
   jfieldID jfidMeta = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "isMetaKeyDown", "Z");
   jboolean jMetaKeyDown = (*jniEnv)->GetBooleanField(jniEnv, jAtkKeyEvent, jfidMeta);
-  if (jMetaKeyDown == JNI_TRUE)
+  if (jMetaKeyDown)
   {
     event->state |= GDK_META_MASK;
   }
@@ -1192,10 +1185,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_dispatchKeyEvent(JNIEnv *jniEnv,
     printf("key_dispatch_result saved = %d\n ", key_dispatch_result);
   if (key_dispatch_result == KEY_DISPATCH_CONSUMED)
   {
-    key_consumed = JNI_TRUE;
+    key_consumed = TRUE;
   } else
   {
-    key_consumed = JNI_FALSE;
+    key_consumed = FALSE;
   }
 
   key_dispatch_result = KEY_DISPATCH_NOT_DISPATCHED;

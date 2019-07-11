@@ -258,13 +258,7 @@ jaw_component_grab_focus (AtkComponent *component)
                                           "()Z");
   jboolean jresult = (*jniEnv)->CallBooleanMethod(jniEnv, atk_component, jmid);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
-
-  if (jresult == JNI_TRUE)
-  {
-    return TRUE;
-  }
-
-  return FALSE;
+  return jresult;
 }
 
 static AtkLayer
