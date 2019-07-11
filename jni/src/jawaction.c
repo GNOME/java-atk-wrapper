@@ -138,11 +138,7 @@ jaw_action_do_action (AtkAction *action, gint i)
                                                   jmid,
                                                   (jint)i);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
-
-  if (jresult == JNI_TRUE)
-    return TRUE;
-
-  return FALSE;
+  return jresult;
 }
 
 static gint
@@ -229,13 +225,7 @@ jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
                                                  (jint)i,
                                                  (jstring)description);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
-
-  if (jisset == JNI_TRUE)
-  {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
+  return jisset;
 }
 
 static const gchar*

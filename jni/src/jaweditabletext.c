@@ -285,8 +285,5 @@ jaw_editable_text_set_run_attributes(AtkEditableText *text,
                                                (jint)start_offset,
                                                (jint)end_offset);
   (*env)->DeleteGlobalRef(env, atk_editable_text);
-  if (jresult == JNI_TRUE)
-    return TRUE;
-
-  return FALSE;
+  return jresult;
 }
