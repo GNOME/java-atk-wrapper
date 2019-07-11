@@ -90,8 +90,8 @@ JNIEXPORT jboolean
 JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
 {
     const gchar* debug_env = g_getenv("JAW_DEBUG");
-    int val_debug= atoi(debug_env);
-    if (val_debug)
+    int val_debug = atoi(debug_env);
+    if (val_debug > 0)
     {
         if(val_debug > 4)
             jaw_debug = 4;
