@@ -236,6 +236,7 @@ jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
   JawObject *jaw_par = JAW_OBJECT(parent);
   jobject pa = (*jniEnv)->NewGlobalRef(jniEnv, jaw_par->acc_context);
   if (!pa) {
+      (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
       return;
   }
 
@@ -264,7 +265,9 @@ jaw_object_get_name (AtkObject *atk_obj)
       AtkObject *child = atk_selection_ref_selection(selection, 0);
       if (child != NULL)
       {
-        return atk_object_get_name(child);
+        const gchar* name = atk_object_get_name(child);
+        g_object_unref(child);
+        return name;
       }
     }
   }
