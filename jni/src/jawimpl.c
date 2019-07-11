@@ -577,95 +577,43 @@ jaw_impl_initialize (AtkObject *atk_obj, gpointer data)
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
 }
 
-static jstring
-get_java_relation_key_constant (JNIEnv *jniEnv, const gchar* strKey)
-{
-  jclass classAccessibleRelation = (*jniEnv)->FindClass(jniEnv,
-                                                        "javax/accessibility/AccessibleRelation");
-  jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv,
-                                              classAccessibleRelation,
-                                              strKey,
-                                              "Ljava/lang/String;");
-  jstring jkey = (*jniEnv)->GetStaticObjectField(jniEnv,
-                                                 classAccessibleRelation,
-                                                 jfid);
-
-  return jkey;
-}
-
 static gboolean
-is_java_relation_key (JNIEnv *jniEnv,jstring jKey, const gchar* strKey)
+is_java_relation_key (JNIEnv *jniEnv, jstring jKey, const gchar* strKey)
 {
-  jstring jConstKey = get_java_relation_key_constant (jniEnv, strKey);
-
-  if ( (*jniEnv)->IsSameObject(jniEnv, jKey, jConstKey) )
-  {
-    return TRUE;
-  } else
-  {
-    return FALSE;
-  }
-}
-
-static AtkRelationType
-get_atk_relation_type_from_java_key (JNIEnv *jniEnv, jstring jrel_key)
-{
-  if ( is_java_relation_key(jniEnv, jrel_key, "CHILD_NODE_OF") )
-  {
-    return ATK_RELATION_NODE_CHILD_OF;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "CONTROLLED_BY") )
-  {
-    return ATK_RELATION_CONTROLLED_BY;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "CONTROLLER_FOR") )
-  {
-    return ATK_RELATION_CONTROLLER_FOR;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "EMBEDDED_BY") )
-  {
-    return ATK_RELATION_EMBEDDED_BY;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "EMBEDS") )
-  {
-    return ATK_RELATION_EMBEDS;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "FLOWS_FROM") )
-  {
-    return ATK_RELATION_FLOWS_FROM;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "FLOWS_TO") )
-  {
-    return ATK_RELATION_FLOWS_TO;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "LABEL_FOR") )
-  {
-    return ATK_RELATION_LABEL_FOR;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "LABELED_BY") )
-  {
-    return ATK_RELATION_LABELLED_BY;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "MEMBER_OF") )
-  {
-    return ATK_RELATION_MEMBER_OF;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "PARENT_WINDOW_OF") )
-  {
-    return ATK_RELATION_PARENT_WINDOW_OF;
-  }
-  if ( is_java_relation_key(jniEnv, jrel_key, "SUBWINDOW_OF") )
-  {
-    return ATK_RELATION_SUBWINDOW_OF;
-  }
-
-  return ATK_RELATION_NULL;
+  jclass classAccessibleRelation = (*jniEnv)->FindClass(jniEnv, "javax/accessibility/AccessibleRelation");
+  jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv, classAccessibleRelation, strKey, "Ljava/lang/String;");
+  jstring jConstKey = (*jniEnv)->GetStaticObjectField(jniEnv, classAccessibleRelation, jfid);
+  return (*jniEnv)->IsSameObject(jniEnv, jKey, jConstKey);
 }
 
 AtkRelationType
-jaw_impl_get_atk_relation_type(JNIEnv *env, jstring jrel_key)
+jaw_impl_get_atk_relation_type(JNIEnv *jniEnv, jstring jrel_key)
 {
-  return get_atk_relation_type_from_java_key(env, jrel_key);
+  if ( is_java_relation_key(jniEnv, jrel_key, "CHILD_NODE_OF") )
+    return ATK_RELATION_NODE_CHILD_OF;
+  if ( is_java_relation_key(jniEnv, jrel_key, "CONTROLLED_BY") )
+    return ATK_RELATION_CONTROLLED_BY;
+  if ( is_java_relation_key(jniEnv, jrel_key, "CONTROLLER_FOR") )
+    return ATK_RELATION_CONTROLLER_FOR;
+  if ( is_java_relation_key(jniEnv, jrel_key, "EMBEDDED_BY") )
+    return ATK_RELATION_EMBEDDED_BY;
+  if ( is_java_relation_key(jniEnv, jrel_key, "EMBEDS") )
+    return ATK_RELATION_EMBEDS;
+  if ( is_java_relation_key(jniEnv, jrel_key, "FLOWS_FROM") )
+    return ATK_RELATION_FLOWS_FROM;
+  if ( is_java_relation_key(jniEnv, jrel_key, "FLOWS_TO") )
+    return ATK_RELATION_FLOWS_TO;
+  if ( is_java_relation_key(jniEnv, jrel_key, "LABEL_FOR") )
+    return ATK_RELATION_LABEL_FOR;
+  if ( is_java_relation_key(jniEnv, jrel_key, "LABELED_BY") )
+    return ATK_RELATION_LABELLED_BY;
+  if ( is_java_relation_key(jniEnv, jrel_key, "MEMBER_OF") )
+    return ATK_RELATION_MEMBER_OF;
+  if ( is_java_relation_key(jniEnv, jrel_key, "PARENT_WINDOW_OF") )
+    return ATK_RELATION_PARENT_WINDOW_OF;
+  if ( is_java_relation_key(jniEnv, jrel_key, "SUBWINDOW_OF") )
+    return ATK_RELATION_SUBWINDOW_OF;
+  return ATK_RELATION_NULL;
 }
 
 #ifdef __cplusplus
