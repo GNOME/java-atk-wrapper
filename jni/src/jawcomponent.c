@@ -59,6 +59,7 @@ typedef struct _ComponentData {
 void
 jaw_component_interface_init (AtkComponentIface *iface, gpointer data)
 {
+    JAW_DEBUG_ALL("%p,%p", iface, data);
   iface->contains = jaw_component_contains;
   iface->ref_accessible_at_point = jaw_component_ref_accessible_at_point;
   iface->get_extents = jaw_component_get_extents;
@@ -71,7 +72,7 @@ jaw_component_interface_init (AtkComponentIface *iface, gpointer data)
 gpointer
 jaw_component_data_init (jobject ac)
 {
-    JAW_DEBUG("%s(%p)", __func__, ac);
+    JAW_DEBUG_ALL("%p", ac);
   ComponentData *data = g_new0(ComponentData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -91,7 +92,7 @@ jaw_component_data_init (jobject ac)
 void
 jaw_component_data_finalize (gpointer p)
 {
-    JAW_DEBUG("%s(%p)", __func__, p);
+    JAW_DEBUG_ALL("%p", p);
   ComponentData *data = (ComponentData*)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -105,7 +106,7 @@ jaw_component_data_finalize (gpointer p)
 static gboolean
 jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType coord_type)
 {
-    JAW_DEBUG("%s(%p, %d, %d, %d)", __func__, component, x, y, coord_type);
+    JAW_DEBUG_C("%p, %d, %d, %d", component, x, y, coord_type);
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -141,7 +142,7 @@ jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType co
 static AtkObject*
 jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, AtkCoordType coord_type)
 {
-    JAW_DEBUG("%s(%p, %d, %d, %d)", __func__, component, x, y, coord_type);
+    JAW_DEBUG_C("%p, %d, %d, %d", component, x, y, coord_type);
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -180,7 +181,7 @@ jaw_component_get_extents (AtkComponent *component,
                            gint         *height,
                            AtkCoordType coord_type)
 {
-    JAW_DEBUG("%s(%p, %d, %d, %d, %d, %d)", __func__, component, x, y, width, height, coord_type);
+    JAW_DEBUG_C("%p, %d, %d, %d, %d, %d", component, x, y, width, height, coord_type);
   if (x == NULL || y == NULL || width == NULL || height == NULL)
     return;
 
@@ -234,7 +235,7 @@ jaw_component_set_extents (AtkComponent *component,
                            gint         height,
                            AtkCoordType coord_type)
 {
-    JAW_DEBUG("%s(%p, %d, %d, %d, %d, %d)", __func__, component, x, y, width, height, coord_type);
+    JAW_DEBUG_C("%p, %d, %d, %d, %d, %d", component, x, y, width, height, coord_type);
     JawObject *jaw_obj = JAW_OBJECT(component);
     if (!jaw_obj)
         return FALSE;
@@ -253,7 +254,7 @@ jaw_component_set_extents (AtkComponent *component,
 static gboolean
 jaw_component_grab_focus (AtkComponent *component)
 {
-    JAW_DEBUG("%s(%p)", __func__, component);
+    JAW_DEBUG_C("%p", component);
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -282,7 +283,7 @@ jaw_component_grab_focus (AtkComponent *component)
 static AtkLayer
 jaw_component_get_layer (AtkComponent *component)
 {
-    JAW_DEBUG("%s(%p)", __func__, component);
+    JAW_DEBUG_C("%p", component);
   JawObject *jaw_obj = JAW_OBJECT(component);
   ComponentData *data = jaw_object_get_interface_data(jaw_obj,
                                                       INTERFACE_COMPONENT);
