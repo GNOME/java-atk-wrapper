@@ -40,7 +40,7 @@ G_DEFINE_TYPE (JawHyperlink, jaw_hyperlink, ATK_TYPE_HYPERLINK)
 JawHyperlink*
 jaw_hyperlink_new (jobject jhyperlink)
 {
-	JAW_DEBUG("%s(%p)", __func__, jhyperlink);
+	JAW_DEBUG_ALL("%p", jhyperlink);
 	JawHyperlink* jaw_hyperlink = g_object_new(JAW_TYPE_HYPERLINK, NULL);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jaw_hyperlink->jhyperlink = (*jniEnv)->NewWeakGlobalRef(jniEnv, jhyperlink);
@@ -51,7 +51,7 @@ jaw_hyperlink_new (jobject jhyperlink)
 static void
 jaw_hyperlink_class_init (JawHyperlinkClass *klass)
 {
-	JAW_DEBUG("%s(%p)", __func__, klass);
+	JAW_DEBUG_ALL("%p", klass);
 	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 	gobject_class->dispose = jaw_hyperlink_dispose;
 	gobject_class->finalize = jaw_hyperlink_finalize;
@@ -68,13 +68,13 @@ jaw_hyperlink_class_init (JawHyperlinkClass *klass)
 static void
 jaw_hyperlink_init (JawHyperlink *link)
 {
-	JAW_DEBUG("%s(%p)", __func__, link);
+	JAW_DEBUG_ALL("%p", link);
 }
 
 static void
 jaw_hyperlink_dispose(GObject *gobject)
 {
-	JAW_DEBUG("%s(%p)", __func__, gobject);
+	JAW_DEBUG_ALL("%p", gobject);
 	/* Chain up to parent's dispose */
 	G_OBJECT_CLASS(jaw_hyperlink_parent_class)->dispose(gobject);
 }
@@ -82,7 +82,7 @@ jaw_hyperlink_dispose(GObject *gobject)
 static void
 jaw_hyperlink_finalize(GObject *gobject)
 {
-	JAW_DEBUG("%s(%p)", __func__, gobject);
+	JAW_DEBUG_ALL("%p", gobject);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(gobject);
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -97,7 +97,7 @@ static gchar*
 jaw_hyperlink_get_uri (AtkHyperlink *atk_hyperlink,
 			gint i)
 {
-	JAW_DEBUG("%s(%p, %d)", __func__, atk_hyperlink, i);
+	JAW_DEBUG_C("%p, %d", atk_hyperlink, i);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
@@ -125,7 +125,7 @@ static AtkObject*
 jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
 			gint i)
 {
-	JAW_DEBUG("%s(%p, %d)", __func__, atk_hyperlink, i);
+	JAW_DEBUG_C("%p, %d", atk_hyperlink, i);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
@@ -149,7 +149,7 @@ jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
 static gint
 jaw_hyperlink_get_end_index (AtkHyperlink *atk_hyperlink)
 {
-	JAW_DEBUG("%s(%p)", __func__, atk_hyperlink);
+	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
@@ -167,7 +167,7 @@ jaw_hyperlink_get_end_index (AtkHyperlink *atk_hyperlink)
 
 static gint jaw_hyperlink_get_start_index (AtkHyperlink	*atk_hyperlink)
 {
-	JAW_DEBUG("%s(%p)", __func__, atk_hyperlink);
+	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
@@ -185,7 +185,7 @@ static gint jaw_hyperlink_get_start_index (AtkHyperlink	*atk_hyperlink)
 
 static gboolean jaw_hyperlink_is_valid (AtkHyperlink *atk_hyperlink)
 {
-	JAW_DEBUG("%s(%p)", __func__, atk_hyperlink);
+	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
@@ -203,7 +203,7 @@ static gboolean jaw_hyperlink_is_valid (AtkHyperlink *atk_hyperlink)
 
 static gint jaw_hyperlink_get_n_anchors (AtkHyperlink *atk_hyperlink)
 {
-	JAW_DEBUG("%s(%p)", __func__, atk_hyperlink);
+	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
