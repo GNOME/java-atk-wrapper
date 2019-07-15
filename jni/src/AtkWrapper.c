@@ -106,7 +106,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
   JAW_DEBUG_F(2,"");
 
   if (jaw_initialized)
-    return JNI_TRUE;
+    return TRUE;
   // Java app with GTK Look And Feel will load gail
   // Set NO_GAIL to "1" to prevent gail from executing
 
@@ -120,7 +120,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
   // Force to invoke base initialization function of each ATK interfaces
   g_type_class_unref(g_type_class_ref(ATK_TYPE_NO_OP_OBJECT));
 
-  return JNI_TRUE;
+  return TRUE;
 }
 
 static guint
