@@ -40,7 +40,7 @@ G_DEFINE_TYPE (JawToplevel, jaw_toplevel, ATK_TYPE_OBJECT)
 static void
 jaw_toplevel_class_init (JawToplevelClass *klass)
 {
-    JAW_DEBUG_ALL("%p", klass);
+  JAW_DEBUG_ALL("%p", klass);
   AtkObjectClass *atk_object_class = ATK_OBJECT_CLASS(klass);
   GObjectClass *g_object_class = G_OBJECT_CLASS(klass);
 
@@ -59,21 +59,21 @@ jaw_toplevel_class_init (JawToplevelClass *klass)
 static void
 jaw_toplevel_init (JawToplevel *toplevel)
 {
-    JAW_DEBUG_ALL("%p", toplevel);
+  JAW_DEBUG_ALL("%p", toplevel);
   toplevel->windows = NULL;
 }
 
 static void
 jaw_toplevel_initialize(AtkObject *accessible, gpointer data)
 {
-    JAW_DEBUG_ALL("%p, %p", accessible, data);
+  JAW_DEBUG_ALL("%p, %p", accessible, data);
  ATK_OBJECT_CLASS (jaw_toplevel_parent_class)->initialize(accessible, data);
 }
 
 static void
 jaw_toplevel_object_finalize (GObject *obj)
 {
-    JAW_DEBUG_ALL("%p", obj);
+  JAW_DEBUG_ALL("%p", obj);
   JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
   g_list_free(jaw_toplevel->windows);
 
@@ -84,7 +84,7 @@ jaw_toplevel_object_finalize (GObject *obj)
 static const gchar*
 jaw_toplevel_get_name (AtkObject *obj)
 {
-    JAW_DEBUG_C("%p", obj);
+  JAW_DEBUG_C("%p", obj);
   gint i;
   for(i = 0; i < atk_object_get_n_accessible_children(obj); i++)
   {
@@ -104,14 +104,14 @@ jaw_toplevel_get_name (AtkObject *obj)
 static const gchar*
 jaw_toplevel_get_description (AtkObject *obj)
 {
-    JAW_DEBUG_C("%p", obj);
+  JAW_DEBUG_C("%p", obj);
   return "Accessible Java application";
 }
 
 static gint
 jaw_toplevel_get_n_children (AtkObject *obj)
 {
-    JAW_DEBUG_C("%p", obj);
+  JAW_DEBUG_C("%p", obj);
   JawToplevel* jaw_toplevel = JAW_TOPLEVEL(obj);
   gint n = g_list_length(jaw_toplevel->windows);
 
@@ -121,7 +121,7 @@ jaw_toplevel_get_n_children (AtkObject *obj)
 static gint
 jaw_toplevel_get_index_in_parent (AtkObject *obj)
 {
-    JAW_DEBUG_C("%p", obj);
+  JAW_DEBUG_C("%p", obj);
   JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
   gint i = g_list_index(jaw_toplevel->windows, obj);
 
@@ -131,14 +131,14 @@ jaw_toplevel_get_index_in_parent (AtkObject *obj)
 static AtkRole
 jaw_toplevel_get_role (AtkObject *obj)
 {
-    JAW_DEBUG_C("%p", obj);
+  JAW_DEBUG_C("%p", obj);
   return ATK_ROLE_APPLICATION;
 }
 
 static AtkObject*
 jaw_toplevel_ref_child (AtkObject *obj, gint i)
 {
-    JAW_DEBUG_C("%p, %d", obj, i);
+  JAW_DEBUG_C("%p, %d", obj, i);
   JawToplevel *jaw_toplevel = JAW_TOPLEVEL(obj);
   AtkObject* child = (AtkObject*)g_list_nth_data(jaw_toplevel->windows, i);
 
@@ -151,14 +151,14 @@ jaw_toplevel_ref_child (AtkObject *obj, gint i)
 static AtkObject*
 jaw_toplevel_get_parent (AtkObject *obj)
 {
-    JAW_DEBUG_C("%p", obj);
+  JAW_DEBUG_C("%p", obj);
   return NULL;
 }
 
 gint
 jaw_toplevel_add_window (JawToplevel *toplevel, AtkObject *child)
 {
-    JAW_DEBUG_C("%p, %p", toplevel, child);
+  JAW_DEBUG_C("%p, %p", toplevel, child);
   if (toplevel == NULL)
   {
     return -1;
@@ -176,7 +176,7 @@ jaw_toplevel_add_window (JawToplevel *toplevel, AtkObject *child)
 
 gint jaw_toplevel_remove_window(JawToplevel *toplevel, AtkObject *child)
 {
-    JAW_DEBUG_C("%p, %p", toplevel, child);
+  JAW_DEBUG_C("%p, %p", toplevel, child);
   gint index = -1;
 
   if (toplevel == NULL)
@@ -196,7 +196,7 @@ gint jaw_toplevel_remove_window(JawToplevel *toplevel, AtkObject *child)
 
 gint jaw_toplevel_get_child_index(JawToplevel *toplevel, AtkObject *child)
 {
-    JAW_DEBUG_C("%p, %p", toplevel, child);
+  JAW_DEBUG_C("%p, %p", toplevel, child);
   gint i = g_list_index(toplevel->windows, child);
   return i;
 }
