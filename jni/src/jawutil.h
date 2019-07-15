@@ -28,31 +28,36 @@
 extern int jaw_debug;
 extern FILE *log_file;
 
+#define PRINT_AND_FLUSH(fmt, ...) do { \
+    fprintf(log_file, "TIME:[%lu] PID:{%d} %s" fmt "\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
+    fflush(log_file); \
+} while (0)
+
 #define JAW_DEBUG_I(fmt, ...) do { \
     if (jaw_debug) { \
         if (1 <= jaw_debug) \
-            fprintf(log_file, "TIME:[%lu] PID:{%d} %s: " fmt "\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
+            PRINT_AND_FLUSH(": "fmt, ##__VA_ARGS__); \
     } \
 } while (0)
 
 #define JAW_DEBUG_JNI(fmt, ...) do { \
     if (jaw_debug) { \
         if (2 <= jaw_debug) \
-            fprintf(log_file, "TIME:[%lu] PID:{%d} %s(" fmt ")\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
+            PRINT_AND_FLUSH("("fmt")", ##__VA_ARGS__); \
     } \
 } while (0)
 
 #define JAW_DEBUG_C(fmt, ...) do { \
     if (jaw_debug) { \
         if (3 <= jaw_debug) \
-            fprintf(log_file, "TIME:[%lu] PID:{%d} %s(" fmt ")\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
+            PRINT_AND_FLUSH("("fmt")", ##__VA_ARGS__); \
     } \
 } while (0)
 
 #define JAW_DEBUG_ALL(fmt, ...) do { \
     if (jaw_debug) { \
         if (4 <= jaw_debug) \
-            fprintf(log_file, "TIME:[%lu] PID:{%d} %s(" fmt ")\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
+            PRINT_AND_FLUSH("("fmt")", ##__VA_ARGS__); \
     } \
 } while (0)
 
