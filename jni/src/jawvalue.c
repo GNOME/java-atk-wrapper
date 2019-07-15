@@ -153,10 +153,15 @@ jaw_value_get_current_value (AtkValue *obj, GValue *value)
   }
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_value = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return;
   }
 
@@ -187,10 +192,15 @@ jaw_value_set_value(AtkValue *obj, const gdouble value)
     return;
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return;
   }
 
@@ -208,10 +218,15 @@ jaw_value_get_range(AtkValue *obj)
 {
   JAW_DEBUG_C("%p", obj);
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return NULL;
   }
 
@@ -230,10 +245,15 @@ jaw_value_get_increment (AtkValue *obj)
 {
   JAW_DEBUG_C("%p", obj);
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return 0.;
   }
   jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");

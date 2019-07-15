@@ -99,6 +99,10 @@ jaw_hyperlink_get_uri (AtkHyperlink *atk_hyperlink,
 {
 	JAW_DEBUG_C("%p, %d", atk_hyperlink, i);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
+	if (!jaw_hyperlink) {
+		JAW_DEBUG_I("jaw_hyperlink == NULL");
+		return NULL;
+	}
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
 	if (!jhyperlink) {
@@ -127,6 +131,10 @@ jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
 {
 	JAW_DEBUG_C("%p, %d", atk_hyperlink, i);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
+	if (!jaw_hyperlink) {
+		JAW_DEBUG_I("jaw_hyperlink == NULL");
+		return NULL;
+	}
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
 	if (!jhyperlink) {
@@ -151,6 +159,10 @@ jaw_hyperlink_get_end_index (AtkHyperlink *atk_hyperlink)
 {
 	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
+	if (!jaw_hyperlink) {
+		JAW_DEBUG_I("jaw_hyperlink == NULL");
+		return 0;
+	}
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
 	if (!jhyperlink) {
@@ -169,6 +181,10 @@ static gint jaw_hyperlink_get_start_index (AtkHyperlink	*atk_hyperlink)
 {
 	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
+	if (!jaw_hyperlink) {
+		JAW_DEBUG_I("jaw_hyperlink == NULL");
+		return 0;
+	}
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
 	if (!jhyperlink) {
@@ -187,6 +203,10 @@ static gboolean jaw_hyperlink_is_valid (AtkHyperlink *atk_hyperlink)
 {
 	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
+	if (!jaw_hyperlink) {
+		JAW_DEBUG_I("jaw_hyperlink == NULL");
+		return FALSE;
+	}
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
 	if (!jhyperlink) {
@@ -205,6 +225,10 @@ static gint jaw_hyperlink_get_n_anchors (AtkHyperlink *atk_hyperlink)
 {
 	JAW_DEBUG_C("%p", atk_hyperlink);
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(atk_hyperlink);
+	if (!jaw_hyperlink) {
+		JAW_DEBUG_I("jaw_hyperlink == NULL");
+		return 0;
+	}
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
 	if (!jhyperlink) {

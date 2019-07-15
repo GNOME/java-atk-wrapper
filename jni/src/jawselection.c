@@ -84,10 +84,15 @@ jaw_selection_add_selection (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
+	if (!jaw_obj) {
+		JAW_DEBUG_I("jaw_obj == NULL");
+		return FALSE;
+	}
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
 	if (!atk_selection) {
+		JAW_DEBUG_I("atk_selection == NULL");
 		return FALSE;
 	}
 
@@ -108,10 +113,15 @@ jaw_selection_clear_selection (AtkSelection *selection)
 {
 	JAW_DEBUG_C("%p", selection);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
+	if (!jaw_obj) {
+		JAW_DEBUG_I("jaw_obj == NULL");
+		return FALSE;
+	}
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
 	if (!atk_selection) {
+		JAW_DEBUG_I("atk_selection == NULL");
 		return FALSE;
 	}
 
@@ -132,10 +142,15 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
+	if (!jaw_obj) {
+		JAW_DEBUG_I("jaw_obj == NULL");
+		return NULL;
+	}
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
 	if (!atk_selection) {
+		JAW_DEBUG_I("atk_selection == NULL");
 		return NULL;
 	}
 
@@ -159,10 +174,15 @@ jaw_selection_get_selection_count (AtkSelection *selection)
 {
 	JAW_DEBUG_C("%p", selection);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
+	if (!jaw_obj) {
+		JAW_DEBUG_I("jaw_obj == NULL");
+		return 0;
+	}
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
 	if (!atk_selection) {
+		JAW_DEBUG_I("atk_selection == NULL");
 		return 0;
 	}
 
@@ -179,10 +199,15 @@ jaw_selection_is_child_selected (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
+	if (!jaw_obj) {
+		JAW_DEBUG_I("jaw_obj == NULL");
+		return FALSE;
+	}
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
 	if (!atk_selection) {
+		JAW_DEBUG_I("atk_selection == NULL");
 		return FALSE;
 	}
 
@@ -203,10 +228,15 @@ jaw_selection_remove_selection (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
+	if (!jaw_obj) {
+		JAW_DEBUG_I("jaw_obj == NULL");
+		return FALSE;
+	}
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
 	if (!atk_selection) {
+		JAW_DEBUG_I("atk_selection == NULL");
 		return FALSE;
 	}
 
@@ -227,10 +257,15 @@ jaw_selection_select_all_selection (AtkSelection *selection)
 {
 	JAW_DEBUG_C("%p", selection);
 	JawObject *jaw_obj = JAW_OBJECT(selection);
+	if (!jaw_obj) {
+		JAW_DEBUG_I("jaw_obj == NULL");
+		return FALSE;
+	}
 	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
 	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
 	if (!atk_selection) {
+		JAW_DEBUG_I("atk_selection == NULL");
 		return FALSE;
 	}
 

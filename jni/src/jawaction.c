@@ -124,10 +124,15 @@ jaw_action_do_action (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
   if (!atk_action) {
+    JAW_DEBUG_I("atk_action == NULL");
     return FALSE;
   }
 
@@ -154,10 +159,15 @@ jaw_action_get_n_actions (AtkAction *action)
 {
   JAW_DEBUG_C("%p", action);
   JawObject *jaw_obj = JAW_OBJECT(action);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
   if (!atk_action) {
+    JAW_DEBUG_I("atk_action == NULL");
     return 0;
   }
 
@@ -177,10 +187,15 @@ jaw_action_get_description (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
   if (!atk_action) {
+    JAW_DEBUG_I("atk_action == NULL");
     return NULL;
   }
 
@@ -217,10 +232,15 @@ jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
 {
   JAW_DEBUG_C("%p, %d, %s", action, i, description);
   JawObject *jaw_obj = JAW_OBJECT(action);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
   if (!atk_action) {
+    JAW_DEBUG_I("atk_action == NULL");
     return FALSE;
   }
 
@@ -250,10 +270,15 @@ jaw_action_get_name (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
   if (!atk_action) {
+    JAW_DEBUG_I("atk_action == NULL");
     return NULL;
   }
 
@@ -287,10 +312,15 @@ jaw_action_get_localized_name (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_action = (*env)->NewGlobalRef(env, data->atk_action);
   if (!atk_action) {
+    JAW_DEBUG_I("atk_action == NULL");
     return NULL;
   }
 
@@ -316,13 +346,15 @@ jaw_action_get_keybinding (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
   JawObject *jaw_obj = JAW_OBJECT(action);
-  if (jaw_obj == NULL)
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
     return NULL;
-
+  }
   ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
   if (!atk_action) {
+    JAW_DEBUG_I("atk_action == NULL");
     return NULL;
   }
 

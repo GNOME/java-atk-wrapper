@@ -138,10 +138,15 @@ jaw_table_ref_at (AtkTable *table, gint	row, gint column)
 {
   JAW_DEBUG_C("%p, %d, %d", table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return NULL;
   }
 
@@ -169,10 +174,15 @@ jaw_table_get_column_at_index (AtkTable *table, gint index)
 {
   JAW_DEBUG_C("%p, %d", table, index);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -189,10 +199,15 @@ jaw_table_get_row_at_index (AtkTable *table, gint index)
 {
   JAW_DEBUG_C("%p, %d", table, index);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -209,10 +224,15 @@ jaw_table_get_n_columns	(AtkTable *table)
 {
   JAW_DEBUG_C("%p", table);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -229,10 +249,15 @@ jaw_table_get_n_rows (AtkTable *table)
 {
   JAW_DEBUG_C("%p", table);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -249,10 +274,15 @@ jaw_table_get_column_extent_at (AtkTable *table, gint row, gint	column)
 {
   JAW_DEBUG_C("%p, %d, %d", table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -269,10 +299,15 @@ jaw_table_get_row_extent_at (AtkTable *table, gint row, gint column)
 {
   JAW_DEBUG_C("%p, %d, %d", table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -289,10 +324,15 @@ jaw_table_get_caption (AtkTable	*table)
 {
   JAW_DEBUG_C("%p", table);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return NULL;
   }
 
@@ -317,11 +357,16 @@ static const gchar*
 jaw_table_get_column_description (AtkTable *table, gint	column)
 {
   JAW_DEBUG_C("%p, %d", table, column);
-  JawObject *jaw_obj = JAW_OBJECT(table);
+  JawObject *jaw_obj = JAW_OBJECT(table)
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  };
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return NULL;
   }
 
@@ -347,10 +392,15 @@ jaw_table_get_row_description (AtkTable *table, gint row)
 {
   JAW_DEBUG_C("%p, %d", table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return NULL;
   }
 
@@ -376,10 +426,15 @@ jaw_table_get_column_header (AtkTable *table, gint column)
 {
   JAW_DEBUG_C("%p, %d", table, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return NULL;
   }
 
@@ -401,10 +456,15 @@ jaw_table_get_row_header (AtkTable *table, gint row)
 {
   JAW_DEBUG_C("%p, %d", table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return NULL;
   }
 
@@ -426,10 +486,15 @@ jaw_table_get_summary (AtkTable *table)
 {
   JAW_DEBUG_C("%p", table);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return NULL;
   }
 
@@ -451,10 +516,15 @@ jaw_table_get_selected_columns (AtkTable *table, gint **selected)
 {
   JAW_DEBUG_C("%p, %d", table, selected);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -485,10 +555,15 @@ jaw_table_get_selected_rows (AtkTable *table, gint **selected)
 {
   JAW_DEBUG_C("%p, %d", table, selected);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return 0;
   }
 
@@ -519,10 +594,15 @@ jaw_table_is_column_selected (AtkTable *table, gint column)
 {
   JAW_DEBUG_C("%p, %d", table, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return FALSE;
   }
 
@@ -542,10 +622,15 @@ jaw_table_is_row_selected (AtkTable *table, gint row)
 {
   JAW_DEBUG_C("%p, %d", table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return FALSE;
   }
 
@@ -565,10 +650,15 @@ jaw_table_is_selected (AtkTable *table, gint row, gint column)
 {
   JAW_DEBUG_C("%p, %d, %d", table, row, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return FALSE;
   }
 
@@ -588,10 +678,15 @@ jaw_table_add_row_selection(AtkTable *table, gint row)
 {
   JAW_DEBUG_C("%p, %d", table, row);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return FALSE;
   }
 
@@ -611,10 +706,15 @@ jaw_table_add_column_selection(AtkTable *table, gint column)
 {
   JAW_DEBUG_C("%p, %d", table, column);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return FALSE;
   }
 
@@ -634,10 +734,15 @@ jaw_table_set_row_description(AtkTable *table, gint row, const gchar *descriptio
 {
   JAW_DEBUG_C("%p, %d, %s", table, row, description);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return;
   }
 
@@ -656,10 +761,15 @@ jaw_table_set_column_description(AtkTable *table, gint column, const gchar *desc
 {
   JAW_DEBUG_C("%p, %d, %s", table, column, description);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return;
   }
 
@@ -678,10 +788,15 @@ jaw_table_set_row_header(AtkTable *table, gint row, AtkObject *header)
 {
   JAW_DEBUG_C("%p, %d, %p", table, row, header);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return;
   }
 
@@ -699,10 +814,15 @@ jaw_table_set_column_header(AtkTable *table, gint column, AtkObject *header)
 {
   JAW_DEBUG_C("%p, %d, %p", table, column, header);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return;
   }
 
@@ -720,10 +840,15 @@ jaw_table_set_caption(AtkTable *table, AtkObject *caption)
 {
   JAW_DEBUG_C("%p, %p", table, caption);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return;
   }
 
@@ -741,10 +866,15 @@ jaw_table_set_summary(AtkTable *table, AtkObject *summary)
 {
   JAW_DEBUG_C("%p, %p", table, summary);
   JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
   if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
     return;
   }
 
