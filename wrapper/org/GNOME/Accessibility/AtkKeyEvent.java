@@ -19,7 +19,6 @@
 
 package org.GNOME.Accessibility;
 
-import javax.accessibility.*;
 import java.awt.event.*;
 import java.util.HashMap;
 

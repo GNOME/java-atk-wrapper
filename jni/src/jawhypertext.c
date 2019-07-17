@@ -90,7 +90,7 @@ jaw_hypertext_get_link (AtkHypertext *hypertext, gint link_index)
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	if(!jaw_obj){
 		JAW_DEBUG_I("jaw_obj == NULL");
-		return;
+		return NULL;
 	}
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -122,7 +122,7 @@ jaw_hypertext_get_n_links (AtkHypertext *hypertext)
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	if(!jaw_obj){
 		JAW_DEBUG_I("jaw_obj == NULL");
-		return;
+		return 0;
 	}
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -147,7 +147,7 @@ jaw_hypertext_get_link_index (AtkHypertext *hypertext, gint char_index)
 	JawObject *jaw_obj = JAW_OBJECT(hypertext);
 	if(!jaw_obj){
 		JAW_DEBUG_I("jaw_obj == NULL");
-		return;
+		return 0;
 	}
 	HypertextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_HYPERTEXT);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();

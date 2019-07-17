@@ -27,7 +27,6 @@ import java.io.*;
 import javax.accessibility.*;
 import java.awt.Toolkit;
 import javax.management.*;
-import java.util.*;
 import javax.swing.JComboBox;
 import java.lang.management.*;
 

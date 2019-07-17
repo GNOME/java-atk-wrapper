@@ -357,7 +357,7 @@ static const gchar*
 jaw_table_get_column_description (AtkTable *table, gint	column)
 {
   JAW_DEBUG_C("%p, %d", table, column);
-  JawObject *jaw_obj = JAW_OBJECT(table)
+  JawObject *jaw_obj = JAW_OBJECT(table);
   if (!jaw_obj) {
     JAW_DEBUG_I("jaw_obj == NULL");
     return NULL;

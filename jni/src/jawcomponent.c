@@ -110,7 +110,7 @@ jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType co
   JawObject *jaw_obj = JAW_OBJECT(component);
   if(!jaw_obj){
     JAW_DEBUG_I("jaw_obj == NULL");
-    return NULL;
+    return FALSE;
   }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
