@@ -81,8 +81,8 @@ else
       JAVA_HOME="${JDK_SRC}/jre"
       if test ! -d ${JAVA_HOME}; then
         JAVA_HOME="${JDK_SRC}"
-	  fi
-	fi
+      fi
+    fi
   fi
 fi
 
@@ -167,11 +167,11 @@ AC_SUBST(XPROP)
 AC_ARG_WITH(jardir, AS_HELP_STRING([--with-jardir=[dirname]],[Directory for installing the java-atk-wrapper.jar file]))
 if test -z "$with_jardir" ; then
     if test -d ${JAVA_HOME}/lib/ext ; then
-	    if test "x$(basename ${JAVA_HOME})" = xjre; then
+        if test "x$(basename ${JAVA_HOME})" = xjre; then
             JARDIR=${libdir}/jvm/$(basename ${JDK_SRC})/jre/lib/ext
-		else
-		    JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib/ext
-		fi
+        else
+            JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib/ext
+        fi
     else
         JARDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib
     fi
@@ -185,11 +185,11 @@ if test -z "$with_propertiesdir" ; then
     if test -d ${JAVA_HOME}/conf ; then
         PROPERTIESDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/conf
     else
-	    if test "x$(basename ${JAVA_HOME})" = xjre; then
+        if test "x$(basename ${JAVA_HOME})" = xjre; then
             PROPERTIESDIR=${libdir}/jvm/$(basename ${JDK_SRC})/jre/lib
-	    else
+        else
             PROPERTIESDIR=${libdir}/jvm/$(basename ${JAVA_HOME})/lib
-		fi
+        fi
     fi
 else
     PROPERTIESDIR=$with_propertiesdir
