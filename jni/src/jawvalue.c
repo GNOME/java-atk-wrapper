@@ -39,6 +39,7 @@ typedef struct _ValueData {
 void
 jaw_value_interface_init (AtkValueIface *iface, gpointer data)
 {
+  JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->get_current_value = jaw_value_get_current_value;
   iface->set_value = jaw_value_set_value;
   iface->get_increment = jaw_value_get_increment;
@@ -48,6 +49,7 @@ jaw_value_interface_init (AtkValueIface *iface, gpointer data)
 gpointer
 jaw_value_data_init (jobject ac)
 {
+  JAW_DEBUG_ALL("%p", ac);
   ValueData *data = g_new0(ValueData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -66,6 +68,7 @@ jaw_value_data_init (jobject ac)
 void
 jaw_value_data_finalize (gpointer p)
 {
+  JAW_DEBUG_ALL("%p", p);
   ValueData *data = (ValueData*)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -79,6 +82,7 @@ jaw_value_data_finalize (gpointer p)
 static void
 get_g_value_from_java_number (JNIEnv *jniEnv, jobject jnumber, GValue *value)
 {
+  JAW_DEBUG_C("%p, %p, %p", jniEnv, jnumber, value);
   jclass classByte = (*jniEnv)->FindClass(jniEnv, "java/lang/Byte");
   jclass classDouble = (*jniEnv)->FindClass(jniEnv, "java/lang/Double");
   jclass classFloat = (*jniEnv)->FindClass(jniEnv, "java/lang/Float");
@@ -142,16 +146,22 @@ get_g_value_from_java_number (JNIEnv *jniEnv, jobject jnumber, GValue *value)
 static void
 jaw_value_get_current_value (AtkValue *obj, GValue *value)
 {
+  JAW_DEBUG_C("%p, %p", obj, value);
   if (!value)
   {
     return;
   }
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_value = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return;
   }
 
@@ -177,14 +187,20 @@ jaw_value_get_current_value (AtkValue *obj, GValue *value)
 static void
 jaw_value_set_value(AtkValue *obj, const gdouble value)
 {
+  JAW_DEBUG_C("%p, %lf", obj, value);
   if (!value)
     return;
 
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return;
   }
 
@@ -200,12 +216,17 @@ jaw_value_set_value(AtkValue *obj, const gdouble value)
 static AtkRange*
 jaw_value_get_range(AtkValue *obj)
 {
-
+  JAW_DEBUG_C("%p", obj);
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return NULL;
   }
 
@@ -222,11 +243,17 @@ jaw_value_get_range(AtkValue *obj)
 static gdouble
 jaw_value_get_increment (AtkValue *obj)
 {
+  JAW_DEBUG_C("%p", obj);
   JawObject *jaw_obj = JAW_OBJECT(obj);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   ValueData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_VALUE);
   JNIEnv *env = jaw_util_get_jni_env();
   jobject atk_value = (*env)->NewGlobalRef(env, data->atk_value);
   if (!atk_value) {
+    JAW_DEBUG_I("atk_value == NULL");
     return 0.;
   }
   jclass classAtkValue = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkValue");

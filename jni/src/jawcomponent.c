@@ -59,6 +59,7 @@ typedef struct _ComponentData {
 void
 jaw_component_interface_init (AtkComponentIface *iface, gpointer data)
 {
+  JAW_DEBUG_ALL("%p,%p", iface, data);
   iface->contains = jaw_component_contains;
   iface->ref_accessible_at_point = jaw_component_ref_accessible_at_point;
   iface->get_extents = jaw_component_get_extents;
@@ -71,6 +72,7 @@ jaw_component_interface_init (AtkComponentIface *iface, gpointer data)
 gpointer
 jaw_component_data_init (jobject ac)
 {
+  JAW_DEBUG_ALL("%p", ac);
   ComponentData *data = g_new0(ComponentData, 1);
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
@@ -90,6 +92,7 @@ jaw_component_data_init (jobject ac)
 void
 jaw_component_data_finalize (gpointer p)
 {
+  JAW_DEBUG_ALL("%p", p);
   ComponentData *data = (ComponentData*)p;
   JNIEnv *jniEnv = jaw_util_get_jni_env();
 
@@ -103,11 +106,17 @@ jaw_component_data_finalize (gpointer p)
 static gboolean
 jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType coord_type)
 {
+  JAW_DEBUG_C("%p, %d, %d, %d", component, x, y, coord_type);
   JawObject *jaw_obj = JAW_OBJECT(component);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
   if (!atk_component) {
+    JAW_DEBUG_I("atk_component == NULL");
     return FALSE;
   }
 
@@ -133,11 +142,17 @@ jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType co
 static AtkObject*
 jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, AtkCoordType coord_type)
 {
+  JAW_DEBUG_C("%p, %d, %d, %d", component, x, y, coord_type);
   JawObject *jaw_obj = JAW_OBJECT(component);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
   if (!atk_component) {
+    JAW_DEBUG_I("atk_component == NULL");
     return NULL;
   }
 
@@ -171,6 +186,7 @@ jaw_component_get_extents (AtkComponent *component,
                            gint         *height,
                            AtkCoordType coord_type)
 {
+  JAW_DEBUG_C("%p, %p, %p, %p, %p, %d", component, x, y, width, height, coord_type);
   if (x == NULL || y == NULL || width == NULL || height == NULL)
     return;
 
@@ -178,11 +194,16 @@ jaw_component_get_extents (AtkComponent *component,
     return;
 
   JawObject *jaw_obj = JAW_OBJECT(component);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return;
+  }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj,
                                                       INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
   if (!atk_component) {
+    JAW_DEBUG_I("atk_component == NULL");
     return;
   }
 
@@ -224,14 +245,19 @@ jaw_component_set_extents (AtkComponent *component,
                            gint         height,
                            AtkCoordType coord_type)
 {
+  JAW_DEBUG_C("%p, %d, %d, %d, %d, %d", component, x, y, width, height, coord_type);
   JawObject *jaw_obj = JAW_OBJECT(component);
-  if (!jaw_obj)
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
     return FALSE;
+  }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
-  if (!atk_component)
+  if (!atk_component) {
+    JAW_DEBUG_I("atk_component == NULL");
     return FALSE;
+  }
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkComponent, "set_extents", "(IIIII)Z");
   jboolean assigned = (*jniEnv)->CallBooleanMethod(jniEnv, atk_component, jmid, (jint)x, (jint)y, (jint)width, (jint)height, (jint)coord_type);
@@ -242,11 +268,17 @@ jaw_component_set_extents (AtkComponent *component,
 static gboolean
 jaw_component_grab_focus (AtkComponent *component)
 {
+  JAW_DEBUG_C("%p", component);
   JawObject *jaw_obj = JAW_OBJECT(component);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return FALSE;
+  }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
   if (!atk_component) {
+    JAW_DEBUG_I("atk_component == NULL");
     return FALSE;
   }
 
@@ -264,12 +296,18 @@ jaw_component_grab_focus (AtkComponent *component)
 static AtkLayer
 jaw_component_get_layer (AtkComponent *component)
 {
+  JAW_DEBUG_C("%p", component);
   JawObject *jaw_obj = JAW_OBJECT(component);
+  if(!jaw_obj){
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj,
                                                       INTERFACE_COMPONENT);
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
   if (!atk_component) {
+    JAW_DEBUG_I("atk_component == NULL");
     return 0;
   }
 

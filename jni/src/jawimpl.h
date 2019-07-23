@@ -48,6 +48,7 @@ struct _JawImpl
 
 	GHashTable *ifaceTable;
 	gint hash_key;
+	unsigned tflag;
 };
 
 JawImpl* jaw_impl_get_instance(JNIEnv*, jobject);

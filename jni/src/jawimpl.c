@@ -57,6 +57,7 @@ static GHashTable *objectTable = NULL;
 static void
 object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
 {
+  JAW_DEBUG_C("%p, %p, %p", jniEnv, ac, jaw_impl);
   jclass atkObject = (*jniEnv)->FindClass (jniEnv,"org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
   jaw_impl->hash_key = (gint)(*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
@@ -68,6 +69,7 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
 static JawImpl*
 object_table_lookup (JNIEnv *jniEnv, jobject ac)
 {
+  JAW_DEBUG_C("%p, %p", jniEnv, ac);
   jclass atkObject = (*jniEnv)->FindClass (jniEnv,"org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
   gint hash_key = (gint)(*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
@@ -86,6 +88,7 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
 static void
 object_table_remove(JNIEnv *jniEnv, JawImpl *jaw_impl)
 {
+  JAW_DEBUG_C("%p, %p", jniEnv, jaw_impl);
   g_mutex_lock(&objectTableMutex);
   g_hash_table_remove(objectTable, GINT_TO_POINTER(jaw_impl->hash_key));
   g_mutex_unlock(&objectTableMutex);
@@ -95,9 +98,12 @@ object_table_remove(JNIEnv *jniEnv, JawImpl *jaw_impl)
 void
 object_table_gc(JNIEnv *jniEnv)
 {
+  JAW_DEBUG_C("%p", jniEnv);
   GHashTableIter iter;
   gpointer key, value;
   GSList *list = NULL, *cur, *next;
+
+  unsigned count[INTERFACE_MASK+1] = { 0, };
 
   g_mutex_lock(&objectTableMutex);
   if (objectTable)
@@ -111,9 +117,20 @@ object_table_gc(JNIEnv *jniEnv)
 	/* Got garbage-collected, mark for dropping */
 	list = g_slist_prepend(list, jaw_impl);
       }
+      else
+      {
+	count[jaw_impl->tflag]++;
+      }
     }
   }
   g_mutex_unlock(&objectTableMutex);
+
+  unsigned i;
+  for (i = 0; i < INTERFACE_MASK+1; i++) {
+    if (count[i] != 0) {
+      JAW_DEBUG_JNI("%x: %d", i, count[i]);
+    }
+  }
 
   for (cur = list; cur != NULL; cur = next)
   {
@@ -127,19 +144,23 @@ object_table_gc(JNIEnv *jniEnv)
 GHashTable*
 jaw_impl_get_object_hash_table(void)
 {
+  JAW_DEBUG_ALL("");
   return objectTable;
 }
 
 GMutex*
 jaw_impl_get_object_hash_table_mutex(void)
 {
+  JAW_DEBUG_ALL("");
   return &objectTableMutex;
 }
 
 static void
 aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
 {
+  JAW_DEBUG_C("%p, %p, %u", jniEnv, jaw_obj, tflag);
   JawImpl *jaw_impl = JAW_IMPL(tflag, jaw_obj);
+  jaw_impl->tflag = tflag;
 
   jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
   jaw_impl->ifaceTable = g_hash_table_new(NULL, NULL);
@@ -250,6 +271,7 @@ aggregate_interface(JNIEnv *jniEnv, JawObject *jaw_obj, guint tflag)
 JawImpl*
 jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 {
+  JAW_DEBUG_C("%p, %p", jniEnv, ac);
   JawImpl *jaw_impl;
   jniEnv = jaw_util_get_jni_env();
 
@@ -284,21 +306,18 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
           object_table_insert(jniEnv, weak_ref, jaw_impl);
         } else
         {
-          if (jaw_debug)
-            g_warning("jaw_impl_get_instance: jaw_obj == NULL");
+          JAW_DEBUG_I("jaw_obj == NULL");
           (*jniEnv)->DeleteGlobalRef(jniEnv, temp_ref);
           return NULL;
         }
       } else
       {
-        if (jaw_debug)
-          g_warning("jaw_impl_get_instance: jaw_impl == NULL");
+        JAW_DEBUG_I("jaw_impl == NULL");
       }
       (*jniEnv)->DeleteGlobalRef(jniEnv, temp_ref);
     } else
     {
-      if (jaw_debug)
-        g_warning("jaw_impl_get_instance: global_ac == NULL");
+      JAW_DEBUG_I("global_ac == NULL");
       return NULL;
     }
   }
@@ -308,6 +327,7 @@ jaw_impl_get_instance (JNIEnv *jniEnv, jobject ac)
 JawImpl*
 jaw_impl_get_instance_from_jaw (JNIEnv *jniEnv, jobject ac)
 {
+  JAW_DEBUG_C("%p, %p", jniEnv, ac);
   jclass classWrapper = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkWrapper");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, classWrapper, "getInstanceFromSwing", "(Ljavax/accessibility/AccessibleContext;)J");
   jlong ptr = (*jniEnv)->CallStaticLongMethod(jniEnv, classWrapper, jmid, ac);
@@ -317,13 +337,13 @@ jaw_impl_get_instance_from_jaw (JNIEnv *jniEnv, jobject ac)
 JawImpl*
 jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 {
+  JAW_DEBUG_C("%p, %p", jniEnv, ac);
   JawImpl *jaw_impl;
 
   jaw_impl = object_table_lookup(jniEnv, ac);
   if (jaw_impl == NULL)
   {
-    if (jaw_debug)
-      g_warning("jaw_impl_find_instance: jaw_impl");
+    JAW_DEBUG_I("jaw_impl == NULL");
     return NULL;
   }
 
@@ -333,6 +353,7 @@ jaw_impl_find_instance (JNIEnv *jniEnv, jobject ac)
 static void
 jaw_impl_class_intern_init (gpointer klass, gpointer data)
 {
+  JAW_DEBUG_ALL("%p, %p", klass, data);
   if (jaw_impl_parent_class == NULL)
   {
     jaw_impl_parent_class = g_type_class_peek_parent (klass);
@@ -344,6 +365,7 @@ jaw_impl_class_intern_init (gpointer klass, gpointer data)
 GType
 jaw_impl_get_type (guint tflag)
 {
+  JAW_DEBUG_C("%u", tflag);
   GType type;
 
   static const GInterfaceInfo atk_action_info =
@@ -483,6 +505,7 @@ jaw_impl_get_type (guint tflag)
 static void
 jaw_impl_class_init(JawImplClass *klass)
 {
+  JAW_DEBUG_ALL("%p", klass);
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   gobject_class->dispose = jaw_impl_dispose;
   gobject_class->finalize = jaw_impl_finalize;
@@ -493,16 +516,11 @@ jaw_impl_class_init(JawImplClass *klass)
   JawObjectClass *jaw_class = JAW_OBJECT_CLASS (klass);
   jaw_class->get_interface_data = jaw_impl_get_interface_data;
 }
-/*
-static void
-jaw_impl_init(JawImpl *impl)
-{
-	jaw_impl->ifaceTable = g_hash_table_new(NULL, NULL);
-}
-*/
+
 static void
 jaw_impl_dispose(GObject *gobject)
 {
+  JAW_DEBUG_ALL("%p", gobject);
   /* Chain up to parent's dispose */
   G_OBJECT_CLASS(jaw_impl_parent_class)->dispose(gobject);
 }
@@ -510,6 +528,7 @@ jaw_impl_dispose(GObject *gobject)
 static void
 jaw_impl_finalize(GObject *gobject)
 {
+  JAW_DEBUG_ALL("%p", gobject);
   JawObject *jaw_obj = JAW_OBJECT(gobject);
   JawImpl *jaw_impl = (JawImpl*)jaw_obj;
 
@@ -545,6 +564,7 @@ jaw_impl_finalize(GObject *gobject)
 static gpointer
 jaw_impl_get_interface_data (JawObject *jaw_obj, guint iface)
 {
+  JAW_DEBUG_C("%p, %u", jaw_obj, iface);
   JawImpl *jaw_impl = (JawImpl*)jaw_obj;
 
   if (jaw_impl->ifaceTable == NULL || jaw_impl == NULL)
@@ -561,6 +581,7 @@ jaw_impl_get_interface_data (JawObject *jaw_obj, guint iface)
 static void
 jaw_impl_initialize (AtkObject *atk_obj, gpointer data)
 {
+  JAW_DEBUG_C("%p, %p", atk_obj, data);
   ATK_OBJECT_CLASS(jaw_impl_parent_class)->initialize(atk_obj, data);
 
   JawObject *jaw_obj = JAW_OBJECT(atk_obj);
@@ -580,6 +601,7 @@ jaw_impl_initialize (AtkObject *atk_obj, gpointer data)
 static gboolean
 is_java_relation_key (JNIEnv *jniEnv, jstring jKey, const gchar* strKey)
 {
+  JAW_DEBUG_C("%p, %p, %s", jniEnv, jKey, strKey);
   jclass classAccessibleRelation = (*jniEnv)->FindClass(jniEnv, "javax/accessibility/AccessibleRelation");
   jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv, classAccessibleRelation, strKey, "Ljava/lang/String;");
   jstring jConstKey = (*jniEnv)->GetStaticObjectField(jniEnv, classAccessibleRelation, jfid);
@@ -589,6 +611,7 @@ is_java_relation_key (JNIEnv *jniEnv, jstring jKey, const gchar* strKey)
 AtkRelationType
 jaw_impl_get_atk_relation_type(JNIEnv *jniEnv, jstring jrel_key)
 {
+  JAW_DEBUG_C("%p, %p", jniEnv, jrel_key);
   if ( is_java_relation_key(jniEnv, jrel_key, "CHILD_NODE_OF") )
     return ATK_RELATION_NODE_CHILD_OF;
   if ( is_java_relation_key(jniEnv, jrel_key, "CONTROLLED_BY") )
