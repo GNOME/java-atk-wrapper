@@ -23,7 +23,6 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Dimension;
 
 public class AtkComponent {
 

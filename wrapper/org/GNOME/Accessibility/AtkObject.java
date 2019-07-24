@@ -158,8 +158,8 @@ public class AtkObject{
     }
 
     public static class WrapKeyAndTarget{
-        private String key;
-        private AccessibleContext[] relations;
+        public String key;
+        public AccessibleContext[] relations;
 
         public WrapKeyAndTarget(String key, AccessibleContext[] relations){
             this.key = key;
