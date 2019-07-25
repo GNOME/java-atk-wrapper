@@ -30,11 +30,15 @@ public class AtkAction {
 	AccessibleContext ac;
 	AccessibleAction acc_action;
 	AccessibleExtendedComponent acc_ext_component;
+	String[] descriptions;
+	int nactions;
 
 	public AtkAction (AccessibleContext ac) {
 		super();
 		this.ac = ac;
 		this.acc_action = ac.getAccessibleAction();
+		this.nactions = this.acc_action.getAccessibleActionCount();
+		this.descriptions = new String[nactions];
 		AccessibleComponent acc_component = ac.getAccessibleComponent();
 		if (acc_component instanceof AccessibleExtendedComponent) {
 			this.acc_ext_component = (AccessibleExtendedComponent)acc_component;
@@ -50,30 +54,25 @@ public class AtkAction {
 		return true;
 	}
 
-	public int get_n_actions () {
-		return AtkUtil.invokeInSwing( () -> { return acc_action.getAccessibleActionCount(); }, 0);
-	}
+	public int get_n_actions () { return this.nactions; }
 
-	// FIXME: get and set methods seem wrong
 	public String get_description (int i) {
-		String description = "<description>";
-		return description;
-	}
-
-        public boolean setDescription(int i, String description) {
-               if (description ==  acc_action.getAccessibleActionDescription(i) &&
-                   description != null)
-                     return true;
-               return false;
-        }
-
-	public String get_name (int i) {
-		String name = acc_action.getAccessibleActionDescription(i);
-		if (name == null) {
-			name = "";
+		if (i >= nactions){
+			return null;
 		}
-
-		return name;
+		if(descriptions[i] != null){
+			return descriptions[i];
+		}
+		descriptions[i] = AtkUtil.invokeInSwing( () -> { return acc_action.getAccessibleActionDescription(i); }, "");
+		return descriptions[i];
+	}
+	
+	public boolean setDescription(int i, String description) {
+		if (i >= nactions){
+			return false;
+		}
+		descriptions[i] = description;
+		return true;
 	}
 
  /**
@@ -88,16 +87,21 @@ public class AtkAction {
   *          class is one way to work around that)
   */
   	public String getLocalizedName (int i) {
+		if (i >= nactions){
+			return null;
+		}
+		if (descriptions[i] != null){
+			return descriptions[i];
+		}
 		return AtkUtil.invokeInSwing ( () -> {
-			String name        = ac.getAccessibleName();
-			String description = acc_action.getAccessibleActionDescription(i);
-			if (description == name && description != null)
-				return description;
-			if (description == null && name != null)
+			descriptions[i] = acc_action.getAccessibleActionDescription(i);
+			if (descriptions[i] != null)
+				return descriptions[i];
+			String name = ac.getAccessibleName();
+			if (name != null)
 				return name;
-			if (description != null)
-				return description;
-			return "";
+			descriptions[i] = "";
+			return descriptions[i];
 		}, null);
 	}
 
