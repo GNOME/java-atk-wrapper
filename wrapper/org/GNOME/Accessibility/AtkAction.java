@@ -21,6 +21,8 @@ package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
 import javax.swing.*;
+
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class AtkAction {
@@ -160,7 +162,7 @@ public class AtkAction {
 
 					if (o instanceof KeyStroke) {
 						KeyStroke keyStroke = (KeyStroke)o;
-						String modString = KeyEvent.getKeyModifiersText(keyStroke.getModifiers());
+						String modString = InputEvent.getModifiersExText(keyStroke.getModifiers());
 						String keyString = KeyEvent.getKeyText(keyStroke.getKeyCode());
 
 						if ( keyString != null ) {
@@ -173,7 +175,7 @@ public class AtkAction {
 					} else if (o instanceof KeyStroke[]) {
 						KeyStroke[] keyStroke = (KeyStroke[])o;
 						for ( int j = 0; j < keyStroke.length; j++ ) {
-							String modString = KeyEvent.getKeyModifiersText(keyStroke[j].getModifiers());
+							String modString = InputEvent.getModifiersExText(keyStroke[j].getModifiers());
 							String keyString = KeyEvent.getKeyText(keyStroke[j].getKeyCode());
 
 							if (j > 0) {

@@ -27,7 +27,6 @@ import java.io.*;
 import javax.accessibility.*;
 import java.awt.Toolkit;
 import javax.management.*;
-import java.util.*;
 import javax.swing.JComboBox;
 import java.lang.management.*;
 
@@ -488,7 +487,7 @@ public class AtkWrapper {
           }
 
           Object[] args = new Object[2];
-          args[0] = new Integer(child_ac.getAccessibleIndexInParent());
+          args[0] = Integer.valueOf(child_ac.getAccessibleIndexInParent());
           args[1] = child_ac;
 
           emitSignal(ac, AtkSignal.OBJECT_CHILDREN_CHANGED_ADD, args);
@@ -502,7 +501,7 @@ public class AtkWrapper {
           }
 
           Object[] args = new Object[2];
-          args[0] = new Integer(child_ac.getAccessibleIndexInParent());
+          args[0] = Integer.valueOf(child_ac.getAccessibleIndexInParent());
           args[1] = child_ac;
 
           emitSignal(ac, AtkSignal.OBJECT_CHILDREN_CHANGED_REMOVE, args);
@@ -555,8 +554,8 @@ public class AtkWrapper {
         }else if( propertyName.equals(AccessibleContext.ACCESSIBLE_VALUE_PROPERTY) ) {
           if (oldValue instanceof Number && newValue instanceof Number) {
             Object[] args = new Object[2];
-            args[0] = new Double(((Number)oldValue).doubleValue());
-            args[1] = new Double(((Number)newValue).doubleValue());
+            args[0] = Double.valueOf(((Number)oldValue).doubleValue());
+            args[1] = Double.valueOf(((Number)newValue).doubleValue());
 
             emitSignal(ac, AtkSignal.OBJECT_PROPERTY_CHANGE_ACCESSIBLE_VALUE, args);
           }
