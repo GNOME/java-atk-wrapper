@@ -593,13 +593,6 @@ public class AtkWrapper {
       } else if(propertyName.equals(AccessibleContext.ACCESSIBLE_STATE_PROPERTY)) {
         Accessible parent = ac.getAccessibleParent();
         AccessibleRole role = ac.getAccessibleRole();
-        AccessibleRole parent_role = null;
-        if (parent != null) {
-          AccessibleContext parent_ac = parent.getAccessibleContext();
-	  if (parent_ac != null) {
-	    parent_role = parent_ac.getAccessibleRole();
-	  }
-        }
         if (role != null) {
           if (newValue == AccessibleState.FOCUSED ||
               newValue == AccessibleState.SELECTED) {
