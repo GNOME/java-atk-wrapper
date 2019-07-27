@@ -103,9 +103,13 @@ public class AtkComponent {
 
       if (coord_type == AtkCoordType.WINDOW) {
           Point window_origin = getWindowLocation(ac);
+          if (window_origin == null)
+              return null;
           Point parent_origin = parent_component.getLocationOnScreen();
+          if (parent_origin == null)
+              return null;
           parent_origin.translate(-window_origin.x, -window_origin.y);
-	  return parent_origin;
+          return parent_origin;
       }
       return null;
   }
