@@ -229,7 +229,7 @@ public class AtkText {
 
 		return AtkUtil.invokeInSwing ( () -> {
 			int start = acc_text.getSelectionStart();
-			int end = acc_text.getSelectionEnd() + 1;
+			int end = acc_text.getSelectionEnd();
 			String text = acc_text.getSelectedText();
 			if (text == null)
 				return null;
@@ -284,7 +284,7 @@ public class AtkText {
 			final int rightStart = getRightStart(start);;
 			final int rightEnd = getRightEnd(start, end, acc_text.getCharCount());
 
-			acc_edt_text.selectText(rightStart, rightEnd-1);
+			acc_edt_text.selectText(rightStart, rightEnd);
 			return true;
 		}, false);
 	}
