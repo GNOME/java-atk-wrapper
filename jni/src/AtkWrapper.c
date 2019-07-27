@@ -31,6 +31,7 @@
 
 int jaw_debug = 0;
 FILE *jaw_log_file;
+time_t jaw_start_time;
 
 #ifdef __cplusplus
 extern "C" {
@@ -103,6 +104,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
       fprintf(stderr, "Error opening log file jaw_log_file.txt\n");
       exit(1);
     }
+    jaw_start_time = time(NULL);
   }
   JAW_DEBUG_JNI("");
 

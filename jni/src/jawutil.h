@@ -27,9 +27,10 @@
 
 extern int jaw_debug;
 extern FILE *jaw_log_file;
+extern time_t jaw_start_time;
 
 #define PRINT_AND_FLUSH(fmt, ...) do { \
-    fprintf(jaw_log_file, "TIME:[%lu] PID:{%d} %s" fmt "\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
+    fprintf(jaw_log_file, "[%lu] %s" fmt "\n", (unsigned long) (time(NULL) - jaw_start_time), __func__, ##__VA_ARGS__); \
     fflush(jaw_log_file); \
 } while (0)
 
