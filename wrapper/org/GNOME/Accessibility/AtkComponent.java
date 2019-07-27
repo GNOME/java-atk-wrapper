@@ -40,49 +40,111 @@ public class AtkComponent {
       return AtkUtil.invokeInSwing ( () -> { return new AtkComponent(ac); }, null);
   }
 
+  static public Point getWindowLocation(AccessibleContext ac) {
+      while (ac != null) {
+          AccessibleRole role = ac.getAccessibleRole();
+          if (role == AccessibleRole.DIALOG ||
+              role == AccessibleRole.FRAME ||
+              role == AccessibleRole.WINDOW) {
+              AccessibleComponent acc_comp = ac.getAccessibleComponent();
+              if (acc_comp == null)
+                  return null;
+              return acc_comp.getLocationOnScreen();
+          }
+          Accessible parent = ac.getAccessibleParent();
+          if (parent == null)
+              return null;
+          ac = parent.getAccessibleContext();
+      }
+      return null;
+  }
+
+  // Return the position of the object relative to the coordinate type
+  public static Point getComponentOrigin(AccessibleContext ac, AccessibleComponent acc_component, int coord_type) {
+      if (coord_type == AtkCoordType.SCREEN)
+          return acc_component.getLocationOnScreen();
+
+      if (coord_type == AtkCoordType.WINDOW)
+      {
+          Point win_p = getWindowLocation(ac);
+	  if (win_p == null)
+	      return null;
+	  Point p = acc_component.getLocationOnScreen();
+	  if (p == null)
+	      return null;
+	  p.translate(-win_p.x, -win_p.y);
+	  return p;
+      }
+
+      if (coord_type == AtkCoordType.PARENT)
+          return acc_component.getLocation();
+
+      return null;
+  }
+
+  // Return the position of the parent relative to the coordinate type
+  public static Point getParentOrigin(AccessibleContext ac, AccessibleComponent acc_component, int coord_type) {
+      if (coord_type == AtkCoordType.PARENT)
+          return new Point(0, 0);
+
+      Accessible parent = ac.getAccessibleParent();
+      if (parent == null)
+          return null;
+      AccessibleContext parent_ac = parent.getAccessibleContext();
+      if (parent_ac == null)
+          return null;
+      AccessibleComponent parent_component = parent_ac.getAccessibleComponent();
+      if (parent_component == null)
+          return null;
+
+      if (coord_type == AtkCoordType.SCREEN) {
+          return parent_component.getLocationOnScreen();
+      }
+
+      if (coord_type == AtkCoordType.WINDOW) {
+          Point window_origin = getWindowLocation(ac);
+          Point parent_origin = parent_component.getLocationOnScreen();
+          parent_origin.translate(-window_origin.x, -window_origin.y);
+	  return parent_origin;
+      }
+      return null;
+  }
+
   public boolean contains (int x, int y, int coord_type) {
+      AccessibleContext ac = _ac.get();
+      if (ac == null)
+          return false;
       AccessibleComponent acc_component = _acc_component.get();
       if (acc_component == null)
           return false;
 
       return AtkUtil.invokeInSwing ( () -> {
-          if(!acc_component.isVisible()){
-              final int rightX;
-              final int rightY;
-              if (coord_type == AtkCoordType.SCREEN) {
-                  Point p = acc_component.getLocationOnScreen();
-                  rightX = x - p.x;
-                  rightY = y - p.y;
-              }
-              else{
-                  rightX = x;
-                  rightY = y;
-              }
-              return acc_component.contains(new Point(rightX, rightY));
+          if(acc_component.isVisible()){
+              Point p = getComponentOrigin(ac, acc_component, coord_type);
+              if (p == null)
+                  return false;
+
+              return acc_component.contains(new Point(x - p.x, y - p.y));
           }
           return false;
       }, false);
   }
 
   public AccessibleContext get_accessible_at_point (int x, int y, int coord_type) {
+      AccessibleContext ac = _ac.get();
+      if (ac == null)
+          return null;
       AccessibleComponent acc_component = _acc_component.get();
       if (acc_component == null)
           return null;
 
       return AtkUtil.invokeInSwing ( () -> {
-           if(acc_component.isVisible()){
-              final int rightX;
-              final int rightY;
-              if (coord_type == AtkCoordType.SCREEN) {
-                  Point p = acc_component.getLocationOnScreen();
-                  rightX = x - p.x;
-                  rightY = y - p.y;
-              }
-              else{
-                  rightX = x;
-                  rightY = y;
-              }
-              Accessible accessible = acc_component.getAccessibleAt(new Point(rightX, rightY));
+          if(acc_component.isVisible()){
+              Point p = getComponentOrigin(ac, acc_component, coord_type);
+              if (p == null)
+                  return null;
+
+              Accessible accessible = acc_component.getAccessibleAt(new Point(x - p.x, y - p.y));
               if (accessible == null)
                   return null;
               return accessible.getAccessibleContext();
@@ -105,31 +167,30 @@ public class AtkComponent {
     }
 
     public boolean set_extents(int x, int y, int width, int height, int coord_type) {
+        AccessibleContext ac = _ac.get();
+        if (ac == null)
+            return false;
         AccessibleComponent acc_component = _acc_component.get();
         if (acc_component == null)
             return false;
 
         return AtkUtil.invokeInSwing( () -> {
             if(acc_component.isVisible()){
-                final int rightX;
-                final int rightY;
-                if (coord_type == AtkCoordType.SCREEN) {
-                    Point p = acc_component.getLocationOnScreen();
-                    rightX = x - p.x;
-                    rightY = y - p.y;
-                }
-                else{
-                    rightX = x;
-                    rightY = y;
-                }
-                acc_component.setBounds(new Rectangle(rightX, rightY, width, height));
+                Point p = getParentOrigin(ac, acc_component, coord_type);
+                if (p == null)
+                    return false;
+
+                acc_component.setBounds(new Rectangle(x - p.x, y - p.y, width, height));
                 return true;
             }
             return false;
         }, false);
     }
 
-    public Rectangle get_extents() {
+    public Rectangle get_extents(int coord_type) {
+        AccessibleContext ac = _ac.get();
+        if (ac == null)
+            return null;
         AccessibleComponent acc_component = _acc_component.get();
         if (acc_component == null)
             return null;
@@ -137,11 +198,14 @@ public class AtkComponent {
         return AtkUtil.invokeInSwing ( () -> {
             if(acc_component.isVisible()){
                 Rectangle rect = acc_component.getBounds();
-                Point p = acc_component.getLocationOnScreen();
-                if (rect == null || p == null)
+                if (rect == null)
                     return null;
-                rect.x = p.x;
-                rect.y = p.y;
+		Point p = getParentOrigin(ac, acc_component, coord_type);
+                if (p == null)
+                    return null;
+
+                rect.x += p.x;
+                rect.y += p.y;
                 return rect;
             }
             return null;

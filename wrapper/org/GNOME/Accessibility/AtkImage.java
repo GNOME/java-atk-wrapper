@@ -22,6 +22,7 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 import java.awt.Point;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.lang.ref.WeakReference;
 
 public class AtkImage {
@@ -48,9 +49,7 @@ public class AtkImage {
 			AccessibleComponent acc_component = ac.getAccessibleComponent();
 			if (acc_component == null)
 				return null;
-			if (coord_type == AtkCoordType.SCREEN)
-				return acc_component.getLocationOnScreen();
-			return acc_component.getLocation();
+			return AtkComponent.getComponentOrigin(ac, acc_component, coord_type);
 		}, null);
 	}
 
@@ -73,14 +72,25 @@ public class AtkImage {
 	public Dimension get_image_size () {
 		Dimension d = new Dimension(0, 0);
 
-		AccessibleIcon[] acc_icons = _acc_icons.get();
-		if (acc_icons == null)
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
 			return d;
+
+		AccessibleIcon[] acc_icons = _acc_icons.get();
 
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_icons != null && acc_icons.length > 0) {
 				d.height = acc_icons[0].getAccessibleIconHeight();
 				d.width = acc_icons[0].getAccessibleIconWidth();
+			} else {
+				AccessibleComponent acc_component = ac.getAccessibleComponent();
+				if (acc_component != null) {
+					Rectangle rect = acc_component.getBounds();
+					if (rect != null) {
+						d.height = rect.height;
+						d.width = rect.width;
+					}
+				}
 			}
 			return d;
 		},d);

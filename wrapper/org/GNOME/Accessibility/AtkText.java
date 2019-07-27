@@ -145,14 +145,12 @@ public class AtkText {
 			Rectangle rect = acc_text.getCharacterBounds(offset);
 			if (rect == null)
 				return null;
-			if (coord_type == AtkCoordType.SCREEN) {
-				AccessibleComponent component = ac.getAccessibleComponent();
-				if (component == null)
-					return null;
-				Point p = component.getLocationOnScreen();
-				rect.x += p.x;
-				rect.y += p.y;
-			}
+			AccessibleComponent component = ac.getAccessibleComponent();
+			if (component == null)
+				return null;
+			Point p = AtkComponent.getComponentOrigin(ac, component, coord_type);
+			rect.x += p.x;
+			rect.y += p.y;
 			return rect;
 		}, null);
 	}
@@ -174,14 +172,11 @@ public class AtkText {
 			return -1;
 
 		return AtkUtil.invokeInSwing ( () -> {
-			if (coord_type == AtkCoordType.SCREEN) {
-				AccessibleComponent component = ac.getAccessibleComponent();
-				if (component == null)
-					return -1;
-				Point p = component.getLocationOnScreen();
-				return acc_text.getIndexAtPoint(new Point(x-p.x, y-p.y));
-			}
-			return acc_text.getIndexAtPoint(new Point(x, y));
+			AccessibleComponent component = ac.getAccessibleComponent();
+			if (component == null)
+				return -1;
+			Point p = AtkComponent.getComponentOrigin(ac, component, coord_type);
+			return acc_text.getIndexAtPoint(new Point(x-p.x, y-p.y));
 		}, -1);
 	}
 
@@ -199,17 +194,15 @@ public class AtkText {
 				final int rightEnd = getRightEnd(start, end, acc_text.getCharCount());
 
 				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
-				Rectangle rect = acc_ext_text.getTextBounds(rightStart, rightEnd-1);
+				Rectangle rect = acc_ext_text.getTextBounds(rightStart, rightEnd);
 				if (rect == null)
 					return null;
-				if (coord_type == AtkCoordType.SCREEN) {
-					AccessibleComponent component = ac.getAccessibleComponent();
-					if (component == null)
-						return null;
-					Point p = component.getLocationOnScreen();
-					rect.x += p.x;
-					rect.y += p.y;
-				}
+				AccessibleComponent component = ac.getAccessibleComponent();
+				if (component == null)
+					return null;
+				Point p = AtkComponent.getComponentOrigin(ac, component, coord_type);
+				rect.x += p.x;
+				rect.y += p.y;
 				return rect;
 			}
 			return null;

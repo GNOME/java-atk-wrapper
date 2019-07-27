@@ -220,9 +220,9 @@ jaw_component_get_extents (AtkComponent *component,
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                           classAtkComponent,
                                           "get_extents",
-                                          "()Ljava/awt/Rectangle;");
+                                          "(I)Ljava/awt/Rectangle;");
 
-  jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid);
+  jobject jrectangle = (*jniEnv)->CallObjectMethod(jniEnv, atk_component, jmid, (jint) coord_type);
   (*jniEnv)->DeleteGlobalRef(jniEnv, atk_component);
 
   if (jrectangle == NULL)
