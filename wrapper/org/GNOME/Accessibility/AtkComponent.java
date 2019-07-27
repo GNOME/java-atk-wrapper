@@ -138,6 +138,8 @@ public class AtkComponent {
             if(acc_component.isVisible()){
                 Rectangle rect = acc_component.getBounds();
                 Point p = acc_component.getLocationOnScreen();
+                if (rect == null || p == null)
+                    return null;
                 rect.x = p.x;
                 rect.y = p.y;
                 return rect;
