@@ -104,6 +104,15 @@ notify_hf (gpointer key, gpointer value, gpointer data)
   AtkKeySnoopFunc func = info->listener;
   gpointer func_data = info->data;
 
+  JAW_DEBUG_C("key event %d %x %x %d '%s' %u %u",
+      key_event->type,
+      key_event->state,
+      key_event->keyval,
+      key_event->length,
+      key_event->string,
+      (unsigned) key_event->keycode,
+      (unsigned) key_event->timestamp);
+
   return (*func)(key_event, func_data) ? TRUE : FALSE;
 }
 
@@ -126,6 +135,7 @@ jaw_util_dispatch_key_event (AtkKeyEventStruct *event)
     consumed = g_hash_table_foreach_steal(new_hash, notify_hf, event);
     g_hash_table_destroy(new_hash);
   }
+  JAW_DEBUG_C("consumed: %d", consumed);
 
   return (consumed > 0) ? TRUE : FALSE;
 }
