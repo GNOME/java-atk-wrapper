@@ -136,7 +136,13 @@ public class AtkKeyEvent {
       }
     }
 
-    keycode = e.getKeyCode();
+    // Yes, this is crude, but Java does not provide another way.
+    String s = e.paramString();
+    int begin = s.lastIndexOf("rawCode=") + 8;
+    int end = s.indexOf(',', begin);
+    String rawcode_s = s.substring(begin, end);
+
+    keycode = Integer.valueOf(rawcode_s);
     timestamp = (int)e.getWhen();
 
     String nonAlphaNumericString = (String) nonAlphaNumericMap.get(string);
