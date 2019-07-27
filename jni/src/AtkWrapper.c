@@ -30,7 +30,7 @@
 #include "AtkWrapper.h"
 
 int jaw_debug = 0;
-FILE *log_file;
+FILE *jaw_log_file;
 
 #ifdef __cplusplus
 extern "C" {
@@ -97,10 +97,10 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
   }
   if (jaw_debug)
   {
-    log_file = fopen("log_file.txt","w+");
-    if (!log_file)
+    jaw_log_file = fopen("jaw_log_file.txt","w+");
+    if (!jaw_log_file)
     {
-      fprintf(stderr, "Error opening log file log_file.txt\n");
+      fprintf(stderr, "Error opening log file jaw_log_file.txt\n");
       exit(1);
     }
   }

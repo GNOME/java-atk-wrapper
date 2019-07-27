@@ -26,11 +26,11 @@
 #include <time.h>
 
 extern int jaw_debug;
-extern FILE *log_file;
+extern FILE *jaw_log_file;
 
 #define PRINT_AND_FLUSH(fmt, ...) do { \
-    fprintf(log_file, "TIME:[%lu] PID:{%d} %s" fmt "\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
-    fflush(log_file); \
+    fprintf(jaw_log_file, "TIME:[%lu] PID:{%d} %s" fmt "\n", (unsigned long) time(NULL), (int)getpid(), __func__, ##__VA_ARGS__); \
+    fflush(jaw_log_file); \
 } while (0)
 
 #define JAW_DEBUG_I(fmt, ...) do { \
