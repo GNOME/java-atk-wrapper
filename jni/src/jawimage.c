@@ -91,6 +91,8 @@ jaw_image_get_image_position (AtkImage *image,
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	if (!jaw_obj) {
 		JAW_DEBUG_I("jaw_obj == NULL");
+		(*x) = 0;
+		(*y) = 0;
 		return;
 	}
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
@@ -98,6 +100,8 @@ jaw_image_get_image_position (AtkImage *image,
 	jobject atk_image = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_image);
 	if (!atk_image) {
 		JAW_DEBUG_I("atk_image == NULL");
+		(*x) = 0;
+		(*y) = 0;
 		return;
 	}
 
@@ -107,6 +111,7 @@ jaw_image_get_image_position (AtkImage *image,
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_image);
 
 	if (jpoint == NULL) {
+		JAW_DEBUG_I("jpoint == NULL");
 		(*x) = 0;
 		(*y) = 0;
 		return;
@@ -162,6 +167,8 @@ jaw_image_get_image_size (AtkImage *image, gint *width, gint *height)
 	JawObject *jaw_obj = JAW_OBJECT(image);
 	if (!jaw_obj) {
 		JAW_DEBUG_I("jaw_obj == NULL");
+		(*width) = 0;
+		(*height) = 0;
 		return;
 	}
 	ImageData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_IMAGE);
@@ -169,6 +176,8 @@ jaw_image_get_image_size (AtkImage *image, gint *width, gint *height)
 	jobject atk_image = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_image);
 	if (!atk_image) {
 		JAW_DEBUG_I("atk_image == NULL");
+		(*width) = 0;
+		(*height) = 0;
 		return;
 	}
 
@@ -178,6 +187,7 @@ jaw_image_get_image_size (AtkImage *image, gint *width, gint *height)
 	(*jniEnv)->DeleteGlobalRef(jniEnv, atk_image);
 
 	if (jdimension == NULL) {
+		JAW_DEBUG_I("jdimension == NULL");
 		(*width) = 0;
 		(*height) = 0;
 		return;

@@ -327,6 +327,10 @@ jaw_text_get_character_extents (AtkText *text,
   JawObject *jaw_obj = JAW_OBJECT(text);
   if (!jaw_obj) {
     JAW_DEBUG_I("jaw_obj == NULL");
+    *x = 0;
+    *y = 0;
+    *width = 0;
+    *height = 0;
     return;
   }
   TextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TEXT);
@@ -334,6 +338,10 @@ jaw_text_get_character_extents (AtkText *text,
   jobject atk_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_text);
   if (!atk_text) {
     JAW_DEBUG_I("atk_text == NULL");
+    *x = 0;
+    *y = 0;
+    *width = 0;
+    *height = 0;
     return;
   }
 
@@ -352,6 +360,11 @@ jaw_text_get_character_extents (AtkText *text,
 
   if (jrect == NULL)
   {
+    JAW_DEBUG_I("jrect == NULL");
+    *x = 0;
+    *y = 0;
+    *width = 0;
+    *height = 0;
     return;
   }
 

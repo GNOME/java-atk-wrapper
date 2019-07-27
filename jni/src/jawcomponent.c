@@ -196,6 +196,10 @@ jaw_component_get_extents (AtkComponent *component,
   JawObject *jaw_obj = JAW_OBJECT(component);
   if(!jaw_obj){
     JAW_DEBUG_I("jaw_obj == NULL");
+    (*x) = 0;
+    (*y) = 0;
+    (*width) = 0;
+    (*height) = 0;
     return;
   }
   ComponentData *data = jaw_object_get_interface_data(jaw_obj,
@@ -204,6 +208,10 @@ jaw_component_get_extents (AtkComponent *component,
   jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
   if (!atk_component) {
     JAW_DEBUG_I("atk_component == NULL");
+    (*x) = 0;
+    (*y) = 0;
+    (*width) = 0;
+    (*height) = 0;
     return;
   }
 
@@ -219,6 +227,7 @@ jaw_component_get_extents (AtkComponent *component,
 
   if (jrectangle == NULL)
   {
+    JAW_DEBUG_I("jrectangle == NULL");
     (*x) = 0;
     (*y) = 0;
     (*width) = 0;
