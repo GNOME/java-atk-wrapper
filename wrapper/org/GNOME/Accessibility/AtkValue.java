@@ -24,7 +24,6 @@ import javax.accessibility.*;
 
 public class AtkValue {
 
-	AccessibleContext ac;
 	AccessibleValue acc_value;
 
 	public AtkValue (AccessibleContext ac) {
