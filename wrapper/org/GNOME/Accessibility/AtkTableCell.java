@@ -20,23 +20,24 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import java.lang.ref.WeakReference;
 
 public class AtkTableCell extends AtkTable {
 
-    AccessibleContext ac;
+    WeakReference<AccessibleContext> _ac;
 
-    AccessibleExtendedTable acc_table_cell;
+    WeakReference<AccessibleExtendedTable> _acc_table_cell;
     private int rowSpan, columnSpan;
 
     public AtkTableCell (AccessibleContext ac) {
         super(ac);
-        this.ac = ac;
+        this._ac = new WeakReference<AccessibleContext>(ac);
         AccessibleTable acc_table = ac.getAccessibleTable();
 
         if (acc_table instanceof AccessibleExtendedTable) {
-            acc_table_cell = (AccessibleExtendedTable)acc_table;
+            _acc_table_cell = new WeakReference<AccessibleExtendedTable>((AccessibleExtendedTable)acc_table);
         } else {
-            acc_table_cell = null;
+            _acc_table_cell = null;
         }
         rowSpan = 0;
         columnSpan = 0;
@@ -52,7 +53,9 @@ public class AtkTableCell extends AtkTable {
     *          AccessibleTable instance.
     */
     public AccessibleTable getTable() {
-        return AtkUtil.invokeInSwing ( () -> { return acc_table_cell; }, null);
+        if (_acc_table_cell == null)
+            return null;
+        return _acc_table_cell.get();
     }
 
     /**
@@ -61,6 +64,12 @@ public class AtkTableCell extends AtkTable {
     * @return: whether the accessible index of the table cell is found
     */
     public boolean getPosition(int row, int column) {
+        if (_acc_table_cell == null)
+            return false;
+        AccessibleExtendedTable acc_table_cell = _acc_table_cell.get();
+        if (acc_table_cell == null)
+            return false;
+
         return AtkUtil.invokeInSwing ( () -> {
             int index = acc_table_cell.getAccessibleIndex(row, column);
             if (index < 0)
@@ -77,6 +86,10 @@ public class AtkTableCell extends AtkTable {
     * @return: whether the column and row span was retrieved
     */
     public boolean getRowColumnSpan(int row, int column, int rowSpan, int columnSpan) {
+        AccessibleTable acc_table = _acc_table.get();
+        if (acc_table == null)
+            return false;
+
         return AtkUtil.invokeInSwing ( () -> {
             this.rowSpan = rowSpan;
             this.columnSpan = columnSpan;

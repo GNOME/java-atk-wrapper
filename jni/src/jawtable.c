@@ -110,7 +110,7 @@ jaw_table_data_init (jobject ac)
                                        "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkTable;");
 
   jobject jatk_table = (*env)->CallStaticObjectMethod(env, classTable, jmid, ac);
-  data->atk_table = (*env)->NewWeakGlobalRef(env, jatk_table);
+  data->atk_table = (*env)->NewGlobalRef(env, jatk_table);
 
   return data;
 }
@@ -132,7 +132,7 @@ jaw_table_data_finalize (gpointer p)
       data->description = NULL;
     }
 
-    (*env)->DeleteWeakGlobalRef(env, data->atk_table);
+    (*env)->DeleteGlobalRef(env, data->atk_table);
     data->atk_table = NULL;
   }
 }

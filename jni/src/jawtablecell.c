@@ -59,7 +59,7 @@ jaw_table_cell_data_init (jobject ac)
   jclass classTableCell = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkTableCell");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, classTableCell, "createAtkTableCell", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkTableCell;");
   jobject jatk_table_cell = (*jniEnv)->CallStaticObjectMethod(jniEnv, classTableCell, jmid, ac);
-  data->atk_table_cell = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_table_cell);
+  data->atk_table_cell = (*jniEnv)->NewGlobalRef(jniEnv, jatk_table_cell);
 
   return data;
 }
@@ -81,7 +81,7 @@ jaw_table_cell_data_finalize (gpointer p)
       data->description = NULL;
     }
 
-    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_table_cell);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_table_cell);
     data->atk_table_cell = NULL;
   }
 }

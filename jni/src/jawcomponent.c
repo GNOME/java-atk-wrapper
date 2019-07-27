@@ -84,7 +84,7 @@ jaw_component_data_init (jobject ac)
                                           "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkComponent;");
 
   jobject jatk_component = (*jniEnv)->CallStaticObjectMethod(jniEnv, classComponent, jmid, ac);
-  data->atk_component = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_component);
+  data->atk_component = (*jniEnv)->NewGlobalRef(jniEnv, jatk_component);
 
   return data;
 }
@@ -98,7 +98,7 @@ jaw_component_data_finalize (gpointer p)
 
   if (data && data->atk_component)
   {
-    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_component);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_component);
     data->atk_component = NULL;
   }
 }

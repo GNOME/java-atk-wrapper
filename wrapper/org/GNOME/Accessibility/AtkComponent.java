@@ -23,16 +23,17 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.lang.ref.WeakReference;
 
 public class AtkComponent {
 
-  AccessibleContext ac;
-  AccessibleComponent acc_component;
+  WeakReference<AccessibleContext> _ac;
+  WeakReference<AccessibleComponent> _acc_component;
 
   public AtkComponent (AccessibleContext ac) {
     super();
-    this.ac = ac;
-    this.acc_component = ac.getAccessibleComponent();
+    this._ac = new WeakReference<AccessibleContext>(ac);
+    this._acc_component = new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
   }
 
   public static AtkComponent createAtkComponent(AccessibleContext ac){
@@ -40,6 +41,10 @@ public class AtkComponent {
   }
 
   public boolean contains (int x, int y, int coord_type) {
+      AccessibleComponent acc_component = _acc_component.get();
+      if (acc_component == null)
+          return false;
+
       return AtkUtil.invokeInSwing ( () -> {
           if(!acc_component.isVisible()){
               final int rightX;
@@ -60,6 +65,10 @@ public class AtkComponent {
   }
 
   public AccessibleContext get_accessible_at_point (int x, int y, int coord_type) {
+      AccessibleComponent acc_component = _acc_component.get();
+      if (acc_component == null)
+          return null;
+
       return AtkUtil.invokeInSwing ( () -> {
            if(acc_component.isVisible()){
               final int rightX;
@@ -83,6 +92,10 @@ public class AtkComponent {
   }
 
     public boolean grab_focus () {
+        AccessibleComponent acc_component = _acc_component.get();
+        if (acc_component == null)
+            return false;
+
         return AtkUtil.invokeInSwing ( () -> {
             if (!acc_component.isFocusTraversable())
                 return false;
@@ -92,6 +105,10 @@ public class AtkComponent {
     }
 
     public boolean set_extents(int x, int y, int width, int height, int coord_type) {
+        AccessibleComponent acc_component = _acc_component.get();
+        if (acc_component == null)
+            return false;
+
         return AtkUtil.invokeInSwing( () -> {
             if(acc_component.isVisible()){
                 final int rightX;
@@ -113,6 +130,10 @@ public class AtkComponent {
     }
 
     public Rectangle get_extents() {
+        AccessibleComponent acc_component = _acc_component.get();
+        if (acc_component == null)
+            return null;
+
         return AtkUtil.invokeInSwing ( () -> {
             if(acc_component.isVisible()){
                 Rectangle rect = acc_component.getBounds();
@@ -126,6 +147,10 @@ public class AtkComponent {
     }
 
     public int get_layer () {
+        AccessibleContext ac = _ac.get();
+        if (ac == null)
+            return AtkLayer.INVALID;
+
         return AtkUtil.invokeInSwing ( () -> {
             AccessibleRole role = ac.getAccessibleRole();
             if (role == AccessibleRole.MENU ||

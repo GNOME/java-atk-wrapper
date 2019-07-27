@@ -20,14 +20,15 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import java.lang.ref.WeakReference;
 
 public class AtkHyperlink {
 
-	AccessibleHyperlink acc_hyperlink;
+	WeakReference<AccessibleHyperlink> _acc_hyperlink;
 
 	public AtkHyperlink (AccessibleHyperlink hl) {
 		super();
-		acc_hyperlink = hl;
+		_acc_hyperlink = new WeakReference<AccessibleHyperlink>(hl);
 	}
 
 	public static AtkHyperlink createAtkHyperlink(AccessibleHyperlink hl){
@@ -35,6 +36,10 @@ public class AtkHyperlink {
 	}
 
 	public String get_uri (int i) {
+		AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
+		if (acc_hyperlink == null)
+			return "";
+
 		return AtkUtil.invokeInSwing ( () -> {
 			Object o = acc_hyperlink.getAccessibleActionObject(i);
 			if (o != null)
@@ -44,6 +49,10 @@ public class AtkHyperlink {
 	}
 
 	public AccessibleContext get_object (int i) {
+		AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
+		if (acc_hyperlink == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			Object anchor = acc_hyperlink.getAccessibleActionAnchor(i);
 			if (anchor instanceof Accessible)
@@ -53,18 +62,34 @@ public class AtkHyperlink {
 	}
 
 	public int get_end_index () {
+		AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
+		if (acc_hyperlink == null)
+			return 0;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.getEndIndex(); }, 0);
 	}
 
 	public int get_start_index () {
+		AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
+		if (acc_hyperlink == null)
+			return 0;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.getStartIndex(); }, 0);
 	}
 
 	public boolean is_valid () {
+		AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
+		if (acc_hyperlink == null)
+			return false;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.isValid(); }, false);
 	}
 
 	public int get_n_anchors () {
+		AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
+		if (acc_hyperlink == null)
+			return 0;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_hyperlink.getAccessibleActionCount(); }, 0);
 	}
 }

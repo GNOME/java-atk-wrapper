@@ -80,7 +80,7 @@ jaw_editable_text_data_init (jobject ac)
                                                     classEditableText,
                                                     jmid,
                                                     ac);
-  data->atk_editable_text = (*jniEnv)->NewWeakGlobalRef(jniEnv,
+  data->atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv,
                                                     jatk_editable_text);
 
   return data;
@@ -95,7 +95,7 @@ jaw_editable_text_data_finalize (gpointer p)
 
   if (data && data->atk_editable_text)
   {
-    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_editable_text);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_editable_text);
     data->atk_editable_text = NULL;
   }
 }

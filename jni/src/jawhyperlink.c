@@ -43,7 +43,7 @@ jaw_hyperlink_new (jobject jhyperlink)
 	JAW_DEBUG_ALL("%p", jhyperlink);
 	JawHyperlink* jaw_hyperlink = g_object_new(JAW_TYPE_HYPERLINK, NULL);
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jaw_hyperlink->jhyperlink = (*jniEnv)->NewWeakGlobalRef(jniEnv, jhyperlink);
+	jaw_hyperlink->jhyperlink = (*jniEnv)->NewGlobalRef(jniEnv, jhyperlink);
 
 	return jaw_hyperlink;
 }
@@ -86,7 +86,7 @@ jaw_hyperlink_finalize(GObject *gobject)
 	JawHyperlink *jaw_hyperlink = JAW_HYPERLINK(gobject);
 
 	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	(*jniEnv)->DeleteWeakGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
+	(*jniEnv)->DeleteGlobalRef(jniEnv, jaw_hyperlink->jhyperlink);
 	jaw_hyperlink->jhyperlink = NULL;
 
 	/* Chain up to parent's finalize */

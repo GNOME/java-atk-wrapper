@@ -20,16 +20,17 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import java.lang.ref.WeakReference;
 
 public class AtkSelection {
 
-	AccessibleContext ac;
-	AccessibleSelection acc_selection;
+	WeakReference<AccessibleContext> _ac;
+	WeakReference<AccessibleSelection> _acc_selection;
 
 	public AtkSelection (AccessibleContext ac) {
 		super();
-		this.ac = ac;
-		this.acc_selection = ac.getAccessibleSelection();
+		this._ac = new WeakReference<AccessibleContext>(ac);
+		this._acc_selection = new WeakReference<AccessibleSelection>(ac.getAccessibleSelection());
 	}
 
 	public static AtkSelection createAtkSelection(AccessibleContext ac){
@@ -37,6 +38,10 @@ public class AtkSelection {
 	}
 
 	public boolean add_selection (int i) {
+		AccessibleSelection acc_selection = _acc_selection.get();
+		if (acc_selection == null)
+			return false;
+
 		return AtkUtil.invokeInSwing( () -> {
 			acc_selection.addAccessibleSelection(i);
 			return is_child_selected(i);
@@ -44,15 +49,30 @@ public class AtkSelection {
 	}
 
 	public boolean clear_selection () {
+		AccessibleSelection acc_selection = _acc_selection.get();
+		if (acc_selection == null)
+			return false;
+
 		AtkUtil.invokeInSwing( () -> { acc_selection.clearAccessibleSelection(); });
 		return true;
 	}
 
 	public AccessibleContext ref_selection (int i) {
+		AccessibleSelection acc_selection = _acc_selection.get();
+		if (acc_selection == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_selection.getAccessibleSelection(i).getAccessibleContext(); }, null);
 	}
 
 	public int get_selection_count () {
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
+			return 0;
+		AccessibleSelection acc_selection = _acc_selection.get();
+		if (acc_selection == null)
+			return 0;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			int count = 0;
 			for(int i = 0; i < ac.getAccessibleChildrenCount(); i++) {
@@ -66,10 +86,18 @@ public class AtkSelection {
 	}
 
 	public boolean is_child_selected (int i) {
+		AccessibleSelection acc_selection = _acc_selection.get();
+		if (acc_selection == null)
+			return false;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_selection.isAccessibleChildSelected(i); }, false);
 	}
 
 	public boolean remove_selection (int i) {
+		AccessibleSelection acc_selection = _acc_selection.get();
+		if (acc_selection == null)
+			return false;
+
 		return AtkUtil.invokeInSwing( () -> {
 			acc_selection.removeAccessibleSelection(i);
 			return !is_child_selected(i);
@@ -77,6 +105,13 @@ public class AtkSelection {
 	}
 
 	public boolean select_all_selection () {
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
+			return false;
+		AccessibleSelection acc_selection = _acc_selection.get();
+		if (acc_selection == null)
+			return false;
+
 		AccessibleStateSet stateSet = ac.getAccessibleStateSet();
 		return AtkUtil.invokeInSwing ( () -> {
 			if (stateSet.contains(AccessibleState.MULTISELECTABLE)) {

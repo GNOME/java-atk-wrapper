@@ -20,50 +20,63 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
+import java.lang.ref.WeakReference;
 
 public class AtkHypertext extends AtkText {
 
-	AccessibleHypertext acc_hyper_text;
+	WeakReference<AccessibleHypertext> _acc_hyper_text;
 
 	public AtkHypertext (AccessibleContext ac) {
 		super(ac);
 
 		AccessibleText ac_text = ac.getAccessibleText();
 		if (ac_text instanceof AccessibleHypertext) {
-			acc_hyper_text = (AccessibleHypertext)ac_text;
+			_acc_hyper_text = new WeakReference<AccessibleHypertext>((AccessibleHypertext)ac_text);
 		} else {
-			acc_hyper_text = null;
+			_acc_hyper_text = null;
 		}
 	}
 
 	public static AtkHypertext createAtkHypertext(AccessibleContext ac){
-        return AtkUtil.invokeInSwing ( () -> { return new AtkHypertext(ac); }, null);
-    }
+		return AtkUtil.invokeInSwing ( () -> { return new AtkHypertext(ac); }, null);
+	}
 
 	public AtkHyperlink get_link (int link_index) {
+		if (_acc_hyper_text == null)
+			return null;
+		AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
+		if (acc_hyper_text == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
-			if (acc_hyper_text != null) {
-				AccessibleHyperlink link = acc_hyper_text.getLink(link_index);
-				if (link != null)
-					return new AtkHyperlink(link);
-			}
+			AccessibleHyperlink link = acc_hyper_text.getLink(link_index);
+			if (link != null)
+				return new AtkHyperlink(link);
 			return null;
 		}, null);
 	}
 
 	public int get_n_links () {
-		return AtkUtil.invokeInSwing ( () -> {
-			if (acc_hyper_text != null)
-				return acc_hyper_text.getLinkCount();
+		if (_acc_hyper_text == null)
 			return 0;
+		AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
+		if (acc_hyper_text == null)
+			return 0;
+
+		return AtkUtil.invokeInSwing ( () -> {
+			return acc_hyper_text.getLinkCount();
 		}, 0);
 	}
 
 	public int get_link_index (int char_index) {
-		return AtkUtil.invokeInSwing ( () -> {
-			if (acc_hyper_text != null)
-				return acc_hyper_text.getLinkIndex(char_index);
+		if (_acc_hyper_text == null)
 			return 0;
+		AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
+		if (acc_hyper_text == null)
+			return 0;
+
+		return AtkUtil.invokeInSwing ( () -> {
+			return acc_hyper_text.getLinkIndex(char_index);
 		}, 0);
 	}
 }

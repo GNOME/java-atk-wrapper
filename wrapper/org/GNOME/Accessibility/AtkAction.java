@@ -21,27 +21,29 @@ package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
 import javax.swing.*;
+import java.lang.ref.WeakReference;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class AtkAction {
 
-	AccessibleContext ac;
-	AccessibleAction acc_action;
-	AccessibleExtendedComponent acc_ext_component;
+	WeakReference<AccessibleContext> _ac;
+	WeakReference<AccessibleAction> _acc_action;
+	WeakReference<AccessibleExtendedComponent> _acc_ext_component;
 	String[] descriptions;
 	int nactions;
 
 	public AtkAction (AccessibleContext ac) {
 		super();
-		this.ac = ac;
-		this.acc_action = ac.getAccessibleAction();
-		this.nactions = this.acc_action.getAccessibleActionCount();
+		this._ac = new WeakReference<AccessibleContext>(ac);
+		AccessibleAction acc_action = ac.getAccessibleAction();
+		this._acc_action = new WeakReference<AccessibleAction>(acc_action);
+		this.nactions = acc_action.getAccessibleActionCount();
 		this.descriptions = new String[nactions];
 		AccessibleComponent acc_component = ac.getAccessibleComponent();
 		if (acc_component instanceof AccessibleExtendedComponent) {
-			this.acc_ext_component = (AccessibleExtendedComponent)acc_component;
+			this._acc_ext_component = new WeakReference<AccessibleExtendedComponent>((AccessibleExtendedComponent)acc_component);
 		}
 	}
 
@@ -50,6 +52,10 @@ public class AtkAction {
 	}
 
 	public boolean do_action (int i) {
+		AccessibleAction acc_action = _acc_action.get();
+		if (acc_action == null)
+			return false;
+
 		AtkUtil.invokeInSwing( () -> { acc_action.doAccessibleAction(i); });
 		return true;
 	}
@@ -57,6 +63,10 @@ public class AtkAction {
 	public int get_n_actions () { return this.nactions; }
 
 	public String get_description (int i) {
+		AccessibleAction acc_action = _acc_action.get();
+		if (acc_action == null)
+			return null;
+
 		if (i >= nactions){
 			return null;
 		}
@@ -87,6 +97,13 @@ public class AtkAction {
   *          class is one way to work around that)
   */
   	public String getLocalizedName (int i) {
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
+			return null;
+		AccessibleAction acc_action = _acc_action.get();
+		if (acc_action == null)
+			return null;
+
 		if (i >= nactions){
 			return null;
 		}
@@ -120,6 +137,10 @@ public class AtkAction {
 	}
 
 	public String get_keybinding (int index) {
+		AccessibleExtendedComponent acc_ext_component = _acc_ext_component.get();
+		if (_acc_ext_component == null)
+			return "";
+
 		// TODO: improve/fix conversion to strings, concatenate,
 		//       and follow our formatting convention for the role of
 		//       various keybindings (i.e. global, transient, etc.)

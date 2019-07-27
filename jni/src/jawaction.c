@@ -65,7 +65,7 @@ jaw_action_data_init (jobject ac)
                                           "createAtkAction",
                                           "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkAction;");
   jobject jatk_action = (*jniEnv)->CallStaticObjectMethod(jniEnv, classAction, jmid, ac);
-  data->atk_action = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_action);
+  data->atk_action = (*jniEnv)->NewGlobalRef(jniEnv, jatk_action);
 
   return data;
 }
@@ -103,7 +103,7 @@ jaw_action_data_finalize (gpointer p)
       data->action_keybinding = NULL;
     }
 
-    (*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_action);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_action);
     data->atk_action = NULL;
   }
 }

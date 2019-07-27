@@ -22,23 +22,28 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 import java.awt.Point;
 import java.awt.Dimension;
+import java.lang.ref.WeakReference;
 
 public class AtkImage {
 
-	AccessibleContext ac;
-	AccessibleIcon[] acc_icons;
+	WeakReference<AccessibleContext> _ac;
+	WeakReference<AccessibleIcon[]> _acc_icons;
 
 	public AtkImage (AccessibleContext ac) {
 		super();
-		this.ac = ac;
-		this.acc_icons = ac.getAccessibleIcon();
+		this._ac = new WeakReference<AccessibleContext>(ac);
+		this._acc_icons = new WeakReference<AccessibleIcon[]>(ac.getAccessibleIcon());
 	}
 
 	public static AtkImage createAtkImage(AccessibleContext ac){
-        return AtkUtil.invokeInSwing ( () -> { return new AtkImage(ac); }, null);
-    }
+		return AtkUtil.invokeInSwing ( () -> { return new AtkImage(ac); }, null);
+	}
 
 	public Point get_image_position (int coord_type) {
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			AccessibleComponent acc_component = ac.getAccessibleComponent();
 			if (acc_component == null)
@@ -50,6 +55,10 @@ public class AtkImage {
 	}
 
 	public String get_image_description () {
+		AccessibleIcon[] acc_icons = _acc_icons.get();
+		if (acc_icons == null)
+			return "";
+
 		return AtkUtil.invokeInSwing ( () -> {
 			String desc = "";
 			if (acc_icons != null && acc_icons.length > 0) {
@@ -63,6 +72,11 @@ public class AtkImage {
 
 	public Dimension get_image_size () {
 		Dimension d = new Dimension(0, 0);
+
+		AccessibleIcon[] acc_icons = _acc_icons.get();
+		if (acc_icons == null)
+			return d;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_icons != null && acc_icons.length > 0) {
 				d.height = acc_icons[0].getAccessibleIconHeight();

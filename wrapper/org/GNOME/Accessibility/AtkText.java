@@ -23,12 +23,13 @@ import javax.accessibility.*;
 import java.text.*;
 import java.awt.Rectangle;
 import java.awt.Point;
+import java.lang.ref.WeakReference;
 
 public class AtkText {
 
-	AccessibleContext ac;
-	AccessibleText acc_text;
-	AccessibleEditableText acc_edt_text;
+	WeakReference<AccessibleContext> _ac;
+	WeakReference<AccessibleText> _acc_text;
+	WeakReference<AccessibleEditableText> _acc_edt_text;
 
 	public class StringSequence {
 
@@ -44,9 +45,9 @@ public class AtkText {
 
 	public AtkText (AccessibleContext ac) {
 		super();
-		this.ac = ac;
-		this.acc_text = ac.getAccessibleText();
-		this.acc_edt_text = ac.getAccessibleEditableText();
+		this._ac = new WeakReference<AccessibleContext>(ac);
+		this._acc_text = new WeakReference<AccessibleText>(ac.getAccessibleText());
+		this._acc_edt_text = new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
 	}
 
 	public static AtkText createAtkText(AccessibleContext ac){
@@ -55,6 +56,10 @@ public class AtkText {
 
 	/* Return string from start, up to, but not including end */
 	public String get_text (int start, int end) {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			int count = acc_text.getCharCount();
 			final int rightStart;
@@ -84,6 +89,10 @@ public class AtkText {
 	}
 
 	public char get_character_at_offset (int offset) {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return ' ';
+
 		return AtkUtil.invokeInSwing ( () -> {
 			String str =  acc_text.getAtIndex(AccessibleText.CHARACTER, offset);
 			if (str == null || str.length() == 0)
@@ -93,6 +102,10 @@ public class AtkText {
 	}
 
 	public StringSequence get_text_at_offset (int offset,int boundary_type) {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_text instanceof AccessibleExtendedText) {
 				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
@@ -108,10 +121,21 @@ public class AtkText {
 	}
 
 	public int get_caret_offset () {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return 0;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_text.getCaretPosition(); }, 0);
 	}
 
 	public Rectangle get_character_extents (int offset, int coord_type) {
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
+			return null;
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			Rectangle rect = acc_text.getCharacterBounds(offset);
 			if (rect == null)
@@ -129,10 +153,21 @@ public class AtkText {
 	}
 
 	public int get_character_count () {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return 0;
+
 		return AtkUtil.invokeInSwing ( () -> { return acc_text.getCharCount(); }, 0);
 	}
 
 	public int get_offset_at_point (int x, int y, int coord_type) {
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
+			return -1;
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return -1;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (coord_type == AtkCoordType.SCREEN) {
 				AccessibleComponent component = ac.getAccessibleComponent();
@@ -146,6 +181,13 @@ public class AtkText {
 	}
 
 	public Rectangle get_range_extents (int start, int end, int coord_type) {
+		AccessibleContext ac = _ac.get();
+		if (ac == null)
+			return null;
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_text instanceof AccessibleExtendedText) {
 				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
@@ -167,6 +209,10 @@ public class AtkText {
 	}
 
 	public int get_n_selections () {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return 0;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			String str = acc_text.getSelectedText();
 			if (str != null && str.length() > 0)
@@ -176,6 +222,10 @@ public class AtkText {
 	}
 
 	public StringSequence get_selection () {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return null;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			int start = acc_text.getSelectionStart();
 			int end = acc_text.getSelectionEnd() + 1;
@@ -187,6 +237,10 @@ public class AtkText {
 	}
 
 	public boolean add_selection (int start, int end) {
+		AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+		if (acc_edt_text == null)
+			return false;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_edt_text == null || get_n_selections() > 0)
 				return false;
@@ -195,6 +249,10 @@ public class AtkText {
 	}
 
 	public boolean remove_selection(int selection_num) {
+		AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+		if (acc_edt_text == null)
+			return false;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_edt_text == null || selection_num > 0)
 				return false;
@@ -204,6 +262,10 @@ public class AtkText {
 	}
 
 	public boolean set_selection (int selection_num, int start, int end) {
+		AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+		if (acc_edt_text == null)
+			return false;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_edt_text == null || selection_num > 0)
 				return false;
@@ -213,6 +275,10 @@ public class AtkText {
 	}
 
 	public boolean set_caret_offset (int offset) {
+		AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+		if (acc_edt_text == null)
+			return false;
+
 		return AtkUtil.invokeInSwing ( () -> {
 			if (acc_edt_text != null) {
 				acc_edt_text.selectText(offset, offset);

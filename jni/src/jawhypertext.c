@@ -61,7 +61,7 @@ jaw_hypertext_data_init (jobject ac)
 	jclass classHypertext = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkHypertext");
 	jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, classHypertext, "createAtkHypertext", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkHypertext;");
 	jobject jatk_hypertext = (*jniEnv)->CallStaticObjectMethod(jniEnv, classHypertext, jmid, ac);
-	data->atk_hypertext = (*jniEnv)->NewWeakGlobalRef(jniEnv, jatk_hypertext);
+	data->atk_hypertext = (*jniEnv)->NewGlobalRef(jniEnv, jatk_hypertext);
 
 	data->link_table = g_hash_table_new_full(NULL, NULL, NULL, link_destroy_notify);
 
@@ -78,7 +78,7 @@ jaw_hypertext_data_finalize (gpointer p)
 	if (data && data->atk_hypertext) {
 		g_hash_table_remove_all(data->link_table);
 
-		(*jniEnv)->DeleteWeakGlobalRef(jniEnv, data->atk_hypertext);
+		(*jniEnv)->DeleteGlobalRef(jniEnv, data->atk_hypertext);
 		data->atk_hypertext = NULL;
 	}
 }

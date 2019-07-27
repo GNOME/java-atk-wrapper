@@ -23,14 +23,15 @@ import javax.accessibility.*;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import javax.swing.text.*;
+import java.lang.ref.WeakReference;
 
 public class AtkEditableText extends AtkText {
 
-  AccessibleEditableText acc_edt_text;
+  WeakReference<AccessibleEditableText> _acc_edt_text;
 
   public AtkEditableText (AccessibleContext ac) {
     super(ac);
-    acc_edt_text = ac.getAccessibleEditableText();
+    _acc_edt_text = new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
   }
 
   public static AtkEditableText createAtkEditableText(AccessibleContext ac){
@@ -38,6 +39,10 @@ public class AtkEditableText extends AtkText {
   }
 
   public void set_text_contents (String s) {
+      AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+      if (acc_edt_text == null)
+          return;
+
       if (!javax.swing.SwingUtilities.isEventDispatchThread())
         System.out.println("It would be unsafe to call setTextContents here");
       AtkUtil.invokeInSwing( () -> {
@@ -46,6 +51,10 @@ public class AtkEditableText extends AtkText {
   }
 
     public void insert_text (String s, int position) {
+        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+        if (acc_edt_text == null)
+            return;
+
         if (position < 0)
             position = 0;
         final int rightPosition = position;
@@ -53,6 +62,10 @@ public class AtkEditableText extends AtkText {
     }
 
     public void copy_text (int start, int end) {
+        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+        if (acc_edt_text == null)
+            return;
+
         int n = acc_edt_text.getCharCount();
         if (start < 0) {
             start = 0;
@@ -74,14 +87,26 @@ public class AtkEditableText extends AtkText {
     }
 
     public void cut_text (int start, int end) {
+        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+        if (acc_edt_text == null)
+            return;
+
         AtkUtil.invokeInSwing( () -> { acc_edt_text.cut(start, end); });
     }
 
     public void delete_text (int start, int end) {
+        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+        if (acc_edt_text == null)
+            return;
+
         AtkUtil.invokeInSwing( () -> { acc_edt_text.delete(start, end); });
     }
 
     public void paste_text (int position) {
+        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+        if (acc_edt_text == null)
+            return;
+
         AtkUtil.invokeInSwing( () -> { acc_edt_text.paste(position); });
     }
 
@@ -96,6 +121,10 @@ public class AtkEditableText extends AtkText {
     *      attributes were set.
     */
     public boolean setRunAttributes(AttributeSet as, int start, int end) {
+        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
+        if (acc_edt_text == null)
+            return false;
+
         return AtkUtil.invokeInSwing( () -> {
             acc_edt_text.setAttributes(start, end, as);
             return true;
