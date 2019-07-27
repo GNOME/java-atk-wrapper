@@ -62,7 +62,12 @@ public class AtkSelection {
 		if (acc_selection == null)
 			return null;
 
-		return AtkUtil.invokeInSwing ( () -> { return acc_selection.getAccessibleSelection(i).getAccessibleContext(); }, null);
+		return AtkUtil.invokeInSwing ( () -> {
+			Accessible sel = acc_selection.getAccessibleSelection(i);
+			if (sel == null)
+				return null;
+			return sel.getAccessibleContext();
+		}, null);
 	}
 
 	public int get_selection_count () {
