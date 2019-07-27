@@ -34,6 +34,7 @@ public class AtkKeyEvent {
   public boolean isCtrlKeyDown = false;
   public boolean isAltKeyDown = false;
   public boolean isMetaKeyDown = false;
+  public boolean isAltGrKeyDown = false;
   public int keyval = 0;
   public String string;
   public int keycode;
@@ -103,6 +104,9 @@ public class AtkKeyEvent {
     }
     if ((modifierMask & InputEvent.META_DOWN_MASK) != 0) {
       isMetaKeyDown = true;
+    }
+    if ((modifierMask & InputEvent.ALT_GRAPH_DOWN_MASK) != 0) {
+      isAltGrKeyDown = true;
     }
 
     GNOMEKeyMapping.GNOMEKeyInfo keyInfo = GNOMEKeyMapping.getKey(e);

@@ -44,6 +44,7 @@ extern "C" {
 #define GDK_SHIFT_MASK (1 << 0)
 #define GDK_CONTROL_MASK (1 << 2)
 #define GDK_MOD1_MASK (1 << 3)
+#define GDK_MOD5_MASK (1 << 7)
 #define GDK_META_MASK (1 << 28)
 
 typedef enum _SignalType SignalType;
@@ -1150,6 +1151,13 @@ key_dispatch_handler (gpointer p)
   if (jMetaKeyDown)
   {
     event->state |= GDK_META_MASK;
+  }
+
+  jfieldID jfidAltGr = (*jniEnv)->GetFieldID(jniEnv, classAtkKeyEvent, "isAltGrKeyDown", "Z");
+  jboolean jAltGrKeyDown = (*jniEnv)->GetBooleanField(jniEnv, jAtkKeyEvent, jfidAltGr);
+  if (jAltGrKeyDown)
+  {
+    event->state |= GDK_MOD5_MASK;
   }
 
   // keyval
