@@ -67,13 +67,13 @@ public class AtkComponent {
       if (coord_type == AtkCoordType.WINDOW)
       {
           Point win_p = getWindowLocation(ac);
-	  if (win_p == null)
-	      return null;
-	  Point p = acc_component.getLocationOnScreen();
-	  if (p == null)
-	      return null;
-	  p.translate(-win_p.x, -win_p.y);
-	  return p;
+          if (win_p == null)
+              return null;
+          Point p = acc_component.getLocationOnScreen();
+          if (p == null)
+              return null;
+          p.translate(-win_p.x, -win_p.y);
+          return p;
       }
 
       if (coord_type == AtkCoordType.PARENT)
@@ -204,7 +204,7 @@ public class AtkComponent {
                 Rectangle rect = acc_component.getBounds();
                 if (rect == null)
                     return null;
-		Point p = getParentOrigin(ac, acc_component, coord_type);
+                Point p = getParentOrigin(ac, acc_component, coord_type);
                 if (p == null)
                     return null;
 
