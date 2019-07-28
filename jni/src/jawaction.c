@@ -204,12 +204,16 @@ jaw_action_get_description (AtkAction *action, gint i)
                                      data->jstrActionDescription,
                                      data->action_description);
     (*jniEnv)->DeleteGlobalRef(jniEnv, data->jstrActionDescription);
+    data->jstrActionDescription = NULL;
+    data->action_description = NULL;
   }
 
-  data->jstrActionDescription = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
-  data->action_description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
-                                                                  data->jstrActionDescription,
-                                                                  NULL);
+  if (jstr) {
+    data->jstrActionDescription = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
+    data->action_description = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
+                                                                    data->jstrActionDescription,
+                                                                    NULL);
+  }
 
   return data->action_description;
 }
