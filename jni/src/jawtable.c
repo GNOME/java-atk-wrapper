@@ -24,6 +24,7 @@
 #include "jawutil.h"
 
 static AtkObject*   jaw_table_ref_at(AtkTable *table, gint row, gint column);
+static gint         jaw_table_get_index_at(AtkTable *table, gint row, gint column);
 static gint         jaw_table_get_column_at_index(AtkTable *table, gint index);
 static gint         jaw_table_get_row_at_index(AtkTable *table, gint index);
 static gint         jaw_table_get_n_columns(AtkTable *table);
@@ -67,7 +68,7 @@ jaw_table_interface_init (AtkTableIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->ref_at = jaw_table_ref_at;
-  // TODO: iface->get_index_at
+  iface->get_index_at = jaw_table_get_index_at;
   iface->get_column_at_index = jaw_table_get_column_at_index;
   iface->get_row_at_index = jaw_table_get_row_at_index;
   iface->get_n_columns = jaw_table_get_n_columns;
@@ -172,6 +173,31 @@ jaw_table_ref_at (AtkTable *table, gint	row, gint column)
     g_object_ref(G_OBJECT(jaw_impl));
 
   return ATK_OBJECT(jaw_impl);
+}
+
+static gint
+jaw_table_get_index_at (AtkTable *table, gint row, gint column)
+{
+  JAW_DEBUG_C("%p, %d, %d", table, row, column);
+  JawObject *jaw_obj = JAW_OBJECT(table);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return 0;
+  }
+  TableData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE);
+  JNIEnv *env = jaw_util_get_jni_env();
+  jobject atk_table = (*env)->NewGlobalRef(env, data->atk_table);
+  if (!atk_table) {
+    JAW_DEBUG_I("atk_table == NULL");
+    return 0;
+  }
+
+  jclass classAtkTable = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkTable");
+  jmethodID jmid = (*env)->GetMethodID(env, classAtkTable, "get_index_at", "(II)I");
+  jint jindex = (*env)->CallIntMethod(env, atk_table, jmid, (jint)row, (jint)column);
+  (*env)->DeleteGlobalRef(env, atk_table);
+
+  return (gint)jindex;
 }
 
 static gint

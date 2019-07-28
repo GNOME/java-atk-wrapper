@@ -50,6 +50,22 @@ public class AtkTable {
 		}, null);
 	}
 
+	public int get_index_at (int row, int column) {
+		AccessibleTable acc_table = _acc_table.get();
+		if (acc_table == null)
+			return -1;
+
+		return AtkUtil.invokeInSwing ( () -> {
+			Accessible child = acc_table.getAccessibleAt(row, column);
+			if (child == null)
+				return -1;
+			AccessibleContext child_ac = child.getAccessibleContext();
+			if (child_ac == null)
+				return -1;
+			return child_ac.getAccessibleIndexInParent();
+		}, -1);
+	}
+
 	public int get_column_at_index (int index) {
 		AccessibleTable acc_table = _acc_table.get();
 		if (acc_table == null)
