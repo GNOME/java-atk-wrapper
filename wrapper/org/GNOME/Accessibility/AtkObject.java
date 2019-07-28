@@ -153,8 +153,24 @@ public class AtkObject{
         }, null);
     }
 
-    public static Locale getLocale(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getLocale(); }, null);
+    public static String getLocale(AccessibleContext ac){
+        return AtkUtil.invokeInSwing( () -> {
+            Locale l = ac.getLocale();
+            String locale = l.getLanguage();
+            String country = l.getCountry();
+            String script = l.getScript();
+            String variant = l.getVariant();
+            if (country.length() != 0) {
+                locale += "_" + country;
+            }
+            if (script.length() != 0) {
+                locale += "@" + script;
+            }
+            if (variant.length() != 0) {
+                locale += "@" + variant;
+            }
+            return locale;
+        }, null);
     }
 
     public static class WrapKeyAndTarget{

@@ -42,6 +42,8 @@ struct _JawObject
 	jobject acc_context;
 	jstring jstrName;
 	jstring jstrDescription;
+	jstring jstrLocale;
+	gchar *locale;
 	AtkStateSet *state_set;
 
 	GHashTable *storedData;

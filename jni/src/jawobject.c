@@ -194,6 +194,14 @@ jaw_object_finalize (GObject *gobject)
     atk_obj->description = NULL;
   }
 
+  if (jaw_obj->locale != NULL)
+  {
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrLocale, jaw_obj->locale);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrLocale);
+    jaw_obj->jstrLocale = NULL;
+    jaw_obj->locale = NULL;
+  }
+
   if (G_OBJECT(jaw_obj->state_set) != NULL)
   {
     g_object_unref(G_OBJECT(jaw_obj->state_set));
@@ -515,15 +523,28 @@ static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
   }
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
-  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getLocale", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/Locale;");
-  jobject locale = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getLocale", "(Ljavax/accessibility/AccessibleContext;)Ljava/lang/String;");
+  jobject jstr = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmid, ac);
 
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
-  JawImpl *target_obj = jaw_impl_get_instance_from_jaw(jniEnv, locale);
-  if(target_obj == NULL)
-    return NULL;
 
-  return atk_object_get_object_locale((AtkObject*) target_obj);
+  if (jaw_obj->locale != NULL)
+  {
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv, jaw_obj->jstrLocale, jaw_obj->locale);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, jaw_obj->jstrLocale);
+    jaw_obj->jstrLocale = NULL;
+    jaw_obj->locale = NULL;
+  }
+
+  if (jstr != NULL)
+  {
+    jaw_obj->jstrLocale = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
+    jaw_obj->locale = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv,
+                                                         jaw_obj->jstrLocale,
+                                                         NULL);
+  }
+
+  return jaw_obj->locale;
 }
 
 static AtkRelationSet*
