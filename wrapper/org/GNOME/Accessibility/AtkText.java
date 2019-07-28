@@ -143,7 +143,10 @@ public class AtkText {
 					return null;
 				return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
 			} else {
-				return private_get_text_at_offset(offset, boundary_type);
+				StringSequence seq = private_get_text_at_offset(offset, boundary_type);
+				if (seq == null)
+					return null;
+				return private_get_text_at_offset(seq.start_offset-1, boundary_type);
 			}
 		}, null);
 	}
@@ -164,7 +167,10 @@ public class AtkText {
 					return null;
 				return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
 			} else {
-				return private_get_text_at_offset(offset, boundary_type);
+				StringSequence seq = private_get_text_at_offset(offset, boundary_type);
+				if (seq == null)
+					return null;
+				return private_get_text_at_offset(seq.end_offset, boundary_type);
 			}
 		}, null);
 	}
@@ -517,7 +523,7 @@ public class AtkText {
 			case AtkTextBoundary.WORD_START :
 			{
 				String s = get_text(0, get_character_count());
-				int start = getPreviousWordStart(offset, s);
+				int start = getPreviousWordStart(offset+1, s);
 				if (start == BreakIterator.DONE) {
 					start = 0;
 				}
@@ -538,7 +544,7 @@ public class AtkText {
 					start = 0;
 				}
 
-				int end = getNextWordEnd(offset, s);
+				int end = getNextWordEnd(offset-1, s);
 				if (end == BreakIterator.DONE) {
 					end = s.length();
 				}
@@ -549,7 +555,7 @@ public class AtkText {
 			case AtkTextBoundary.SENTENCE_START :
 			{
 				String s = get_text(0, get_character_count());
-				int start = getPreviousSentenceStart(offset, s);
+				int start = getPreviousSentenceStart(offset+1, s);
 				if (start == BreakIterator.DONE) {
 					start = 0;
 				}
@@ -570,7 +576,7 @@ public class AtkText {
 					start = 0;
 				}
 
-				int end = getNextSentenceEnd(offset, s);
+				int end = getNextSentenceEnd(offset-1, s);
 				if (end == BreakIterator.DONE) {
 					end = s.length();
 				}
