@@ -56,6 +56,8 @@ public class AtkTable {
 			return -1;
 
 		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_table instanceof AccessibleExtendedTable)
+				return ( (AccessibleExtendedTable) acc_table).getAccessibleIndex(row, column);
 			Accessible child = acc_table.getAccessibleAt(row, column);
 			if (child == null)
 				return -1;
