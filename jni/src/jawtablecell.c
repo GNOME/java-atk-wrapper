@@ -43,10 +43,10 @@ jaw_table_cell_interface_init (AtkTableCellIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->get_column_span = jaw_table_cell_get_column_span;
-  // TODO: iface->get_column_header_cells
+  // TODO: iface->get_column_header_cells from getAccessibleColumnHeader
   iface->get_position = jaw_table_cell_get_position;
   iface->get_row_span = jaw_table_cell_get_row_span;
-  // TODO: iface->get_row_header_cells
+  // TODO: iface->get_row_header_cells from getAccessibleRowHeader
   iface->get_row_column_span = jaw_table_cell_get_row_column_span;
   iface->get_table = jaw_table_cell_get_table;
 }
