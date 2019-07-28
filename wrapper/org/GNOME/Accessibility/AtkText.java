@@ -522,6 +522,9 @@ public class AtkText {
 			}
 			case AtkTextBoundary.WORD_START :
 			{
+				if (offset == get_character_count())
+					return new StringSequence("", 0, 0);
+
 				String s = get_text(0, get_character_count());
 				int start = getPreviousWordStart(offset+1, s);
 				if (start == BreakIterator.DONE) {
@@ -538,6 +541,9 @@ public class AtkText {
 			}
 			case AtkTextBoundary.WORD_END :
 			{
+				if (offset == 0)
+					return new StringSequence("", 0, 0);
+
 				String s = get_text(0, get_character_count());
 				int start = getPreviousWordEnd(offset, s);
 				if (start == BreakIterator.DONE) {
@@ -554,6 +560,9 @@ public class AtkText {
 			}
 			case AtkTextBoundary.SENTENCE_START :
 			{
+				if (offset == get_character_count())
+					return new StringSequence("", 0, 0);
+
 				String s = get_text(0, get_character_count());
 				int start = getPreviousSentenceStart(offset+1, s);
 				if (start == BreakIterator.DONE) {
@@ -570,6 +579,9 @@ public class AtkText {
 			}
 			case AtkTextBoundary.SENTENCE_END :
 			{
+				if (offset == 0)
+					return new StringSequence("", 0, 0);
+
 				String s = get_text(0, get_character_count());
 				int start = getPreviousSentenceEnd(offset, s);
 				if (start == BreakIterator.DONE) {
