@@ -522,10 +522,10 @@ public class AtkText {
 			}
 			case AtkTextBoundary.WORD_START :
 			{
-				if (offset == get_character_count())
-					return new StringSequence("", 0, 0);
+				if (offset == char_count)
+					return new StringSequence("", char_count, char_count);
 
-				String s = get_text(0, get_character_count());
+				String s = get_text(0, char_count);
 				int start = getPreviousWordStart(offset+1, s);
 				if (start == BreakIterator.DONE) {
 					start = 0;
@@ -544,7 +544,7 @@ public class AtkText {
 				if (offset == 0)
 					return new StringSequence("", 0, 0);
 
-				String s = get_text(0, get_character_count());
+				String s = get_text(0, char_count);
 				int start = getPreviousWordEnd(offset, s);
 				if (start == BreakIterator.DONE) {
 					start = 0;
@@ -560,10 +560,10 @@ public class AtkText {
 			}
 			case AtkTextBoundary.SENTENCE_START :
 			{
-				if (offset == get_character_count())
-					return new StringSequence("", 0, 0);
+				if (offset == char_count)
+					return new StringSequence("", char_count, char_count);
 
-				String s = get_text(0, get_character_count());
+				String s = get_text(0, char_count);
 				int start = getPreviousSentenceStart(offset+1, s);
 				if (start == BreakIterator.DONE) {
 					start = 0;
@@ -582,7 +582,7 @@ public class AtkText {
 				if (offset == 0)
 					return new StringSequence("", 0, 0);
 
-				String s = get_text(0, get_character_count());
+				String s = get_text(0, char_count);
 				int start = getPreviousSentenceEnd(offset, s);
 				if (start == BreakIterator.DONE) {
 					start = 0;
@@ -600,7 +600,7 @@ public class AtkText {
 			case AtkTextBoundary.LINE_END :
 			{
 				BreakIterator lines = BreakIterator.getLineInstance();
-				String s = get_text(0, get_character_count());
+				String s = get_text(0, char_count);
 				lines.setText(s);
 
 				int start = lines.preceding(offset);
