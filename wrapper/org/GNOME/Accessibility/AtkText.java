@@ -112,7 +112,8 @@ public class AtkText {
 			return null;
 
 		return AtkUtil.invokeInSwing ( () -> {
-			if (acc_text instanceof AccessibleExtendedText) {
+			if (false && acc_text instanceof AccessibleExtendedText) {
+				// FIXME: this is not using start/end boundaries
 				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
 				int part = getPartTypeFromBoundary(boundary_type);
 				if (part == -1)
@@ -133,7 +134,8 @@ public class AtkText {
 			return null;
 
 		return AtkUtil.invokeInSwing ( () -> {
-			if (acc_text instanceof AccessibleExtendedText) {
+			if (false && acc_text instanceof AccessibleExtendedText) {
+				// FIXME: this is not using start/end boundaries
 				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
 				int part = getPartTypeFromBoundary(boundary_type);
 				if (part == -1)
@@ -157,7 +159,8 @@ public class AtkText {
 			return null;
 
 		return AtkUtil.invokeInSwing ( () -> {
-			if (acc_text instanceof AccessibleExtendedText) {
+			if (false && acc_text instanceof AccessibleExtendedText) {
+				// FIXME: this is not using start/end boundaries
 				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
 				int part = getPartTypeFromBoundary(boundary_type);
 				if (part == -1)
