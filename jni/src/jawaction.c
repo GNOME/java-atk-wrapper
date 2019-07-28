@@ -45,8 +45,9 @@ jaw_action_interface_init (AtkActionIface *iface, gpointer data)
   JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->do_action = jaw_action_do_action;
   iface->get_n_actions = jaw_action_get_n_actions;
+  // FIXME: missing java support for distinguishing name and description
   iface->get_description = jaw_action_get_description;
-  // TODO: iface->get_name: use description
+  iface->get_name = jaw_action_get_description;
   iface->get_keybinding = jaw_action_get_keybinding;
   iface->set_description = jaw_action_set_description;
   iface->get_localized_name = jaw_action_get_localized_name;
