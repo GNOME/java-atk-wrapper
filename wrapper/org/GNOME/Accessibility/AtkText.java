@@ -127,6 +127,48 @@ public class AtkText {
 		}, null);
 	}
 
+	public StringSequence get_text_before_offset (int offset,int boundary_type) {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return null;
+
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_text instanceof AccessibleExtendedText) {
+				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
+				int part = getPartTypeFromBoundary(boundary_type);
+				if (part == -1)
+					return null;
+				AccessibleTextSequence seq = acc_ext_text.getTextSequenceBefore(part, offset);
+				if (seq == null)
+					return null;
+				return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
+			} else {
+				return private_get_text_at_offset(offset, boundary_type);
+			}
+		}, null);
+	}
+
+	public StringSequence get_text_after_offset (int offset,int boundary_type) {
+		AccessibleText acc_text = _acc_text.get();
+		if (acc_text == null)
+			return null;
+
+		return AtkUtil.invokeInSwing ( () -> {
+			if (acc_text instanceof AccessibleExtendedText) {
+				AccessibleExtendedText acc_ext_text = (AccessibleExtendedText)acc_text;
+				int part = getPartTypeFromBoundary(boundary_type);
+				if (part == -1)
+					return null;
+				AccessibleTextSequence seq = acc_ext_text.getTextSequenceAfter(part, offset);
+				if (seq == null)
+					return null;
+				return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
+			} else {
+				return private_get_text_at_offset(offset, boundary_type);
+			}
+		}, null);
+	}
+
 	public int get_caret_offset () {
 		AccessibleText acc_text = _acc_text.get();
 		if (acc_text == null)
