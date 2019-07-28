@@ -118,6 +118,8 @@ public class AtkText {
 				if (part == -1)
 					return null;
 				AccessibleTextSequence seq = acc_ext_text.getTextSequenceAt(part, offset);
+				if (seq == null)
+					return null;
 				return new StringSequence(seq.text, seq.startIndex, seq.endIndex+1);
 			} else {
 				return private_get_text_at_offset(offset, boundary_type);
