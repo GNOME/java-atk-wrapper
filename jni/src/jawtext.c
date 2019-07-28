@@ -82,25 +82,35 @@ typedef struct _TextData {
   jstring jstrText;
 }TextData;
 
-//FIXME we need to include atk_text_get_string_at_offset()
 void
 jaw_text_interface_init (AtkTextIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->get_text = jaw_text_get_text;
-  iface->get_character_at_offset = jaw_text_get_character_at_offset;
+  // TODO: iface->get_text_after_offset
   iface->get_text_at_offset = jaw_text_get_text_at_offset;
+  iface->get_character_at_offset = jaw_text_get_character_at_offset;
+  // TODO: iface->get_text_before_offset
   iface->get_caret_offset = jaw_text_get_caret_offset;
+  // TODO: iface->get_run_attributes by iterating getCharacterAttribute or using getTextSequenceAt with ATTRIBUTE_RUN
+  // TODO: iface->get_default_attributes
   iface->get_character_extents = jaw_text_get_character_extents;
   iface->get_character_count = jaw_text_get_character_count;
   iface->get_offset_at_point = jaw_text_get_offset_at_point;
-  iface->get_range_extents = jaw_text_get_range_extents;
   iface->get_n_selections = jaw_text_get_n_selections;
   iface->get_selection = jaw_text_get_selection;
   iface->add_selection = jaw_text_add_selection;
   iface->remove_selection = jaw_text_remove_selection;
   iface->set_selection = jaw_text_set_selection;
   iface->set_caret_offset = jaw_text_set_caret_offset;
+
+  iface->get_range_extents = jaw_text_get_range_extents;
+  // TODO: iface->get_bounded_ranges from getTextBounds
+  // TODO: iface->get_string_at_offset
+
+  // TODO: missing java support for:
+  // iface->scroll_substring_to
+  // iface->scroll_substring_to_point
 }
 
 gpointer

@@ -67,6 +67,7 @@ jaw_table_interface_init (AtkTableIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->ref_at = jaw_table_ref_at;
+  // TODO: iface->get_index_at
   iface->get_column_at_index = jaw_table_get_column_at_index;
   iface->get_row_at_index = jaw_table_get_row_at_index;
   iface->get_n_columns = jaw_table_get_n_columns;
@@ -75,10 +76,16 @@ jaw_table_interface_init (AtkTableIface *iface, gpointer data)
   iface->get_row_extent_at = jaw_table_get_row_extent_at;
   iface->get_caption = jaw_table_get_caption;
   iface->get_column_description = jaw_table_get_column_description;
-  iface->get_row_description = jaw_table_get_row_description;
   iface->get_column_header = jaw_table_get_column_header;
+  iface->get_row_description = jaw_table_get_row_description;
   iface->get_row_header = jaw_table_get_row_header;
   iface->get_summary = jaw_table_get_summary;
+  iface->set_caption = jaw_table_set_caption;
+  iface->set_column_description = jaw_table_set_column_description;
+  iface->set_column_header = jaw_table_set_column_header;
+  iface->set_row_description = jaw_table_set_row_description;
+  iface->set_row_header = jaw_table_set_row_header;
+  iface->set_summary = jaw_table_set_summary;
   iface->get_selected_columns = jaw_table_get_selected_columns;
   iface->get_selected_rows = jaw_table_get_selected_rows;
   iface->is_column_selected = jaw_table_is_column_selected;
@@ -88,12 +95,6 @@ jaw_table_interface_init (AtkTableIface *iface, gpointer data)
   iface->remove_row_selection = jaw_table_remove_row_selection;
   iface->add_column_selection = jaw_table_add_column_selection;
   iface->remove_column_selection = jaw_table_remove_column_selection;
-  iface->set_row_description = jaw_table_set_row_description;
-  iface->set_column_description = jaw_table_set_column_description;
-  iface->set_row_header = jaw_table_set_row_header;
-  iface->set_column_header = jaw_table_set_column_header;
-  iface->set_caption = jaw_table_set_caption;
-  iface->set_summary = jaw_table_set_summary;
 }
 
 gpointer

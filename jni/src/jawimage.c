@@ -43,8 +43,9 @@ jaw_image_interface_init (AtkImageIface *iface, gpointer data)
 	JAW_DEBUG_ALL("%p, %p", iface, data);
 	iface->get_image_position = jaw_image_get_image_position;
 	iface->get_image_description = jaw_image_get_image_description;
-	iface->set_image_description = NULL;
 	iface->get_image_size = jaw_image_get_image_size;
+	iface->set_image_description = NULL; /* TODO */
+	// TODO: iface->get_image_locale from AccessibleContext.getLocale()
 }
 
 gpointer

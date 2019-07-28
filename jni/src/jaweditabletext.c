@@ -54,13 +54,13 @@ void
 jaw_editable_text_interface_init (AtkEditableTextIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p,%p", iface, data);
+  iface->set_run_attributes = jaw_editable_text_set_run_attributes;
   iface->set_text_contents = jaw_editable_text_set_text_contents;
   iface->insert_text = jaw_editable_text_insert_text;
   iface->copy_text = jaw_editable_text_copy_text;
   iface->cut_text = jaw_editable_text_cut_text;
   iface->delete_text = jaw_editable_text_delete_text;
   iface->paste_text = jaw_editable_text_paste_text;
-  iface->set_run_attributes = jaw_editable_text_set_run_attributes;
 }
 
 gpointer

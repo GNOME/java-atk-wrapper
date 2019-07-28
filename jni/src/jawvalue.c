@@ -41,9 +41,15 @@ jaw_value_interface_init (AtkValueIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->get_current_value = jaw_value_get_current_value;
-  iface->set_value = jaw_value_set_value;
-  iface->get_increment = jaw_value_get_increment;
+  // deprecated: iface->get_maximum_value
+  // deprecated: iface->get_minimum_value
+  // deprecated: iface->set_current_value
+  // deprecated: iface->get_minimum_increment
+  // TODO: get_value_and_text
   iface->get_range = jaw_value_get_range;
+  iface->get_increment = jaw_value_get_increment;
+  // TODO: missing java support for iface->get_sub_ranges
+  iface->set_value = jaw_value_set_value;
 }
 
 gpointer

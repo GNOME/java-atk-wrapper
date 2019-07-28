@@ -99,21 +99,23 @@ jaw_object_class_init (JawObjectClass *klass)
   parent_class = g_type_class_peek_parent (klass);
 
   atk_class->get_name = jaw_object_get_name;
-  atk_class->set_name = jaw_object_set_name;
   atk_class->get_description = jaw_object_get_description;
-  atk_class->set_description = jaw_object_set_description;
-  atk_class->get_n_children = jaw_object_get_n_children;
-  atk_class->get_index_in_parent = jaw_object_get_index_in_parent;
-  atk_class->get_role = jaw_object_get_role;
   atk_class->get_parent = jaw_object_get_parent;
+  atk_class->get_n_children = jaw_object_get_n_children;
+  atk_class->ref_child = jaw_object_ref_child;
+  atk_class->get_index_in_parent = jaw_object_get_index_in_parent;
+  atk_class->ref_relation_set = jaw_object_ref_relation_set;
+  atk_class->get_role = jaw_object_get_role;
+  // Done by atk: atk_class->get_layer
+  // TODO: missing java support for atk_class->get_mdi_zorder
+  atk_class->ref_state_set = jaw_object_ref_state_set;
+  atk_class->set_name = jaw_object_set_name;
+  atk_class->set_description = jaw_object_set_description;
   atk_class->set_parent = jaw_object_set_parent;
   atk_class->set_role = jaw_object_set_role;
-  atk_class->get_object_locale = jaw_object_get_object_locale;
-  atk_class->ref_relation_set = jaw_object_ref_relation_set;
-  atk_class->ref_child = jaw_object_ref_child;
-
-  atk_class->ref_state_set = jaw_object_ref_state_set;
   atk_class->initialize = jaw_object_initialize;
+  // TODO: atk_class->get_attributes
+  atk_class->get_object_locale = jaw_object_get_object_locale;
 
   jaw_window_signals[ACTIVATE]    = jaw_window_add_signal ("activate", klass);
   jaw_window_signals[CREATE]      = jaw_window_add_signal ("create", klass);

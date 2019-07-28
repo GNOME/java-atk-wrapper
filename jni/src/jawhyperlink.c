@@ -63,6 +63,8 @@ jaw_hyperlink_class_init (JawHyperlinkClass *klass)
 	atk_hyperlink_class->get_start_index = jaw_hyperlink_get_start_index;
 	atk_hyperlink_class->is_valid = jaw_hyperlink_is_valid;
 	atk_hyperlink_class->get_n_anchors = jaw_hyperlink_get_n_anchors;
+	// TODO: missing java support for atk_hyperlink_class->link_state
+	// TODO: missing java support for atk_hyperlink_class->is_selected_link
 }
 
 static void

@@ -60,13 +60,22 @@ void
 jaw_component_interface_init (AtkComponentIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p,%p", iface, data);
+  // deprecated: iface->add_focus_handler
   iface->contains = jaw_component_contains;
   iface->ref_accessible_at_point = jaw_component_ref_accessible_at_point;
   iface->get_extents = jaw_component_get_extents;
+  // done by atk: iface->get_position
+  // done by atk: iface->get_size
   iface->grab_focus = jaw_component_grab_focus;
-  iface->get_layer = jaw_component_get_layer;
-  iface->get_mdi_zorder = NULL; /*jaw_component_get_mdi_zorder;*/
+  // deprecated: iface->remove_focus_handler
   iface->set_extents = jaw_component_set_extents;
+  // TODO: iface->set_position similar to set_extents
+  // TODO: iface->set_size similar to set_extents
+  iface->get_layer = jaw_component_get_layer;
+  iface->get_mdi_zorder = NULL; /* TODO: jaw_component_get_mdi_zorder;*/
+  // TODO: missing java support for iface->get_alpha
+  // TODO: missing java support for iface->scroll_to
+  // TODO: missing java support for iface->scroll_to_point
 }
 
 gpointer
