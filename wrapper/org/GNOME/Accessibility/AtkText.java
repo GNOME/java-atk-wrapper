@@ -507,16 +507,59 @@ public class AtkText {
 		return end;
 	}
 
+	private int getNextLineStart (int offset, String str) {
+		int max = str.length();
+		while (offset < max) {
+			if (str.charAt(offset) == '\n')
+				return offset+1;
+			offset += 1;
+		}
+		return offset;
+	}
+
+	private int getPreviousLineStart (int offset, String str) {
+		offset -= 2;
+		while (offset >= 0) {
+			if (str.charAt(offset) == '\n')
+				return offset+1;
+			offset -= 1;
+		}
+		return 0;
+	}
+
+	private int getNextLineEnd (int offset, String str) {
+		int max = str.length();
+		offset += 1;
+		while (offset < max) {
+			if (str.charAt(offset) == '\n')
+				return offset;
+			offset += 1;
+		}
+		return offset;
+	}
+
+	private int getPreviousLineEnd (int offset, String str) {
+		offset -= 1;
+		while (offset >= 0) {
+			if (str.charAt(offset) == '\n')
+				return offset;
+			offset -= 1;
+		}
+		return 0;
+	}
+
 	private StringSequence private_get_text_at_offset (int offset,
 			int boundary_type) {
 		int char_count = get_character_count();
-		if (offset < 0 || offset >= char_count) {
+		if (offset < 0 || offset > char_count) {
 			return null;
 		}
 
 		switch (boundary_type) {
 			case AtkTextBoundary.CHAR :
 			{
+				if (offset == char_count)
+					return null;
 				String str = get_text(offset, offset+1);
 				return new StringSequence(str, offset, offset+1);
 			}
@@ -597,21 +640,22 @@ public class AtkText {
 				return new StringSequence(str, start, end);
 			}
 			case AtkTextBoundary.LINE_START :
+			{
+				if (offset == char_count)
+					return new StringSequence("", char_count, char_count);
+
+				String s = get_text(0, char_count);
+				int start = getPreviousLineStart(offset+1, s);
+				int end = getNextLineStart(offset, s);
+
+				String str = get_text(start, end);
+				return new StringSequence(str, start, end);
+			}
 			case AtkTextBoundary.LINE_END :
 			{
-				BreakIterator lines = BreakIterator.getLineInstance();
 				String s = get_text(0, char_count);
-				lines.setText(s);
-
-				int start = lines.preceding(offset);
-				if (start == BreakIterator.DONE) {
-					start = 0;
-				}
-
-				int end = lines.following(offset);
-				if (end == BreakIterator.DONE) {
-					end = s.length();
-				}
+				int start = getPreviousLineEnd(offset, s);
+				int end = getNextLineEnd(offset-1, s);
 
 				String str = get_text(start, end);
 				return new StringSequence(str, start, end);
