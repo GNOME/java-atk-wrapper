@@ -23,7 +23,7 @@
 #include "jawutil.h"
 
 static AtkObject *jaw_table_cell_get_table (AtkTableCell *cell);
-//TODO atk_table_cell_get_column_header_cells()
+static GPtrArray *jaw_table_cell_get_column_header_cells (AtkTableCell *cell);
 static gboolean jaw_table_cell_get_position(AtkTableCell *cell, gint *row, gint *column);
 static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
                                                    gint         *row,
@@ -31,7 +31,7 @@ static gboolean jaw_table_cell_get_row_column_span(AtkTableCell *cell,
                                                    gint         *row_span,
                                                    gint         *column_span);
 static gint jaw_table_cell_get_row_span(AtkTableCell *cell);
-//TODO atk_table_cell_get_row_header_cells()
+static GPtrArray *jaw_table_cell_get_row_header_cells (AtkTableCell *cell);
 static gint jaw_table_cell_get_column_span(AtkTableCell *cell);
 
 typedef struct _TableCellData {
@@ -45,10 +45,10 @@ jaw_table_cell_interface_init (AtkTableCellIface *iface, gpointer data)
 {
   JAW_DEBUG_ALL("%p, %p", iface, data);
   iface->get_column_span = jaw_table_cell_get_column_span;
-  // TODO: iface->get_column_header_cells from getAccessibleColumnHeader
+  iface->get_column_header_cells = jaw_table_cell_get_column_header_cells;
   iface->get_position = jaw_table_cell_get_position;
   iface->get_row_span = jaw_table_cell_get_row_span;
-  // TODO: iface->get_row_header_cells from getAccessibleRowHeader
+  iface->get_row_header_cells = jaw_table_cell_get_row_header_cells;
   iface->get_row_column_span = jaw_table_cell_get_row_column_span;
   iface->get_table = jaw_table_cell_get_table;
 }
@@ -241,4 +241,70 @@ jaw_table_cell_get_column_span(AtkTableCell *cell)
   getColumnSpan (env, jatk_table_cell, classAtkTableCell, &column_span);
   (*env)->DeleteGlobalRef(env, jatk_table_cell);
   return column_span;
+}
+
+static GPtrArray*
+jaw_table_cell_get_column_header_cells(AtkTableCell *cell)
+{
+  JAW_DEBUG_C("%p", cell);
+  JawObject *jaw_obj = JAW_OBJECT(cell);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
+  TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject jatk_table_cell = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_table_cell);
+  if (!jatk_table_cell) {
+    JAW_DEBUG_I("jatk_table_cell == NULL");
+    return NULL;
+  }
+  jclass classAtkTableCell = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkTableCell");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkTableCell, "getAccessibleColumnHeader", "()[Ljavax/accessibility/AccessibleContext;");
+  jobjectArray ja_ac = (jobjectArray) (*jniEnv)->CallObjectMethod(jniEnv, jatk_table_cell, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, jatk_table_cell);
+  if (!ja_ac)
+    return NULL;
+  jsize length = (*jniEnv)->GetArrayLength(jniEnv, ja_ac) ;
+  GPtrArray *result = g_ptr_array_sized_new ((guint) length);
+  for ( int i = 0; i < length; i++)
+  {
+    jobject jac = (*jniEnv)->GetObjectArrayElement(jniEnv,ja_ac, i);
+    JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw(jniEnv, jac);
+    g_ptr_array_add(result, jaw_impl);
+  }
+  return result;
+}
+
+static GPtrArray*
+jaw_table_cell_get_row_header_cells(AtkTableCell *cell)
+{
+  JAW_DEBUG_C("%p", cell);
+  JawObject *jaw_obj = JAW_OBJECT(cell);
+  if (!jaw_obj) {
+    JAW_DEBUG_I("jaw_obj == NULL");
+    return NULL;
+  }
+  TableCellData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_TABLE_CELL);
+  JNIEnv *jniEnv = jaw_util_get_jni_env();
+  jobject jatk_table_cell = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_table_cell);
+  if (!jatk_table_cell) {
+    JAW_DEBUG_I("jatk_table_cell == NULL");
+    return NULL;
+  }
+  jclass classAtkTableCell = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkTableCell");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkTableCell, "getAccessibleRowHeader", "()[Ljavax/accessibility/AccessibleContext;");
+  jobjectArray ja_ac = (jobjectArray) (*jniEnv)->CallObjectMethod(jniEnv, jatk_table_cell, jmid);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, jatk_table_cell);
+  if (!ja_ac)
+    return NULL;
+  jsize length = (*jniEnv)->GetArrayLength(jniEnv, ja_ac) ;
+  GPtrArray *result = g_ptr_array_sized_new ((guint) length);
+  for ( int i = 0; i < length; i++)
+  {
+    jobject jac = (*jniEnv)->GetObjectArrayElement(jniEnv,ja_ac, i);
+    JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw(jniEnv, jac);
+    g_ptr_array_add(result, jaw_impl);
+  }
+  return result;
 }

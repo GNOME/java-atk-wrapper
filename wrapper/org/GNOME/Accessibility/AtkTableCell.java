@@ -74,4 +74,38 @@ public class AtkTableCell {
         return _acc_pt.get();
     }
 
+    public AccessibleContext[] getAccessibleColumnHeader(){
+        if (_acc_pt == null)
+            return null;
+        return AtkUtil.invokeInSwing( () -> {
+            AccessibleTable iteration = _acc_pt.get().getAccessibleColumnHeader();
+            if (iteration != null){
+                int length = iteration.getAccessibleColumnCount();
+                AccessibleContext[] result = new AccessibleContext[length];
+                for (int i = 0; i < length; i++){
+                    result[i] = iteration.getAccessibleAt(0,i).getAccessibleContext();
+                }
+                return result;
+            }
+            return null;
+        }, null);
+    }
+
+    public AccessibleContext[] getAccessibleRowHeader(){
+        if (_acc_pt == null)
+            return null;
+        return AtkUtil.invokeInSwing( () -> {
+            AccessibleTable iteration = _acc_pt.get().getAccessibleRowHeader();
+            if (iteration != null){
+                int length = iteration.getAccessibleRowCount();
+                AccessibleContext[] result = new AccessibleContext[length];
+                for (int i = 0; i < length; i++){
+                    result[i] = iteration.getAccessibleAt(i,0).getAccessibleContext();
+                }
+                return result;
+            }
+            return null;
+        }, null);
+    }
+
 }

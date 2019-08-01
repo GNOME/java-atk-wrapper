@@ -34,10 +34,6 @@ Object base class:
   implementor_ref_accessible
   get_attributes
 
-TableCell:
-  get_column_header_cells
-  get_row_header_cells
-
 Deprecated Methods Which Are Implemented
 ----------------------------------------
 
