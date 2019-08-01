@@ -82,8 +82,19 @@ public class AtkObject{
         AccessibleTable table = ac.getAccessibleTable();
         if (table != null){
             flags |= AtkObject.INTERFACE_TABLE;
-            if (table instanceof AccessibleExtendedTable)
-                flags |= AtkObject.INTERFACE_TABLE_CELL;
+        }
+        Accessible parent = ac.getAccessibleParent();
+        if (parent != null){
+            AccessibleContext pc = parent.getAccessibleContext();
+            if (pc != null){
+                table = pc.getAccessibleTable();
+                // Unfortunately without the AccessibleExtendedTable interface
+                // we can't determine the column/row of this accessible in the
+                // table
+                if (table != null && table instanceof AccessibleExtendedTable){
+                    flags |= AtkObject.INTERFACE_TABLE_CELL;
+                }
+            }
         }
         if (ac.getAccessibleValue() != null)
             flags |= AtkObject.INTERFACE_VALUE;

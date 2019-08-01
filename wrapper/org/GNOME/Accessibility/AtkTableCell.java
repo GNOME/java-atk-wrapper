@@ -22,25 +22,41 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 import java.lang.ref.WeakReference;
 
-public class AtkTableCell extends AtkTable {
+public class AtkTableCell {
 
     WeakReference<AccessibleContext> _ac;
-
-    WeakReference<AccessibleExtendedTable> _acc_table_cell;
-    private int rowSpan, columnSpan;
+    WeakReference<AccessibleTable> _acc_pt;
+    public int row, rowSpan, column, columnSpan;
 
     public AtkTableCell (AccessibleContext ac) {
-        super(ac);
         this._ac = new WeakReference<AccessibleContext>(ac);
-        AccessibleTable acc_table = ac.getAccessibleTable();
-
-        if (acc_table instanceof AccessibleExtendedTable) {
-            _acc_table_cell = new WeakReference<AccessibleExtendedTable>((AccessibleExtendedTable)acc_table);
-        } else {
-            _acc_table_cell = null;
+        Accessible parent = ac.getAccessibleParent();
+        _acc_pt = null;
+        row = -1;
+        rowSpan = -1;
+        column = -1;
+        columnSpan = -1;
+        if (parent == null){
+            return;
         }
-        rowSpan = 0;
-        columnSpan = 0;
+        AccessibleContext pc = parent.getAccessibleContext();
+        if(pc == null){
+            return;
+        }
+        AccessibleTable pt = pc.getAccessibleTable();
+        if(pt == null){
+            return;
+        }
+        _acc_pt = new WeakReference<AccessibleTable>(pt);
+        int index = ac.getAccessibleIndexInParent();
+        if (!(pt instanceof AccessibleExtendedTable)){
+            return;
+        }
+        AccessibleExtendedTable aet = (AccessibleExtendedTable) pt;
+        row = aet.getAccessibleRow(index);
+        column = aet.getAccessibleColumn(index);
+        rowSpan = pt.getAccessibleRowExtentAt(row,column);
+        columnSpan = pt.getAccessibleColumnExtentAt(row,column);
     }
 
     public static AtkTableCell createAtkTableCell(AccessibleContext ac){
@@ -53,74 +69,9 @@ public class AtkTableCell extends AtkTable {
     *          AccessibleTable instance.
     */
     public AccessibleTable getTable() {
-        if (_acc_table_cell == null)
+        if (_acc_pt == null)
             return null;
-        return _acc_table_cell.get();
-    }
-
-    /**
-    * @param row the row of the accessible table cell
-    * @param column the column of the accessible table cell
-    * @return: whether the accessible index of the table cell is found
-    */
-    public boolean getPosition(int row, int column) {
-        if (_acc_table_cell == null)
-            return false;
-        AccessibleExtendedTable acc_table_cell = _acc_table_cell.get();
-        if (acc_table_cell == null)
-            return false;
-
-        return AtkUtil.invokeInSwing ( () -> {
-            int index = acc_table_cell.getAccessibleIndex(row, column);
-            if (index < 0)
-                return false;
-            return true;
-        }, false);
-    }
-
-    /**
-    * @param row the row of the accessible table cell
-    * @param column the column of the accessible table cell
-    * @param rowSpan the row span of the accessible table cell the
-    * @param columnSpan the column span of the accessible table cell
-    * @return: whether the column and row span was retrieved
-    */
-    public boolean getRowColumnSpan(int row, int column, int rowSpan, int columnSpan) {
-        AccessibleTable acc_table = _acc_table.get();
-        if (acc_table == null)
-            return false;
-
-        return AtkUtil.invokeInSwing ( () -> {
-            this.rowSpan = rowSpan;
-            this.columnSpan = columnSpan;
-            int chekRowSpan = acc_table.getAccessibleRowExtentAt(row, column);
-            int checkColumnSpan = acc_table.getAccessibleColumnExtentAt(row, column);
-            if (chekRowSpan < 0 && checkColumnSpan < 0)
-                return false;
-            return true;
-        }, false);
-    }
-
-    /**
-    * @return: span of the table_cell row as an int
-    */
-    public int getRowSpan() {
-        return AtkUtil.invokeInSwing ( () -> {
-            if (rowSpan < 0)
-                return -1;
-            return rowSpan;
-        }, -1);
-    }
-
-    /**
-    * @return: span of the table_cell column as an int
-    */
-    public int getColumnSpan() {
-        return AtkUtil.invokeInSwing ( () -> {
-            if (columnSpan < 0)
-                return -1;
-            return columnSpan;
-        }, -1);
+        return _acc_pt.get();
     }
 
 }
