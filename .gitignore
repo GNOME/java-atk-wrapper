@@ -13,6 +13,7 @@
 
 nbproject/
 .idea/
+.vscode/
 *.iml
 
 /autom4te.cache
