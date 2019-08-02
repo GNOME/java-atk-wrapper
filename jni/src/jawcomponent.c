@@ -56,6 +56,9 @@ typedef struct _ComponentData {
   jobject atk_component;
 } ComponentData;
 
+#define JAW_GET_COMPONENT(component, def_ret) \
+  JAW_GET_OBJ_IFACE(component, INTERFACE_COMPONENT, ComponentData, atk_component, jniEnv, atk_component, def_ret)
+
 void
 jaw_component_interface_init (AtkComponentIface *iface, gpointer data)
 {
@@ -116,18 +119,7 @@ static gboolean
 jaw_component_contains (AtkComponent *component, gint x, gint y, AtkCoordType coord_type)
 {
   JAW_DEBUG_C("%p, %d, %d, %d", component, x, y, coord_type);
-  JawObject *jaw_obj = JAW_OBJECT(component);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return FALSE;
-  }
-  ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
-  if (!atk_component) {
-    JAW_DEBUG_I("atk_component == NULL");
-    return FALSE;
-  }
+  JAW_GET_COMPONENT(component, FALSE);
 
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
@@ -152,18 +144,7 @@ static AtkObject*
 jaw_component_ref_accessible_at_point (AtkComponent *component, gint x, gint y, AtkCoordType coord_type)
 {
   JAW_DEBUG_C("%p, %d, %d, %d", component, x, y, coord_type);
-  JawObject *jaw_obj = JAW_OBJECT(component);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return NULL;
-  }
-  ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
-  if (!atk_component) {
-    JAW_DEBUG_I("atk_component == NULL");
-    return NULL;
-  }
+  JAW_GET_COMPONENT(component, NULL);
 
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
@@ -199,30 +180,15 @@ jaw_component_get_extents (AtkComponent *component,
   if (x == NULL || y == NULL || width == NULL || height == NULL)
     return;
 
+  (*x) = 0;
+  (*y) = 0;
+  (*width) = 0;
+  (*height) = 0;
+
   if (component == NULL)
     return;
 
-  JawObject *jaw_obj = JAW_OBJECT(component);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    (*x) = 0;
-    (*y) = 0;
-    (*width) = 0;
-    (*height) = 0;
-    return;
-  }
-  ComponentData *data = jaw_object_get_interface_data(jaw_obj,
-                                                      INTERFACE_COMPONENT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
-  if (!atk_component) {
-    JAW_DEBUG_I("atk_component == NULL");
-    (*x) = 0;
-    (*y) = 0;
-    (*width) = 0;
-    (*height) = 0;
-    return;
-  }
+  JAW_GET_COMPONENT(component, );
 
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
@@ -237,10 +203,6 @@ jaw_component_get_extents (AtkComponent *component,
   if (jrectangle == NULL)
   {
     JAW_DEBUG_I("jrectangle == NULL");
-    (*x) = 0;
-    (*y) = 0;
-    (*width) = 0;
-    (*height) = 0;
     return;
   }
 
@@ -264,18 +226,8 @@ jaw_component_set_extents (AtkComponent *component,
                            AtkCoordType coord_type)
 {
   JAW_DEBUG_C("%p, %d, %d, %d, %d, %d", component, x, y, width, height, coord_type);
-  JawObject *jaw_obj = JAW_OBJECT(component);
-  if (!jaw_obj) {
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return FALSE;
-  }
-  ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
-  if (!atk_component) {
-    JAW_DEBUG_I("atk_component == NULL");
-    return FALSE;
-  }
+  JAW_GET_COMPONENT(component, FALSE);
+
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkComponent, "set_extents", "(IIIII)Z");
   jboolean assigned = (*jniEnv)->CallBooleanMethod(jniEnv, atk_component, jmid, (jint)x, (jint)y, (jint)width, (jint)height, (jint)coord_type);
@@ -287,18 +239,7 @@ static gboolean
 jaw_component_grab_focus (AtkComponent *component)
 {
   JAW_DEBUG_C("%p", component);
-  JawObject *jaw_obj = JAW_OBJECT(component);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return FALSE;
-  }
-  ComponentData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_COMPONENT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
-  if (!atk_component) {
-    JAW_DEBUG_I("atk_component == NULL");
-    return FALSE;
-  }
+  JAW_GET_COMPONENT(component, FALSE);
 
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");
@@ -315,19 +256,7 @@ static AtkLayer
 jaw_component_get_layer (AtkComponent *component)
 {
   JAW_DEBUG_C("%p", component);
-  JawObject *jaw_obj = JAW_OBJECT(component);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return 0;
-  }
-  ComponentData *data = jaw_object_get_interface_data(jaw_obj,
-                                                      INTERFACE_COMPONENT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_component = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_component);
-  if (!atk_component) {
-    JAW_DEBUG_I("atk_component == NULL");
-    return 0;
-  }
+  JAW_GET_COMPONENT(component, 0);
 
   jclass classAtkComponent = (*jniEnv)->FindClass(jniEnv,
                                                   "org/GNOME/Accessibility/AtkComponent");

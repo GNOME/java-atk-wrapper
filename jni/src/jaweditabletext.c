@@ -50,6 +50,9 @@ typedef struct _EditableTextData {
   jobject atk_editable_text;
 }EditableTextData;
 
+#define JAW_GET_EDITABLETEXT(text, def_ret) \
+  JAW_GET_OBJ_IFACE(text, INTERFACE_EDITABLE_TEXT, EditableTextData, atk_editable_text, jniEnv, atk_editable_text, def_ret)
+
 void
 jaw_editable_text_interface_init (AtkEditableTextIface *iface, gpointer data)
 {
@@ -105,18 +108,7 @@ jaw_editable_text_set_text_contents (AtkEditableText *text,
                                      const gchar *string)
 {
   JAW_DEBUG_C("%p, %s", text, string);
-  JawObject *jaw_obj = JAW_OBJECT(text);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return;
-  }
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_editable_text);
-  if (!atk_editable_text) {
-    JAW_DEBUG_I("atk_editable_text == NULL");
-    return;
-  }
+  JAW_GET_EDITABLETEXT(text, );
 
   jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
                                                      "org/GNOME/Accessibility/AtkEditableText");
@@ -137,18 +129,7 @@ jaw_editable_text_insert_text (AtkEditableText *text,
                                gint *position)
 {
   JAW_DEBUG_C("%p, %s, %d, %p", text, string, length, position);
-  JawObject *jaw_obj = JAW_OBJECT(text);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return;
-  }
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_editable_text);
-  if (!atk_editable_text) {
-    JAW_DEBUG_I("atk_editable_text == NULL");
-    return;
-  }
+  JAW_GET_EDITABLETEXT(text, );
 
   jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
                                                      "org/GNOME/Accessibility/AtkEditableText");
@@ -173,19 +154,7 @@ jaw_editable_text_copy_text (AtkEditableText *text,
                              gint end_pos)
 {
   JAW_DEBUG_C("%p, %d, %d", text, start_pos, end_pos);
-  JawObject *jaw_obj = JAW_OBJECT(text);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return;
-  }
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj,
-                                                         INTERFACE_EDITABLE_TEXT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_editable_text);
-  if (!atk_editable_text) {
-    JAW_DEBUG_I("atk_editable_text == NULL");
-    return;
-  }
+  JAW_GET_EDITABLETEXT(text, );
 
   jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
                                                      "org/GNOME/Accessibility/AtkEditableText");
@@ -206,18 +175,7 @@ jaw_editable_text_cut_text (AtkEditableText *text,
                             gint start_pos, gint end_pos)
 {
   JAW_DEBUG_C("%p, %d, %d", text, start_pos, end_pos);
-  JawObject *jaw_obj = JAW_OBJECT(text);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return;
-  }
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_editable_text);
-  if (!atk_editable_text) {
-    JAW_DEBUG_I("atk_editable_text == NULL");
-    return;
-  }
+  JAW_GET_EDITABLETEXT(text, );
 
   jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
                                                      "org/GNOME/Accessibility/AtkEditableText");
@@ -239,19 +197,7 @@ jaw_editable_text_delete_text (AtkEditableText *text,
                                gint end_pos)
 {
   JAW_DEBUG_C("%p, %d, %d", text, start_pos, end_pos);
-  JawObject *jaw_obj = JAW_OBJECT(text);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return;
-  }
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj,
-                                                         INTERFACE_EDITABLE_TEXT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_editable_text);
-  if (!atk_editable_text) {
-    JAW_DEBUG_I("atk_editable_text == NULL");
-    return;
-  }
+  JAW_GET_EDITABLETEXT(text, );
 
   jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
                                                      "org/GNOME/Accessibility/AtkEditableText");
@@ -272,19 +218,7 @@ jaw_editable_text_paste_text (AtkEditableText *text,
                               gint position)
 {
   JAW_DEBUG_C("%p, %d", text, position);
-  JawObject *jaw_obj = JAW_OBJECT(text);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return;
-  }
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj,
-                                                         INTERFACE_EDITABLE_TEXT);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_editable_text = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_editable_text);
-  if (!atk_editable_text) {
-    JAW_DEBUG_I("atk_editable_text == NULL");
-    return;
-  }
+  JAW_GET_EDITABLETEXT(text, );
 
   jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv,
                                                      "org/GNOME/Accessibility/AtkEditableText");
@@ -306,29 +240,19 @@ jaw_editable_text_set_run_attributes(AtkEditableText *text,
                                      gint             end_offset)
 {
   JAW_DEBUG_C("%p, %p, %d, %d", text, attrib_set, start_offset, end_offset);
-  JawObject *jaw_obj = JAW_OBJECT(text);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return FALSE;
-  }
-  EditableTextData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_EDITABLE_TEXT);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_editable_text = (*env)->NewGlobalRef(env, data->atk_editable_text);
-  if (!atk_editable_text) {
-    JAW_DEBUG_I("atk_editable_text == NULL");
-    return FALSE;
-  }
-  jclass classAtkEditableText = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkEditableText");
-  jmethodID jmid = (*env)->GetMethodID(env,
+  JAW_GET_EDITABLETEXT(text, FALSE);
+
+  jclass classAtkEditableText = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkEditableText");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                        classAtkEditableText,
                                        "setRunAttributes",
                                        "(Ljavax/swing/text/AttributeSet;II)Z");
-  jboolean jresult = (*env)->CallBooleanMethod(env,
+  jboolean jresult = (*jniEnv)->CallBooleanMethod(jniEnv,
                                                atk_editable_text,
                                                jmid,
                                                (jobject)attrib_set,
                                                (jint)start_offset,
                                                (jint)end_offset);
-  (*env)->DeleteGlobalRef(env, atk_editable_text);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_editable_text);
   return jresult;
 }

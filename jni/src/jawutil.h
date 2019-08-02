@@ -116,6 +116,33 @@ gboolean jaw_util_dispatch_key_event (AtkKeyEventStruct *event);
 
 void jaw_util_detach(void);
 
+#define JAW_GET_OBJ_IFACE(o, iface, Data, field, env, name, def_ret) \
+  JawObject *jaw_obj = JAW_OBJECT(o); \
+  if (!jaw_obj) { \
+    JAW_DEBUG_I("jaw_obj == NULL"); \
+    return def_ret; \
+  } \
+  Data *data = jaw_object_get_interface_data(jaw_obj, iface); \
+  JNIEnv *env = jaw_util_get_jni_env(); \
+  jobject name = (*env)->NewGlobalRef(env, data->field); \
+  if (!name) { \
+    JAW_DEBUG_I(#name " == NULL"); \
+    return def_ret; \
+  }
+
+#define JAW_GET_OBJ(o, CAST, JawObject, object_name, field, env, name, def_ret) \
+  JawObject *object_name = CAST(o); \
+  if (!object_name) { \
+    JAW_DEBUG_I(#object_name " == NULL"); \
+    return def_ret; \
+  } \
+  JNIEnv *env = jaw_util_get_jni_env(); \
+  jobject name = (*env)->NewGlobalRef(env, object_name->field); \
+  if (!name) { \
+    JAW_DEBUG_I(#name " == NULL"); \
+    return def_ret; \
+  }
+
 G_END_DECLS
 
 #endif

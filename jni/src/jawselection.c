@@ -38,6 +38,9 @@ typedef struct _SelectionData {
 	jobject atk_selection;
 } SelectionData;
 
+#define JAW_GET_SELECTION(selection, def_ret) \
+  JAW_GET_OBJ_IFACE(selection, INTERFACE_SELECTION, SelectionData, atk_selection, jniEnv, atk_selection, def_ret)
+
 void
 jaw_selection_interface_init (AtkSelectionIface *iface, gpointer data)
 {
@@ -83,18 +86,7 @@ static gboolean
 jaw_selection_add_selection (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
-	JawObject *jaw_obj = JAW_OBJECT(selection);
-	if (!jaw_obj) {
-		JAW_DEBUG_I("jaw_obj == NULL");
-		return FALSE;
-	}
-	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
-	if (!atk_selection) {
-		JAW_DEBUG_I("atk_selection == NULL");
-		return FALSE;
-	}
+	JAW_GET_SELECTION(selection, FALSE);
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "add_selection", "(I)Z");
@@ -108,18 +100,7 @@ static gboolean
 jaw_selection_clear_selection (AtkSelection *selection)
 {
 	JAW_DEBUG_C("%p", selection);
-	JawObject *jaw_obj = JAW_OBJECT(selection);
-	if (!jaw_obj) {
-		JAW_DEBUG_I("jaw_obj == NULL");
-		return FALSE;
-	}
-	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
-	if (!atk_selection) {
-		JAW_DEBUG_I("atk_selection == NULL");
-		return FALSE;
-	}
+	JAW_GET_SELECTION(selection, FALSE);
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "clear_selection", "()Z");
@@ -133,18 +114,7 @@ static AtkObject*
 jaw_selection_ref_selection (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
-	JawObject *jaw_obj = JAW_OBJECT(selection);
-	if (!jaw_obj) {
-		JAW_DEBUG_I("jaw_obj == NULL");
-		return NULL;
-	}
-	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
-	if (!atk_selection) {
-		JAW_DEBUG_I("atk_selection == NULL");
-		return NULL;
-	}
+	JAW_GET_SELECTION(selection, NULL);
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "ref_selection", "(I)Ljavax/accessibility/AccessibleContext;");
@@ -165,18 +135,7 @@ static gint
 jaw_selection_get_selection_count (AtkSelection *selection)
 {
 	JAW_DEBUG_C("%p", selection);
-	JawObject *jaw_obj = JAW_OBJECT(selection);
-	if (!jaw_obj) {
-		JAW_DEBUG_I("jaw_obj == NULL");
-		return 0;
-	}
-	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
-	if (!atk_selection) {
-		JAW_DEBUG_I("atk_selection == NULL");
-		return 0;
-	}
+	JAW_GET_SELECTION(selection, 0);
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "get_selection_count", "()I");
@@ -190,18 +149,7 @@ static gboolean
 jaw_selection_is_child_selected (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
-	JawObject *jaw_obj = JAW_OBJECT(selection);
-	if (!jaw_obj) {
-		JAW_DEBUG_I("jaw_obj == NULL");
-		return FALSE;
-	}
-	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
-	if (!atk_selection) {
-		JAW_DEBUG_I("atk_selection == NULL");
-		return FALSE;
-	}
+	JAW_GET_SELECTION(selection, FALSE);
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "is_child_selected", "(I)Z");
@@ -215,18 +163,7 @@ static gboolean
 jaw_selection_remove_selection (AtkSelection *selection, gint i)
 {
 	JAW_DEBUG_C("%p, %d", selection, i);
-	JawObject *jaw_obj = JAW_OBJECT(selection);
-	if (!jaw_obj) {
-		JAW_DEBUG_I("jaw_obj == NULL");
-		return FALSE;
-	}
-	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
-	if (!atk_selection) {
-		JAW_DEBUG_I("atk_selection == NULL");
-		return FALSE;
-	}
+	JAW_GET_SELECTION(selection, FALSE);
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "remove_selection", "(I)Z");
@@ -240,18 +177,7 @@ static gboolean
 jaw_selection_select_all_selection (AtkSelection *selection)
 {
 	JAW_DEBUG_C("%p", selection);
-	JawObject *jaw_obj = JAW_OBJECT(selection);
-	if (!jaw_obj) {
-		JAW_DEBUG_I("jaw_obj == NULL");
-		return FALSE;
-	}
-	SelectionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_SELECTION);
-	JNIEnv *jniEnv = jaw_util_get_jni_env();
-	jobject atk_selection = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_selection);
-	if (!atk_selection) {
-		JAW_DEBUG_I("atk_selection == NULL");
-		return FALSE;
-	}
+	JAW_GET_SELECTION(selection, FALSE);
 
 	jclass classAtkSelection = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkSelection");
 	jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv, classAtkSelection, "select_all_selection", "()Z");

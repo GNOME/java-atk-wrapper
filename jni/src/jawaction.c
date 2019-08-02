@@ -39,6 +39,9 @@ typedef struct _ActionData {
   jstring jstrActionKeybinding;
 } ActionData;
 
+#define JAW_GET_ACTION(action, def_ret) \
+    JAW_GET_OBJ_IFACE(action, INTERFACE_ACTION, ActionData, atk_action, jniEnv, atk_action, def_ret)
+
 void
 jaw_action_interface_init (AtkActionIface *iface, gpointer data)
 {
@@ -114,18 +117,7 @@ static gboolean
 jaw_action_do_action (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
-  JawObject *jaw_obj = JAW_OBJECT(action);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return FALSE;
-  }
-  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
-  if (!atk_action) {
-    JAW_DEBUG_I("atk_action == NULL");
-    return FALSE;
-  }
+  JAW_GET_ACTION(action, FALSE);
 
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
@@ -145,18 +137,7 @@ static gint
 jaw_action_get_n_actions (AtkAction *action)
 {
   JAW_DEBUG_C("%p", action);
-  JawObject *jaw_obj = JAW_OBJECT(action);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return 0;
-  }
-  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
-  if (!atk_action) {
-    JAW_DEBUG_I("atk_action == NULL");
-    return 0;
-  }
+  JAW_GET_ACTION(action, 0);
 
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
@@ -173,18 +154,7 @@ static const gchar*
 jaw_action_get_description (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
-  JawObject *jaw_obj = JAW_OBJECT(action);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return NULL;
-  }
-  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
-  if (!atk_action) {
-    JAW_DEBUG_I("atk_action == NULL");
-    return NULL;
-  }
+  JAW_GET_ACTION(action, NULL);
 
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
@@ -222,18 +192,7 @@ static gboolean
 jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
 {
   JAW_DEBUG_C("%p, %d, %s", action, i, description);
-  JawObject *jaw_obj = JAW_OBJECT(action);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return FALSE;
-  }
-  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
-  if (!atk_action) {
-    JAW_DEBUG_I("atk_action == NULL");
-    return FALSE;
-  }
+  JAW_GET_ACTION(action, FALSE);
 
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");
@@ -254,33 +213,22 @@ static const gchar*
 jaw_action_get_localized_name (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
-  JawObject *jaw_obj = JAW_OBJECT(action);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return NULL;
-  }
-  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  JNIEnv *env = jaw_util_get_jni_env();
-  jobject atk_action = (*env)->NewGlobalRef(env, data->atk_action);
-  if (!atk_action) {
-    JAW_DEBUG_I("atk_action == NULL");
-    return NULL;
-  }
+  JAW_GET_ACTION(action, NULL);
 
-  jclass classAtkAction = (*env)->FindClass(env, "org/GNOME/Accessibility/AtkAction");
-  jmethodID jmid = (*env)->GetMethodID(env,
+  jclass classAtkAction = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkAction");
+  jmethodID jmid = (*jniEnv)->GetMethodID(jniEnv,
                                        classAtkAction,
                                        "getLocalizedName",
                                        "(I)Ljava/lang/String;");
-  jstring jstr = (*env)->CallObjectMethod(env, atk_action, jmid, (jint)i);
-  (*env)->DeleteGlobalRef(env, atk_action);
+  jstring jstr = (*jniEnv)->CallObjectMethod(jniEnv, atk_action, jmid, (jint)i);
+  (*jniEnv)->DeleteGlobalRef(jniEnv, atk_action);
   if (data->localized_name != NULL)
   {
-    (*env)->ReleaseStringUTFChars(env, data->jstrLocalizedName, data->localized_name);
-    (*env)->DeleteGlobalRef(env, data->jstrLocalizedName);
+    (*jniEnv)->ReleaseStringUTFChars(jniEnv, data->jstrLocalizedName, data->localized_name);
+    (*jniEnv)->DeleteGlobalRef(jniEnv, data->jstrLocalizedName);
   }
-  data->jstrLocalizedName = (*env)->NewGlobalRef(env, jstr);
-  data->localized_name = (gchar*)(*env)->GetStringUTFChars(env, data->jstrLocalizedName, NULL);
+  data->jstrLocalizedName = (*jniEnv)->NewGlobalRef(jniEnv, jstr);
+  data->localized_name = (gchar*)(*jniEnv)->GetStringUTFChars(jniEnv, data->jstrLocalizedName, NULL);
   return data->localized_name;
 }
 
@@ -288,18 +236,7 @@ static const gchar*
 jaw_action_get_keybinding (AtkAction *action, gint i)
 {
   JAW_DEBUG_C("%p, %d", action, i);
-  JawObject *jaw_obj = JAW_OBJECT(action);
-  if(!jaw_obj){
-    JAW_DEBUG_I("jaw_obj == NULL");
-    return NULL;
-  }
-  ActionData *data = jaw_object_get_interface_data(jaw_obj, INTERFACE_ACTION);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject atk_action = (*jniEnv)->NewGlobalRef(jniEnv, data->atk_action);
-  if (!atk_action) {
-    JAW_DEBUG_I("atk_action == NULL");
-    return NULL;
-  }
+  JAW_GET_ACTION(action, NULL);
 
   jclass classAtkAction = (*jniEnv)->FindClass(jniEnv,
                                                "org/GNOME/Accessibility/AtkAction");

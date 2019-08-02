@@ -73,6 +73,9 @@ static guint jaw_window_signals[LAST_SIGNAL] = { 0, };
 
 G_DEFINE_TYPE (JawObject, jaw_object, ATK_TYPE_OBJECT);
 
+#define JAW_GET_OBJECT(atk_obj, def_ret) \
+  JAW_GET_OBJ(atk_obj, JAW_OBJECT, JawObject, jaw_obj, acc_context, jniEnv, ac, def_ret)
+
 static guint
 jaw_window_add_signal (const gchar *name, JawObjectClass *klass)
 {
@@ -219,11 +222,7 @@ jaw_object_get_parent(AtkObject *atk_obj)
   if (jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj) != -1)
     return ATK_OBJECT(atk_get_root());
 
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac)
-    return NULL;
+  JAW_GET_OBJECT(atk_obj, NULL);
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv,"org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleParent", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleContext;");
@@ -246,12 +245,8 @@ static void
 jaw_object_set_parent(AtkObject *atk_obj, AtkObject *parent)
 {
   JAW_DEBUG_C("%p, %p", atk_obj, parent);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return;
-  }
+  JAW_GET_OBJECT(atk_obj, );
+
   JawObject *jaw_par = JAW_OBJECT(parent);
   jobject pa = (*jniEnv)->NewGlobalRef(jniEnv, jaw_par->acc_context);
   if (!pa) {
@@ -271,8 +266,6 @@ static const gchar*
 jaw_object_get_name (AtkObject *atk_obj)
 {
   JAW_DEBUG_C("%p", atk_obj);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
 
   atk_obj->name = (gchar *)ATK_OBJECT_CLASS (parent_class)->get_name (atk_obj);
 
@@ -292,10 +285,7 @@ jaw_object_get_name (AtkObject *atk_obj)
     }
   }
 
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return NULL;
-  }
+  JAW_GET_OBJECT(atk_obj, NULL);
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleName", "(Ljavax/accessibility/AccessibleContext;)Ljava/lang/String;");
@@ -325,12 +315,7 @@ jaw_object_get_name (AtkObject *atk_obj)
 static void jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
 {
   JAW_DEBUG_C("%p, %s", atk_obj, name);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return;
-  }
+  JAW_GET_OBJECT(atk_obj, );
 
   jstring jstr = NULL;
   if (name) {
@@ -348,12 +333,7 @@ static const gchar*
 jaw_object_get_description (AtkObject *atk_obj)
 {
   JAW_DEBUG_C("%p", atk_obj);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return NULL;
-  }
+  JAW_GET_OBJECT(atk_obj, NULL);
 
   jclass atkObject = (*jniEnv)->FindClass ( jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleDescription", "(Ljavax/accessibility/AccessibleContext;)Ljava/lang/String;");
@@ -383,12 +363,7 @@ jaw_object_get_description (AtkObject *atk_obj)
 static void jaw_object_set_description (AtkObject *atk_obj, const gchar *description)
 {
   JAW_DEBUG_C("%p, %s", atk_obj, description);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return;
-  }
+  JAW_GET_OBJECT(atk_obj, );
 
   jstring jstr = NULL;
   if (description) {
@@ -407,12 +382,7 @@ static gint
 jaw_object_get_n_children (AtkObject *atk_obj)
 {
   JAW_DEBUG_C("%p", atk_obj);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return 0;
-  }
+  JAW_GET_OBJECT(atk_obj, 0);
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleChildrenCount", "(Ljavax/accessibility/AccessibleContext;)I");
@@ -432,12 +402,7 @@ jaw_object_get_index_in_parent (AtkObject *atk_obj)
     return jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj);
   }
 
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return 0;
-  }
+  JAW_GET_OBJECT(atk_obj, 0);
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleIndexInParent", "(Ljavax/accessibility/AccessibleContext;)I");
@@ -457,11 +422,8 @@ jaw_object_get_role (AtkObject *atk_obj)
     return atk_obj->role;
   }
 
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac)
-    return ATK_ROLE_INVALID;
+  JAW_GET_OBJECT(atk_obj, ATK_ROLE_INVALID);
+
   AtkRole role = jaw_util_get_atk_role_from_AccessibleContext(ac);
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
   return role;
@@ -478,15 +440,10 @@ static AtkStateSet*
 jaw_object_ref_state_set (AtkObject *atk_obj)
 {
   JAW_DEBUG_C("%p", atk_obj);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
+  JAW_GET_OBJECT(atk_obj, NULL);
+
   AtkStateSet* state_set = jaw_obj->state_set;
   atk_state_set_clear_states( state_set );
-
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return NULL;
-  }
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getArrayAccessibleState", "(Ljavax/accessibility/AccessibleContext;)[Ljavax/accessibility/AccessibleState;");
@@ -517,12 +474,7 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
 static const gchar *jaw_object_get_object_locale (AtkObject *atk_obj)
 {
   JAW_DEBUG_C("%p", atk_obj);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return NULL;
-  }
+  JAW_GET_OBJECT(atk_obj, NULL);
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getLocale", "(Ljavax/accessibility/AccessibleContext;)Ljava/lang/String;");
@@ -553,18 +505,11 @@ static AtkRelationSet*
 jaw_object_ref_relation_set (AtkObject *atk_obj)
 {
   JAW_DEBUG_C("%p)", atk_obj);
+  JAW_GET_OBJECT(atk_obj, NULL);
+
   if (atk_obj->relation_set)
     g_object_unref(G_OBJECT(atk_obj->relation_set));
   atk_obj->relation_set = atk_relation_set_new();
-  if(atk_obj == NULL)
-    return NULL;
-
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return NULL;
-  }
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getArrayAccessibleRelation", "(Ljavax/accessibility/AccessibleContext;)[Lorg/GNOME/Accessibility/AtkObject$WrapKeyAndTarget;");
@@ -609,12 +554,7 @@ static AtkObject*
 jaw_object_ref_child(AtkObject *atk_obj, gint i)
 {
   JAW_DEBUG_C("%p, %d", atk_obj, i);
-  JawObject *jaw_obj = JAW_OBJECT(atk_obj);
-  JNIEnv *jniEnv = jaw_util_get_jni_env();
-  jobject ac = (*jniEnv)->NewGlobalRef(jniEnv, jaw_obj->acc_context);
-  if (!ac) {
-    return NULL;
-  }
+  JAW_GET_OBJECT(atk_obj, NULL);
 
   jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleChild", "(Ljavax/accessibility/AccessibleContext;I)Ljavax/accessibility/AccessibleContext;" );
