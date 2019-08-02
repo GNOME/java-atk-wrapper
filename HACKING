@@ -136,3 +136,8 @@ The jint object is mapped to C's long which is always at least 32 bits), instead
 of of C's int (which could be 16 bits). The resource for glib types can be
 found at <https://developer.gnome.org/glib/stable/glib-Basic-Types.html>
 
+JAW_GET_* acquire a global reference on the obtained jobject (because local
+references are dropped when ), it needs to be released before returning in all
+code paths!
+
+TODO: probably we can safely use mere (non-weak) local references here?
