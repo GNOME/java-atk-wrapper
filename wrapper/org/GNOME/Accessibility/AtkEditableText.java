@@ -43,8 +43,6 @@ public class AtkEditableText extends AtkText {
       if (acc_edt_text == null)
           return;
 
-      if (!javax.swing.SwingUtilities.isEventDispatchThread())
-        System.out.println("It would be unsafe to call setTextContents here");
       AtkUtil.invokeInSwing( () -> {
           acc_edt_text.setTextContents(s);
       });
