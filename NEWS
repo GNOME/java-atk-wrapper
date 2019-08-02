@@ -12,6 +12,8 @@ Build:
   Bump atk-bridge-2.0 dependency to 2.33.1
   760227: Filter out AtkWrapper.java from distributed files
   768824: Replace GNOME_COMPILE_WARNINGS with AX_COMPILER_FLAGS
+  Fix all warnings
+  Extend JAW_DEBUG
 
 Wrapper:
   Provide javax.accessibility.AccessibilityProvider
@@ -33,13 +35,31 @@ Wrapper:
   669029: Fix netbeans crashes
   754748: Fix freemind crashes
   758242: Fix swing threading rules
+  Fix SetName/Description/Role/AccessibleParent
+  Fix GetLocale
+  Fix Component extents
+  Fix TableSetCaption/Summary
+  Fix ActionSet/GetDescription
+  Fix GetTextAtOffset
+  Add GetTextBefore/AfterOffset
+  Fix calling Accessible* methods in the EDT only
+  Fix weak/global reference management, to make sure Accessible objects can
+  easily be freed by the GC, but Atk* objects can't.
+  Fix some null dereferences
+  Fix text selection offsets
+  Support alt graph modifier
+  Fix key event hw_code reporting
+  Support TableGetIndexAt
+  Fix TableCell
 
 Internal:
   Update HACKING
   Update bug tracker URL
+  Update missing atk interface implementations
   Make Samuel Thibault maintainer
 
 Contributors:
+  Giuseppe Capaldo
   Magdalen Berns
   Federico Mena Quintero
   Fridrich Štrba
