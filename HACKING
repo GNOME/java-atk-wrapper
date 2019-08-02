@@ -18,6 +18,68 @@ To file a bug against java-atk-wrapper:
 More information on Java ATK Wrapper can be found at:
   <https://wiki.gnome.org/Accessibility/JavaAtkWrapper>
 
+
+Overall picture
+---------------
+
+We have two kinds of entry points into the java-atk-wrapper code:
+
+- events from the application
+- requests from the at-spi bus
+
+
+Events from the application come through the class specified in
+java's assistive_technologies variable, set to
+org.GNOME.Accessibility.AtkWrapper. We thus end up in
+wrapper/org/GNOME/Accessibility/AtkWrapper.java's methods such as
+AtkWrapper::windowActivated. This calls the C version from AtkWrapper.c,
+Java_org_GNOME_Accessibility_AtkWrapper_windowActivate, which emits a glib
+signal, caught by ATK to send the right message on the at-spi bus.
+
+Requests from the at-spi bus come from ATK calling our methods, for instance
+jaw_object_get_name, which calls the java version AtkObject::getAccessibleName
+which calls the java-provided AccessibleContext::getAccessibleName().
+
+
+Request from the at-spi bus have to be processed in a glib main loop. Since
+java may or may not be using a glib main loop, we have to run a glib loop in a
+separate thread, called the jaw thread.  Events from the application are thus
+processed from the application threads, and requests from the at-spi bus are
+processed from the jaw thread.  This brings concurrency issues, thus mutexes
+on hash tables etc.  Unfortunately we can not assume that the application is
+thread-safe: it might be using just one thread and not lock anything.  Even
+getAccessibleContext() calls may not be safe because they might involve table
+lookups etc. within the application.  This is why the java versions AtkObject::*
+take care of surrounding any Accessible* calls within an AtkUtil.invokeInSwing()
+wrapper, to delegate running the piece of code to the application thread, the
+EDT (Event Dispatch Thread).  Conversely, we can not emit glib signals etc. at
+random times, so AtkWrapper.c delegates this to the idle handler of the glib
+mamin loop.  We thus have some ping-pong of code execution between the two
+threads, to make sure it executes safely.
+
+In summary:
+- Java_org_GNOME_Accessibility_AtkWrapper_* are called from the application
+thread,
+- the corresponding *_handler are called in the jaw thread,
+- the jaw_* methods are called from the jaw thread,
+- the corresponding Atk* methods delegate some of their work to the EDT.
+
+
+Last but not least, three kinds of objects exist: the java-implemented
+Accessible*, the ATK-implemented C Atk*, and its Atk* java-ish counterpart.
+When an event comes from the application, the object at stake might not be
+known to ATK yet.  One has to use jaw_impl_get_instance to get the existing
+corresponding ATK C object, or create it, as well as the java-ish counterpart.
+When java gets rid of an Accessible* object, we need to release the Atk* C and
+java objects.  This is done by storing only weak references in the Atk* C and
+java objects, and get notified of GC passes; object_table_gc then goes through
+all Atk* C objects to check whether the weak references are still valid, and
+release them otherwise.  This however also means that when a request comes from
+the at-spi bus, the java object might not exist any more.  In Atk* methods, one
+thus have to acquire a global reference and check that it is valid before working
+on the java object and after that release the global reference.
+
+
 Methods Not Yet Fully Implemented
 ---------------------------------
 
@@ -34,6 +96,7 @@ Object base class:
   implementor_ref_accessible
   get_attributes
 
+
 Deprecated Methods Which Are Implemented
 ----------------------------------------
 
@@ -45,6 +108,7 @@ Text Interface:
   get_text_at_offset     -   use get_string_at_offset instead
                              NOTE: some legacy implementations
                              need to default to get_text_at_offset
+
 
 Conventions for Writing Java ATK Wrapper Code
 ---------------------------------------------
@@ -63,6 +127,7 @@ terminal or set it in ~/.bashrc:
   export JAW_DEBUG=1
 
 More JAW_DEBUG level values are available (2: JAW_DEBUG_JNI, 3: JAW_DEBUG_C, 4: JAW_DEBUG_ALL)
+
 
 Other Things to Keep in Mind
 ----------------------------
