@@ -1,3 +1,9 @@
+Changes in version 0.35.1pre
+=========================
+
+Build:
+  Fix 32bit build
+
 Changes in version 0.35.0
 =========================
 
