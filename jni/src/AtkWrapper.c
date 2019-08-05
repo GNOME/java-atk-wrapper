@@ -21,6 +21,7 @@
 #include <jni.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <glib.h>
 #include <atk-bridge.h>
 #include <X11/Xlib.h>
@@ -1227,7 +1228,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_getInstance(JNIEnv *jniEnv,
   if (!ac)
     return 0;
 
-  return (jlong) jaw_impl_get_instance(jniEnv, ac);
+  return (jlong) (uintptr_t) jaw_impl_get_instance(jniEnv, ac);
 }
 
 #ifdef __cplusplus

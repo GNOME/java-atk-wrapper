@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gprintf.h>
@@ -331,7 +332,7 @@ jaw_impl_get_instance_from_jaw (JNIEnv *jniEnv, jobject ac)
   jclass classWrapper = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkWrapper");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID(jniEnv, classWrapper, "getInstanceFromSwing", "(Ljavax/accessibility/AccessibleContext;)J");
   jlong ptr = (*jniEnv)->CallStaticLongMethod(jniEnv, classWrapper, jmid, ac);
-  return (JawImpl*) ptr;
+  return (JawImpl*) (uintptr_t) ptr;
 }
 
 JawImpl*
