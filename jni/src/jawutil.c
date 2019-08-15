@@ -248,7 +248,6 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserve)
 JNIEnv*
 jaw_util_get_jni_env(void)
 {
-  JAW_DEBUG_C("");
   JNIEnv *env;
   env  = NULL;
   static int i;
@@ -307,7 +306,6 @@ jaw_util_detach(void)
 static jobject
 jaw_util_get_java_acc_role (JNIEnv *jniEnv, const gchar* roleName)
 {
-  JAW_DEBUG_C("%p, %s", jniEnv, roleName);
   jclass classAccessibleRole = (*jniEnv)->FindClass(jniEnv,
                                                     "javax/accessibility/AccessibleRole");
   jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv,
@@ -322,7 +320,6 @@ jaw_util_get_java_acc_role (JNIEnv *jniEnv, const gchar* roleName)
 static gboolean
 jaw_util_is_java_acc_role (JNIEnv *jniEnv, jobject acc_role, const gchar* roleName)
 {
-  JAW_DEBUG_C("%p, %p, %s", jniEnv, acc_role, roleName);
   jobject jrole = jaw_util_get_java_acc_role (jniEnv, roleName);
 
   if ((*jniEnv)->IsSameObject(jniEnv, acc_role, jrole))
@@ -561,7 +558,6 @@ jaw_util_get_atk_role_from_AccessibleContext (jobject jAccessibleContext)
 static gboolean
 is_same_java_state (JNIEnv *jniEnv, jobject jobj, const gchar* strState)
 {
-  JAW_DEBUG_C("%p, %p, %s", jniEnv, jobj, strState);
   jclass classAccessibleState = (*jniEnv)->FindClass(jniEnv,
                                                      "javax/accessibility/AccessibleState");
   jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv,
@@ -580,7 +576,6 @@ is_same_java_state (JNIEnv *jniEnv, jobject jobj, const gchar* strState)
 AtkStateType
 jaw_util_get_atk_state_type_from_java_state (JNIEnv *jniEnv, jobject jobj)
 {
-  JAW_DEBUG_C("%p, %p", jniEnv, jobj);
   if (is_same_java_state( jniEnv, jobj, "ACTIVE" ))
     return ATK_STATE_ACTIVE;
 

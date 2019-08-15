@@ -280,6 +280,8 @@ jaw_object_get_name (AtkObject *atk_obj)
       {
         const gchar* name = atk_object_get_name(child);
         g_object_unref(child);
+        if (name)
+          JAW_DEBUG_C("-> %s", name);
         return name;
       }
     }
@@ -309,6 +311,8 @@ jaw_object_get_name (AtkObject *atk_obj)
                                                          NULL);
   }
 
+  if (atk_obj->name)
+    JAW_DEBUG_C("-> %s", atk_obj->name);
   return atk_obj->name;
 }
 
@@ -419,6 +423,7 @@ jaw_object_get_role (AtkObject *atk_obj)
   JAW_DEBUG_C("%p", atk_obj);
   if (atk_obj->role != ATK_ROLE_INVALID
    && atk_obj->role != ATK_ROLE_UNKNOWN) {
+    JAW_DEBUG_C("-> %d", atk_obj->role);
     return atk_obj->role;
   }
 
@@ -426,6 +431,7 @@ jaw_object_get_role (AtkObject *atk_obj)
 
   AtkRole role = jaw_util_get_atk_role_from_AccessibleContext(ac);
   (*jniEnv)->DeleteGlobalRef(jniEnv, ac);
+  JAW_DEBUG_C("-> %d", role);
   return role;
 }
 
