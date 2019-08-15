@@ -205,6 +205,7 @@ enum _SignalType {
 };
 
 typedef struct _CallbackPara {
+  jobject ac;
   jobject global_ac;
   JawImpl *jaw_impl;
   JawImpl *child_impl;
@@ -629,6 +630,15 @@ get_int_value (JNIEnv *jniEnv, jobject o)
   return (gint)(*jniEnv)->CallIntMethod(jniEnv, o, jmid);
 }
 
+/*
+ * OpenJDK seems to be sending flurries of visible data changed events, which
+ * overloads us. They are however usually just for the same object, so we can
+ * compact them: there is no need to queue another one if the previous hasn't
+ * even been sent!
+ */
+static pthread_mutex_t jaw_vdc_dup_mutex = PTHREAD_MUTEX_INITIALIZER;
+static jobject jaw_vdc_last_ac = NULL;
+
 static gboolean
 signal_emit_handler (gpointer p)
 {
@@ -637,6 +647,16 @@ signal_emit_handler (gpointer p)
   JNIEnv *jniEnv = jaw_util_get_jni_env();
   jobjectArray args = para->args;
   AtkObject* atk_obj = ATK_OBJECT(para->jaw_impl);
+
+  if (para->signal_id == Sig_Object_Visible_Data_Changed)
+  {
+    pthread_mutex_lock(&jaw_vdc_dup_mutex);
+    if (jaw_vdc_last_ac == para->ac)
+      /* So we will be sending the visible data changed event. If any other
+       * comes, we will want to send it  */
+      jaw_vdc_last_ac = NULL;
+    pthread_mutex_unlock(&jaw_vdc_dup_mutex);
+  }
 
   switch (para->signal_id)
   {
@@ -869,14 +889,38 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
                                                            jobjectArray args)
 {
   JAW_DEBUG_JNI("%p, %p, %p, %d, %p", jniEnv, jClass, jAccContext, id, args);
+
+  pthread_mutex_lock(&jaw_vdc_dup_mutex);
+  if (id != Sig_Object_Visible_Data_Changed)
+  {
+    /* Something may have happened since the last visible data changed event, so
+     * we want to sent it again */
+    jaw_vdc_last_ac = NULL;
+  }
+  else
+  {
+    if (jaw_vdc_last_ac == jAccContext)
+    {
+      /* We have already queued to send one and nothing happened in between,
+       * this one is really useless */
+      pthread_mutex_unlock(&jaw_vdc_dup_mutex);
+      return;
+    }
+
+    jaw_vdc_last_ac = jAccContext;
+  }
+  pthread_mutex_unlock(&jaw_vdc_dup_mutex);
+
   if (!jAccContext) {
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
+
   jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
   jobjectArray global_args = (jobjectArray)(*jniEnv)->NewGlobalRef(jniEnv, args);
   CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  para->ac = jAccContext;
   para->signal_id = (gint)id;
   para->args = global_args;
   switch (para->signal_id)
