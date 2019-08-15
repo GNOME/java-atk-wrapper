@@ -180,10 +180,10 @@ jaw_component_get_extents (AtkComponent *component,
   if (x == NULL || y == NULL || width == NULL || height == NULL)
     return;
 
-  (*x) = 0;
-  (*y) = 0;
-  (*width) = 0;
-  (*height) = 0;
+  (*x) = -1;
+  (*y) = -1;
+  (*width) = -1;
+  (*height) = -1;
 
   if (component == NULL)
     return;

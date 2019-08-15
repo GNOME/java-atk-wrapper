@@ -92,8 +92,8 @@ jaw_image_get_image_position (AtkImage *image,
 		gint *x, gint *y, AtkCoordType coord_type)
 {
 	JAW_DEBUG_C("%p, %p, %p, %d", image, x, y, coord_type);
-	(*x) = 0;
-	(*y) = 0;
+	(*x) = -1;
+	(*y) = -1;
 	JAW_GET_IMAGE(image, );
 
 	jclass classAtkImage = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkImage");
@@ -142,8 +142,8 @@ static void
 jaw_image_get_image_size (AtkImage *image, gint *width, gint *height)
 {
 	JAW_DEBUG_C("%p, %p, %p", image, width, height);
-	(*width) = 0;
-	(*height) = 0;
+	(*width) = -1;
+	(*height) = -1;
 	JAW_GET_IMAGE(image, );
 
 	jclass classAtkImage = (*jniEnv)->FindClass(jniEnv, "org/GNOME/Accessibility/AtkImage");

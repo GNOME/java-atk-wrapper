@@ -373,10 +373,10 @@ jaw_text_get_character_extents (AtkText *text,
                                 AtkCoordType coords)
 {
   JAW_DEBUG_C("%p, %d, %p, %p, %p, %p, %d", text, offset, x, y, width, height, coords);
-  *x = 0;
-  *y = 0;
-  *width = 0;
-  *height = 0;
+  *x = -1;
+  *y = -1;
+  *width = -1;
+  *height = -1;
   JAW_GET_TEXT(text, );
 
   jclass classAtkText = (*jniEnv)->FindClass(jniEnv,
