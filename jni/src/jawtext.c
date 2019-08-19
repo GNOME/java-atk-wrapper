@@ -453,7 +453,10 @@ jaw_text_get_range_extents (AtkText *text,
   {
     return;
   }
-  memset(rect, 0, sizeof(*rect));
+  rect->x = -1;
+  rect->y = -1;
+  rect->width = -1;
+  rect->height = -1;
 
   JAW_GET_TEXT(text, );
 
