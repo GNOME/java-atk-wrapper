@@ -1,8 +1,15 @@
-Changes in version 0.35.1pre
-=========================
+Changes in version 0.35.91
+==========================
 
 Build:
   Fix 32bit build
+
+Wrapper:
+  Fix extents value for invalid extents
+  Compact data-changed events queue
+
+Internal:
+  Improve debugging log
 
 Changes in version 0.35.0
 =========================
