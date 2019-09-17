@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([java-atk-wrapper],[0.36.0],[https://gitlab.gnome.org/GNOME/java-atk-wrapper/issues/new])
+AC_INIT([java-atk-wrapper],[0.37.0pre],[https://gitlab.gnome.org/GNOME/java-atk-wrapper/issues/new])
 : ${CXXFLAGS=""}
 
 AC_CONFIG_AUX_DIR(config)
