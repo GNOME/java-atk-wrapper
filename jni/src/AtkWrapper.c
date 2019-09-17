@@ -48,6 +48,9 @@ extern "C" {
 #define GDK_MOD5_MASK (1 << 7)
 #define GDK_META_MASK (1 << 28)
 
+#define JAW_LOG_FILE "jaw_log.txt"
+#define JAW_LOG_FILE2 "/tmp/"JAW_LOG_FILE
+
 typedef enum _SignalType SignalType;
 gboolean jaw_accessibility_init (void);
 void jaw_accessibility_shutdown (void);
@@ -100,10 +103,16 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
   }
   if (jaw_debug)
   {
-    jaw_log_file = fopen("jaw_log_file.txt","w+");
+    jaw_log_file = fopen(JAW_LOG_FILE, "w+");
     if (!jaw_log_file)
     {
-      fprintf(stderr, "Error opening log file jaw_log_file.txt\n");
+      perror("Error opening log file "JAW_LOG_FILE", trying "JAW_LOG_FILE2);
+      jaw_log_file = fopen(JAW_LOG_FILE2, "w+");
+    }
+
+    if (!jaw_log_file)
+    {
+      perror("Error opening log file "JAW_LOG_FILE2);
       exit(1);
     }
     jaw_start_time = time(NULL);
