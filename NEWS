@@ -1,3 +1,10 @@
+Changes in version 0.37.1
+=========================
+
+Internal:
+  Make debugging cope with current directory not being writable
+
+
 Changes in version 0.35.91 = 0.36.0
 ==========================
 
