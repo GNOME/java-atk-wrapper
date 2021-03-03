@@ -123,6 +123,7 @@ else
 fi
 AC_SUBST(JAW_CFLAGS)
 
+AX_IS_RELEASE(dash-version)
 AX_COMPILER_FLAGS()
 case "$WARN_CFLAGS" in
     *-Werror*)
