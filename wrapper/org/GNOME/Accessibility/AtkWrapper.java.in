@@ -32,6 +32,11 @@ import java.lang.management.*;
 
 public class AtkWrapper {
   static boolean accessibilityEnabled = false;
+  static void initAtk() {
+    System.loadLibrary("atk-wrapper");
+    if (AtkWrapper.initNativeLibrary())
+      accessibilityEnabled = true;
+  }
   static {
     try {
       Process p = Runtime.getRuntime().exec("@XPROP@ -root");
@@ -39,11 +44,18 @@ public class AtkWrapper {
       String result;
       while ((result = b.readLine()) != null) {
         if (result.indexOf("AT_SPI_IOR") >= 0 || result.indexOf("AT_SPI_BUS") >= 0) {
-          System.loadLibrary("atk-wrapper");
-          if (AtkWrapper.initNativeLibrary())
-            accessibilityEnabled = true;
+          initAtk();
           break;
         }
+      }
+
+      if (!accessibilityEnabled) {
+        p = Runtime.getRuntime().exec("dbus-send --session --dest=org.a11y.Bus --print-reply /org/a11y/bus org.a11y.Bus.GetAddress");
+        b = new BufferedReader(new InputStreamReader (p.getInputStream ()));
+        while ((b.readLine()) != null);
+        p.waitFor();
+        if (p.exitValue() == 0)
+          initAtk();
       }
 
       java.util.List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
