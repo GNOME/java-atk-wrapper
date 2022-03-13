@@ -179,6 +179,11 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_loadAtkBridge(void)
     JAW_DEBUG_I("Thread create failed: %s !", err->message);
     g_error_free (err);
   }
+  else
+  {
+    /* We won't join it */
+    g_thread_unref(thread);
+  }
 }
 
 JNIEXPORT void
