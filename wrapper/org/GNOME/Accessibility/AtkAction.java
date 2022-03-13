@@ -137,9 +137,11 @@ public class AtkAction {
 	}
 
 	public String get_keybinding (int index) {
-		AccessibleExtendedComponent acc_ext_component = _acc_ext_component.get();
+		AccessibleExtendedComponent acc_ext_component;
 		if (_acc_ext_component == null)
 			return "";
+
+		acc_ext_component = _acc_ext_component.get();
 
 		// TODO: improve/fix conversion to strings, concatenate,
 		//       and follow our formatting convention for the role of

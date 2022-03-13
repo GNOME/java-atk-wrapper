@@ -568,7 +568,7 @@ jaw_impl_get_interface_data (JawObject *jaw_obj, guint iface)
   JAW_DEBUG_C("%p, %u", jaw_obj, iface);
   JawImpl *jaw_impl = (JawImpl*)jaw_obj;
 
-  if (jaw_impl->ifaceTable == NULL || jaw_impl == NULL)
+  if (jaw_impl == NULL || jaw_impl->ifaceTable == NULL)
     return NULL;
 
   JawInterfaceInfo *info = g_hash_table_lookup(jaw_impl->ifaceTable,GUINT_TO_POINTER(iface));
