@@ -589,7 +589,11 @@ jaw_util_get_atk_state_type_from_java_state (JNIEnv *jniEnv, jobject jobj)
     return ATK_STATE_CHECKED;
 
   if (is_same_java_state( jniEnv, jobj, "COLLAPSED" ))
+#ifdef ATK_STATE_COLLAPSED
     return ATK_STATE_COLLAPSED;
+#else
+    return ATK_STATE_INVALID;
+#endif
 
   if (is_same_java_state( jniEnv, jobj, "EDITABLE" ))
     return ATK_STATE_EDITABLE;
