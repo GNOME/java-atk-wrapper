@@ -1,3 +1,11 @@
+Changes in version 0.40.0
+=========================
+
+Wrapper:
+  Make collapsed java state mapped to ATK_STATE_COLLAPSED
+  Also use dbus to detect accessibility being enabled
+
+
 Changes in version 0.37.1 = 0.38.0
 =========================
 
