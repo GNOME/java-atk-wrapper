@@ -235,6 +235,8 @@ jaw_object_get_parent(AtkObject *atk_obj)
 
     if (parent_obj != NULL )
       return parent_obj;
+
+    g_warning("didn't find jaw for parent, returning null");
   }
 
   g_warning("didn't find parent, returning null");
