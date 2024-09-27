@@ -548,7 +548,7 @@ jaw_util_get_atk_role_from_AccessibleContext (jobject jAccessibleContext)
   if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "WINDOW"))
     return ATK_ROLE_WINDOW;
 
-  jmethodID jmideic = (*jniEnv)->GetMethodID(jniEnv, atkObject, "equalsIgnoreCaseLocaleWithRole", "(Ljavax/accessibility/AccessibleRole;)Z");
+  jmethodID jmideic = (*jniEnv)->GetStaticMethodID(jniEnv, atkObject, "equalsIgnoreCaseLocaleWithRole", "(Ljavax/accessibility/AccessibleRole;)Z");
   if ( (*jniEnv)->CallStaticBooleanMethod(jniEnv, atkObject, jmideic, ac_role) )
     return ATK_ROLE_PARAGRAPH;
 
