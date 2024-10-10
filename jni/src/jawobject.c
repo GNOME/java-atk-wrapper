@@ -445,6 +445,22 @@ jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
   atk_obj->role = role;
 }
 
+#if !ATK_CHECK_VERSION (2,38,0)
+static gboolean
+is_collapsed_java_state (JNIEnv *jniEnv, jobject jobj)
+{
+    jclass classAccessibleState = (*jniEnv)->FindClass(jniEnv, "javax/accessibility/AccessibleState");
+    jfieldID jfid = (*jniEnv)->GetStaticFieldID(jniEnv, classAccessibleState, "COLLAPSED", "Ljavax/accessibility/AccessibleState;");
+    jobject jstate = (*jniEnv)->GetStaticObjectField(jniEnv, classAccessibleState, jfid);
+
+    if ((*jniEnv)->IsSameObject(jniEnv, jobj, jstate)) {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+#endif
+
 static AtkStateSet*
 jaw_object_ref_state_set (AtkObject *atk_obj)
 {
@@ -467,6 +483,12 @@ jaw_object_ref_state_set (AtkObject *atk_obj)
   for (i = 0; i < jarr_size; i++)
   {
     jobject jstate = (*jniEnv)->GetObjectArrayElement( jniEnv, jstate_arr, i );
+#if !ATK_CHECK_VERSION (2,38,0)
+    if (is_collapsed_java_state(jniEnv, jstate))
+    {
+      continue;
+    }
+#endif
     AtkStateType state_type = jaw_util_get_atk_state_type_from_java_state( jniEnv, jstate );
     atk_state_set_add_state( state_set, state_type );
     if (state_type == ATK_STATE_ENABLED)
