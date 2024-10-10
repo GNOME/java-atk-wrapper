@@ -210,9 +210,10 @@ jaw_object_finalize (GObject *gobject)
   if (G_OBJECT(jaw_obj->state_set) != NULL)
   {
     g_object_unref(G_OBJECT(jaw_obj->state_set));
-    /* Chain up to parent's finalize method */
-    G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
   }
+
+  /* Chain up to parent's finalize method */
+  G_OBJECT_CLASS(jaw_object_parent_class)->finalize(gobject);
 }
 
 static AtkObject*
