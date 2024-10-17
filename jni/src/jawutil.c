@@ -410,7 +410,7 @@ jaw_util_get_atk_role_from_AccessibleContext (jobject jAccessibleContext)
     return ATK_ROLE_HTML_CONTAINER;
 
   if (jaw_util_is_java_acc_role(jniEnv, ac_role, "HYPERLINK"))
-    return ATK_ROLE_UNKNOWN;
+    return ATK_ROLE_LINK;
 
   if ( jaw_util_is_java_acc_role(jniEnv, ac_role, "ICON"))
     return ATK_ROLE_ICON;
