@@ -527,6 +527,21 @@ public class AtkWrapper {
           return;
         }
 
+        /*
+        * JComboBox sends two signals: object:active-descendant-changed and object:selection-changed.
+        * Information about the component is announced when processing the object:selection-changed signal.
+        * The object:active-descendant-changed signal interrupts this announcement in earlier versions of GNOME.
+        * Skipping the emission of object:active-descendant-changed signal resolves this issue.
+        * See: https://gitlab.gnome.org/GNOME/java-atk-wrapper/-/issues/29
+        */
+        if (ac.getAccessibleRole() == AccessibleRole.COMBO_BOX) {
+          String jcombobox = "javax.swing.JComboBox$AccessibleJComboBox";
+          String name = ac.getClass().getName();
+          if (jcombobox.compareTo(name) == 0) {
+            return;
+          }
+        }
+
         Object[] args = new Object[1];
         args[0] = child_ac;
 
