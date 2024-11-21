@@ -535,11 +535,7 @@ public class AtkWrapper {
         * See: https://gitlab.gnome.org/GNOME/java-atk-wrapper/-/issues/29
         */
         if (ac.getAccessibleRole() == AccessibleRole.COMBO_BOX) {
-          String jcombobox = "javax.swing.JComboBox$AccessibleJComboBox";
-          String name = ac.getClass().getName();
-          if (jcombobox.compareTo(name) == 0) {
-            return;
-          }
+          return;
         }
 
         Object[] args = new Object[1];
@@ -577,11 +573,7 @@ public class AtkWrapper {
           * See: https://gitlab.gnome.org/GNOME/orca/-/issues/552
           */
           if (ac.getAccessibleRole() == AccessibleRole.TREE) {
-            String jtree = "javax.swing.JTree$AccessibleJTree";
-            String name = ac.getClass().getName();
-            if (jtree.compareTo(name) == 0) {
-              return;
-            }
+            return;
           }
 
           if (!isTextEvent) {
