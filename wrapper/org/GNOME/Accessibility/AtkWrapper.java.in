@@ -527,6 +527,17 @@ public class AtkWrapper {
           return;
         }
 
+        /*
+        * JComboBox sends two signals: object:active-descendant-changed and object:selection-changed.
+        * Information about the component is announced when processing the object:selection-changed signal.
+        * The object:active-descendant-changed signal interrupts this announcement in earlier versions of GNOME.
+        * Skipping the emission of object:active-descendant-changed signal resolves this issue.
+        * See: https://gitlab.gnome.org/GNOME/java-atk-wrapper/-/issues/29
+        */
+        if (ac.getAccessibleRole() == AccessibleRole.COMBO_BOX) {
+          return;
+        }
+
         Object[] args = new Object[1];
         args[0] = child_ac;
 
@@ -547,6 +558,22 @@ public class AtkWrapper {
               java.lang.Object child = selection.getAccessibleSelection(0);
               dispatchFocusEvent(child);
             }
+          }
+
+          /*
+          * When navigating through nodes, JTree sends two signals: object:selection-changed and object:active-descendant-changed.
+          * The object:selection-changed signal is emitted before object:active-descendant-changed, leading to the following issues:
+          * 1. When focusing on the root of the tree, object:active-descendant-changed interrupts the announcement and does not
+          *    provide any output because the FOCUS MANAGER doesn't update the focus — it is already set to the same object.
+          * 2. For other nodes, the correct behavior happens because of the bug in JTree:
+          *    AccessibleJTree incorrectly reports the selected children and object:selection-changed sets focus on the tree.
+          *
+          * Removing the object:selection-changed signal ensures that the locus of focus is updated during object:active-descendant-changed,
+          * allowing elements to be announced correctly.
+          * See: https://gitlab.gnome.org/GNOME/orca/-/issues/552
+          */
+          if (ac.getAccessibleRole() == AccessibleRole.TREE) {
+            return;
           }
 
           if (!isTextEvent) {
