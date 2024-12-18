@@ -28,6 +28,10 @@ package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
 import java.util.Locale;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+import java.awt.event.KeyEvent;
+import java.awt.event.InputEvent;
 
 /**
 * AtkObject:
@@ -121,8 +125,51 @@ public class AtkObject{
         } );
     }
 
-    public static String getAccessibleName(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleName(); }, "");
+    public static String getAccessibleName(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            String accessibleName = ac.getAccessibleName();
+            if (accessibleName == null) {
+                return null;
+            }
+            final String acceleratorText = getAcceleratorText(ac);
+            if (!acceleratorText.isEmpty()) {
+                return accessibleName + " " + acceleratorText;
+            }
+            return accessibleName;
+        }, "");
+    }
+
+    /**
+     * Returns the JMenuItem accelerator. Similar implementation is used on
+     * macOS, see CAccessibility.getAcceleratorText(AccessibleContext) in OpenJDK, and
+     * on Windows, see AccessBridge.getAccelerator(AccessibleContext) in OpenJDK.
+     */
+    private static String getAcceleratorText(AccessibleContext ac) {
+        String accText = "";
+        Accessible parent = ac.getAccessibleParent();
+        if (parent != null) {
+            int indexInParent = ac.getAccessibleIndexInParent();
+            Accessible child = parent.getAccessibleContext()
+                    .getAccessibleChild(indexInParent);
+            if (child instanceof JMenuItem) {
+                JMenuItem menuItem = (JMenuItem)child;
+                KeyStroke keyStroke = menuItem.getAccelerator();
+                if (keyStroke != null) {
+                    int modifiers = keyStroke.getModifiers();
+                    String modifiersText = modifiers > 0 ? InputEvent.getModifiersExText(modifiers) : "";
+
+                    int keyCode = keyStroke.getKeyCode();
+                    String keyCodeText = keyCode != 0 ? KeyEvent.getKeyText(keyCode) : String.valueOf(keyStroke.getKeyChar());
+
+                    accText += modifiersText;
+                    if (!modifiersText.isEmpty() && !keyCodeText.isEmpty()) {
+                        accText += "+";
+                    }
+                    accText += keyCodeText;
+                }
+            }
+        }
+        return accText;
     }
 
     public static void setAccessibleName(AccessibleContext ac, String name){
