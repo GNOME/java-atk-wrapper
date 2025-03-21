@@ -14,3 +14,19 @@ wrapper:  the Java library that listens to Swing events, and adapting JAAPI
 jni:      the C library that converts Swing events into GSignals and talks
           to ATK-Bridge
 
+
+Note:
+JAW is known to work at least with openjdk-8. Support in later versions vary,
+Oracle does not seem to have realized that the latest versions are just not able
+to load JAW, see Oracle incident 9127367
+https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8204862
+
+For some versions, one may have to enable by hand by uncommenting in e.g.
+/etc/java-8-openjdk/accessibility.properties :
+
+    assistive_technologies=org.GNOME.Accessibility.AtkWrapper
+
+For old versions, in /etc/java-7-openjdk/swing.properties one has to enable the
+GTK look&feel:
+
+    swing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel
