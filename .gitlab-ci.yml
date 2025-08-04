@@ -1,0 +1,56 @@
+include:
+  - component: "gitlab.gnome.org/GNOME/citemplates/release-service@master"
+    inputs:
+      job-stage: "release"
+      dist-job-name: "build-release-tarball"
+      tarball-artifact-path: "${TARBALL_ARTIFACT_PATH}"
+
+stages:
+  - "build"
+  - "release"
+
+# Enable merge request pipelines and avoid duplicate pipelines
+# https://docs.gitlab.com/ee/ci/yaml/index.html#switch-between-branch-pipelines-and-merge-request-pipelines
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_BRANCH'
+
+variables:
+  TARBALL_ARTIFACT_PATH: "${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz"
+
+.default-build:
+  script:
+    - apt-get update
+    - apt-get install -o APT::Install-Recommends=false -y autoconf autoconf-archive pkgconf libgirepository1.0-dev gnome-common libatk1.0-dev libatk-bridge2.0-dev libatspi2.0-dev libdbus-1-dev libglib2.0-dev default-jdk-headless:native java-common x11-utils
+    - ./autogen.sh
+    - ./configure
+    - make
+  artifacts:
+    when: always
+    name: "java-atk-wrapper-${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    paths:
+      - "config.log"
+
+debian-stable:
+  extends: .default-build
+  stage: build
+  image: debian:stable
+
+build-release-tarball:
+  stage: "build"
+  script:
+    - dnf install --assumeyes which autoconf autoconf-archive pkg-config java-devel gcc gcc-c++ clang atk-devel glib2-devel gtk2-devel xprop gtk3-devel at-spi2-atk-devel at-spi2-core-devel gobject-introspection-devel make
+    - ./autogen.sh
+    - ./configure
+    - make
+    - make dist
+    - make distcheck
+  artifacts:
+    name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    when: "always"
+    paths:
+      - "${TARBALL_ARTIFACT_PATH}"
