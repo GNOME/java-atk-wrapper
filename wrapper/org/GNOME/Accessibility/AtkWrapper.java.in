@@ -564,7 +564,7 @@ public class AtkWrapper {
           * When navigating through nodes, JTree sends two signals: object:selection-changed and object:active-descendant-changed.
           * The object:selection-changed signal is emitted before object:active-descendant-changed, leading to the following issues:
           * 1. When focusing on the root of the tree, object:active-descendant-changed interrupts the announcement and does not
-          *    provide any output because the FOCUS MANAGER doesn't update the focus — it is already set to the same object.
+          *    provide any output because the FOCUS MANAGER doesn't update the focus - it is already set to the same object.
           * 2. For other nodes, the correct behavior happens because of the bug in JTree:
           *    AccessibleJTree incorrectly reports the selected children and object:selection-changed sets focus on the tree.
           *
