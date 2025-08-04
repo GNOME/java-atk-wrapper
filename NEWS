@@ -1,3 +1,15 @@
+Changes in version 0.42.0
+=========================
+
+Wrapper:
+  Fix returning ATK_STATE_COLLAPSED, fixes #25
+  Fix crash in jni_CallStaticBooleanMethod, fixes #26
+  Fix focus_notify_handler, fixes #27
+  Fix mapping of AccessibleRole.HYPERLINK to LINK, fixes #28
+  Fix announcing root in JTree, fixes #29
+
+Document the OpenJDK load situation
+
 Changes in version 0.40.0
 =========================
 
