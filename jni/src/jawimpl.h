@@ -32,11 +32,13 @@ G_BEGIN_DECLS
 #define JAW_IS_IMPL_CLASS(tf, klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), JAW_TYPE_IMPL(tf)))
 #define JAW_IMPL_GET_CLASS(tf, obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), JAW_TYPE_IMPL(tf), JawImplClass))
 
+#if !GLIB_CHECK_VERSION(2,80,0)
 #ifdef GPOINTER_TO_SIZE
   #define GPOINTER_TO_TYPE(gpointer) (GPOINTER_TO_SIZE (gpointer))
 #endif
 #ifdef GSIZE_TO_POINTER
   #define GTYPE_TO_POINTER(gtype) (GSIZE_TO_POINTER(gtype))
+#endif
 #endif
 
 typedef struct _JawImpl			JawImpl;
