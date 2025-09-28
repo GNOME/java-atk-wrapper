@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 #define JAW_IMPL_GET_CLASS(tf, obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), JAW_TYPE_IMPL(tf), JawImplClass))
 
 #ifdef GPOINTER_TO_SIZE
-  #define GPOINTER_TO_GTYPE(gpointer) (GPOINTER_TO_SIZE (gpointer))
+  #define GPOINTER_TO_TYPE(gpointer) (GPOINTER_TO_SIZE (gpointer))
 #endif
 #ifdef GSIZE_TO_POINTER
   #define GTYPE_TO_POINTER(gtype) (GSIZE_TO_POINTER(gtype))

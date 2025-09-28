@@ -444,7 +444,7 @@ jaw_impl_get_type (guint tflag)
     typeTable = g_hash_table_new( NULL, NULL );
   }
 
-  type = GPOINTER_TO_GTYPE(g_hash_table_lookup(typeTable, GUINT_TO_POINTER(tflag)));
+  type = GPOINTER_TO_TYPE(g_hash_table_lookup(typeTable, GUINT_TO_POINTER(tflag)));
   g_mutex_unlock(&typeTableMutex);
   if (type == 0) {
     GTypeInfo tinfo = {
