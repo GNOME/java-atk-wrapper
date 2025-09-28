@@ -404,10 +404,9 @@ static gint
 jaw_object_get_index_in_parent (AtkObject *atk_obj)
 {
   JAW_DEBUG_C("%p", atk_obj);
-  if (jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj) != -1)
-  {
-    return jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj);
-  }
+  gint root_index = jaw_toplevel_get_child_index(JAW_TOPLEVEL(atk_get_root()), atk_obj);
+  if (root_index != -1)
+    return root_index;
 
   JAW_GET_OBJECT(atk_obj, 0);
 
