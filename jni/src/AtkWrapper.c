@@ -231,20 +231,24 @@ typedef struct _CallbackPara {
 } CallbackPara;
 
 static CallbackPara*
-alloc_callback_para (JNIEnv *jniEnv, jobject ac)
+alloc_callback_para (JNIEnv *jniEnv, jobject jAccContext)
 {
-  JAW_DEBUG_C("%p, %p", jniEnv, ac);
-  if (ac == NULL)
+  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
+
+  JAW_DEBUG_C("%p, %p", jniEnv, global_ac);
+  if (global_ac == NULL)
     return NULL;
-  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, ac);
+
+  JawImpl* jaw_impl = jaw_impl_get_instance(jniEnv, global_ac);
   if (jaw_impl == NULL)
   {
     JAW_DEBUG_I("jaw_impl == NULL");
     return NULL;
   }
+
   g_object_ref(G_OBJECT(jaw_impl));
   CallbackPara *para = g_new(CallbackPara, 1);
-  para->global_ac = ac;
+  para->global_ac = global_ac;
   para->jaw_impl = jaw_impl;
   para->child_impl = NULL;
   para->args = NULL;
@@ -338,9 +342,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_focusNotify(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(focus_notify_handler, para);
 }
 
@@ -395,9 +398,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowOpen(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   para->is_toplevel = jIsToplevel;
   jni_main_idle_add(window_open_handler, para);
 }
@@ -451,9 +453,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowClose(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   para->is_toplevel = jIsToplevel;
   jni_main_idle_add(window_close_handler, para);
 }
@@ -482,9 +483,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMinimize(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(window_minimize_handler, para);
 }
 
@@ -511,9 +511,8 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowMaximize(JN
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac );
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext );
   jni_main_idle_add(window_maximize_handler, para);
 }
 
@@ -540,9 +539,8 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowRestore(JNI
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(window_restore_handler, para);
 }
 
@@ -569,9 +567,8 @@ JNIEXPORT void JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowActivate(JN
       JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(window_activate_handler, para);
 }
 
@@ -599,9 +596,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowDeactivate(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(window_deactivate_handler, para);
 }
 
@@ -629,9 +625,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_windowStateChange(JNIEnv *jniEnv
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(window_state_change_handler, para);
 }
 
@@ -930,10 +925,9 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
     return;
   }
 
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
   jobjectArray global_args = (jobjectArray)(*jniEnv)->NewGlobalRef(jniEnv, args);
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   para->ac = jAccContext;
   para->signal_id = (gint)id;
   para->args = global_args;
@@ -1017,9 +1011,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_objectStateChange(JNIEnv *jniEnv
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   AtkStateType state_type = jaw_util_get_atk_state_type_from_java_state( jniEnv, state );
   para->atk_state = state_type;
   para->state_value = value;
@@ -1054,9 +1047,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentAdded(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(component_added_handler, para);
 }
 
@@ -1090,9 +1082,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_componentRemoved(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(component_removed_handler, para);
 }
 
@@ -1133,9 +1124,8 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_boundsChanged(JNIEnv *jniEnv,
     JAW_DEBUG_I("jAccContext == NULL");
     return;
   }
-  jobject global_ac = (*jniEnv)->NewGlobalRef(jniEnv, jAccContext);
   callback_para_process_frees();
-  CallbackPara *para = alloc_callback_para(jniEnv, global_ac);
+  CallbackPara *para = alloc_callback_para(jniEnv, jAccContext);
   jni_main_idle_add(bounds_changed_handler, para);
 }
 
