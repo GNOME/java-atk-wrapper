@@ -79,6 +79,13 @@ the at-spi bus, the java object might not exist any more.  In Atk* methods, one
 thus have to acquire a global reference and check that it is valid before working
 on the java object and after that release the global reference.
 
+To get a JawImpl from an AccessibleContext, one can use jaw_impl_get_instance,
+but only from the application threads, since to properly create the C Atk*
+and java Atk* we need to call methods from the AccessibleContext. In the jaw
+thread, one can either use the quick jaw_impl_find_instance if we know that it
+is supposed to exist, or we can use jaw_impl_get_instance_from_jaw which
+triggers a call to jaw_impl_get_instance inside the Swing thread.
+
 
 Methods Not Yet Fully Implemented
 ---------------------------------
