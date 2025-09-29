@@ -87,6 +87,17 @@ is supposed to exist, or we can use jaw_impl_get_instance_from_jaw which
 triggers a call to jaw_impl_get_instance inside the Swing thread.
 
 
+References
+----------
+
+We keep global references:
+
+- A reference to java Atk* stored in the corresponding C Atk*
+- A weak reference to AccessibleContext stored in the corresponding C Atk* acc_context
+- For signal parameters stored in CallbackPara
+- A reference to the C Atk* for being stored in objectTable
+
+
 Methods Not Yet Fully Implemented
 ---------------------------------
 
