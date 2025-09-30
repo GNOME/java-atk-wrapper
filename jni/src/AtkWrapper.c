@@ -277,6 +277,9 @@ free_callback_para (CallbackPara *para)
 
   g_object_unref(G_OBJECT(para->jaw_impl));
 
+  if (para->child_impl)
+    g_object_unref(G_OBJECT(para->child_impl));
+
   if (para->args) {
     (*jniEnv)->DeleteGlobalRef(jniEnv, para->args);
   }
@@ -961,6 +964,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
         free_callback_para(para);
         return;
       }
+      g_object_ref(G_OBJECT(child_impl));
       para->child_impl = child_impl;
       break;
     }
@@ -974,6 +978,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
         free_callback_para(para);
         return;
       }
+      g_object_ref(G_OBJECT(child_impl));
       para->child_impl = child_impl;
       break;
     }
