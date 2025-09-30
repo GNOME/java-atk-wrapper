@@ -235,6 +235,7 @@ jaw_object_get_parent(AtkObject *atk_obj)
     AtkObject *parent_obj = (AtkObject*) jaw_object_table_lookup (jniEnv, jparent);
 
     if (parent_obj != NULL )
+      /* get_parent returns with transfer: none */
       return parent_obj;
 
     g_warning("didn't find jaw for parent, returning null");

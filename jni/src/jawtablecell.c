@@ -112,6 +112,9 @@ jaw_table_cell_get_table(AtkTableCell *cell)
     return NULL;
 
   JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw(jniEnv, jac);
+  /* FIXME: atk_table_cell_get_table is documented to return with transfer full,
+   * but it doesn't seem so??
+   * see https://gitlab.gnome.org/GNOME/at-spi2-core/-/issues/207 */
 
   return ATK_OBJECT(jaw_impl);
 }

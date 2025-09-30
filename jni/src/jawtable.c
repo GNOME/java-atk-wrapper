@@ -295,6 +295,7 @@ jaw_table_get_caption (AtkTable	*table)
     return NULL;
 
   JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
+  /* get_caption returns with transfer: none */
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -360,6 +361,7 @@ jaw_table_get_column_header (AtkTable *table, gint column)
     return NULL;
 
   JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
+  /* get_column_header returns with transfer: none */
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -379,6 +381,7 @@ jaw_table_get_row_header (AtkTable *table, gint row)
     return NULL;
 
   JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
+  /* get_row_header returns with transfer: none */
 
   return ATK_OBJECT(jaw_impl);
 }
@@ -398,6 +401,9 @@ jaw_table_get_summary (AtkTable *table)
     return NULL;
 
   JawImpl* jaw_impl = jaw_impl_get_instance_from_jaw( env, jac );
+  /* FIXME: get_summary is documented to return with transfer full,
+   * but used with transfer null in atk_object_real_get_property,
+   * see https://gitlab.gnome.org/GNOME/at-spi2-core/-/issues/207 */
 
   return ATK_OBJECT(jaw_impl);
 }

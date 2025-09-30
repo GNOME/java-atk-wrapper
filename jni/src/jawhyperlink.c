@@ -137,6 +137,7 @@ jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
 	}
 
 	AtkObject *obj = (AtkObject*) jaw_impl_get_instance_from_jaw( jniEnv, ac );
+	/* get_object returns with transfer: none */
 
 	return obj;
 }
