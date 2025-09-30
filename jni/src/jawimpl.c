@@ -86,15 +86,6 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
   return (JawImpl*)value;
 }
 
-static void
-object_table_remove(JNIEnv *jniEnv, JawImpl *jaw_impl)
-{
-  JAW_DEBUG_C("%p, %p", jniEnv, jaw_impl);
-  g_mutex_lock(&objectTableMutex);
-  g_hash_table_remove(objectTable, GINT_TO_POINTER(jaw_impl->hash_key));
-  g_mutex_unlock(&objectTableMutex);
-}
-
 /* Called on completion of Java GC, take the opportunity to look for stale jaw_impl */
 void
 object_table_gc(JNIEnv *jniEnv)
@@ -122,6 +113,13 @@ object_table_gc(JNIEnv *jniEnv)
       {
 	count[jaw_impl->tflag]++;
       }
+    }
+
+    /* Drop them from the hash immediately, so we don't try to GC them again */
+    for (cur = list; cur != NULL; cur = g_slist_next(cur))
+    {
+      JawImpl *jaw_impl = cur->data;
+      g_hash_table_remove(objectTable, GINT_TO_POINTER(jaw_impl->hash_key));
     }
   }
   g_mutex_unlock(&objectTableMutex);
@@ -534,7 +532,6 @@ jaw_impl_finalize(GObject *gobject)
   JawImpl *jaw_impl = (JawImpl*)jaw_obj;
 
   JNIEnv *jniEnv = jaw_util_get_jni_env();
-  object_table_remove( jniEnv, jaw_impl );
 
   (*jniEnv)->DeleteWeakGlobalRef(jniEnv, jaw_obj->acc_context);
   jaw_obj->acc_context = NULL;
