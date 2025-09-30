@@ -708,8 +708,6 @@ signal_emit_handler (gpointer p)
                             "children_changed::add",
                             child_index,
                             para->child_impl);
-      if (G_OBJECT(atk_obj) != NULL)
-        g_object_ref(G_OBJECT(atk_obj));
       break;
     }
     case Sig_Object_Children_Changed_Remove:
@@ -727,8 +725,6 @@ signal_emit_handler (gpointer p)
                             "children_changed::remove",
                             child_index,
                             child_impl);
-      if (G_OBJECT(atk_obj) != NULL)
-        g_object_unref(G_OBJECT(atk_obj));
       break;
     }
     case Sig_Object_Active_Descendant_Changed:
