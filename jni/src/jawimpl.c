@@ -63,7 +63,8 @@ object_table_insert (JNIEnv *jniEnv, jobject ac, JawImpl* jaw_impl)
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
   jaw_impl->hash_key = (gint)(*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
   g_mutex_lock(&objectTableMutex);
-  g_hash_table_insert(objectTable, GINT_TO_POINTER(jaw_impl->hash_key), jaw_impl);
+  gboolean res = g_hash_table_insert(objectTable, GINT_TO_POINTER(jaw_impl->hash_key), jaw_impl);
+  g_assert (res == TRUE);
   g_mutex_unlock(&objectTableMutex);
 }
 
