@@ -86,6 +86,22 @@ object_table_lookup (JNIEnv *jniEnv, jobject ac)
   return (JawImpl*)value;
 }
 
+static gboolean
+jni_object_table_gc(gpointer data)
+{
+  GSList *list = data, *cur, *next;
+
+  for (cur = list; cur != NULL; cur = next)
+  {
+    JawImpl *jaw_impl = cur->data;
+    g_object_unref(G_OBJECT(jaw_impl));
+    next = g_slist_next(cur);
+    g_slist_free_1(cur);
+  }
+
+  return G_SOURCE_REMOVE;
+}
+
 /* Called on completion of Java GC, take the opportunity to look for stale jaw_impl */
 void
 object_table_gc(JNIEnv *jniEnv)
@@ -93,7 +109,7 @@ object_table_gc(JNIEnv *jniEnv)
   JAW_DEBUG_C("%p", jniEnv);
   GHashTableIter iter;
   gpointer key, value;
-  GSList *list = NULL, *cur, *next;
+  GSList *list = NULL, *cur;
 
   unsigned count[INTERFACE_MASK+1] = { 0, };
 
@@ -131,13 +147,8 @@ object_table_gc(JNIEnv *jniEnv)
     }
   }
 
-  for (cur = list; cur != NULL; cur = next)
-  {
-    JawImpl *jaw_impl = cur->data;
-    g_object_unref(G_OBJECT(jaw_impl));
-    next = g_slist_next(cur);
-    g_slist_free_1(cur);
-  }
+  if (list)
+    jni_main_idle_add(jni_object_table_gc, list);
 }
 
 GHashTable*

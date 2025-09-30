@@ -114,6 +114,8 @@ void jaw_util_get_rect_info(JNIEnv *jniEnv,
                             gint *height);
 gboolean jaw_util_dispatch_key_event (AtkKeyEventStruct *event);
 
+guint jni_main_idle_add(GSourceFunc function, gpointer data);
+
 void jaw_util_detach(void);
 
 #define JAW_GET_OBJ_IFACE(o, iface, Data, field, env, name, def_ret) \

@@ -137,7 +137,7 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_initNativeLibrary(void)
   return TRUE;
 }
 
-static guint
+guint
 jni_main_idle_add(GSourceFunc    function, gpointer       data)
 {
   JAW_DEBUG_C("%p, %p", function, data);
