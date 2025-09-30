@@ -717,17 +717,11 @@ signal_emit_handler (gpointer p)
     {
       gint child_index = get_int_value(jniEnv,
                                        (*jniEnv)->GetObjectArrayElement(jniEnv, args, 0));
-      jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
-      JawImpl *child_impl = jaw_impl_find_instance(jniEnv, child_ac);
-      if (!child_impl)
-      {
-        break;
-      }
 
       g_signal_emit_by_name(atk_obj,
                             "children_changed::remove",
                             child_index,
-                            child_impl);
+                            para->child_impl);
       break;
     }
     case Sig_Object_Active_Descendant_Changed:
@@ -936,7 +930,6 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
     case Sig_Text_Property_Changed_Insert:
     case Sig_Text_Property_Changed_Delete:
     case Sig_Text_Property_Changed_Replace:
-    case Sig_Object_Children_Changed_Remove:
     case Sig_Object_Selection_Changed:
     case Sig_Object_Visible_Data_Changed:
     case Sig_Object_Property_Change_Accessible_Actions:
@@ -955,6 +948,20 @@ JNICALL Java_org_GNOME_Accessibility_AtkWrapper_emitSignal(JNIEnv *jniEnv,
     default:
       break;
     case Sig_Object_Children_Changed_Add:
+    {
+      jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
+      JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
+      if (child_impl == NULL)
+      {
+        JAW_DEBUG_I("child_impl == NULL");
+        free_callback_para(para);
+        return;
+      }
+      g_object_ref(G_OBJECT(child_impl));
+      para->child_impl = child_impl;
+      break;
+    }
+    case Sig_Object_Children_Changed_Remove:
     {
       jobject child_ac = (*jniEnv)->GetObjectArrayElement(jniEnv, args, 1);
       JawImpl *child_impl = jaw_impl_get_instance(jniEnv, child_ac);
