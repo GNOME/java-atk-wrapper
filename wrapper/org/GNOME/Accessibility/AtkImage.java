@@ -27,13 +27,13 @@ import java.lang.ref.WeakReference;
 
 public class AtkImage {
 
-    WeakReference<AccessibleContext> _ac;
-    WeakReference<AccessibleIcon[]> _acc_icons;
+    WeakReference<AccessibleContext> accessibleContextWeakRef;
+    WeakReference<AccessibleIcon[]> accessibleIcons;
 
     public AtkImage(AccessibleContext ac) {
         super();
-        this._ac = new WeakReference<AccessibleContext>(ac);
-        this._acc_icons = new WeakReference<AccessibleIcon[]>(ac.getAccessibleIcon());
+        this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
+        this.accessibleIcons = new WeakReference<AccessibleIcon[]>(ac.getAccessibleIcon());
     }
 
     public static AtkImage createAtkImage(AccessibleContext ac) {
@@ -42,52 +42,53 @@ public class AtkImage {
         }, null);
     }
 
-    public Point get_image_position(int coord_type) {
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+    public Point get_image_position(int coordType) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            AccessibleComponent acc_component = ac.getAccessibleComponent();
-            if (acc_component == null)
+            AccessibleComponent accessibleComponent = accessibleContext.getAccessibleComponent();
+            if (accessibleComponent == null)
                 return null;
-            return AtkComponent.getComponentOrigin(ac, acc_component, coord_type);
+            return AtkComponent.getComponentOrigin(
+                    accessibleContext, accessibleComponent, coordType);
         }, null);
     }
 
     public String get_image_description() {
-        AccessibleIcon[] acc_icons = _acc_icons.get();
-        if (acc_icons == null)
+        AccessibleIcon[] accessibleIcons = this.accessibleIcons.get();
+        if (accessibleIcons == null)
             return "";
 
         return AtkUtil.invokeInSwing(() -> {
-            String desc = "";
-            if (acc_icons != null && acc_icons.length > 0) {
-                desc = acc_icons[0].getAccessibleIconDescription();
-                if (desc == null)
-                    desc = "";
+            String description = "";
+            if (accessibleIcons != null && accessibleIcons.length > 0) {
+                description = accessibleIcons[0].getAccessibleIconDescription();
+                if (description == null)
+                    description = "";
             }
-            return desc;
+            return description;
         }, "");
     }
 
     public Dimension get_image_size() {
         Dimension d = new Dimension(0, 0);
 
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return d;
 
-        AccessibleIcon[] acc_icons = _acc_icons.get();
+        AccessibleIcon[] accessibleIcons = this.accessibleIcons.get();
 
         return AtkUtil.invokeInSwing(() -> {
-            if (acc_icons != null && acc_icons.length > 0) {
-                d.height = acc_icons[0].getAccessibleIconHeight();
-                d.width = acc_icons[0].getAccessibleIconWidth();
+            if (accessibleIcons != null && accessibleIcons.length > 0) {
+                d.height = accessibleIcons[0].getAccessibleIconHeight();
+                d.width = accessibleIcons[0].getAccessibleIconWidth();
             } else {
-                AccessibleComponent acc_component = ac.getAccessibleComponent();
-                if (acc_component != null) {
-                    Rectangle rect = acc_component.getBounds();
+                AccessibleComponent accessibleComponent = accessibleContext.getAccessibleComponent();
+                if (accessibleComponent != null) {
+                    Rectangle rect = accessibleComponent.getBounds();
                     if (rect != null) {
                         d.height = rect.height;
                         d.width = rect.width;

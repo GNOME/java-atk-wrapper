@@ -28,11 +28,12 @@ import java.lang.ref.WeakReference;
 
 public class AtkEditableText extends AtkText {
 
-    WeakReference<AccessibleEditableText> _acc_edt_text;
+    WeakReference<AccessibleEditableText> accessibleEditableTextWeakRef;
 
     public AtkEditableText(AccessibleContext ac) {
         super(ac);
-        _acc_edt_text = new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
+        accessibleEditableTextWeakRef =
+                new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
     }
 
     public static AtkEditableText createAtkEditableText(AccessibleContext ac) {
@@ -41,81 +42,81 @@ public class AtkEditableText extends AtkText {
         }, null);
     }
 
-    public void set_text_contents(String s) {
-        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
-        if (acc_edt_text == null)
+    public void set_text_contents(String textContent) {
+        AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
+        if (accessibleEditableText == null)
             return;
 
         AtkUtil.invokeInSwing(() -> {
-            acc_edt_text.setTextContents(s);
+            accessibleEditableText.setTextContents(textContent);
         });
     }
 
-    public void insert_text(String s, int position) {
-        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
-        if (acc_edt_text == null)
+    public void insert_text(String textToInsert, int codePointIndex) {
+        AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
+        if (accessibleEditableText == null)
             return;
 
-        if (position < 0)
-            position = 0;
-        final int rightPosition = position;
+        if (codePointIndex < 0)
+            codePointIndex = 0;
+        final int rightPosition = codePointIndex;
         AtkUtil.invokeInSwing(() -> {
-            acc_edt_text.insertTextAtIndex(rightPosition, s);
+            accessibleEditableText.insertTextAtIndex(rightPosition, textToInsert);
         });
     }
 
-    public void copy_text(int start, int end) {
-        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
-        if (acc_edt_text == null)
+    public void copy_text(int startCodePointIndex, int endCodePointIndex) {
+        AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
+        if (accessibleEditableText == null)
             return;
 
-        int n = acc_edt_text.getCharCount();
-        if (start < 0) {
-            start = 0;
+        int n = accessibleEditableText.getCharCount();
+        if (startCodePointIndex < 0) {
+            startCodePointIndex = 0;
         }
-        if (end > n || end == -1) {
-            end = n;
-        } else if (end < -1) {
-            end = 0;
+        if (endCodePointIndex > n || endCodePointIndex == -1) {
+            endCodePointIndex = n;
+        } else if (endCodePointIndex < -1) {
+            endCodePointIndex = 0;
         }
-        final int rightStart = start;
-        final int rightEnd = end;
+        final int rightStart = startCodePointIndex;
+        final int rightEnd = endCodePointIndex;
         AtkUtil.invokeInSwing(() -> {
-            String s = acc_edt_text.getTextRange(rightStart, rightEnd);
-            if (s != null) {
-                StringSelection stringSel = new StringSelection(s);
+            String textContent = accessibleEditableText.getTextRange(rightStart, rightEnd);
+            if (textContent != null) {
+                StringSelection stringSel = new StringSelection(textContent);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSel, stringSel);
             }
         });
     }
 
-    public void cut_text(int start, int end) {
-        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
-        if (acc_edt_text == null)
+    public void cut_text(int startCodePointIndex, int endCodePointIndex) {
+        AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
+        if (accessibleEditableText == null)
             return;
 
         AtkUtil.invokeInSwing(() -> {
-            acc_edt_text.cut(start, end);
+            accessibleEditableText.cut(startCodePointIndex, endCodePointIndex);
         });
     }
 
-    public void delete_text(int start, int end) {
-        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
-        if (acc_edt_text == null)
+    public void delete_text(int startCodePointIndex, int endCodePointIndex) {
+        AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
+        if (accessibleEditableText == null)
             return;
 
         AtkUtil.invokeInSwing(() -> {
-            acc_edt_text.delete(start, end);
+            accessibleEditableText.delete(startCodePointIndex, endCodePointIndex);
         });
     }
 
-    public void paste_text(int position) {
-        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
-        if (acc_edt_text == null)
+    public void paste_text(int codePointOffset) {
+        AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
+        if (accessibleEditableText == null)
             return;
 
         AtkUtil.invokeInSwing(() -> {
-            acc_edt_text.paste(position);
+            accessibleEditableText.paste(codePointOffset);
         });
     }
 
@@ -130,12 +131,12 @@ public class AtkEditableText extends AtkText {
      *      attributes were set.
      */
     public boolean setRunAttributes(AttributeSet as, int start, int end) {
-        AccessibleEditableText acc_edt_text = _acc_edt_text.get();
-        if (acc_edt_text == null)
+        AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
+        if (accessibleEditableText == null)
             return false;
 
         return AtkUtil.invokeInSwing(() -> {
-            acc_edt_text.setAttributes(start, end, as);
+            accessibleEditableText.setAttributes(start, end, as);
             return true;
         }, false);
     }

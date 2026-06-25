@@ -29,13 +29,14 @@ import java.lang.ref.WeakReference;
 
 public class AtkComponent {
 
-    WeakReference<AccessibleContext> _ac;
-    WeakReference<AccessibleComponent> _acc_component;
+    WeakReference<AccessibleContext> accessibleContextWeakRef;
+    WeakReference<AccessibleComponent> accessibleComponentWeakRef;
 
     public AtkComponent(AccessibleContext ac) {
         super();
-        this._ac = new WeakReference<AccessibleContext>(ac);
-        this._acc_component = new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
+        this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
+        this.accessibleComponentWeakRef =
+                new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
     }
 
     public static AtkComponent createAtkComponent(AccessibleContext ac) {
@@ -64,51 +65,53 @@ public class AtkComponent {
     }
 
     // Return the position of the object relative to the coordinate type
-    public static Point getComponentOrigin(AccessibleContext ac, AccessibleComponent acc_component, int coord_type) {
-        if (coord_type == AtkCoordType.SCREEN)
-            return acc_component.getLocationOnScreen();
+    public static Point getComponentOrigin(
+            AccessibleContext ac, AccessibleComponent accessibleComponent, int coordType) {
+        if (coordType == AtkCoordType.SCREEN)
+            return accessibleComponent.getLocationOnScreen();
 
-        if (coord_type == AtkCoordType.WINDOW) {
+        if (coordType == AtkCoordType.WINDOW) {
             Point win_p = getWindowLocation(ac);
             if (win_p == null)
                 return null;
-            Point p = acc_component.getLocationOnScreen();
+            Point p = accessibleComponent.getLocationOnScreen();
             if (p == null)
                 return null;
             p.translate(-win_p.x, -win_p.y);
             return p;
         }
 
-        if (coord_type == AtkCoordType.PARENT)
-            return acc_component.getLocation();
+        if (coordType == AtkCoordType.PARENT)
+            return accessibleComponent.getLocation();
 
         return null;
     }
 
     // Return the position of the parent relative to the coordinate type
-    public static Point getParentOrigin(AccessibleContext ac, AccessibleComponent acc_component, int coord_type) {
-        if (coord_type == AtkCoordType.PARENT)
+    public static Point getParentOrigin(
+            AccessibleContext ac, AccessibleComponent accessibleComponent, int coordType) {
+        if (coordType == AtkCoordType.PARENT)
             return new Point(0, 0);
 
         Accessible parent = ac.getAccessibleParent();
         if (parent == null)
             return null;
-        AccessibleContext parent_ac = parent.getAccessibleContext();
-        if (parent_ac == null)
+        AccessibleContext parentAccessibleContext = parent.getAccessibleContext();
+        if (parentAccessibleContext == null)
             return null;
-        AccessibleComponent parent_component = parent_ac.getAccessibleComponent();
-        if (parent_component == null)
+        AccessibleComponent parentComponent = parentAccessibleContext.getAccessibleComponent();
+        if (parentComponent == null)
             return null;
 
-        if (coord_type == AtkCoordType.SCREEN) {
-            return parent_component.getLocationOnScreen();
+        if (coordType == AtkCoordType.SCREEN) {
+            return parentComponent.getLocationOnScreen();
         }
 
-        if (coord_type == AtkCoordType.WINDOW) {
+        if (coordType == AtkCoordType.WINDOW) {
             Point window_origin = getWindowLocation(ac);
             if (window_origin == null)
                 return null;
-            Point parent_origin = parent_component.getLocationOnScreen();
+            Point parent_origin = parentComponent.getLocationOnScreen();
             if (parent_origin == null)
                 return null;
             parent_origin.translate(-window_origin.x, -window_origin.y);
@@ -117,41 +120,42 @@ public class AtkComponent {
         return null;
     }
 
-    public boolean contains(int x, int y, int coord_type) {
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+    public boolean contains(int x, int y, int coordType) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return false;
-        AccessibleComponent acc_component = _acc_component.get();
-        if (acc_component == null)
+        AccessibleComponent accessibleComponent = accessibleComponentWeakRef.get();
+        if (accessibleComponent == null)
             return false;
 
         return AtkUtil.invokeInSwing(() -> {
-            if (acc_component.isVisible()) {
-                Point p = getComponentOrigin(ac, acc_component, coord_type);
+            if (accessibleComponent.isVisible()) {
+                Point p = getComponentOrigin(accessibleContext, accessibleComponent, coordType);
                 if (p == null)
                     return false;
 
-                return acc_component.contains(new Point(x - p.x, y - p.y));
+                return accessibleComponent.contains(new Point(x - p.x, y - p.y));
             }
             return false;
         }, false);
     }
 
-    public AccessibleContext get_accessible_at_point(int x, int y, int coord_type) {
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+    public AccessibleContext get_accessible_at_point(int x, int y, int coordType) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return null;
-        AccessibleComponent acc_component = _acc_component.get();
-        if (acc_component == null)
+        AccessibleComponent accessibleComponent = accessibleComponentWeakRef.get();
+        if (accessibleComponent == null)
             return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            if (acc_component.isVisible()) {
-                Point p = getComponentOrigin(ac, acc_component, coord_type);
+            if (accessibleComponent.isVisible()) {
+                Point p = getComponentOrigin(accessibleContext, accessibleComponent, coordType);
                 if (p == null)
                     return null;
 
-                Accessible accessible = acc_component.getAccessibleAt(new Point(x - p.x, y - p.y));
+                Accessible accessible =
+                        accessibleComponent.getAccessibleAt(new Point(x - p.x, y - p.y));
                 if (accessible == null)
                     return null;
                 return accessible.getAccessibleContext();
@@ -161,53 +165,53 @@ public class AtkComponent {
     }
 
     public boolean grab_focus() {
-        AccessibleComponent acc_component = _acc_component.get();
-        if (acc_component == null)
+        AccessibleComponent accessibleComponent = accessibleComponentWeakRef.get();
+        if (accessibleComponent == null)
             return false;
 
         return AtkUtil.invokeInSwing(() -> {
-            if (!acc_component.isFocusTraversable())
+            if (!accessibleComponent.isFocusTraversable())
                 return false;
-            acc_component.requestFocus();
+            accessibleComponent.requestFocus();
             return true;
         }, false);
     }
 
-    public boolean set_extents(int x, int y, int width, int height, int coord_type) {
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+    public boolean set_extents(int x, int y, int width, int height, int coordType) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return false;
-        AccessibleComponent acc_component = _acc_component.get();
-        if (acc_component == null)
+        AccessibleComponent accessibleComponent = accessibleComponentWeakRef.get();
+        if (accessibleComponent == null)
             return false;
 
         return AtkUtil.invokeInSwing(() -> {
-            if (acc_component.isVisible()) {
-                Point p = getParentOrigin(ac, acc_component, coord_type);
+            if (accessibleComponent.isVisible()) {
+                Point p = getParentOrigin(accessibleContext, accessibleComponent, coordType);
                 if (p == null)
                     return false;
 
-                acc_component.setBounds(new Rectangle(x - p.x, y - p.y, width, height));
+                accessibleComponent.setBounds(new Rectangle(x - p.x, y - p.y, width, height));
                 return true;
             }
             return false;
         }, false);
     }
 
-    public Rectangle get_extents(int coord_type) {
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+    public Rectangle get_extents(int coordType) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return null;
-        AccessibleComponent acc_component = _acc_component.get();
-        if (acc_component == null)
+        AccessibleComponent accessibleComponent = accessibleComponentWeakRef.get();
+        if (accessibleComponent == null)
             return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            if (acc_component.isVisible()) {
-                Rectangle rect = acc_component.getBounds();
+            if (accessibleComponent.isVisible()) {
+                Rectangle rect = accessibleComponent.getBounds();
                 if (rect == null)
                     return null;
-                Point p = getParentOrigin(ac, acc_component, coord_type);
+                Point p = getParentOrigin(accessibleContext, accessibleComponent, coordType);
                 if (p == null)
                     return null;
 
@@ -220,12 +224,12 @@ public class AtkComponent {
     }
 
     public int get_layer() {
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return AtkLayer.INVALID;
 
         return AtkUtil.invokeInSwing(() -> {
-            AccessibleRole role = ac.getAccessibleRole();
+            AccessibleRole role = accessibleContext.getAccessibleRole();
             if (role == AccessibleRole.MENU ||
                     role == AccessibleRole.MENU_ITEM ||
                     role == AccessibleRole.POPUP_MENU) {

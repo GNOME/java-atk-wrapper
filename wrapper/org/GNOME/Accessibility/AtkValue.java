@@ -26,11 +26,11 @@ import java.lang.ref.WeakReference;
 
 public class AtkValue {
 
-    WeakReference<AccessibleValue> _acc_value;
+    WeakReference<AccessibleValue> accessibleValueWeakRef;
 
     public AtkValue(AccessibleContext ac) {
         super();
-        this._acc_value = new WeakReference<AccessibleValue>(ac.getAccessibleValue());
+        this.accessibleValueWeakRef = new WeakReference<AccessibleValue>(ac.getAccessibleValue());
     }
 
     public static AtkValue createAtkValue(AccessibleContext ac) {
@@ -40,42 +40,42 @@ public class AtkValue {
     }
 
     public Number get_current_value() {
-        AccessibleValue acc_value = _acc_value.get();
-        if (acc_value == null)
+        AccessibleValue accessibleValue = accessibleValueWeakRef.get();
+        if (accessibleValue == null)
             return 0.0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_value.getCurrentAccessibleValue();
+            return accessibleValue.getCurrentAccessibleValue();
         }, 0.0);
     }
 
     public double getMaximumValue() {
-        AccessibleValue acc_value = _acc_value.get();
-        if (acc_value == null)
+        AccessibleValue accessibleValue = accessibleValueWeakRef.get();
+        if (accessibleValue == null)
             return 0.0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_value.getMaximumAccessibleValue().doubleValue();
+            return accessibleValue.getMaximumAccessibleValue().doubleValue();
         }, 0.0);
     }
 
     public double getMinimumValue() {
-        AccessibleValue acc_value = _acc_value.get();
-        if (acc_value == null)
+        AccessibleValue accessibleValue = accessibleValueWeakRef.get();
+        if (accessibleValue == null)
             return 0.0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_value.getMinimumAccessibleValue().doubleValue();
+            return accessibleValue.getMinimumAccessibleValue().doubleValue();
         }, 0.0);
     }
 
     public void setValue(Number n) {
-        AccessibleValue acc_value = _acc_value.get();
-        if (acc_value == null)
+        AccessibleValue accessibleValue = accessibleValueWeakRef.get();
+        if (accessibleValue == null)
             return;
 
         AtkUtil.invokeInSwing(() -> {
-            acc_value.setCurrentAccessibleValue(n);
+            accessibleValue.setCurrentAccessibleValue(n);
         });
     }
 

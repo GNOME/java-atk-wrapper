@@ -89,9 +89,9 @@ public class AtkObject {
             }
             Accessible parent = ac.getAccessibleParent();
             if (parent != null) {
-                AccessibleContext pc = parent.getAccessibleContext();
-                if (pc != null) {
-                    table = pc.getAccessibleTable();
+                AccessibleContext parentAccessibleContext = parent.getAccessibleContext();
+                if (parentAccessibleContext != null) {
+                    table = parentAccessibleContext.getAccessibleTable();
                     // Unfortunately without the AccessibleExtendedTable interface
                     // we can't determine the column/row of this accessible in the
                     // table
@@ -108,18 +108,19 @@ public class AtkObject {
 
     public static AccessibleContext getAccessibleParent(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
-            Accessible father = ac.getAccessibleParent();
-            if (father != null)
-                return father.getAccessibleContext();
+            Accessible accessibleParent = ac.getAccessibleParent();
+            if (accessibleParent != null)
+                return accessibleParent.getAccessibleContext();
             else
                 return null;
         }, null);
     }
 
-    public static void setAccessibleParent(AccessibleContext ac, AccessibleContext pa) {
+    public static void setAccessibleParent(
+            AccessibleContext ac, AccessibleContext parentAccessibleContext) {
         AtkUtil.invokeInSwing(() -> {
-            if (pa instanceof Accessible father) {
-                ac.setAccessibleParent(father);
+            if (parentAccessibleContext instanceof Accessible parentAccessible) {
+                ac.setAccessibleParent(parentAccessible);
             }
         });
     }
@@ -144,7 +145,7 @@ public class AtkObject {
      * on Windows, see AccessBridge.getAccelerator(AccessibleContext) in OpenJDK.
      */
     private static String getAcceleratorText(AccessibleContext ac) {
-        String accText = "";
+        String acceleratorText = "";
         Accessible parent = ac.getAccessibleParent();
         if (parent != null) {
             int indexInParent = ac.getAccessibleIndexInParent();
@@ -159,15 +160,15 @@ public class AtkObject {
                     int keyCode = keyStroke.getKeyCode();
                     String keyCodeText = keyCode != 0 ? KeyEvent.getKeyText(keyCode) : String.valueOf(keyStroke.getKeyChar());
 
-                    accText += modifiersText;
+                    acceleratorText += modifiersText;
                     if (!modifiersText.isEmpty() && !keyCodeText.isEmpty()) {
-                        accText += "+";
+                        acceleratorText += "+";
                     }
-                    accText += keyCodeText;
+                    acceleratorText += keyCodeText;
                 }
             }
         }
-        return accText;
+        return acceleratorText;
     }
 
     public static void setAccessibleName(AccessibleContext ac, String name) {

@@ -29,36 +29,36 @@ public class AtkTableCell {
 
     public int row, rowSpan, column, columnSpan;
     WeakReference<AccessibleContext> _ac;
-    WeakReference<AccessibleTable> _acc_pt;
+    WeakReference<AccessibleTable> accessibleTableWeakRef;
 
     public AtkTableCell(AccessibleContext ac) {
         this._ac = new WeakReference<AccessibleContext>(ac);
-        Accessible parent = ac.getAccessibleParent();
-        _acc_pt = null;
+        Accessible accessibleParent = ac.getAccessibleParent();
+        accessibleTableWeakRef = null;
         row = -1;
         rowSpan = -1;
         column = -1;
         columnSpan = -1;
-        if (parent == null) {
+        if (accessibleParent == null) {
             return;
         }
-        AccessibleContext pc = parent.getAccessibleContext();
-        if (pc == null) {
+        AccessibleContext parentAccessibleContext = accessibleParent.getAccessibleContext();
+        if (parentAccessibleContext == null) {
             return;
         }
-        AccessibleTable pt = pc.getAccessibleTable();
-        if (pt == null) {
+        AccessibleTable accessibleTable = parentAccessibleContext.getAccessibleTable();
+        if (accessibleTable == null) {
             return;
         }
-        _acc_pt = new WeakReference<AccessibleTable>(pt);
+        accessibleTableWeakRef = new WeakReference<AccessibleTable>(accessibleTable);
         int index = ac.getAccessibleIndexInParent();
-        if (!(pt instanceof AccessibleExtendedTable aet)) {
+        if (!(accessibleTable instanceof AccessibleExtendedTable accessibleExtendedTable)) {
             return;
         }
-        row = aet.getAccessibleRow(index);
-        column = aet.getAccessibleColumn(index);
-        rowSpan = pt.getAccessibleRowExtentAt(row, column);
-        columnSpan = pt.getAccessibleColumnExtentAt(row, column);
+        row = accessibleExtendedTable.getAccessibleRow(index);
+        column = accessibleExtendedTable.getAccessibleColumn(index);
+        rowSpan = accessibleTable.getAccessibleRowExtentAt(row, column);
+        columnSpan = accessibleTable.getAccessibleColumnExtentAt(row, column);
     }
 
     public static AtkTableCell createAtkTableCell(AccessibleContext ac) {
@@ -74,16 +74,16 @@ public class AtkTableCell {
      * AccessibleTable instance.
      */
     public AccessibleTable getTable() {
-        if (_acc_pt == null)
+        if (accessibleTableWeakRef == null)
             return null;
-        return _acc_pt.get();
+        return accessibleTableWeakRef.get();
     }
 
     public AccessibleContext[] getAccessibleColumnHeader() {
-        if (_acc_pt == null)
+        if (accessibleTableWeakRef == null)
             return null;
         return AtkUtil.invokeInSwing(() -> {
-            AccessibleTable iteration = _acc_pt.get().getAccessibleColumnHeader();
+            AccessibleTable iteration = accessibleTableWeakRef.get().getAccessibleColumnHeader();
             if (iteration != null) {
                 int length = iteration.getAccessibleColumnCount();
                 AccessibleContext[] result = new AccessibleContext[length];
@@ -97,10 +97,10 @@ public class AtkTableCell {
     }
 
     public AccessibleContext[] getAccessibleRowHeader() {
-        if (_acc_pt == null)
+        if (accessibleTableWeakRef == null)
             return null;
         return AtkUtil.invokeInSwing(() -> {
-            AccessibleTable iteration = _acc_pt.get().getAccessibleRowHeader();
+            AccessibleTable iteration = accessibleTableWeakRef.get().getAccessibleRowHeader();
             if (iteration != null) {
                 int length = iteration.getAccessibleRowCount();
                 AccessibleContext[] result = new AccessibleContext[length];

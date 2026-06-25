@@ -27,22 +27,24 @@ import java.lang.ref.WeakReference;
 
 public class AtkAction {
 
-    WeakReference<AccessibleContext> _ac;
-    WeakReference<AccessibleAction> _acc_action;
+    WeakReference<AccessibleContext> accessibleContextWeakRef;
+    WeakReference<AccessibleAction> accessibleActionWeakRef;
     WeakReference<AccessibleExtendedComponent> _acc_ext_component;
     String[] descriptions;
     int nactions;
 
     public AtkAction(AccessibleContext ac) {
         super();
-        this._ac = new WeakReference<AccessibleContext>(ac);
-        AccessibleAction acc_action = ac.getAccessibleAction();
-        this._acc_action = new WeakReference<AccessibleAction>(acc_action);
-        this.nactions = acc_action.getAccessibleActionCount();
+        this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
+        AccessibleAction accessibleAction = ac.getAccessibleAction();
+        this.accessibleActionWeakRef = new WeakReference<AccessibleAction>(accessibleAction);
+        this.nactions = accessibleAction.getAccessibleActionCount();
         this.descriptions = new String[nactions];
-        AccessibleComponent acc_component = ac.getAccessibleComponent();
-        if (acc_component instanceof AccessibleExtendedComponent) {
-            this._acc_ext_component = new WeakReference<AccessibleExtendedComponent>((AccessibleExtendedComponent) acc_component);
+        AccessibleComponent accessibleComponent = ac.getAccessibleComponent();
+        if (accessibleComponent instanceof AccessibleExtendedComponent) {
+            this._acc_ext_component =
+                    new WeakReference<AccessibleExtendedComponent>(
+                            (AccessibleExtendedComponent) accessibleComponent);
         }
     }
 
@@ -52,13 +54,13 @@ public class AtkAction {
         }, null);
     }
 
-    public boolean do_action(int i) {
-        AccessibleAction acc_action = _acc_action.get();
-        if (acc_action == null)
+    public boolean do_action(int index) {
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
             return false;
 
         AtkUtil.invokeInSwing(() -> {
-            acc_action.doAccessibleAction(i);
+            accessibleAction.doAccessibleAction(index);
         });
         return true;
     }
@@ -67,34 +69,34 @@ public class AtkAction {
         return this.nactions;
     }
 
-    public String get_description(int i) {
-        AccessibleAction acc_action = _acc_action.get();
-        if (acc_action == null)
+    public String get_description(int index) {
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
             return null;
 
-        if (i >= nactions) {
+        if (index >= nactions) {
             return null;
         }
-        if (descriptions[i] != null) {
-            return descriptions[i];
+        if (descriptions[index] != null) {
+            return descriptions[index];
         }
-        descriptions[i] = AtkUtil.invokeInSwing(() -> {
-            return acc_action.getAccessibleActionDescription(i);
+        descriptions[index] = AtkUtil.invokeInSwing(() -> {
+            return accessibleAction.getAccessibleActionDescription(index);
         }, "");
-        return descriptions[i];
+        return descriptions[index];
     }
 
-    public boolean setDescription(int i, String description) {
-        if (i >= nactions) {
+    public boolean setDescription(int index, String description) {
+        if (index >= nactions) {
             return false;
         }
-        descriptions[i] = description;
+        descriptions[index] = description;
         return true;
     }
 
     /**
-     * @param i an integer holding the index of the name of
-     *          the accessible.
+     * @param index an integer holding the index of the name of
+     *              the accessible.
      * @return the localized name of the object or otherwise,
      * null if the "action" object does not have a
      * name (really, java's AccessibleAction class
@@ -103,29 +105,29 @@ public class AtkAction {
      * name so a getter from the AcccessibleContext
      * class is one way to work around that)
      */
-    public String getLocalizedName(int i) {
-        AccessibleContext ac = _ac.get();
-        if (ac == null)
+    public String getLocalizedName(int index) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
             return null;
-        AccessibleAction acc_action = _acc_action.get();
-        if (acc_action == null)
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
             return null;
 
-        if (i >= nactions) {
+        if (index >= nactions) {
             return null;
         }
-        if (descriptions[i] != null) {
-            return descriptions[i];
+        if (descriptions[index] != null) {
+            return descriptions[index];
         }
         return AtkUtil.invokeInSwing(() -> {
-            descriptions[i] = acc_action.getAccessibleActionDescription(i);
-            if (descriptions[i] != null)
-                return descriptions[i];
-            String name = ac.getAccessibleName();
+            descriptions[index] = accessibleAction.getAccessibleActionDescription(index);
+            if (descriptions[index] != null)
+                return descriptions[index];
+            String name = accessibleContext.getAccessibleName();
             if (name != null)
                 return name;
-            descriptions[i] = "";
-            return descriptions[i];
+            descriptions[index] = "";
+            return descriptions[index];
         }, null);
     }
 

@@ -27,16 +27,17 @@ import java.lang.ref.WeakReference;
 
 public class AtkHypertext extends AtkText {
 
-    WeakReference<AccessibleHypertext> _acc_hyper_text;
+    WeakReference<AccessibleHypertext> accessibleHypertextRef;
 
     public AtkHypertext(AccessibleContext ac) {
         super(ac);
 
-        AccessibleText ac_text = ac.getAccessibleText();
-        if (ac_text instanceof AccessibleHypertext) {
-            _acc_hyper_text = new WeakReference<AccessibleHypertext>((AccessibleHypertext) ac_text);
+        AccessibleText accessibleText = ac.getAccessibleText();
+        if (accessibleText instanceof AccessibleHypertext) {
+            accessibleHypertextRef =
+                    new WeakReference<AccessibleHypertext>((AccessibleHypertext) accessibleText);
         } else {
-            _acc_hyper_text = null;
+            accessibleHypertextRef = null;
         }
     }
 
@@ -46,15 +47,15 @@ public class AtkHypertext extends AtkText {
         }, null);
     }
 
-    public AtkHyperlink get_link(int link_index) {
-        if (_acc_hyper_text == null)
+    public AtkHyperlink get_link(int linkIndex) {
+        if (accessibleHypertextRef == null)
             return null;
-        AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
-        if (acc_hyper_text == null)
+        AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
+        if (accessibleHypertext == null)
             return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            AccessibleHyperlink link = acc_hyper_text.getLink(link_index);
+            AccessibleHyperlink link = accessibleHypertext.getLink(linkIndex);
             if (link != null)
                 return new AtkHyperlink(link);
             return null;
@@ -62,26 +63,26 @@ public class AtkHypertext extends AtkText {
     }
 
     public int get_n_links() {
-        if (_acc_hyper_text == null)
+        if (accessibleHypertextRef == null)
             return 0;
-        AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
-        if (acc_hyper_text == null)
+        AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
+        if (accessibleHypertext == null)
             return 0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_hyper_text.getLinkCount();
+            return accessibleHypertext.getLinkCount();
         }, 0);
     }
 
-    public int get_link_index(int char_index) {
-        if (_acc_hyper_text == null)
+    public int get_link_index(int charIndex) {
+        if (accessibleHypertextRef == null)
             return 0;
-        AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
-        if (acc_hyper_text == null)
+        AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
+        if (accessibleHypertext == null)
             return 0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_hyper_text.getLinkIndex(char_index);
+            return accessibleHypertext.getLinkIndex(charIndex);
         }, 0);
     }
 }

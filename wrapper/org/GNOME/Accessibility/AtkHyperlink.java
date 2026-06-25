@@ -26,39 +26,39 @@ import java.lang.ref.WeakReference;
 
 public class AtkHyperlink {
 
-    WeakReference<AccessibleHyperlink> _acc_hyperlink;
+    WeakReference<AccessibleHyperlink> accessibleHyperlinkWeakRef;
 
-    public AtkHyperlink(AccessibleHyperlink hl) {
+    public AtkHyperlink(AccessibleHyperlink accessibleHyperlink) {
         super();
-        _acc_hyperlink = new WeakReference<AccessibleHyperlink>(hl);
+        accessibleHyperlinkWeakRef = new WeakReference<AccessibleHyperlink>(accessibleHyperlink);
     }
 
-    public static AtkHyperlink createAtkHyperlink(AccessibleHyperlink hl) {
+    public static AtkHyperlink createAtkHyperlink(AccessibleHyperlink accessibleHyperlink) {
         return AtkUtil.invokeInSwing(() -> {
-            return new AtkHyperlink(hl);
+            return new AtkHyperlink(accessibleHyperlink);
         }, null);
     }
 
-    public String get_uri(int i) {
-        AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
-        if (acc_hyperlink == null)
+    public String get_uri(int index) {
+        AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
+        if (accessibleHyperlink == null)
             return "";
 
         return AtkUtil.invokeInSwing(() -> {
-            Object o = acc_hyperlink.getAccessibleActionObject(i);
+            Object o = accessibleHyperlink.getAccessibleActionObject(index);
             if (o != null)
                 return o.toString();
             return "";
         }, "");
     }
 
-    public AccessibleContext get_object(int i) {
-        AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
-        if (acc_hyperlink == null)
+    public AccessibleContext get_object(int index) {
+        AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
+        if (accessibleHyperlink == null)
             return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            Object anchor = acc_hyperlink.getAccessibleActionAnchor(i);
+            Object anchor = accessibleHyperlink.getAccessibleActionAnchor(index);
             if (anchor instanceof Accessible)
                 return ((Accessible) anchor).getAccessibleContext();
             return null;
@@ -66,42 +66,42 @@ public class AtkHyperlink {
     }
 
     public int get_end_index() {
-        AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
-        if (acc_hyperlink == null)
+        AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
+        if (accessibleHyperlink == null)
             return 0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_hyperlink.getEndIndex();
+            return accessibleHyperlink.getEndIndex();
         }, 0);
     }
 
     public int get_start_index() {
-        AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
-        if (acc_hyperlink == null)
+        AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
+        if (accessibleHyperlink == null)
             return 0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_hyperlink.getStartIndex();
+            return accessibleHyperlink.getStartIndex();
         }, 0);
     }
 
     public boolean is_valid() {
-        AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
-        if (acc_hyperlink == null)
+        AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
+        if (accessibleHyperlink == null)
             return false;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_hyperlink.isValid();
+            return accessibleHyperlink.isValid();
         }, false);
     }
 
     public int get_n_anchors() {
-        AccessibleHyperlink acc_hyperlink = _acc_hyperlink.get();
-        if (acc_hyperlink == null)
+        AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
+        if (accessibleHyperlink == null)
             return 0;
 
         return AtkUtil.invokeInSwing(() -> {
-            return acc_hyperlink.getAccessibleActionCount();
+            return accessibleHyperlink.getAccessibleActionCount();
         }, 0);
     }
 }
