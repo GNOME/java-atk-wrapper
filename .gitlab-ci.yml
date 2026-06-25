@@ -6,6 +6,7 @@ include:
       tarball-artifact-path: "${TARBALL_ARTIFACT_PATH}"
 
 stages:
+  - "style-check"
   - "build"
   - "release"
 
@@ -21,6 +22,15 @@ workflow:
 
 variables:
   TARBALL_ARTIFACT_PATH: "${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz"
+
+style-check-diff:
+  stage: style-check
+  image: debian:stable
+  script:
+    - apt-get update
+    - apt-get install -o APT::Install-Recommends=false -y bash ca-certificates clang-format git
+    - update-ca-certificates
+    - bash ./ci/run-style-check.sh
 
 .default-build:
   script:
