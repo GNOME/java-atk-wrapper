@@ -23,6 +23,24 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkHypertext:
+ *
+ * The ATK interface which provides standard mechanism for manipulating
+ * hyperlinks.
+ *
+ * An interface used for objects which implement linking between
+ * multiple resource or content locations, or multiple 'markers'
+ * within a single document.  A Hypertext instance is associated with
+ * one or more Hyperlinks, which are associated with particular
+ * offsets within the Hypertext's included content.  While this
+ * interface is derived from Text, there is no requirement that
+ * Hypertext instances have textual content; they may implement Image
+ * as well, and Hyperlinks need not have non-zero text offsets.
+ */
+
 static AtkHyperlink *jaw_hypertext_get_link (AtkHypertext *hypertext,
                                              gint link_index);
 static gint jaw_hypertext_get_n_links (AtkHypertext *hypertext);
@@ -37,6 +55,13 @@ typedef struct _HypertextData
 
 #define JAW_GET_HYPERTEXT(hypertext, def_ret) \
   JAW_GET_OBJ_IFACE (hypertext, INTERFACE_HYPERTEXT, HypertextData, atk_hypertext, jniEnv, atk_hypertext, def_ret)
+
+/**
+ * AtkHypertextIface:
+ * @get_link:
+ * @get_n_links:
+ * @get_link_index:
+ **/
 
 void
 jaw_hypertext_interface_init (AtkHypertextIface *iface, gpointer data)
@@ -55,6 +80,22 @@ link_destroy_notify (gpointer p)
     g_object_unref (G_OBJECT (jaw_hyperlink));
 }
 
+/**
+ * jaw_hypertext_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes hypertext interface data for an AccessibleContext.
+ *
+ * Creates a Java AtkHypertext wrapper and stores it in a HypertextData
+ * structure.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (transfer full): HypertextData pointer, or %NULL on error
+ */
+
 gpointer
 jaw_hypertext_data_init (jobject ac)
 {
@@ -72,6 +113,15 @@ jaw_hypertext_data_init (jobject ac)
   return data;
 }
 
+/**
+ * jaw_hypertext_data_finalize:
+ * @p: HypertextData pointer to finalize
+ *
+ * Cleans up HypertextData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
+
 void
 jaw_hypertext_data_finalize (gpointer p)
 {
@@ -87,6 +137,20 @@ jaw_hypertext_data_finalize (gpointer p)
       data->atk_hypertext = NULL;
     }
 }
+
+/**
+ * jaw_hypertext_get_link:
+ * @hypertext: an #AtkHypertext
+ * @link_index: an integer specifying the desired link
+ *
+ * Gets the link in this hypertext document at index
+ * @link_index
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (transfer none): the link in this hypertext document at
+ * index @link_index
+ **/
 
 static AtkHyperlink *
 jaw_hypertext_get_link (AtkHypertext *hypertext, gint link_index)
@@ -110,6 +174,17 @@ jaw_hypertext_get_link (AtkHypertext *hypertext, gint link_index)
   return ATK_HYPERLINK (jaw_hyperlink);
 }
 
+/**
+ * jaw_hypertext_get_n_links:
+ * @hypertext: an #AtkHypertext
+ *
+ * Gets the number of links within this hypertext document.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the number of links within this hypertext document
+ **/
+
 static gint
 jaw_hypertext_get_n_links (AtkHypertext *hypertext)
 {
@@ -123,6 +198,20 @@ jaw_hypertext_get_n_links (AtkHypertext *hypertext)
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_hypertext);
   return ret;
 }
+
+/**
+ * jaw_hypertext_get_link_index:
+ * @hypertext: an #AtkHypertext
+ * @char_index: a character index
+ *
+ * Gets the index into the array of hyperlinks that is associated with
+ * the character specified by @char_index.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: an index into the array of hyperlinks in @hypertext,
+ * or -1 if there is no hyperlink associated with this character.
+ **/
 
 static gint
 jaw_hypertext_get_link_index (AtkHypertext *hypertext, gint char_index)

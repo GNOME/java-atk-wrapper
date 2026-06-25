@@ -82,6 +82,17 @@ jaw_toplevel_object_finalize (GObject *obj)
   G_OBJECT_CLASS (klass)->finalize (obj);
 }
 
+/**
+ * jaw_toplevel_get_name:
+ * @obj: an #AtkObject
+ *
+ * Gets the accessible name of the obj.
+ *
+ * Returns: a character string representing the accessible name of the object:
+ * the name of the first named child of the object, and if no such child exists,
+ * returns 'Java Application'.
+ **/
+
 static const gchar *
 jaw_toplevel_get_name (AtkObject *obj)
 {
@@ -102,12 +113,33 @@ jaw_toplevel_get_name (AtkObject *obj)
   return "Java Application";
 }
 
+/**
+ * jaw_toplevel_get_description:
+ * @accessible: an #AtkObject
+ *
+ * Gets the accessible description of the accessible.
+ *
+ * Returns: a character string representing the accessible description
+ * of the accessible.
+ *
+ **/
+
 static const gchar *
 jaw_toplevel_get_description (AtkObject *obj)
 {
   JAW_DEBUG_C ("%p", obj);
   return "Accessible Java application";
 }
+
+/**
+ * jaw_toplevel_get_n_children:
+ * @obj: an #AtkObject
+ *
+ * Gets the number of accessible children of the obj.
+ *
+ * Returns: an integer representing the number of accessible children
+ * of the obj.
+ **/
 
 static gint
 jaw_toplevel_get_n_children (AtkObject *obj)
@@ -119,6 +151,16 @@ jaw_toplevel_get_n_children (AtkObject *obj)
   return n;
 }
 
+/**
+ * jaw_toplevel_get_index_in_parent:
+ * @obj: an #AtkObject
+ *
+ * Gets the 0-based index of this obj in its parent; returns -1 if the
+ * obj does not have an accessible parent.
+ *
+ * Returns: an integer which is the index of the obj in its parent
+ **/
+
 static gint
 jaw_toplevel_get_index_in_parent (AtkObject *obj)
 {
@@ -129,12 +171,35 @@ jaw_toplevel_get_index_in_parent (AtkObject *obj)
   return i;
 }
 
+/**
+ * jaw_toplevel_get_role:
+ * @obj: an #AtkObject
+ *
+ * Gets the role of the accessible.
+ *
+ * Returns: an #AtkRole which is the role of the obj (`ATK_ROLE_APPLICATION` for
+ * toplevel object)
+ **/
+
 static AtkRole
 jaw_toplevel_get_role (AtkObject *obj)
 {
   JAW_DEBUG_C ("%p", obj);
   return ATK_ROLE_APPLICATION;
 }
+
+/**
+ * atk_object_ref_accessible_child:
+ * @obj: an #AtkObject
+ * @i: a gint representing the position of the child, starting from 0
+ *
+ * Gets a reference to the specified accessible child of the object.
+ * The accessible children are 0-based so the first accessible child is
+ * at index 0, the second at index 1 and so on.
+ *
+ * Returns: (transfer full): an #AtkObject representing the specified
+ * accessible child of the obj.
+ **/
 
 static AtkObject *
 jaw_toplevel_ref_child (AtkObject *obj, gint i)
@@ -148,6 +213,16 @@ jaw_toplevel_ref_child (AtkObject *obj, gint i)
 
   return child;
 }
+
+/**
+ * atk_object_get_parent:
+ * @obj: an #AtkObject
+ *
+ * Gets the accessible parent of the accessible.
+ *
+ * Returns: (transfer none): an #AtkObject representing the accessible
+ * parent of the obj
+ **/
 
 static AtkObject *
 jaw_toplevel_get_parent (AtkObject *obj)

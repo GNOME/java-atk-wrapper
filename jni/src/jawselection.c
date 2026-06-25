@@ -22,6 +22,26 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkSelection:
+ *
+ * The ATK interface implemented by container objects whose #AtkObject children
+ * can be selected.
+ *
+ * #AtkSelection should be implemented by UI components with children
+ * which are exposed by #atk_object_ref_child and
+ * #atk_object_get_n_children, if the use of the parent UI component
+ * ordinarily involves selection of one or more of the objects
+ * corresponding to those #AtkObject children - for example,
+ * selectable lists.
+ *
+ * Note that other types of "selection" (for instance text selection)
+ * are accomplished a other ATK interfaces - #AtkSelection is limited
+ * to the selection/deselection of children.
+ */
+
 static gboolean jaw_selection_add_selection (AtkSelection *selection,
                                              gint i);
 static gboolean jaw_selection_clear_selection (AtkSelection *selection);
@@ -42,6 +62,17 @@ typedef struct _SelectionData
 #define JAW_GET_SELECTION(selection, def_ret) \
   JAW_GET_OBJ_IFACE (selection, INTERFACE_SELECTION, SelectionData, atk_selection, jniEnv, atk_selection, def_ret)
 
+/**
+ * AtkSelectionIface:
+ * @add_selection:
+ * @clear_selection:
+ * @ref_selection:
+ * @get_selection_count:
+ * @is_child_selected:
+ * @remove_selection:
+ * @select_all_selection:
+ **/
+
 void
 jaw_selection_interface_init (AtkSelectionIface *iface, gpointer data)
 {
@@ -54,6 +85,21 @@ jaw_selection_interface_init (AtkSelectionIface *iface, gpointer data)
   iface->remove_selection = jaw_selection_remove_selection;
   iface->select_all_selection = jaw_selection_select_all_selection;
 }
+
+/**
+ * jaw_selection_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes the selection interface data for an accessible object.
+ * Creates and returns a SelectionData structure containing a global reference
+ * to the Java AtkSelection object.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (nullable): pointer to SelectionData or NULL on failure
+ **/
 
 gpointer
 jaw_selection_data_init (jobject ac)
@@ -70,6 +116,15 @@ jaw_selection_data_init (jobject ac)
   return data;
 }
 
+/**
+ * jaw_selection_data_finalize:
+ * @p: SelectionData pointer to finalize
+ *
+ * Cleans up SelectionData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
+
 void
 jaw_selection_data_finalize (gpointer p)
 {
@@ -83,6 +138,17 @@ jaw_selection_data_finalize (gpointer p)
       data->atk_selection = NULL;
     }
 }
+
+/**
+ * jaw_selection_add_selection:
+ * @selection: a #GObject instance that implements AtkSelectionIface
+ * @i: a #gint specifying the child index.
+ *
+ * Adds the specified accessible child of the object to the
+ * object's selection.
+ *
+ * Returns: TRUE if success, FALSE otherwise.
+ **/
 
 static gboolean
 jaw_selection_add_selection (AtkSelection *selection, gint i)
@@ -98,6 +164,18 @@ jaw_selection_add_selection (AtkSelection *selection, gint i)
   return jbool;
 }
 
+/**
+ * jaw_selection_clear_selection:
+ * @selection: a #GObject instance that implements AtkSelectionIface
+ *
+ * Clears the selection in the object so that no children in the object
+ * are selected.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: TRUE if success, FALSE otherwise.
+ **/
+
 static gboolean
 jaw_selection_clear_selection (AtkSelection *selection)
 {
@@ -111,6 +189,22 @@ jaw_selection_clear_selection (AtkSelection *selection)
 
   return jbool;
 }
+
+/**
+ * jaw_selection_ref_selection:
+ * @selection: a #GObject instance that implements AtkSelectionIface
+ * @i: a #gint specifying the index in the selection set.  (e.g. the
+ * ith selection as opposed to the ith child).
+ *
+ * Gets a reference to the accessible object representing the specified
+ * selected child of the object.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (nullable) (transfer full): an #AtkObject representing the
+ * selected accessible, or %NULL if @selection does not implement this
+ * interface.
+ **/
 
 static AtkObject *
 jaw_selection_ref_selection (AtkSelection *selection, gint i)
@@ -134,6 +228,18 @@ jaw_selection_ref_selection (AtkSelection *selection, gint i)
   return obj;
 }
 
+/**
+ * jaw_selection_get_selection_count:
+ * @selection: a #GObject instance that implements AtkSelectionIface
+ *
+ * Gets the number of accessible children currently selected.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: a gint representing the number of items selected, or 0
+ * if @selection does not implement this interface.
+ **/
+
 static gint
 jaw_selection_get_selection_count (AtkSelection *selection)
 {
@@ -147,6 +253,17 @@ jaw_selection_get_selection_count (AtkSelection *selection)
 
   return (gint) jcount;
 }
+
+/**
+ * jaw_selection_is_child_selected:
+ * @selection: a #GObject instance that implements AtkSelectionIface
+ * @i: a #gint specifying the child index.
+ *
+ * Determines if the current child of this object is selected
+ *
+ * Returns: a gboolean representing the specified child is selected, or 0
+ * if @selection does not implement this interface.
+ **/
 
 static gboolean
 jaw_selection_is_child_selected (AtkSelection *selection, gint i)
@@ -162,6 +279,19 @@ jaw_selection_is_child_selected (AtkSelection *selection, gint i)
   return jbool;
 }
 
+/**
+ * jaw_selection_remove_selection:
+ * @selection: a #GObject instance that implements AtkSelectionIface
+ * @i: a #gint specifying the index in the selection set.  (e.g. the
+ * ith selection as opposed to the ith child).
+ *
+ * Removes the specified child of the object from the object's selection.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: TRUE if success, FALSE otherwise.
+ **/
+
 static gboolean
 jaw_selection_remove_selection (AtkSelection *selection, gint i)
 {
@@ -175,6 +305,18 @@ jaw_selection_remove_selection (AtkSelection *selection, gint i)
 
   return jbool;
 }
+
+/**
+ * jaw_selection_select_all_selection:
+ * @selection: a #GObject instance that implements AtkSelectionIface
+ *
+ * Causes every child of the object to be selected if the object
+ * supports multiple selections.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: TRUE if success, FALSE otherwise.
+ **/
 
 static gboolean
 jaw_selection_select_all_selection (AtkSelection *selection)

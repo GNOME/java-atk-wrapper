@@ -25,6 +25,36 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkObject:
+ *
+ * The base object class for the Accessibility Toolkit API.
+ *
+ * This class is the primary class for accessibility support via the
+ * Accessibility ToolKit (ATK).  Objects which are instances of
+ * #AtkObject (or instances of AtkObject-derived types) are queried
+ * for properties which relate basic (and generic) properties of a UI
+ * component such as name and description.  Instances of #AtkObject
+ * may also be queried as to whether they implement other ATK
+ * interfaces (e.g. #AtkAction, #AtkComponent, etc.), as appropriate
+ * to the role which a given UI component plays in a user interface.
+ *
+ * All UI components in an application which provide useful
+ * information or services to the user must provide corresponding
+ * #AtkObject instances on request (in GTK+, for instance, usually on
+ * a call to #gtk_widget_get_accessible ()), either via ATK support
+ * built into the toolkit for the widget class or ancestor class, or
+ * in the case of custom widgets, if the inherited #AtkObject
+ * implementation is insufficient, via instances of a new #AtkObject
+ * subclass.
+ *
+ * See [class@AtkObjectFactory], [class@AtkRegistry].  (GTK+ users see also
+ * #GtkAccessible).
+ *
+ */
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -220,6 +250,18 @@ extern "C"
     G_OBJECT_CLASS (jaw_object_parent_class)->finalize (gobject);
   }
 
+/**
+ * jaw_object_get_parent:
+ * @accessible: an #AtkObject
+ *
+ * Gets the accessible parent of the accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (transfer none): an #AtkObject representing the accessible
+ * parent of the accessible
+ **/
+
   static AtkObject *
   jaw_object_get_parent (AtkObject *atk_obj)
   {
@@ -249,6 +291,18 @@ extern "C"
     return NULL;
   }
 
+/**
+ * jaw_object_set_parent:
+ * @accessible: an #AtkObject
+ *
+ * Sets the accessible parent of the accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (transfer none): an #AtkObject representing the accessible
+ * parent of the accessible
+ **/
+
   static void
   jaw_object_set_parent (AtkObject *atk_obj, AtkObject *parent)
   {
@@ -270,6 +324,17 @@ extern "C"
     (*jniEnv)->DeleteGlobalRef (jniEnv, ac);
     (*jniEnv)->DeleteGlobalRef (jniEnv, pa);
   }
+
+/**
+ * jaw_object_get_name:
+ * @role: The #AtkRole whose name is required
+ *
+ * Gets the description string describing the #AtkRole @role.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the string describing the AtkRole
+ */
 
   static const gchar *
   jaw_object_get_name (AtkObject *atk_obj)
@@ -325,6 +390,20 @@ extern "C"
     return atk_obj->name;
   }
 
+/**
+ * jaw_object_set_name:
+ * @accessible: an #AtkObject
+ * @name: a character string to be set as the accessible name
+ *
+ * Sets the accessible name of the accessible. You can't set the name
+ * to NULL. This is reserved for the initial value. In this aspect
+ * NULL is similar to ATK_ROLE_UNKNOWN. If you want to set the name to
+ * a empty value you can use "".
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ **/
+
   static void
   jaw_object_set_name (AtkObject *atk_obj, const gchar *name)
   {
@@ -343,6 +422,18 @@ extern "C"
 
     (*jniEnv)->DeleteGlobalRef (jniEnv, ac);
   }
+
+/**
+ * jaw_object_get_description:
+ * @accessible: an #AtkObject
+ *
+ * Gets the accessible description of the accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: a character string representing the accessible description
+ * of the accessible.
+ **/
 
   static const gchar *
   jaw_object_get_description (AtkObject *atk_obj)
@@ -375,6 +466,20 @@ extern "C"
     return atk_obj->description;
   }
 
+/**
+ * jaw_object_set_description:
+ * @accessible: an #AtkObject
+ * @description: a character string to be set as the accessible description
+ *
+ * Sets the accessible description of the accessible. You can't set
+ * the description to NULL. This is reserved for the initial value. In
+ * this aspect NULL is similar to ATK_ROLE_UNKNOWN. If you want to set
+ * the name to a empty value you can use "".
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ **/
+
   static void
   jaw_object_set_description (AtkObject *atk_obj, const gchar *description)
   {
@@ -394,6 +499,18 @@ extern "C"
     (*jniEnv)->DeleteGlobalRef (jniEnv, ac);
   }
 
+/**
+ * jaw_object_get_n_children:
+ * @accessible: an #AtkObject
+ *
+ * Gets the number of accessible children of the accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: an integer representing the number of accessible children
+ * of the accessible.
+ **/
+
   static gint
   jaw_object_get_n_children (AtkObject *atk_obj)
   {
@@ -408,6 +525,18 @@ extern "C"
 
     return (gint) count;
   }
+
+/**
+ * jaw_object_get_index_in_parent:
+ * @accessible: an #AtkObject
+ *
+ * Gets the 0-based index of this accessible in its parent; returns -1 if the
+ * accessible does not have an accessible parent.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: an integer which is the index of the accessible in its parent
+ **/
 
   static gint
   jaw_object_get_index_in_parent (AtkObject *atk_obj)
@@ -428,6 +557,17 @@ extern "C"
     return (gint) index;
   }
 
+/**
+ * jaw_object_get_role:
+ * @accessible: an #AtkObject
+ *
+ * Gets the role of the accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: an #AtkRole which is the role of the accessible
+ **/
+
   static AtkRole
   jaw_object_get_role (AtkObject *atk_obj)
   {
@@ -445,6 +585,17 @@ extern "C"
     JAW_DEBUG_C ("-> %d", role);
     return role;
   }
+
+/**
+ * jaw_object_set_role:
+ * @accessible: an #AtkObject
+ * @role: an #AtkRole to be set as the role
+ *
+ * Sets the role of the accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ **/
 
   static void
   jaw_object_set_role (AtkObject *atk_obj, AtkRole role)
@@ -469,6 +620,19 @@ extern "C"
     return FALSE;
   }
 #endif
+
+/**
+ * atk_object_ref_state_set:
+ * @accessible: an #AtkObject
+ *
+ * Gets a reference to the state set of the accessible; the caller must
+ * unreference it when it is no longer needed.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (transfer full): a reference to an #AtkStateSet which is the state
+ * set of the accessible
+ **/
 
   static AtkStateSet *
   jaw_object_ref_state_set (AtkObject *atk_obj)
@@ -511,6 +675,19 @@ extern "C"
     return state_set;
   }
 
+/**
+ * jaw_object_get_object_locale:
+ * @accessible: an #AtkObject
+ *
+ * Gets a UTF-8 string indicating the POSIX-style LC_MESSAGES locale
+ * of @accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: a UTF-8 string indicating the POSIX-style LC_MESSAGES
+ *          locale of @accessible.
+ **/
+
   static const gchar *
   jaw_object_get_object_locale (AtkObject *atk_obj)
   {
@@ -541,6 +718,18 @@ extern "C"
 
     return jaw_obj->locale;
   }
+
+/**
+ * jaw_object_ref_relation_set:
+ * @accessible: an #AtkObject
+ *
+ * Gets the #AtkRelationSet associated with the object.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (transfer full) : an #AtkRelationSet representing the relation set
+ * of the object.
+ **/
 
   static AtkRelationSet *
   jaw_object_ref_relation_set (AtkObject *atk_obj)
@@ -590,6 +779,19 @@ extern "C"
 
     return atk_obj->relation_set;
   }
+
+/**
+ * jaw_object_ref_child:
+ * @accessible: an #AtkObject
+ * @i: a gint representing the position of the child, starting from 0
+ *
+ * Gets a reference to the specified accessible child of the object.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: an #AtkObject representing the specified
+ * accessible child of the accessible.
+ **/
 
   static AtkObject *
   jaw_object_ref_child (AtkObject *atk_obj, gint i)

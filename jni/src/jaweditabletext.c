@@ -23,6 +23,25 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkEditableText:
+ *
+ * The ATK interface implemented by components containing user-editable text
+ * content.
+ *
+ * #AtkEditableText should be implemented by UI components which
+ * contain text which the user can edit, via the #AtkObject
+ * corresponding to that component (see #AtkObject).
+ *
+ * #AtkEditableText is a subclass of #AtkText, and as such, an object
+ * which implements #AtkEditableText is by definition an #AtkText
+ * implementor as well.
+ *
+ * See [iface@AtkText]
+ */
+
 static void jaw_editable_text_set_text_contents (AtkEditableText *text,
                                                  const gchar *string);
 static void jaw_editable_text_insert_text (AtkEditableText *text,
@@ -54,6 +73,16 @@ typedef struct _EditableTextData
 #define JAW_GET_EDITABLETEXT(text, def_ret) \
   JAW_GET_OBJ_IFACE (text, INTERFACE_EDITABLE_TEXT, EditableTextData, atk_editable_text, jniEnv, atk_editable_text, def_ret)
 
+/**
+ * AtkEditableTextIface:
+ * @set_run_attributes:
+ * @set_text_contents:
+ * @copy_text:
+ * @cut_text:
+ * @delete_text:
+ * @paste_text:
+ **/
+
 void
 jaw_editable_text_interface_init (AtkEditableTextIface *iface, gpointer data)
 {
@@ -66,6 +95,19 @@ jaw_editable_text_interface_init (AtkEditableTextIface *iface, gpointer data)
   iface->delete_text = jaw_editable_text_delete_text;
   iface->paste_text = jaw_editable_text_paste_text;
 }
+
+/**
+ * jaw_editable_text_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes editable text interface data for an AccessibleContext.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (transfer full): EditableTextData pointer, or %NULL on error
+ */
 
 gpointer
 jaw_editable_text_data_init (jobject ac)
@@ -90,6 +132,15 @@ jaw_editable_text_data_init (jobject ac)
   return data;
 }
 
+/**
+ * jaw_editable_text_data_finalize:
+ * @p: EditableTextData pointer to finalize
+ *
+ * Cleans up EditableTextData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
+
 void
 jaw_editable_text_data_finalize (gpointer p)
 {
@@ -103,6 +154,16 @@ jaw_editable_text_data_finalize (gpointer p)
       data->atk_editable_text = NULL;
     }
 }
+
+/**
+ * jaw_editable_text_set_text_contents:
+ * @text: an #AtkEditableText
+ * @string: string to set for text contents of @text
+ *
+ * Sets the entire contents of @text to the specified string.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ */
 
 void
 jaw_editable_text_set_text_contents (AtkEditableText *text,
@@ -122,6 +183,21 @@ jaw_editable_text_set_text_contents (AtkEditableText *text,
   (*jniEnv)->CallVoidMethod (jniEnv, atk_editable_text, jmid, jstr);
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_editable_text);
 }
+
+/**
+ * jaw_editable_text_insert_text:
+ * @text: an #AtkEditableText
+ * @string: the text to insert
+ * @length: the length of text to insert, in bytes. If len is negative, then the
+ * string is nul-terminated.
+ * @position: (inout): The caller initializes this to the position at which to
+ *   insert the text. After the call it points at the position after the newly
+ *   inserted text.
+ *
+ * Inserts text at a given position.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ */
 
 void
 jaw_editable_text_insert_text (AtkEditableText *text,
@@ -149,6 +225,18 @@ jaw_editable_text_insert_text (AtkEditableText *text,
   atk_text_set_caret_offset (ATK_TEXT (jaw_obj), *position);
 }
 
+/**
+ * jaw_editable_text_copy_text:
+ * @text: an #AtkEditableText
+ * @start_pos: start position
+ * @end_pos: end position
+ *
+ * Copies text from @start_pos up to, but not including @end_pos to the
+ * clipboard.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ */
+
 void
 jaw_editable_text_copy_text (AtkEditableText *text,
                              gint start_pos,
@@ -170,6 +258,18 @@ jaw_editable_text_copy_text (AtkEditableText *text,
                              (jint) end_pos);
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_editable_text);
 }
+
+/**
+ * jaw_editable_text_cut_text:
+ * @text: an #AtkEditableText
+ * @start_pos: start position
+ * @end_pos: end position
+ *
+ * Copies text from @start_pos up to, but not including @end_pos to the
+ * clipboard and then deletes the text from the widget.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ */
 
 void
 jaw_editable_text_cut_text (AtkEditableText *text,
@@ -193,6 +293,17 @@ jaw_editable_text_cut_text (AtkEditableText *text,
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_editable_text);
 }
 
+/**
+ * jaw_editable_text_delete_text:
+ * @text: an #AtkEditableText
+ * @start_pos: start position
+ * @end_pos: end position
+ *
+ * Deletes text from @start_pos up to, but not including @end_pos.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ */
+
 void
 jaw_editable_text_delete_text (AtkEditableText *text,
                                gint start_pos,
@@ -214,6 +325,16 @@ jaw_editable_text_delete_text (AtkEditableText *text,
                              (jint) end_pos);
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_editable_text);
 }
+
+/**
+ * jaw_editable_text_paste_text:
+ * @text: an #AtkEditableText
+ * @position: position to paste
+ *
+ * Pastes text from the clipboard to the specified @position.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ */
 
 void
 jaw_editable_text_paste_text (AtkEditableText *text,

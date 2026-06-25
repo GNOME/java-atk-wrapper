@@ -57,6 +57,21 @@ extern "C"
     iface->set_value = jaw_value_set_value;
   }
 
+/**
+ * jaw_value_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes the value interface data for an accessible object.
+ * Creates and returns a ValueData structure containing a global reference
+ * to the Java AtkValue object.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (nullable): pointer to ValueData or NULL on failure
+ **/
+
   gpointer
   jaw_value_data_init (jobject ac)
   {
@@ -75,6 +90,15 @@ extern "C"
 
     return data;
   }
+
+/**
+ * jaw_value_data_finalize:
+ * @p: ValueData pointer to finalize
+ *
+ * Cleans up ValueData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
 
   void
   jaw_value_data_finalize (gpointer p)
@@ -154,6 +178,19 @@ extern "C"
       }
   }
 
+/**
+ * jaw_value_get_current_value:
+ * @obj: a GObject instance that implements AtkValueIface
+ * @value: (out): a #GValue representing the current accessible value
+ *
+ * Gets the value of this object.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Deprecated in atk: Since 2.12. Use atk_value_get_value_and_text()
+ * instead.
+ **/
+
   static void
   jaw_value_get_current_value (AtkValue *obj, GValue *value)
   {
@@ -182,6 +219,24 @@ extern "C"
     get_g_value_from_java_number (env, jnumber, value);
   }
 
+/**
+ * atk_value_set_value:
+ * @obj: a GObject instance that implements AtkValueIface
+ * @value: a double which is the desired new accessible value.
+ *
+ * Sets the value of this object.
+ *
+ * This method is intended to provide a way to change the value of the
+ * object. In any case, it is possible that the value can't be
+ * modified (ie: a read-only component). If the value changes due this
+ * call, it is possible that the text could change, and will trigger
+ * an #AtkValue::value-changed signal emission.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Since: 2.12
+ **/
+
   static void
   jaw_value_set_value (AtkValue *obj, const gdouble value)
   {
@@ -198,6 +253,21 @@ extern "C"
     (*env)->DeleteGlobalRef (env, atk_value);
   }
 
+/**
+ * jaw_value_get_range:
+ * @obj: a GObject instance that implements AtkValueIface
+ *
+ * Gets the range of this object.
+ *
+ * Returns: (nullable) (transfer full): a newly allocated #AtkRange
+ * that represents the minimum, maximum and descriptor (if available)
+ * of @obj. NULL if that range is not defined.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * In Atk Since: 2.12
+ **/
+
   static AtkRange *
   jaw_value_get_range (AtkValue *obj)
   {
@@ -213,6 +283,23 @@ extern "C"
     (*env)->DeleteGlobalRef (env, atk_value);
     return ret;
   }
+
+/**
+ * jaw_value_get_increment:
+ * @obj: a GObject instance that implements AtkValueIface
+ *
+ * Gets the minimum increment by which the value of this object may be
+ * changed.  If zero, the minimum increment is undefined, which may
+ * mean that it is limited only by the floating point precision of the
+ * platform.
+ *
+ * Return value: the minimum increment by which the value of this
+ * object may be changed. zero if undefined.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * In atk Since: 2.12
+ **/
 
   static gdouble
   jaw_value_get_increment (AtkValue *obj)

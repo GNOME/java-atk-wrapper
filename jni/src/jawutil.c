@@ -97,6 +97,17 @@ extern "C"
     gpointer data;
   } JawKeyListenerInfo;
 
+/**
+ * Notifies a key event to the registered key listener.
+ *
+ * @param key
+ * @param value Pointer to the `JawKeyListenerInfo`
+ * @param data Pointer to the `AtkKeyEventStruct`
+ *
+ * @return TRUE if the listener processes the event successfully,
+ *         FALSE if any argument is null or the listener returns FALSE.
+ */
+
   static gboolean
   notify_hf (gpointer key, gpointer value, gpointer data)
   {
@@ -118,6 +129,14 @@ extern "C"
 
     return (*func) (key_event, func_data) ? TRUE : FALSE;
   }
+
+/**
+ * Inserts key value pair into a hash table.
+ *
+ * @param key Pointer to the hash table's key
+ * @param value Pointer to the associated value
+ * @param data Pointer to the `GHashTable`
+ */
 
   static void
   insert_hf (gpointer key, gpointer value, gpointer data)
@@ -143,6 +162,19 @@ extern "C"
 
     return (consumed > 0) ? TRUE : FALSE;
   }
+
+/**
+ * jaw_util_add_key_event_listener:
+ * @listener: the listener to notify
+ * @data: a #gpointer that points to a block of data that should be sent to the
+ *registered listeners, along with the event notification, when it occurs.
+ *
+ * Adds the specified function to the list of functions to be called
+ *        when a key event occurs.  The @data element will be passed to the
+ *        #AtkKeySnoopFunc (@listener) as the @func_data param, on notification.
+ *
+ * Returns: added event listener id, or 0 on failure.
+ **/
 
   static guint
   jaw_util_add_key_event_listener (AtkKeySnoopFunc listener, gpointer data)
@@ -170,6 +202,16 @@ extern "C"
     return key;
   }
 
+/**
+ * jaw_util_remove_key_event_listener:
+ * @remove_listener_id: the id of the event listener to remove
+ *
+ * @remove_listener_id is the value returned by #atk_add_key_event_listener
+ * when you registered that event listener.
+ *
+ * Removes the specified event listener.
+ **/
+
   static void
   jaw_util_remove_key_event_listener (guint remove_listener)
   {
@@ -181,6 +223,15 @@ extern "C"
 
     g_hash_table_remove (key_listener_list, GUINT_TO_POINTER (remove_listener));
   }
+
+/**
+ * jaw_util_get_root:
+ *
+ * Gets the root accessible container for the current application.
+ *
+ * Returns: (transfer none): the root accessible container for the current
+ * application
+ **/
 
   static AtkObject *
   jaw_util_get_root (void)
@@ -197,12 +248,31 @@ extern "C"
     return ATK_OBJECT (root);
   }
 
+/**
+ * jaw_util_get_toolkit_name:
+ *
+ * Gets name string for the GUI toolkit implementing ATK for this application.
+ *
+ * Returns: name string for the GUI toolkit implementing ATK for this
+ *application
+ **/
+
   static const gchar *
   jaw_util_get_toolkit_name (void)
   {
     JAW_DEBUG_C ("");
     return "J2SE-access-bridge";
   }
+
+/**
+ * jaw_util_get_toolkit_version:
+ *
+ * Gets version string for the GUI toolkit implementing ATK for this
+ *application.
+ *
+ * Returns: version string for the GUI toolkit implementing ATK for this
+ *application
+ **/
 
   static const gchar *
   jaw_util_get_toolkit_version (void)
@@ -345,6 +415,12 @@ extern "C"
         return FALSE;
       }
   }
+
+/**
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ */
 
   AtkRole
   jaw_util_get_atk_role_from_AccessibleContext (jobject jAccessibleContext)
@@ -570,6 +646,12 @@ extern "C"
 
     return ATK_ROLE_UNKNOWN; /* ROLE_EXTENDED */
   }
+
+/**
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ */
 
   static gboolean
   is_same_java_state (JNIEnv *jniEnv, jobject jobj, const gchar *strState)

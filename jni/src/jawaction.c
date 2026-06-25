@@ -22,6 +22,34 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkAction:
+ *
+ * The ATK interface provided by UI components
+ * which the user can activate/interact with.
+ *
+ * #AtkAction should be implemented by instances of #AtkObject classes
+ * with which the user can interact directly, i.e. buttons,
+ * checkboxes, scrollbars, e.g. components which are not "passive"
+ * providers of UI information.
+ *
+ * Exceptions: when the user interaction is already covered by another
+ * appropriate interface such as #AtkEditableText (insert/delete text,
+ * etc.) or #AtkValue (set value) then these actions should not be
+ * exposed by #AtkAction as well.
+ *
+ * Though most UI interactions on components should be invocable via
+ * keyboard as well as mouse, there will generally be a close mapping
+ * between "mouse actions" that are possible on a component and the
+ * AtkActions.  Where mouse and keyboard actions are redundant in
+ * effect, #AtkAction should expose only one action rather than
+ * exposing redundant actions if possible.  By convention we have been
+ * using "mouse centric" terminology for #AtkAction names.
+ *
+ */
+
 static gboolean jaw_action_do_action (AtkAction *action, gint i);
 static gint jaw_action_get_n_actions (AtkAction *action);
 static const gchar *jaw_action_get_description (AtkAction *action, gint i);
@@ -43,6 +71,17 @@ typedef struct _ActionData
 #define JAW_GET_ACTION(action, def_ret) \
   JAW_GET_OBJ_IFACE (action, INTERFACE_ACTION, ActionData, atk_action, jniEnv, atk_action, def_ret)
 
+/**
+ * AtkActionIface:
+ * @do_action:
+ * @get_n_actions:
+ * @get_description:
+ * @get_name:
+ * @get_keybinding:
+ * @set_description:
+ * @get_localized_name:
+ **/
+
 void
 jaw_action_interface_init (AtkActionIface *iface, gpointer data)
 {
@@ -56,6 +95,21 @@ jaw_action_interface_init (AtkActionIface *iface, gpointer data)
   iface->set_description = jaw_action_set_description;
   iface->get_localized_name = jaw_action_get_localized_name;
 }
+
+/**
+ * jaw_action_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes action interface data for an AccessibleContext.
+ *
+ * Creates a Java AtkAction wrapper and stores it in an ActionData structure.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (transfer full): ActionData pointer, or %NULL on error
+ */
 
 gpointer
 jaw_action_data_init (jobject ac)
@@ -75,6 +129,15 @@ jaw_action_data_init (jobject ac)
 
   return data;
 }
+
+/**
+ * jaw_action_data_finalize:
+ * @p: ActionData pointer to finalize
+ *
+ * Cleans up ActionData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
 
 void
 jaw_action_data_finalize (gpointer p)
@@ -118,6 +181,18 @@ jaw_action_data_finalize (gpointer p)
     }
 }
 
+/**
+ * jaw_action_do_action:
+ * @action: a #GObject instance that implements AtkActionIface
+ * @i: the action index corresponding to the action to be performed
+ *
+ * Perform the specified action on the object.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: %TRUE if success, %FALSE otherwise
+ **/
+
 static gboolean
 jaw_action_do_action (AtkAction *action, gint i)
 {
@@ -138,6 +213,20 @@ jaw_action_do_action (AtkAction *action, gint i)
   return jresult;
 }
 
+/**
+ * jaw_action_get_n_actions:
+ * @action: a #GObject instance that implements AtkActionIface
+ *
+ * Gets the number of accessible actions available on the object.
+ * If there are more than one, the first one is considered the
+ * "default" action of the object.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: the number of actions, or 0 if @action does not
+ * implement this interface.
+ **/
+
 static gint
 jaw_action_get_n_actions (AtkAction *action)
 {
@@ -154,6 +243,19 @@ jaw_action_get_n_actions (AtkAction *action)
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_action);
   return ret;
 }
+
+/**
+ * jaw_action_get_description:
+ * @action: a #GObject instance that implements AtkActionIface
+ * @i: the action index corresponding to the action to be performed
+ *
+ * Returns a description of the specified action of the object.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (nullable): a description string for action @i, or %NULL if
+ * @action does not implement this interface or if an error occurs.
+ **/
 
 static const gchar *
 jaw_action_get_description (AtkAction *action, gint i)
@@ -194,6 +296,17 @@ jaw_action_get_description (AtkAction *action, gint i)
   return data->action_description;
 }
 
+/**
+ * jaw_action_set_description:
+ * @action: a #GObject instance that implements AtkActionIface
+ * @i: the action index corresponding to the action to be performed
+ * @description: the description to be assigned to this action
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: %TRUE if the description was successfully set, %FALSE otherwise.
+ **/
+
 static gboolean
 jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
 {
@@ -214,6 +327,17 @@ jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_action);
   return jisset;
 }
+
+/**
+ * jaw_action_get_localized_name:
+ * @action: a #GObject instance that implements AtkActionIface
+ * @i: the action index corresponding to the action to be performed
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (nullable): a localized name string for action @i, or %NULL
+ *   if @action does not implement this interface or if an error occurs.
+ **/
 
 static const gchar *
 jaw_action_get_localized_name (AtkAction *action, gint i)

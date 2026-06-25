@@ -22,6 +22,34 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkText:
+ *
+ * The ATK interface implemented by components with text content.
+ *
+ * #AtkText should be implemented by #AtkObjects on behalf of widgets
+ * that have text content which is either attributed or otherwise
+ * non-trivial.  #AtkObjects whose text content is simple,
+ * unattributed, and very brief may expose that content via
+ * #atk_object_get_name instead; however if the text is editable,
+ * multi-line, typically longer than three or four words, attributed,
+ * selectable, or if the object already uses the 'name' ATK property
+ * for other information, the #AtkText interface should be used to
+ * expose the text content.  In the case of editable text content,
+ * #AtkEditableText (a subtype of the #AtkText interface) should be
+ * implemented instead.
+ *
+ *  #AtkText provides not only traversal facilities and change
+ * notification for text content, but also caret tracking and glyph
+ * bounding box calculations.  Note that the text strings are exposed
+ * as UTF-8, and are therefore potentially multi-byte, and
+ * caret-to-byte offset mapping makes no assumptions about the
+ * character length; also bounding box glyph-to-offset mapping may be
+ * complex for languages which use ligatures.
+ */
+
 static gchar *jaw_text_get_text (AtkText *text,
                                  gint start_offset,
                                  gint end_offset);
@@ -129,6 +157,21 @@ jaw_text_interface_init (AtkTextIface *iface, gpointer data)
   // iface->scroll_substring_to_point
 }
 
+/**
+ * jaw_text_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes the text interface data for an accessible object.
+ * Creates and returns a TextData structure containing a global reference
+ * to the Java AtkText object.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (nullable): pointer to TextData or NULL on failure
+ **/
+
 gpointer
 jaw_text_data_init (jobject ac)
 {
@@ -147,6 +190,15 @@ jaw_text_data_init (jobject ac)
 
   return data;
 }
+
+/**
+ * jaw_text_data_finalize:
+ * @p: TextData pointer to finalize
+ *
+ * Cleans up TextData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
 
 void
 jaw_text_data_finalize (gpointer p)
@@ -186,6 +238,22 @@ jaw_text_get_gtext_from_jstr (JNIEnv *jniEnv, jstring jstr)
   return text;
 }
 
+/**
+ * atk_text_get_text:
+ * @text: an #AtkText
+ * @start_offset: a starting character offset within @text
+ * @end_offset: an ending character offset within @text, or -1 for the end of
+ *the string.
+ *
+ * Gets the specified text.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: a newly allocated string containing the text from @start_offset up
+ *          to, but not including @end_offset. Use g_free() to free the returned
+ *          string.
+ **/
+
 static gchar *
 jaw_text_get_text (AtkText *text, gint start_offset, gint end_offset)
 {
@@ -208,6 +276,18 @@ jaw_text_get_text (AtkText *text, gint start_offset, gint end_offset)
 
   return jaw_text_get_gtext_from_jstr (jniEnv, jstr);
 }
+
+/**
+ * jaw_text_get_character_at_offset:
+ * @text: an #AtkText
+ * @offset: a character offset within @text
+ *
+ * Gets the specified text.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the character at @offset or 0 in the case of failure.
+ **/
 
 static gunichar
 jaw_text_get_character_at_offset (AtkText *text, gint offset)
@@ -259,6 +339,25 @@ jaw_text_get_gtext_from_string_seq (JNIEnv *jniEnv,
 
   return jaw_text_get_gtext_from_jstr (jniEnv, jStr);
 }
+
+/**
+ * jaw_text_get_text_at_offset:
+ * @text: an #AtkText
+ * @offset: position
+ * @boundary_type: An #AtkTextBoundary
+ * @start_offset: (out): the starting character offset of the returned string
+ * @end_offset: (out): the offset of the first character after the
+ *              returned substring
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Deprecated: This method is deprecated since ATK version
+ * 2.9.4. Please use atk_text_get_string_at_offset() instead.
+ *
+ * Returns: a newly allocated string containing the text at @offset bounded
+ *          by the specified @boundary_type. Use g_free() to free the returned
+ *          string.
+ **/
 
 static gchar *
 jaw_text_get_text_at_offset (AtkText *text,
@@ -353,6 +452,19 @@ jaw_text_get_text_after_offset (AtkText *text,
   return jaw_text_get_gtext_from_string_seq (jniEnv, jStrSeq, start_offset, end_offset);
 }
 
+/**
+ * jaw_text_get_caret_offset:
+ * @text: an #AtkText
+ *
+ * Gets the offset of the position of the caret (cursor).
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the character offset of the position of the caret or -1 if
+ *          the caret is not located inside the element or in the case of
+ *          any other failure.
+ **/
+
 static gint
 jaw_text_get_caret_offset (AtkText *text)
 {
@@ -370,6 +482,28 @@ jaw_text_get_caret_offset (AtkText *text)
 
   return (gint) joffset;
 }
+
+/**
+ * jaw_text_get_character_extents:
+ * @text: an #AtkText
+ * @offset: The offset of the text character for which bounding information is
+ *required.
+ * @x: (out) (optional): Pointer for the x coordinate of the bounding box
+ * @y: (out) (optional): Pointer for the y coordinate of the bounding box
+ * @width: (out) (optional): Pointer for the width of the bounding box
+ * @height: (out) (optional): Pointer for the height of the bounding box
+ * @coords: specify whether coordinates are relative to the screen or widget
+ *window
+ *
+ * If the extent can not be obtained (e.g. missing support), all of x, y, width,
+ * height are set to -1.
+ *
+ * Get the bounding box containing the glyph representing the character at
+ *     a particular text offset.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ **/
 
 static void
 jaw_text_get_character_extents (AtkText *text,
@@ -409,6 +543,17 @@ jaw_text_get_character_extents (AtkText *text,
   jaw_util_get_rect_info (jniEnv, jrect, x, y, width, height);
 }
 
+/**
+ * jaw_text_get_character_count:
+ * @text: an #AtkText
+ *
+ * Gets the character count.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the number of characters or -1 in case of failure.
+ **/
+
 static gint
 jaw_text_get_character_count (AtkText *text)
 {
@@ -426,6 +571,24 @@ jaw_text_get_character_count (AtkText *text)
 
   return (gint) jcount;
 }
+
+/**
+ * jaw_text_get_offset_at_point:
+ * @text: an #AtkText
+ * @x: screen x-position of character
+ * @y: screen y-position of character
+ * @coords: specify whether coordinates are relative to the screen or
+ * widget window
+ *
+ * Gets the offset of the character located at coordinates @x and @y. @x and @y
+ * are interpreted as being relative to the screen or this widget's window
+ * depending on @coords.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the offset to the character which is located at  the specified
+ *          @x and @y coordinates of -1 in case of failure.
+ **/
 
 static gint
 jaw_text_get_offset_at_point (AtkText *text, gint x, gint y, AtkCoordType coords)
@@ -448,6 +611,28 @@ jaw_text_get_offset_at_point (AtkText *text, gint x, gint y, AtkCoordType coords
 
   return (gint) joffset;
 }
+
+/**
+ * jaw_text_get_range_extents:
+ * @text: an #AtkText
+ * @start_offset: The offset of the first text character for which boundary
+ *        information is required.
+ * @end_offset: The offset of the text character after the last character
+ *        for which boundary information is required.
+ * @coord_type: Specify whether coordinates are relative to the screen or widget
+ *window.
+ * @rect: (out): A pointer to a AtkTextRectangle which is filled in by this
+ *function.
+ *
+ * Get the bounding box for text within the specified range.
+ *
+ * If the extents can not be obtained (e.g. or missing support), the rectangle
+ * fields are set to -1.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * In Atk Since: 1.3
+ **/
 
 static void
 jaw_text_get_range_extents (AtkText *text,
@@ -490,6 +675,17 @@ jaw_text_get_range_extents (AtkText *text,
   jaw_util_get_rect_info (jniEnv, jrect, &(rect->x), &(rect->y), &(rect->width), &(rect->height));
 }
 
+/**
+ * jaw_text_get_n_selections:
+ * @text: an #AtkText
+ *
+ * Gets the number of selected regions.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: The number of selected regions, or -1 in the case of failure.
+ **/
+
 static gint
 jaw_text_get_n_selections (AtkText *text)
 {
@@ -507,6 +703,27 @@ jaw_text_get_n_selections (AtkText *text)
 
   return (gint) jselections;
 }
+
+/**
+ * jaw_text_get_selection:
+ * @text: an #AtkText
+ * @selection_num: The selection number.  The selected regions are
+ * assigned numbers that correspond to how far the region is from the
+ * start of the text.  The selected region closest to the beginning
+ * of the text region is assigned the number 0, etc.  Note that adding,
+ * moving or deleting a selected region can change the numbering.
+ * @start_offset: (out): passes back the starting character offset of the
+ *selected region
+ * @end_offset: (out): passes back the ending character offset (offset
+ *immediately past) of the selected region
+ *
+ * Gets the text from the specified selection.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: a newly allocated string containing the selected text. Use g_free()
+ *          to free the returned string.
+ **/
 
 static gchar *
 jaw_text_get_selection (AtkText *text, gint selection_num, gint *start_offset, gint *end_offset)
@@ -549,6 +766,19 @@ jaw_text_get_selection (AtkText *text, gint selection_num, gint *start_offset, g
   return jaw_text_get_gtext_from_jstr (jniEnv, jStr);
 }
 
+/**
+ * jaw_text_add_selection:
+ * @text: an #AtkText
+ * @start_offset: the starting character offset of the selected region
+ * @end_offset: the offset of the first character after the selected region.
+ *
+ * Adds a selection bounded by the specified offsets.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: %TRUE if successful, %FALSE otherwise
+ **/
+
 static gboolean
 jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
 {
@@ -569,6 +799,22 @@ jaw_text_add_selection (AtkText *text, gint start_offset, gint end_offset)
 
   return jresult;
 }
+
+/**
+ * jaw_text_remove_selection:
+ * @text: an #AtkText
+ * @selection_num: The selection number.  The selected regions are
+ * assigned numbers that correspond to how far the region is from the
+ * start of the text.  The selected region closest to the beginning
+ * of the text region is assigned the number 0, etc.  Note that adding,
+ * moving or deleting a selected region can change the numbering.
+ *
+ * Removes the specified selection.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: %TRUE if successful, %FALSE otherwise
+ **/
 
 static gboolean
 jaw_text_remove_selection (AtkText *text, gint selection_num)
@@ -591,6 +837,25 @@ jaw_text_remove_selection (AtkText *text, gint selection_num)
   return jresult;
 }
 
+/**
+ * jaw_text_set_selection:
+ * @text: an #AtkText
+ * @selection_num: The selection number.  The selected regions are
+ * assigned numbers that correspond to how far the region is from the
+ * start of the text.  The selected region closest to the beginning
+ * of the text region is assigned the number 0, etc.  Note that adding,
+ * moving or deleting a selected region can change the numbering.
+ * @start_offset: the new starting character offset of the selection
+ * @end_offset: the new end position of (e.g. offset immediately past)
+ * the selection
+ *
+ * Changes the start and end offset of the specified selection.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: %TRUE if successful, %FALSE otherwise
+ **/
+
 static gboolean
 jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gint end_offset)
 {
@@ -609,6 +874,34 @@ jaw_text_set_selection (AtkText *text, gint selection_num, gint start_offset, gi
 
   return jresult;
 }
+
+/**
+ * jaw_text_set_caret_offset:
+ * @text: an #AtkText
+ * @offset: the character offset of the new caret position
+ *
+ * Sets the caret (cursor) position to the specified @offset.
+ *
+ * In the case of rich-text content, this method should either grab focus
+ * or move the sequential focus navigation starting point (if the application
+ * supports this concept) as if the user had clicked on the new caret position.
+ * Typically, this means that the target of this operation is the node
+ *containing the new caret position or one of its ancestors. In other words,
+ *after this method is called, if the user advances focus, it should move to the
+ *first focusable node following the new caret position.
+ *
+ * Calling this method should also scroll the application viewport in a way
+ * that matches the behavior of the application's typical caret motion or tab
+ * navigation as closely as possible. This also means that if the application's
+ * caret motion or focus navigation does not trigger a scroll operation, this
+ * method should not trigger one either. If the application does not have a
+ *caret motion or focus navigation operation, this method should try to scroll
+ *the new caret position into view while minimizing unnecessary scroll motion.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: %TRUE if successful, %FALSE otherwise.
+ **/
 
 static gboolean
 jaw_text_set_caret_offset (AtkText *text, gint offset)

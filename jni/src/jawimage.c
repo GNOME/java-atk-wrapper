@@ -22,6 +22,29 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkImage:
+ *
+ * The ATK Interface implemented by components
+ *  which expose image or pixmap content on-screen.
+ *
+ * #AtkImage should be implemented by #AtkObject subtypes on behalf of
+ * components which display image/pixmap information onscreen, and
+ * which provide information (other than just widget borders, etc.)
+ * via that image content.  For instance, icons, buttons with icons,
+ * toolbar elements, and image viewing panes typically should
+ * implement #AtkImage.
+ *
+ * #AtkImage primarily provides two types of information: coordinate
+ * information (useful for screen review mode of screenreaders, and
+ * for use by onscreen magnifiers), and descriptive information.  The
+ * descriptive information is provided for alternative, text-only
+ * presentation of the most significant information present in the
+ * image.
+ */
+
 static void jaw_image_get_image_position (AtkImage *image,
                                           gint *x,
                                           gint *y,
@@ -41,6 +64,15 @@ typedef struct _ImageData
 #define JAW_GET_IMAGE(image, def_ret) \
   JAW_GET_OBJ_IFACE (image, INTERFACE_IMAGE, ImageData, atk_image, jniEnv, atk_image, def_ret)
 
+/**
+ * AtkImageIface:
+ * @get_image_position:
+ * @get_image_description:
+ * @get_image_size
+ * @set_image_description:
+ * @get_image_locale:
+ **/
+
 void
 jaw_image_interface_init (AtkImageIface *iface, gpointer data)
 {
@@ -51,6 +83,21 @@ jaw_image_interface_init (AtkImageIface *iface, gpointer data)
   iface->set_image_description = NULL; /* TODO */
                                        // TODO: iface->get_image_locale from AccessibleContext.getLocale()
 }
+
+/**
+ * jaw_image_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes the image interface data for an accessible object.
+ * Creates and returns an ImageData structure containing a global reference
+ * to the Java AtkImage object.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (nullable): pointer to ImageData or NULL on failure
+ **/
 
 gpointer
 jaw_image_data_init (jobject ac)
@@ -66,6 +113,15 @@ jaw_image_data_init (jobject ac)
 
   return data;
 }
+
+/**
+ * jaw_image_data_finalize:
+ * @p: ImageData pointer to finalize
+ *
+ * Cleans up ImageData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
 
 void
 jaw_image_data_finalize (gpointer p)
@@ -88,6 +144,25 @@ jaw_image_data_finalize (gpointer p)
       data->atk_image = NULL;
     }
 }
+
+/**
+ * jaw_image_get_image_position:
+ * @image: a #GObject instance that implements AtkImageIface
+ * @x: (out) (optional): address of #gint to put x coordinate position;
+ *otherwise, -1 if value cannot be obtained.
+ * @y: (out) (optional): address of #gint to put y coordinate position;
+ *otherwise, -1 if value cannot be obtained.
+ * @coord_type: specifies whether the coordinates are relative to the screen
+ * or to the components top level window
+ *
+ * Gets the position of the image in the form of a point specifying the
+ * images top-left corner.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * If the position can not be obtained (e.g. missing support), x and y are set
+ * to -1.
+ **/
 
 static void
 jaw_image_get_image_position (AtkImage *image,
@@ -121,6 +196,17 @@ jaw_image_get_image_position (AtkImage *image,
   (*y) = (gint) jy;
 }
 
+/**
+ * jaw_image_get_image_description:
+ * @image: a #GObject instance that implements AtkImageIface
+ *
+ * Get a textual description of this image.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: a string representing the image description or NULL
+ **/
+
 static const gchar *
 jaw_image_get_image_description (AtkImage *image)
 {
@@ -143,6 +229,24 @@ jaw_image_get_image_description (AtkImage *image)
 
   return data->image_description;
 }
+
+/**
+ * jaw_image_get_image_size:
+ * @image: a #GObject instance that implements AtkImageIface
+ * @width: (out) (optional): filled with the image width, or -1 if the value
+ *cannot be obtained.
+ * @height: (out) (optional): filled with the image height, or -1 if the value
+ *cannot be obtained.
+ *
+ * Get the width and height in pixels for the specified image.
+ * The values of @width and @height are returned as -1 if the
+ * values cannot be obtained (for instance, if the object is not onscreen).
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * If the size can not be obtained (e.g. missing support), x and y are set
+ * to -1.
+ **/
 
 static void
 jaw_image_get_image_size (AtkImage *image, gint *width, gint *height)

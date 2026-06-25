@@ -35,6 +35,11 @@ G_BEGIN_DECLS
 typedef struct _JawObject JawObject;
 typedef struct _JawObjectClass JawObjectClass;
 
+/**
+ * JawObject:
+ * A base structure wrapping an AtkObject.
+ **/
+
 struct _JawObject
 {
   AtkObject parent;
@@ -45,6 +50,12 @@ struct _JawObject
   jstring jstrLocale;
   gchar *locale;
   AtkStateSet *state_set;
+
+    /**
+     * Hash table for storing simple key-value pairs.
+     * Hash table for data. Does not destroy keys or values on cleanup -
+     * do not store dynamically allocated memory here.
+     */
 
   GHashTable *storedData;
 };

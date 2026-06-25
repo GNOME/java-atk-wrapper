@@ -22,6 +22,22 @@
 #include "jawutil.h"
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkHyperlink:
+ *
+ * An ATK object which encapsulates a link or set of links in a hypertext
+ * document.
+ *
+ * An ATK object which encapsulates a link or set of links (for
+ * instance in the case of client-side image maps) in a hypertext
+ * document.  It may implement the AtkAction interface.  AtkHyperlink
+ * may also be used to refer to inline embedded content, since it
+ * allows specification of a start and end offset within the host
+ * AtkHypertext object.
+ */
+
 static void jaw_hyperlink_dispose (GObject *gobject);
 static void jaw_hyperlink_finalize (GObject *gobject);
 
@@ -50,6 +66,20 @@ jaw_hyperlink_new (jobject jhyperlink)
 
   return jaw_hyperlink;
 }
+
+/**
+ * _AtkHyperlinkClass:
+ * @get_uri:
+ * @get_object:
+ * @get_end_index:
+ * @get_start_index:
+ * @is_valid:
+ * @get_n_anchors:
+ * @link_state:
+ * @is_selected_link:
+ * @link_activated -- The signal link-activated is emitted when a link is
+ *activated.
+ **/
 
 static void
 jaw_hyperlink_class_init (JawHyperlinkClass *klass)
@@ -98,6 +128,23 @@ jaw_hyperlink_finalize (GObject *gobject)
   G_OBJECT_CLASS (jaw_hyperlink_parent_class)->finalize (gobject);
 }
 
+/**
+ * jaw_hyperlink_get_uri:
+ * @atk_hyperlink: an #AtkHyperlink
+ * @i: a (zero-index) integer specifying the desired anchor
+ *
+ * Get the URI associated with the anchor specified
+ * by @i of @atk_hyperlink.
+ *
+ * Multiple anchors are primarily used by client-side image maps.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: a string specifying the URI.
+ * The caller of the method takes ownership of the returned data, and is
+ * responsible for freeing it
+ **/
+
 static gchar *
 jaw_hyperlink_get_uri (AtkHyperlink *atk_hyperlink,
                        gint i)
@@ -122,6 +169,19 @@ jaw_hyperlink_get_uri (AtkHyperlink *atk_hyperlink,
   return jaw_hyperlink->uri;
 }
 
+/**
+ * jaw_hyperlink_get_object:
+ * @atk_hyperlink: an #AtkHyperlink
+ * @i: a (zero-index) integer specifying the desired anchor
+ *
+ * Returns the item associated with this hyperlinks nth anchor.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: (transfer none): an #AtkObject associated with this hyperlinks
+ * i-th anchor
+ **/
+
 static AtkObject *
 jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
                           gint i)
@@ -144,6 +204,18 @@ jaw_hyperlink_get_object (AtkHyperlink *atk_hyperlink,
   return obj;
 }
 
+/**
+ * atk_hyperlink_get_end_index:
+ * @atk_hyperlink: an #AtkHyperlink
+ *
+ * Gets the index with the hypertext document at which this link ends.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the index with the hypertext document at which this link ends, 0 if
+ *an error happened.
+ **/
+
 static gint
 jaw_hyperlink_get_end_index (AtkHyperlink *atk_hyperlink)
 {
@@ -157,6 +229,18 @@ jaw_hyperlink_get_end_index (AtkHyperlink *atk_hyperlink)
 
   return jindex;
 }
+
+/**
+ * jaw_hyperlink_get_start_index:
+ * @atk_hyperlink: an #AtkHyperlink
+ *
+ * Gets the index with the hypertext document at which this link begins.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the index with the hypertext document at which this link begins, 0
+ * if an error happened
+ **/
 
 static gint
 jaw_hyperlink_get_start_index (AtkHyperlink *atk_hyperlink)
@@ -172,6 +256,19 @@ jaw_hyperlink_get_start_index (AtkHyperlink *atk_hyperlink)
   return jindex;
 }
 
+/**
+ * jaw_hyperlink_is_valid:
+ * @atk_hyperlink: an #AtkHyperlink
+ *
+ * Since the document that a link is associated with may have changed
+ * this method returns %TRUE if the link is still valid (with
+ * respect to the document it references) and %FALSE otherwise.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: whether or not this link is still valid
+ **/
+
 static gboolean
 jaw_hyperlink_is_valid (AtkHyperlink *atk_hyperlink)
 {
@@ -185,6 +282,17 @@ jaw_hyperlink_is_valid (AtkHyperlink *atk_hyperlink)
 
   return jvalid;
 }
+
+/**
+ * jaw_hyperlink_get_n_anchors:
+ * @atk_hyperlink: an #AtkHyperlink
+ *
+ * Gets the number of anchors associated with this hyperlink.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+ *
+ * Returns: the number of anchors associated with this hyperlink
+ **/
 
 static gint
 jaw_hyperlink_get_n_anchors (AtkHyperlink *atk_hyperlink)

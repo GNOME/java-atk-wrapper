@@ -22,6 +22,20 @@
 #include <atk/atk.h>
 #include <glib.h>
 
+/**
+ * (From Atk documentation)
+ *
+ * AtkTableCell:
+ *
+ * The ATK interface implemented for a cell inside a two-dimentional #AtkTable
+ *
+ * Being #AtkTable a component which present elements ordered via rows
+ * and columns, an #AtkTableCell is the interface which each of those
+ * elements, so "cells" should implement.
+ *
+ * See [iface@AtkTable]
+ */
+
 static AtkObject *jaw_table_cell_get_table (AtkTableCell *cell);
 static GPtrArray *jaw_table_cell_get_column_header_cells (AtkTableCell *cell);
 static gboolean jaw_table_cell_get_position (AtkTableCell *cell, gint *row, gint *column);
@@ -44,6 +58,28 @@ typedef struct _TableCellData
 #define JAW_GET_TABLECELL(cell, def_ret) \
   JAW_GET_OBJ_IFACE (cell, INTERFACE_TABLE_CELL, TableCellData, atk_table_cell, jniEnv, jatk_table_cell, def_ret)
 
+/**
+ * AtkTableCellIface:
+ * @get_column_span: virtual function that returns the number of
+ *   columns occupied by this cell accessible
+ * @get_column_header_cells: virtual function that returns the column
+ *   headers as an array of cell accessibles
+ * @get_position: virtual function that retrieves the tabular position
+ *   of this cell
+ * @get_row_span: virtual function that returns the number of rows
+ *   occupied by this cell
+ * @get_row_header_cells: virtual function that returns the row
+ *   headers as an array of cell accessibles
+ * @get_row_column_span: virtual function that get the row an column
+ *   indexes and span of this cell
+ * @get_table: virtual function that returns a reference to the
+ *   accessible of the containing table
+ *
+ * AtkTableCell is an interface for cells inside an #AtkTable.
+ *
+ * Since: 2.12
+ */
+
 void
 jaw_table_cell_interface_init (AtkTableCellIface *iface, gpointer data)
 {
@@ -56,6 +92,21 @@ jaw_table_cell_interface_init (AtkTableCellIface *iface, gpointer data)
   iface->get_row_column_span = jaw_table_cell_get_row_column_span;
   iface->get_table = jaw_table_cell_get_table;
 }
+
+/**
+ * jaw_table_cell_data_init:
+ * @ac: a Java AccessibleContext object
+ *
+ * Initializes the table cell interface data for an accessible object.
+ * Creates and returns a TableCellData structure containing a global reference
+ * to the Java AtkTableCell object.
+ *
+ * Explicitly manages a JNI local reference frame using
+ * PushLocalFrame/PopLocalFrame; all local references are released
+ * before the function returns.
+ *
+ * Returns: (nullable): pointer to TableCellData or NULL on failure
+ **/
 
 gpointer
 jaw_table_cell_data_init (jobject ac)
@@ -71,6 +122,15 @@ jaw_table_cell_data_init (jobject ac)
 
   return data;
 }
+
+/**
+ * jaw_table_cell_data_finalize:
+ * @p: TableCellData pointer to finalize
+ *
+ * Cleans up TableCellData when the parent GObject is finalized.
+ * Called from jaw_impl_finalize() when the object's reference count reaches
+ * zero.
+ */
 
 void
 jaw_table_cell_data_finalize (gpointer p)
@@ -93,6 +153,17 @@ jaw_table_cell_data_finalize (gpointer p)
       data->atk_table_cell = NULL;
     }
 }
+
+/**
+ * jaw_table_cell_get_table:
+ * @cell: a GObject instance that implements AtkTableCellIface
+ *
+ * Returns a reference to the accessible of the containing table.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: (transfer full): the atk object for the containing table.
+ */
 
 static AtkObject *
 jaw_table_cell_get_table (AtkTableCell *cell)
@@ -120,6 +191,22 @@ jaw_table_cell_get_table (AtkTableCell *cell)
   return ATK_OBJECT (jaw_impl);
 }
 
+/**
+ * getPosition:
+ * @jniEnv: JNI environment pointer.
+ * @jatk_table_cell: a Java object implementing the AtkTableCell interface.
+ * @row: (out): return location for the zero-based row index of the cell.
+ * @column: (out): return location for the zero-based column index of the cell.
+ *
+ * Retrieves the row and column index of the cell.
+ * If the operation succeeds, the values of @row and @column are updated.
+ * If it fails, the output arguments are left unchanged.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: %TRUE if successful; %FALSE otherwise.
+ */
+
 static void
 getPosition (JNIEnv *jniEnv, jobject jatk_table_cell, jclass classAtkTableCell, gint *row, gint *column)
 {
@@ -130,6 +217,21 @@ getPosition (JNIEnv *jniEnv, jobject jatk_table_cell, jclass classAtkTableCell, 
   (*row) = (gint) jrow;
   (*column) = (gint) jcolumn;
 }
+
+/**
+ * jaw_table_cell_get_position:
+ * @cell: an #AtkTableCell.
+ * @row: (out): the row of the given cell.
+ * @column: (out): the column of the given cell.
+ *
+ * Retrieves the tabular position of this cell.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: %TRUE if successful; %FALSE otherwise.
+ *
+ * Since: 2.12
+ */
 
 static gboolean
 jaw_table_cell_get_position (AtkTableCell *cell, gint *row, gint *column)
@@ -143,6 +245,22 @@ jaw_table_cell_get_position (AtkTableCell *cell, gint *row, gint *column)
   return TRUE;
 }
 
+/**
+ * getRowSpan:
+ * @jniEnv: JNI environment pointer.
+ * @jatk_table_cell: a Java object implementing the AtkTableCell interface.
+ * @classAtkTableCell: the Java class of @jatk_table_cell.
+ * @row_span: (out): return location for the row-span value.
+ *
+ * Retrieves the `rowSpan` field from a Java ATK table cell object.
+ * On success, the value is stored in @row_span.
+ * On failure, @row_span is left unchanged.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: %TRUE if the value was successfully retrieved; %FALSE otherwise.
+ */
+
 static void
 getRowSpan (JNIEnv *jniEnv, jobject jatk_table_cell, jclass classAtkTableCell, gint *row_span)
 {
@@ -151,6 +269,23 @@ getRowSpan (JNIEnv *jniEnv, jobject jatk_table_cell, jclass classAtkTableCell, g
   (*row_span) = (gint) jrow_span;
 }
 
+/**
+ * getColumnSpan:
+ * @jniEnv: a valid JNI environment pointer.
+ * @jatk_table_cell: a Java object implementing the AtkTableCell interface.
+ * @classAtkTableCell: the Java class of @jatk_table_cell.
+ * @column_span: (out): return location for the column-span value.
+ *
+ * Retrieves the `columnSpan` field from a Java ATK table cell object.
+ * On success, the value is stored in @column_span.
+ * On failure, @column_span is left unchanged.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: %TRUE if the column span value was successfully retrieved and
+ *          stored in @column_span; %FALSE on error.
+ */
+
 static void
 getColumnSpan (JNIEnv *jniEnv, jobject jatk_table_cell, jclass classAtkTableCell, gint *column_span)
 {
@@ -158,6 +293,26 @@ getColumnSpan (JNIEnv *jniEnv, jobject jatk_table_cell, jclass classAtkTableCell
   jint jcolumn_span = (*jniEnv)->GetIntField (jniEnv, jatk_table_cell, id_column_span);
   (*column_span) = (gint) jcolumn_span;
 }
+
+/**
+ * jaw_table_cell_get_row_column_span:
+ * @cell: an #AtkTableCell.
+ * @row: (out): the row index of the given cell.
+ * @column: (out): the column index of the given cell.
+ * @row_span: (out): the number of rows occupied by this cell.
+ * @column_span: (out): the number of columns occupied by this cell.
+ *
+ * Gets the row and column indexes and span of this cell accessible.
+ *
+ * Note: Even if the function returns %FALSE, some of the output arguments
+ *       may have been partially updated before the failure occurred.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: %TRUE if successful; %FALSE otherwise.
+ *
+ * Since: 2.12
+ */
 
 static gboolean
 jaw_table_cell_get_row_column_span (AtkTableCell *cell, gint *row, gint *column, gint *row_span, gint *column_span)
@@ -173,6 +328,21 @@ jaw_table_cell_get_row_column_span (AtkTableCell *cell, gint *row, gint *column,
   return TRUE;
 }
 
+/**
+ * jaw_table_cell_get_row_span:
+ * @cell: (nullable): an #AtkTableCell instance
+ *
+ * Returns the number of rows occupied by this cell accessible.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: (type gint):
+ *     A gint representing the number of rows occupied by this cell, or 0 if the
+ * cell does not implement this method.
+ *
+ * Since: 2.12
+ */
+
 static gint
 jaw_table_cell_get_row_span (AtkTableCell *cell)
 {
@@ -186,6 +356,21 @@ jaw_table_cell_get_row_span (AtkTableCell *cell)
   return row_span;
 }
 
+/**
+ * jaw_table_cell_get_column_span:
+ * @cell: (nullable): an #AtkTableCell instance
+ *
+ * Returns the number of columns occupied by this table cell.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: (type gint):
+ *     A gint representing the number of columns occupied by this cell,
+ *     or 0 if the cell does not implement this method.
+ *
+ * Since: 2.12
+ */
+
 static gint
 jaw_table_cell_get_column_span (AtkTableCell *cell)
 {
@@ -198,6 +383,18 @@ jaw_table_cell_get_column_span (AtkTableCell *cell)
   (*jniEnv)->DeleteGlobalRef (jniEnv, jatk_table_cell);
   return column_span;
 }
+
+/**
+ * jaw_table_cell_get_column_header_cells:
+ * @cell: a GObject instance that implements AtkTableCellIface
+ *
+ * Returns the column headers as an array of cell accessibles.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: (element-type AtkObject) (transfer full): a GPtrArray of AtkObjects
+ * representing the column header cells.
+ */
 
 static GPtrArray *
 jaw_table_cell_get_column_header_cells (AtkTableCell *cell)
@@ -221,6 +418,18 @@ jaw_table_cell_get_column_header_cells (AtkTableCell *cell)
     }
   return result;
 }
+
+/**
+ * jaw_table_cell_get_row_header_cells:
+ * @cell: a GObject instance that implements AtkTableCellIface
+ *
+ * Returns the row headers as an array of cell accessibles.
+ *
+ * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed
+ *
+ * Returns: (element-type AtkObject) (transfer full): a GPtrArray of AtkObjects
+ * representing the row header cells.
+ */
 
 static GPtrArray *
 jaw_table_cell_get_row_header_cells (AtkTableCell *cell)
