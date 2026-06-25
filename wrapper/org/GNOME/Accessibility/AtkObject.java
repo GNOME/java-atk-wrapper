@@ -27,19 +27,19 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
-import java.util.Locale;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-import java.awt.event.KeyEvent;
+import javax.swing.*;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.util.Locale;
 
 /**
-* AtkObject:
-*   That class is used to wrap AccessibleContext Java object
-*   to avoid the concurrency of AWT objects.
-* @autor Giuseppe Capaldo
-*/
-public class AtkObject{
+ * AtkObject:
+ * That class is used to wrap AccessibleContext Java object
+ * to avoid the concurrency of AWT objects.
+ *
+ * @autor Giuseppe Capaldo
+ */
+public class AtkObject {
 
     public static final int INTERFACE_ACTION = 0x00000001;
     public static final int INTERFACE_COMPONENT = 0x00000002;
@@ -55,59 +55,59 @@ public class AtkObject{
     public static final int INTERFACE_TEXT = 0x00000800;
     public static final int INTERFACE_VALUE = 0x00001000;
 
-    public static int getTFlagFromObj(Object o){
-      return AtkUtil.invokeInSwing( () -> {
-        int flags = 0;
-        AccessibleContext ac;
+    public static int getTFlagFromObj(Object o) {
+        return AtkUtil.invokeInSwing(() -> {
+            int flags = 0;
+            AccessibleContext ac;
 
-        if (o instanceof AccessibleContext)
-            ac = (AccessibleContext) o;
-        else if (o instanceof Accessible)
-            ac = ( (Accessible) o).getAccessibleContext();
-        else
-            return flags;
+            if (o instanceof AccessibleContext)
+                ac = (AccessibleContext) o;
+            else if (o instanceof Accessible)
+                ac = ((Accessible) o).getAccessibleContext();
+            else
+                return flags;
 
-        if (ac.getAccessibleAction() != null)
-            flags |= AtkObject.INTERFACE_ACTION;
-        if (ac.getAccessibleComponent() != null)
-            flags |= AtkObject.INTERFACE_COMPONENT;
-        AccessibleText text = ac.getAccessibleText();
-        if (text != null){
-            flags |= AtkObject.INTERFACE_TEXT;
-            if (text instanceof AccessibleHypertext)
-                flags |= AtkObject.INTERFACE_HYPERTEXT;
-	    if (ac.getAccessibleEditableText() != null)
-		flags |= AtkObject.INTERFACE_EDITABLE_TEXT;
-        }
-        if (ac.getAccessibleIcon() != null)
-            flags |= AtkObject.INTERFACE_IMAGE;
-        if (ac.getAccessibleSelection() != null)
-            flags |= AtkObject.INTERFACE_SELECTION;
-        AccessibleTable table = ac.getAccessibleTable();
-        if (table != null){
-            flags |= AtkObject.INTERFACE_TABLE;
-        }
-        Accessible parent = ac.getAccessibleParent();
-        if (parent != null){
-            AccessibleContext pc = parent.getAccessibleContext();
-            if (pc != null){
-                table = pc.getAccessibleTable();
-                // Unfortunately without the AccessibleExtendedTable interface
-                // we can't determine the column/row of this accessible in the
-                // table
-                if (table != null && table instanceof AccessibleExtendedTable){
-                    flags |= AtkObject.INTERFACE_TABLE_CELL;
+            if (ac.getAccessibleAction() != null)
+                flags |= AtkObject.INTERFACE_ACTION;
+            if (ac.getAccessibleComponent() != null)
+                flags |= AtkObject.INTERFACE_COMPONENT;
+            AccessibleText text = ac.getAccessibleText();
+            if (text != null) {
+                flags |= AtkObject.INTERFACE_TEXT;
+                if (text instanceof AccessibleHypertext)
+                    flags |= AtkObject.INTERFACE_HYPERTEXT;
+                if (ac.getAccessibleEditableText() != null)
+                    flags |= AtkObject.INTERFACE_EDITABLE_TEXT;
+            }
+            if (ac.getAccessibleIcon() != null)
+                flags |= AtkObject.INTERFACE_IMAGE;
+            if (ac.getAccessibleSelection() != null)
+                flags |= AtkObject.INTERFACE_SELECTION;
+            AccessibleTable table = ac.getAccessibleTable();
+            if (table != null) {
+                flags |= AtkObject.INTERFACE_TABLE;
+            }
+            Accessible parent = ac.getAccessibleParent();
+            if (parent != null) {
+                AccessibleContext pc = parent.getAccessibleContext();
+                if (pc != null) {
+                    table = pc.getAccessibleTable();
+                    // Unfortunately without the AccessibleExtendedTable interface
+                    // we can't determine the column/row of this accessible in the
+                    // table
+                    if (table != null && table instanceof AccessibleExtendedTable) {
+                        flags |= AtkObject.INTERFACE_TABLE_CELL;
+                    }
                 }
             }
-        }
-        if (ac.getAccessibleValue() != null)
-            flags |= AtkObject.INTERFACE_VALUE;
-        return flags;
-      }, 0);
+            if (ac.getAccessibleValue() != null)
+                flags |= AtkObject.INTERFACE_VALUE;
+            return flags;
+        }, 0);
     }
 
-    public static AccessibleContext getAccessibleParent(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> {
+    public static AccessibleContext getAccessibleParent(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
             Accessible father = ac.getAccessibleParent();
             if (father != null)
                 return father.getAccessibleContext();
@@ -116,13 +116,12 @@ public class AtkObject{
         }, null);
     }
 
-    public static void setAccessibleParent(AccessibleContext ac, AccessibleContext pa){
-        AtkUtil.invokeInSwing( () -> {
-            if (pa instanceof Accessible){
-                Accessible father = (Accessible) pa;
+    public static void setAccessibleParent(AccessibleContext ac, AccessibleContext pa) {
+        AtkUtil.invokeInSwing(() -> {
+            if (pa instanceof Accessible father) {
                 ac.setAccessibleParent(father);
             }
-        } );
+        });
     }
 
     public static String getAccessibleName(AccessibleContext ac) {
@@ -151,8 +150,7 @@ public class AtkObject{
             int indexInParent = ac.getAccessibleIndexInParent();
             Accessible child = parent.getAccessibleContext()
                     .getAccessibleChild(indexInParent);
-            if (child instanceof JMenuItem) {
-                JMenuItem menuItem = (JMenuItem)child;
+            if (child instanceof JMenuItem menuItem) {
                 KeyStroke keyStroke = menuItem.getAccelerator();
                 if (keyStroke != null) {
                     int modifiers = keyStroke.getModifiers();
@@ -172,37 +170,49 @@ public class AtkObject{
         return accText;
     }
 
-    public static void setAccessibleName(AccessibleContext ac, String name){
-        AtkUtil.invokeInSwing( () -> { ac.setAccessibleName(name); } );
+    public static void setAccessibleName(AccessibleContext ac, String name) {
+        AtkUtil.invokeInSwing(() -> {
+            ac.setAccessibleName(name);
+        });
     }
 
-    public static String getAccessibleDescription(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleDescription(); }, "");
+    public static String getAccessibleDescription(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleDescription();
+        }, "");
     }
 
-    public static void setAccessibleDescription(AccessibleContext ac, String description){
-        AtkUtil.invokeInSwing( () -> { ac.setAccessibleDescription(description); } );
+    public static void setAccessibleDescription(AccessibleContext ac, String description) {
+        AtkUtil.invokeInSwing(() -> {
+            ac.setAccessibleDescription(description);
+        });
     }
 
-    public static int getAccessibleChildrenCount(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleChildrenCount(); }, 0);
+    public static int getAccessibleChildrenCount(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleChildrenCount();
+        }, 0);
     }
 
-    public static int getAccessibleIndexInParent(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleIndexInParent(); }, -1);
+    public static int getAccessibleIndexInParent(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleIndexInParent();
+        }, -1);
     }
 
-    public static AccessibleRole getAccessibleRole(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleRole(); }, AccessibleRole.UNKNOWN);
+    public static AccessibleRole getAccessibleRole(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleRole();
+        }, AccessibleRole.UNKNOWN);
     }
 
-    public static boolean equalsIgnoreCaseLocaleWithRole(AccessibleRole role){
+    public static boolean equalsIgnoreCaseLocaleWithRole(AccessibleRole role) {
         String displayString = role.toDisplayString(Locale.US);
         return displayString.equalsIgnoreCase("paragraph");
     }
 
-    public static AccessibleState[] getArrayAccessibleState(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> {
+    public static AccessibleState[] getArrayAccessibleState(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
             AccessibleStateSet stateSet = ac.getAccessibleStateSet();
             if (stateSet == null)
                 return null;
@@ -211,8 +221,8 @@ public class AtkObject{
         }, null);
     }
 
-    public static String getLocale(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> {
+    public static String getLocale(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
             Locale l = ac.getLocale();
             String locale = l.getLanguage();
             String country = l.getCountry();
@@ -231,32 +241,22 @@ public class AtkObject{
         }, null);
     }
 
-    public static class WrapKeyAndTarget{
-        public String key;
-        public AccessibleContext[] relations;
-
-        public WrapKeyAndTarget(String key, AccessibleContext[] relations){
-            this.key = key;
-            this.relations = relations;
-        }
-    }
-
-    public static WrapKeyAndTarget[] getArrayAccessibleRelation(AccessibleContext ac){
+    public static WrapKeyAndTarget[] getArrayAccessibleRelation(AccessibleContext ac) {
         WrapKeyAndTarget[] d = new WrapKeyAndTarget[0];
-        return AtkUtil.invokeInSwing( () -> {
+        return AtkUtil.invokeInSwing(() -> {
             AccessibleRelationSet relationSet = ac.getAccessibleRelationSet();
             if (relationSet == null)
                 return d;
             else {
                 AccessibleRelation[] array = relationSet.toArray();
                 WrapKeyAndTarget[] result = new WrapKeyAndTarget[array.length];
-                for(int i = 0; i < array.length; i++) {
+                for (int i = 0; i < array.length; i++) {
                     String key = array[i].getKey();
                     Object[] objs = array[i].getTarget();
                     AccessibleContext[] contexts = new AccessibleContext[objs.length];
-                    for(int j = 0; j < objs.length; j++) {
+                    for (int j = 0; j < objs.length; j++) {
                         if (objs[i] instanceof Accessible)
-                            contexts[i] = ( (Accessible) objs[i]).getAccessibleContext();
+                            contexts[i] = ((Accessible) objs[i]).getAccessibleContext();
                         else
                             contexts[i] = null;
                     }
@@ -267,8 +267,8 @@ public class AtkObject{
         }, d);
     }
 
-    public static AccessibleContext getAccessibleChild(AccessibleContext ac, int i){
-        return AtkUtil.invokeInSwing( () -> {
+    public static AccessibleContext getAccessibleChild(AccessibleContext ac, int i) {
+        return AtkUtil.invokeInSwing(() -> {
             Accessible child = ac.getAccessibleChild(i);
             if (child == null)
                 return null;
@@ -277,8 +277,20 @@ public class AtkObject{
         }, null);
     }
 
-    public static int hashCode(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
+    public static int hashCode(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.hashCode();
+        }, 0);
+    }
+
+    public static class WrapKeyAndTarget {
+        public String key;
+        public AccessibleContext[] relations;
+
+        public WrapKeyAndTarget(String key, AccessibleContext[] relations) {
+            this.key = key;
+            this.relations = relations;
+        }
     }
 
 }
