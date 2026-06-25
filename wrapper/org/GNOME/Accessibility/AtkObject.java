@@ -34,6 +34,9 @@ import java.util.Locale;
 
 /**
  * AtkObject:
+ * <p>
+ * Java-side utility class used by the GNOME Accessibility Bridge.
+ * <p>
  * That class is used to wrap AccessibleContext Java object
  * to avoid the concurrency of AWT objects.
  *
@@ -55,6 +58,13 @@ public class AtkObject {
     public static final int INTERFACE_TEXT = 0x00000800;
     public static final int INTERFACE_VALUE = 0x00001000;
 
+    /**
+     * Gets the ATK interface flags for the given accessible object.
+     * Called from native code via JNI.
+     *
+     * @param o the accessible object (AccessibleContext or Accessible)
+     * @return bitwise OR of ATK interface flags from {@link AtkInterface}
+     */
     public static int getTFlagFromObj(Object o) {
         return AtkUtil.invokeInSwing(() -> {
             int flags = 0;
@@ -106,6 +116,13 @@ public class AtkObject {
         }, 0);
     }
 
+    /**
+     * Gets the parent AccessibleContext of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the parent accessible context, or null if no parent exists
+     */
     public static AccessibleContext getAccessibleParent(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             Accessible accessibleParent = ac.getAccessibleParent();
@@ -116,6 +133,13 @@ public class AtkObject {
         }, null);
     }
 
+    /**
+     * Sets the parent of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac                      the accessible context whose parent should be set
+     * @param parentAccessibleContext the new parent accessible context (must be Accessible)
+     */
     public static void setAccessibleParent(
             AccessibleContext ac, AccessibleContext parentAccessibleContext) {
         AtkUtil.invokeInSwing(() -> {
@@ -125,6 +149,13 @@ public class AtkObject {
         });
     }
 
+    /**
+     * Gets the accessible name of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the accessible name, with accelerator text appended, or null if no name is set
+     */
     public static String getAccessibleName(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             String accessibleName = ac.getAccessibleName();
@@ -171,36 +202,78 @@ public class AtkObject {
         return acceleratorText;
     }
 
+    /**
+     * Sets the accessible name of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac   the accessible context
+     * @param name the new accessible name
+     */
     public static void setAccessibleName(AccessibleContext ac, String name) {
         AtkUtil.invokeInSwing(() -> {
             ac.setAccessibleName(name);
         });
     }
 
+    /**
+     * Gets the accessible description of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the accessible description, or empty string if no description is set
+     */
     public static String getAccessibleDescription(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleDescription();
         }, "");
     }
 
+    /**
+     * Sets the accessible description of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac          the accessible context
+     * @param description the new accessible description
+     */
     public static void setAccessibleDescription(AccessibleContext ac, String description) {
         AtkUtil.invokeInSwing(() -> {
             ac.setAccessibleDescription(description);
         });
     }
 
+    /**
+     * Gets the number of accessible children of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the number of accessible children, or 0 if there are no children
+     */
     public static int getAccessibleChildrenCount(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleChildrenCount();
         }, 0);
     }
 
+    /**
+     * Gets the index of this accessible context within its parent's children.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the zero-based index in parent, or -1 if no parent exists or index cannot be determined
+     */
     public static int getAccessibleIndexInParent(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleIndexInParent();
         }, -1);
     }
 
+    /**
+     * Gets the accessible role of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the accessible role, or null if the role cannot be determined
+     */
     public static AccessibleRole getAccessibleRole(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleRole();
@@ -212,6 +285,13 @@ public class AtkObject {
         return displayString.equalsIgnoreCase("paragraph");
     }
 
+    /**
+     * Gets an array of accessible states for the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return an array of accessible states, or null if no state set exists
+     */
     public static AccessibleState[] getArrayAccessibleState(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             AccessibleStateSet stateSet = ac.getAccessibleStateSet();
@@ -222,6 +302,13 @@ public class AtkObject {
         }, null);
     }
 
+    /**
+     * Gets the locale of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the locale string in the format "language_country@script@variant", or null if locale cannot be determined
+     */
     public static String getLocale(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             Locale l = ac.getLocale();
@@ -242,6 +329,14 @@ public class AtkObject {
         }, null);
     }
 
+    /**
+     * Gets an array of accessible relations for the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return an array of WrapKeyAndTarget records containing relation keys and targets,
+     * or an empty array if no relations exist
+     */
     public static WrapKeyAndTarget[] getArrayAccessibleRelation(AccessibleContext ac) {
         WrapKeyAndTarget[] d = new WrapKeyAndTarget[0];
         return AtkUtil.invokeInSwing(() -> {
@@ -268,6 +363,14 @@ public class AtkObject {
         }, d);
     }
 
+    /**
+     * Gets the accessible child at the specified index.
+     * Called from native code via JNI.
+     *
+     * @param ac the parent accessible context
+     * @param i  the zero-based index of the child
+     * @return the child accessible context at the given index, or null if no child exists at that index
+     */
     public static AccessibleContext getAccessibleChild(AccessibleContext ac, int i) {
         return AtkUtil.invokeInSwing(() -> {
             Accessible child = ac.getAccessibleChild(i);
@@ -288,6 +391,10 @@ public class AtkObject {
         public String key;
         public AccessibleContext[] relations;
 
+        /**
+         * A record that wraps an accessible relation key with its target accessible contexts.
+         * Used to pass relation information from Java to native code.
+         */
         public WrapKeyAndTarget(String key, AccessibleContext[] relations) {
             this.key = key;
             this.relations = relations;

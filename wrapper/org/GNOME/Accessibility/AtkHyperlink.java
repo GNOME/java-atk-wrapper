@@ -24,6 +24,12 @@ import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleHyperlink;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Hyperlink implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleHyperlink interface
+ * and the ATK (Accessibility Toolkit) hyperlink interface.
+ */
 public class AtkHyperlink {
 
     WeakReference<AccessibleHyperlink> accessibleHyperlinkWeakRef;
@@ -39,6 +45,13 @@ public class AtkHyperlink {
         }, null);
     }
 
+    /**
+     * Gets the URI associated with the anchor specified by the index.
+     * Called from native code via JNI.
+     *
+     * @param index the zero-based index specifying the desired anchor
+     * @return a string specifying the URI, or null if not available
+     */
     public String get_uri(int index) {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
@@ -52,6 +65,14 @@ public class AtkHyperlink {
         }, "");
     }
 
+    /**
+     * Returns the accessible object associated with this hyperlink's nth anchor.
+     * Called from native code via JNI.
+     *
+     * @param index the zero-based index specifying the desired anchor
+     * @return the AccessibleContext associated with this hyperlink's index-th anchor,
+     * or null if not available
+     */
     public AccessibleContext get_object(int index) {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
@@ -65,6 +86,13 @@ public class AtkHyperlink {
         }, null);
     }
 
+    /**
+     * Gets the index with the hypertext document at which this link ends.
+     * Called from native code via JNI.
+     *
+     * @return the index with the hypertext document at which this link ends,
+     * or 0 if an error happened.
+     */
     public int get_end_index() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
@@ -75,6 +103,13 @@ public class AtkHyperlink {
         }, 0);
     }
 
+    /**
+     * Gets the index with the hypertext document at which this link begins.
+     * Called from native code via JNI.
+     *
+     * @return the index with the hypertext document at which this link begins,
+     * or 0 if an error happened
+     */
     public int get_start_index() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
@@ -85,6 +120,16 @@ public class AtkHyperlink {
         }, 0);
     }
 
+    /**
+     * Determines whether this link is still valid.
+     * Called from native code via JNI.
+     * <p>
+     * Since the document that a link is associated with may have changed,
+     * this method returns true if the link is still valid (with respect to
+     * the document it references) and false otherwise.
+     *
+     * @return true if the link is still valid, false otherwise
+     */
     public boolean is_valid() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
@@ -95,6 +140,12 @@ public class AtkHyperlink {
         }, false);
     }
 
+    /**
+     * Gets the number of anchors associated with this hyperlink.
+     * Called from native code via JNI (jaw_hyperlink_get_n_anchors in jawhyperlink.c).
+     *
+     * @return the number of anchors associated with this hyperlink
+     */
     public int get_n_anchors() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)

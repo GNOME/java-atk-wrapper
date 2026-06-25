@@ -78,11 +78,11 @@ public class AtkUtil {
     }
 
     /**
-     * invokeInSwing:
-     * Invoked when we need to make an asynchronous callback on
-     * some Java object and this callback hasn't a return value.
+     * Executes a Runnable on the event dispatching thread.
+     * If called from the EDT, it runs the function directly.
+     * Otherwise, it executed asynchronously on the AWT event dispatching thread.
      *
-     * @param function A Runnable object that doesn't return some value
+     * @param function The Runnable task to execute.
      */
     public static void invokeInSwing(Runnable function) {
         if (SwingUtilities.isEventDispatchThread()) {

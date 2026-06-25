@@ -22,6 +22,12 @@ package org.GNOME.Accessibility;
 import javax.accessibility.*;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Selection interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleSelection interface
+ * and the ATK (Accessibility Toolkit) selection interface.
+ */
 public class AtkSelection {
 
     WeakReference<AccessibleContext> accessibleContextWeakRef;
@@ -34,12 +40,26 @@ public class AtkSelection {
                 new WeakReference<AccessibleSelection>(ac.getAccessibleSelection());
     }
 
+    /**
+     * Factory method to create an AtkSelection instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkSelection instance, or null if creation fails
+     */
     public static AtkSelection createAtkSelection(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkSelection(ac);
         }, null);
     }
 
+    /**
+     * Adds the specified accessible child to the object's selection.
+     * Called from native code via JNI.
+     *
+     * @param index the index of the child in the object's list of children
+     * @return true if the child was successfully selected, false otherwise
+     */
     public boolean add_selection(int index) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
@@ -51,6 +71,12 @@ public class AtkSelection {
         }, false);
     }
 
+    /**
+     * Clears the selection in the object so that no children in the object are selected.
+     * Called from native code via JNI.
+     *
+     * @return true if the selection was successfully cleared, false otherwise
+     */
     public boolean clear_selection() {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
@@ -62,6 +88,13 @@ public class AtkSelection {
         return true;
     }
 
+    /**
+     * Gets a reference to the accessible object representing the specified selected child of the object.
+     * Called from native code via JNI.
+     *
+     * @param index the index of the selected child in the selection
+     * @return the AccessibleContext of the selected child, or null if none
+     */
     public AccessibleContext ref_selection(int index) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
@@ -75,6 +108,12 @@ public class AtkSelection {
         }, null);
     }
 
+    /**
+     * Gets the number of accessible children currently selected.
+     * Called from native code via JNI.
+     *
+     * @return the number of currently selected children, or 0 if none are selected
+     */
     public int get_selection_count() {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -95,6 +134,13 @@ public class AtkSelection {
         //return acc_selection.getAccessibleSelectionCount();
     }
 
+    /**
+     * Determines if the specified child of the object is included in the object's selection.
+     * Called from native code via JNI.
+     *
+     * @param i the index of the child in the object's list of children
+     * @return true if the child is selected, false otherwise
+     */
     public boolean is_child_selected(int i) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
@@ -105,6 +151,13 @@ public class AtkSelection {
         }, false);
     }
 
+    /**
+     * Removes the specified child of the object from the object's selection.
+     * Called from native code via JNI.
+     *
+     * @param i the index of the selected child in the selection
+     * @return true if the child was successfully removed from the selection, false otherwise
+     */
     public boolean remove_selection(int i) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
@@ -116,6 +169,12 @@ public class AtkSelection {
         }, false);
     }
 
+    /**
+     * Causes every child of the object to be selected if the object supports multiple selection.
+     * Called from native code via JNI.
+     *
+     * @return true if all children were successfully selected (object supports multiple selection), false otherwise
+     */
     public boolean select_all_selection() {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)

@@ -25,6 +25,12 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Action interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleAction interface
+ * and the ATK (Accessibility Toolkit) action interface.
+ */
 public class AtkAction {
 
     WeakReference<AccessibleContext> accessibleContextWeakRef;
@@ -48,12 +54,26 @@ public class AtkAction {
         }
     }
 
+    /**
+     * Factory method to create an AtkAction instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkAction instance, or null if creation fails
+     */
     public static AtkAction createAtkAction(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkAction(ac);
         }, null);
     }
 
+    /**
+     * Performs the specified action on the object.
+     * Called from native code via JNI.
+     *
+     * @param index the action index corresponding to the action to be performed
+     * @return true if the action was successfully performed, false otherwise
+     */
     public boolean do_action(int index) {
         AccessibleAction accessibleAction = accessibleActionWeakRef.get();
         if (accessibleAction == null)
@@ -65,10 +85,23 @@ public class AtkAction {
         return true;
     }
 
+    /**
+     * Gets the number of accessible actions available on the object.
+     * Called from native code via JNI.
+     *
+     * @return the number of actions, or 0 if this object does not implement actions
+     */
     public int get_n_actions() {
         return this.nactions;
     }
 
+    /**
+     * Returns a description of the specified action of the object.
+     * Called from native code via JNI.
+     *
+     * @param index the action index corresponding to the action
+     * @return a description string, or null if the action does not exist
+     */
     public String get_description(int index) {
         AccessibleAction accessibleAction = accessibleActionWeakRef.get();
         if (accessibleAction == null)
@@ -86,6 +119,14 @@ public class AtkAction {
         return descriptions[index];
     }
 
+    /**
+     * Sets a description of the specified action of the object.
+     * Called from native code via JNI.
+     *
+     * @param index       the action index corresponding to the action
+     * @param description the description to be assigned to this action
+     * @return true if the description was successfully set, false otherwise
+     */
     public boolean setDescription(int index, String description) {
         if (index >= nactions) {
             return false;
@@ -95,15 +136,11 @@ public class AtkAction {
     }
 
     /**
-     * @param index an integer holding the index of the name of
-     *              the accessible.
-     * @return the localized name of the object or otherwise,
-     * null if the "action" object does not have a
-     * name (really, java's AccessibleAction class
-     * does not provide
-     * a getter for an AccessibleAction
-     * name so a getter from the AcccessibleContext
-     * class is one way to work around that)
+     * Returns the localized name of the specified action of the object.
+     * Called from native code via JNI.
+     *
+     * @param index the action index corresponding to the action
+     * @return a localized name string, or null if the action does not exist
      */
     public String getLocalizedName(int index) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();

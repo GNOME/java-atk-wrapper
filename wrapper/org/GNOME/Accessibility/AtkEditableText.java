@@ -26,6 +26,19 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK EditableText interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's {@link AccessibleEditableText}
+ * interface and the ATK (Accessibility Toolkit) editable text interface.
+ * <p>
+ * <strong>Offset conventions:</strong> ATK uses "character offsets" in the
+ * exposed UTF-8 text stream. Across the JNI boundary we standardize on Unicode
+ * code point offsets. Java Swing text component indices, however, are typically
+ * UTF-16 indices. Therefore, all offsets received from native code are treated
+ * as code point offsets and converted to UTF-16 indices before calling into
+ * {@link AccessibleEditableText}.
+ */
 public class AtkEditableText extends AtkText {
 
     WeakReference<AccessibleEditableText> accessibleEditableTextWeakRef;
@@ -36,12 +49,25 @@ public class AtkEditableText extends AtkText {
                 new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
     }
 
+    /**
+     * Factory method to create an AtkEditableText instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkEditableText instance, or null if creation fails
+     */
     public static AtkEditableText createAtkEditableText(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkEditableText(ac);
         }, null);
     }
 
+    /**
+     * Sets the text contents to the specified string.
+     * Called from native code via JNI.
+     *
+     * @param textContent the string to set as the text contents
+     */
     public void set_text_contents(String textContent) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
@@ -52,6 +78,13 @@ public class AtkEditableText extends AtkText {
         });
     }
 
+    /**
+     * Inserts text at the specified position.
+     * Called from native code via JNI.
+     *
+     * @param textToInsert   the string to insert
+     * @param codePointIndex the code point offset at which to insert the text
+     */
     public void insert_text(String textToInsert, int codePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
@@ -65,6 +98,13 @@ public class AtkEditableText extends AtkText {
         });
     }
 
+    /**
+     * Copies text from the specified start and end positions to the system clipboard.
+     * Called from native code via JNI.
+     *
+     * @param startCodePointIndex the start code point offset
+     * @param endCodePointIndex   the end code point offset (or -1 for end-of-text)
+     */
     public void copy_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
@@ -90,6 +130,13 @@ public class AtkEditableText extends AtkText {
         });
     }
 
+    /**
+     * Cuts text from the specified start and end positions.
+     * Called from native code via JNI.
+     *
+     * @param startCodePointIndex the start code point offset
+     * @param endCodePointIndex   the end code point offset (or -1 for end-of-text)
+     */
     public void cut_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
@@ -100,6 +147,13 @@ public class AtkEditableText extends AtkText {
         });
     }
 
+    /**
+     * Deletes text from the specified start and end positions.
+     * Called from native code via JNI.
+     *
+     * @param startCodePointIndex the start code point offset
+     * @param endCodePointIndex   the end code point offset (or -1 for end-of-text)
+     */
     public void delete_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
@@ -110,6 +164,12 @@ public class AtkEditableText extends AtkText {
         });
     }
 
+    /**
+     * Pastes text from the system clipboard at the specified position.
+     * Called from native code via JNI.
+     *
+     * @param codePointOffset the code point offset at which to paste the text
+     */
     public void paste_text(int codePointOffset) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)

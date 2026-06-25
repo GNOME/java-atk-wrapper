@@ -27,6 +27,12 @@ import javax.accessibility.AccessibleRole;
 import java.awt.*;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Component interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleComponent interface
+ * and the ATK (Accessibility Toolkit) component interface.
+ */
 public class AtkComponent {
 
     WeakReference<AccessibleContext> accessibleContextWeakRef;
@@ -39,6 +45,13 @@ public class AtkComponent {
                 new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
     }
 
+    /**
+     * Factory method to create an AtkComponent instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkComponent instance, or null if creation fails
+     */
     public static AtkComponent createAtkComponent(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkComponent(ac);
@@ -120,6 +133,16 @@ public class AtkComponent {
         return null;
     }
 
+    /**
+     * Checks whether the specified point is within the extent of the component.
+     * Called from native code via JNI.
+     *
+     * @param x         x coordinate
+     * @param y         y coordinate
+     * @param coordType specifies whether the coordinates are relative to the screen,
+     *                  the component's toplevel window, or the component's parent
+     * @return true if the specified point is within the extent of the component
+     */
     public boolean contains(int x, int y, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -140,6 +163,17 @@ public class AtkComponent {
         }, false);
     }
 
+    /**
+     * Gets a reference to the accessible child, if one exists, at the coordinate point
+     * specified by x and y.
+     * Called from native code via JNI.
+     *
+     * @param x         x coordinate
+     * @param y         y coordinate
+     * @param coordType specifies whether the coordinates are relative to the screen,
+     *                  the component's toplevel window, or the component's parent
+     * @return the AccessibleContext of the child at the specified point, or null if none exists
+     */
     public AccessibleContext get_accessible_at_point(int x, int y, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -164,6 +198,12 @@ public class AtkComponent {
         }, null);
     }
 
+    /**
+     * Grabs focus for this component.
+     * Called from native code via JNI.
+     *
+     * @return true if successful, false otherwise
+     */
     public boolean grab_focus() {
         AccessibleComponent accessibleComponent = accessibleComponentWeakRef.get();
         if (accessibleComponent == null)
@@ -177,6 +217,18 @@ public class AtkComponent {
         }, false);
     }
 
+    /**
+     * Sets the extents of the component.
+     * Called from native code via JNI.
+     *
+     * @param x         x coordinate
+     * @param y         y coordinate
+     * @param width     width to set for the component
+     * @param height    height to set for the component
+     * @param coordType specifies whether the coordinates are relative to the screen,
+     *                  the component's toplevel window, or the component's parent
+     * @return true if the extents were set successfully, false otherwise
+     */
     public boolean set_extents(int x, int y, int width, int height, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -198,6 +250,14 @@ public class AtkComponent {
         }, false);
     }
 
+    /**
+     * Gets the rectangle which gives the extent of the component.
+     * Called from native code via JNI.
+     *
+     * @param coordType specifies whether the coordinates are relative to the screen,
+     *                  the component's toplevel window, or the component's parent
+     * @return the Rectangle representing the component's extent, or null if it cannot be obtained
+     */
     public Rectangle get_extents(int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -223,6 +283,12 @@ public class AtkComponent {
         }, null);
     }
 
+    /**
+     * Gets the AtkLayer of the component based on AccessibleRole.
+     * Called from native code via JNI.
+     *
+     * @return an int representing the AtkLayer of the component, or AtkLayer.INVALID if an error occurs
+     */
     public int get_layer() {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)

@@ -25,6 +25,13 @@ import javax.accessibility.AccessibleExtendedTable;
 import javax.accessibility.AccessibleTable;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK TableCell interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleTable interface
+ * and the ATK (Accessibility Toolkit) table cell interface, representing
+ * individual cells within an accessible table.
+ */
 public class AtkTableCell {
 
     public int row, rowSpan, column, columnSpan;
@@ -61,6 +68,13 @@ public class AtkTableCell {
         columnSpan = accessibleTable.getAccessibleColumnExtentAt(row, column);
     }
 
+    /**
+     * Factory method to create an AtkTableCell instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext representing a table cell
+     * @return a new AtkTableCell instance, or null if creation fails
+     */
     public static AtkTableCell createAtkTableCell(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkTableCell(ac);
@@ -68,10 +82,10 @@ public class AtkTableCell {
     }
 
     /**
-     * getTable
+     * Gets the table containing this cell.
+     * Called from native code via JNI.
      *
-     * @return: Reference to the accessible of the containing table as an
-     * AccessibleTable instance.
+     * @return the AccessibleTable containing this cell, or null if unavailable
      */
     public AccessibleTable getTable() {
         if (accessibleTableWeakRef == null)
@@ -79,6 +93,13 @@ public class AtkTableCell {
         return accessibleTableWeakRef.get();
     }
 
+    /**
+     * Returns the column headers as an array of AccessibleContext objects.
+     * Called from native code via JNI.
+     *
+     * @return an array of AccessibleContext objects representing the column headers,
+     * or null if column headers are not available
+     */
     public AccessibleContext[] getAccessibleColumnHeader() {
         if (accessibleTableWeakRef == null)
             return null;
@@ -96,6 +117,13 @@ public class AtkTableCell {
         }, null);
     }
 
+    /**
+     * Returns the row headers as an array of AccessibleContext objects.
+     * Called from native code via JNI.
+     *
+     * @return an array of AccessibleContext objects representing the row headers,
+     * or null if row headers are not available
+     */
     public AccessibleContext[] getAccessibleRowHeader() {
         if (accessibleTableWeakRef == null)
             return null;

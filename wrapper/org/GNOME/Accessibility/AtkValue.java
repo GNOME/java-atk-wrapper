@@ -24,6 +24,13 @@ import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleValue;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Value interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleValue interface
+ * and the ATK (Accessibility Toolkit) value interface, enabling access to
+ * numeric values and their ranges for accessible objects.
+ */
 public class AtkValue {
 
     WeakReference<AccessibleValue> accessibleValueWeakRef;
@@ -33,12 +40,26 @@ public class AtkValue {
         this.accessibleValueWeakRef = new WeakReference<AccessibleValue>(ac.getAccessibleValue());
     }
 
+    /**
+     * Factory method to create an AtkValue instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkValue instance, or null if creation fails
+     */
     public static AtkValue createAtkValue(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkValue(ac);
         }, null);
     }
 
+    /**
+     * Gets the current value of this object.
+     * Called from native code via JNI.
+     *
+     * @return a Number representing the current accessible value, or null if the value
+     * is unavailable or the object doesn't implement this interface
+     */
     public Number get_current_value() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
@@ -49,6 +70,13 @@ public class AtkValue {
         }, 0.0);
     }
 
+    /**
+     * Gets the maximum value of this object.
+     * Called from native code via JNI.
+     *
+     * @return a Double representing the maximum accessible value, or null if the value
+     * is unavailable or the object doesn't implement this interface
+     */
     public double getMaximumValue() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
@@ -59,6 +87,13 @@ public class AtkValue {
         }, 0.0);
     }
 
+    /**
+     * Gets the minimum value of this object.
+     * Called from native code via JNI.
+     *
+     * @return a Double representing the minimum accessible value, or null if the value
+     * is unavailable or the object doesn't implement this interface
+     */
     public double getMinimumValue() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
@@ -69,6 +104,12 @@ public class AtkValue {
         }, 0.0);
     }
 
+    /**
+     * Sets the current value of this object.
+     * Called from native code via JNI.
+     *
+     * @param n the Number value to set as the current accessible value
+     */
     public void setValue(Number n) {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
@@ -79,6 +120,12 @@ public class AtkValue {
         });
     }
 
+    /**
+     * Gets the minimum increment by which the value may be changed.
+     * Called from native code via JNI.
+     *
+     * @return the minimum increment value, returns Double.MIN_VALUE
+     */
     public double getIncrement() {
         return Double.MIN_VALUE;
     }

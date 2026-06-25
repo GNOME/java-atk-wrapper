@@ -25,6 +25,19 @@ import javax.accessibility.AccessibleIcon;
 import java.awt.*;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Image interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleIcon interface
+ * and the ATK (Accessibility Toolkit) image interface.
+ * AtkImage should be implemented by components which display
+ * image/pixmap content on-screen, such as icons, buttons with icons,
+ * toolbar elements, and image viewing panes.
+ * <p>
+ * This interface provides two types of information: coordinate information
+ * (useful for screen review mode and onscreen magnifiers) and descriptive
+ * information (for alternative text-only presentation).
+ */
 public class AtkImage {
 
     WeakReference<AccessibleContext> accessibleContextWeakRef;
@@ -36,12 +49,29 @@ public class AtkImage {
         this.accessibleIcons = new WeakReference<AccessibleIcon[]>(ac.getAccessibleIcon());
     }
 
+    /**
+     * Factory method to create an AtkImage instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkImage instance, or null if creation fails
+     */
     public static AtkImage createAtkImage(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkImage(ac);
         }, null);
     }
 
+    /**
+     * Gets the position of the image in the form of a point specifying the
+     * image's top-left corner.
+     * Called from native code via JNI.
+     *
+     * @param coordType specifies whether the coordinates are relative to the screen
+     *                  or to the component's top level window
+     * @return a Point representing the image position (x, y coordinates), or null
+     * if the position cannot be obtained (e.g., missing support).
+     */
     public Point get_image_position(int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -56,6 +86,13 @@ public class AtkImage {
         }, null);
     }
 
+    /**
+     * Gets a textual description of this image.
+     * Called from native code via JNI.
+     *
+     * @return a string representing the image description, or null if there is
+     * no description available or an error occurs
+     */
     public String get_image_description() {
         AccessibleIcon[] accessibleIcons = this.accessibleIcons.get();
         if (accessibleIcons == null)
@@ -72,6 +109,16 @@ public class AtkImage {
         }, "");
     }
 
+    /**
+     * Gets the width and height in pixels for the specified image.
+     * Called from native code via JNI.
+     *
+     * @return a Dimension containing the width and height of the image.
+     * Returns a Dimension with width and height set to -1 if the values
+     * cannot be obtained (for instance, if the object is not onscreen).
+     * If AccessibleIcon information is available, uses that; otherwise,
+     * falls back to the component's bounds.
+     */
     public Dimension get_image_size() {
         Dimension d = new Dimension(0, 0);
 

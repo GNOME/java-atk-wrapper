@@ -23,6 +23,20 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
+/**
+ * Repeats structure of Atk.KeyEventStruct encapsulating information about a key event.
+ * Using to create Atk.KeyEventStruct instance.
+ * <p>
+ * struct AtkKeyEventStruct {
+ * gint type;
+ * guint state;
+ * guint keyval;
+ * gint length;
+ * gchar* string;
+ * guint16 keycode;
+ * guint32 timestamp;
+ * }
+ */
 public class AtkKeyEvent {
 
     public static final int ATK_KEY_EVENT_PRESSED = 0;
@@ -113,8 +127,8 @@ public class AtkKeyEvent {
         switch (e.getKeyChar()) {
             case KeyEvent.CHAR_UNDEFINED: {
                 if (keyInfo != null) {
-                    keyval = keyInfo.getGdkKeyCode();
-                    string = keyInfo.getGdkKeyString();
+                    keyval = keyInfo.gdkKeyCode();
+                    string = keyInfo.gdkKeyString();
                 } else {
                     string = KeyEvent.getKeyText(e.getKeyCode());
                     if (string == null) string = "";
@@ -128,8 +142,8 @@ public class AtkKeyEvent {
                     chars[0] = (char) keyval;
                     string = new String(chars);
                 } else {
-                    keyval = keyInfo.getGdkKeyCode();
-                    string = keyInfo.getGdkKeyString();
+                    keyval = keyInfo.gdkKeyCode();
+                    string = keyInfo.gdkKeyString();
                 }
             }
         }
@@ -313,22 +327,7 @@ class GNOMEKeyMapping {
         keyMap.put(Integer.valueOf(RIGHT_OFFSET + KeyEvent.VK_ALT), new GNOMEKeyInfo(0xFFEA, "Alt_R")); // GDK_Alt_R
     }
 
-    public static final class GNOMEKeyInfo {
-        private final int gdkKeyCode;
-        private final String gdkKeyString;
-
-        public GNOMEKeyInfo(int code, String string) {
-            gdkKeyCode = code;
-            gdkKeyString = string;
-        }
-
-        public int getGdkKeyCode() {
-            return gdkKeyCode;
-        }
-
-        public String getGdkKeyString() {
-            return gdkKeyString;
-        }
+    public record GNOMEKeyInfo(int gdkKeyCode, String gdkKeyString) {
     }
 }
 

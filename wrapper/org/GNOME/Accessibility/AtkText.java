@@ -24,6 +24,20 @@ import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.text.BreakIterator;
 
+/**
+ * The ATK Text interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's {@link AccessibleText}
+ * interface and the ATK (Accessibility Toolkit) text interface used by
+ * assistive technologies.
+ * <p>
+ * <strong>Offset conventions:</strong> ATK uses "character offsets" in the
+ * exposed UTF-8 text stream. Across the JNI boundary we standardize on Unicode
+ * code point offsets. Java Swing text component indices, however, are typically
+ * UTF-16 indices. Therefore, all offsets received from native code are treated
+ * as code point offsets and converted to UTF-16 indices before calling into
+ * {@link AccessibleText}.
+ */
 public class AtkText {
 
     WeakReference<AccessibleContext> accessibleContextWeakRef;
@@ -38,6 +52,13 @@ public class AtkText {
                 new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
     }
 
+    /**
+     * Factory method to create an AtkText instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkText instance, or null if creation fails
+     */
     public static AtkText createAtkText(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkText(ac);
@@ -60,6 +81,15 @@ public class AtkText {
     }
 
     /* Return string from start, up to, but not including end */
+
+    /**
+     * Gets the specified text from start to end offset.
+     * Called from native code via JNI.
+     *
+     * @param startCodePointIndex a starting code point offset within the text
+     * @param endCodePointIndex   an ending code point offset within the text, or -1 for the end of the string
+     * @return a string containing the text from start up to, but not including end, or null if retrieval fails
+     */
     public String get_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -85,6 +115,13 @@ public class AtkText {
         }, null);
     }
 
+    /**
+     * Gets the character (Unicode code point) at the specified offset.
+     * Called from native code via JNI.
+     *
+     * @param codePointOffset a code point offset within the text
+     * @return the Unicode code point at the specified offset, or 0 in case of failure
+     */
     public char get_character_at_offset(int codePointOffset) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -170,6 +207,13 @@ public class AtkText {
         }, null);
     }
 
+    /**
+     * Gets the offset of the position of the caret (cursor).
+     * Called from native code via JNI.
+     *
+     * @return the character offset of the position of the caret, or -1 if the caret is not located
+     * inside the element or in the case of any other failure
+     */
     public int get_caret_offset() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -180,6 +224,15 @@ public class AtkText {
         }, 0);
     }
 
+    /**
+     * Gets the bounding box containing the glyph representing the character at a particular text offset.
+     * Called from native code via JNI.
+     *
+     * @param codePointOffset the code point offset of the text character for which bounding information is required
+     * @param coordType       specifies whether coordinates are relative to the screen or widget window
+     * @return a Rectangle containing the bounding box (x, y, width, height), or null if the extent
+     * cannot be obtained. Returns null if all coordinates are set to -1.
+     */
     public Rectangle get_character_extents(int codePointOffset, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -202,6 +255,12 @@ public class AtkText {
         }, null);
     }
 
+    /**
+     * Gets the character count.
+     * Called from native code via JNI.
+     *
+     * @return the number of characters, or -1 in case of failure
+     */
     public int get_character_count() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -212,6 +271,18 @@ public class AtkText {
         }, 0);
     }
 
+    /**
+     * Gets the offset of the character located at coordinates @x and @y. @x and @y
+     * are interpreted as being relative to the screen or this widget's window
+     * depending on @coords.
+     *
+     * @param x         int screen x-position of character
+     * @param y         int screen y-position of character
+     * @param coordType int specify whether coordinates are relative to the screen or
+     *                  widget window
+     * @return the offset to the character which is located at the specified
+     * @x and @y coordinates or -1 in case of failure.
+     */
     public int get_offset_at_point(int x, int y, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -229,6 +300,16 @@ public class AtkText {
         }, -1);
     }
 
+    /**
+     * Gets the bounding box for text within the specified range.
+     * Called from native code via JNI.
+     *
+     * @param startCodePointIndex the code point offset of the first text character for which boundary information is required
+     * @param endCodePointIndex   the code point offset of the text character after the last character for which boundary information is required
+     * @param coordType           specifies whether coordinates are relative to the screen or widget window
+     * @return a Rectangle filled in with the bounding box, or null if the extents cannot be obtained.
+     * Returns null if all rectangle fields are set to -1.
+     */
     public Rectangle get_range_extents(
             int startCodePointIndex, int endCodePointIndex, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
@@ -262,6 +343,12 @@ public class AtkText {
         }, null);
     }
 
+    /**
+     * Gets the number of selected regions.
+     * Called from native code via JNI.
+     *
+     * @return The number of selected regions, or -1 in the case of failure.
+     */
     public int get_n_selections() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -275,6 +362,13 @@ public class AtkText {
         }, 0);
     }
 
+    /**
+     * Gets the text from the specified selection.
+     * Called from native code via JNI.
+     *
+     * @return a StringSequence containing the selected text and its start and end code point offsets,
+     * or null if there is no selection or retrieval fails
+     */
     public StringSequence get_selection() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -290,6 +384,15 @@ public class AtkText {
         }, null);
     }
 
+    /**
+     * Adds a selection bounded by the specified offsets.
+     * Called from native code via JNI.
+     *
+     * @param startCodePointIndex the starting code point offset of the selected region
+     * @param endCodePointIndex   the code point offset of the first character after the selected region
+     * @return true if successful, false otherwise. Note that Java AccessibleText only supports
+     * a single selection, so this will return false if a selection already exists.
+     */
     public boolean add_selection(int startCodePointIndex, int endCodePointIndex) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -313,6 +416,15 @@ public class AtkText {
         }, false);
     }
 
+    /**
+     * Removes the specified selection.
+     * Called from native code via JNI.
+     *
+     * @param selectionNum the selection number. The selected regions are assigned numbers
+     *                     that correspond to how far the region is from the start of the text.
+     *                     Since Java only supports a single selection, only 0 is valid.
+     * @return true if successful, false otherwise
+     */
     public boolean remove_selection(int selectionNum) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
@@ -326,6 +438,17 @@ public class AtkText {
         }, false);
     }
 
+    /**
+     * Changes the start and end offset of the specified selection.
+     * Called from native code via JNI.
+     *
+     * @param selectionNum        the selection number. The selected regions are assigned numbers
+     *                            that correspond to how far the region is from the start of the text.
+     *                            Since Java only supports a single selection, only 0 is valid.
+     * @param startCodePointIndex the new starting code point offset of the selection
+     * @param endCodePointIndex   the new end code point offset (offset immediately past) of the selection
+     * @return true if successful, false otherwise
+     */
     public boolean set_selection(
             int selectionNum, int startCodePointIndex, int endCodePointIndex) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
@@ -351,6 +474,13 @@ public class AtkText {
         }, false);
     }
 
+    /**
+     * Sets the caret (cursor) position to the specified offset.
+     * Called from native code via JNI.
+     *
+     * @param codePointOffset the code point offset of the new caret position
+     * @return true if successful, false otherwise
+     */
     public boolean set_caret_offset(int codePointOffset) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -422,6 +552,14 @@ public class AtkText {
         }
     }
 
+    /**
+     * Gets the start position of the previous word before the given UTF-16 index.
+     *
+     * @param utf16Index The UTF-16 character index within the text
+     * @param text       The full text to search within
+     * @return The UTF-16 start position of the previous word, or {@link BreakIterator#DONE}
+     * if no previous word is found or if no word segments contain letters or digits
+     */
     private int getPreviousWordStart(int utf16Index, String text) {
         BreakIterator words = BreakIterator.getWordInstance();
         words.setText(text);
@@ -493,6 +631,13 @@ public class AtkText {
         return index;
     }
 
+    /**
+     * Gets the start position of the previous sentence before the given offset.
+     *
+     * @param utf16Index The UTF-16 character index within the text
+     * @param text       The full text to search within
+     * @return The start position of the previous sentence, or BreakIterator.DONE if not found
+     */
     private int getPreviousSentenceStart(int utf16Index, String text) {
         BreakIterator sentences = BreakIterator.getSentenceInstance();
         sentences.setText(text);
@@ -672,6 +817,20 @@ public class AtkText {
         }
     }
 
+    /**
+     * The ATK Text interface implementation for Java accessibility.
+     * <p>
+     * This class provides a bridge between Java's {@link AccessibleText}
+     * interface and the ATK (Accessibility Toolkit) text interface used by
+     * assistive technologies.
+     * <p>
+     * <strong>Offset conventions:</strong> ATK uses "character offsets" in the
+     * exposed UTF-8 text stream. Across the JNI boundary we standardize on Unicode
+     * code point offsets. Java Swing text component indices, however, are typically
+     * UTF-16 indices. Therefore, all offsets received from native code are treated
+     * as code point offsets and converted to UTF-16 indices before calling into
+     * {@link AccessibleText}.
+     */
     public class StringSequence {
 
         public String str;
