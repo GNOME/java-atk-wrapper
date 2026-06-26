@@ -127,7 +127,7 @@ jaw_component_data_init (jobject ac)
                                                 "org/GNOME/Accessibility/AtkComponent");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv,
                                                  classComponent,
-                                                 "createAtkComponent",
+                                                 "create_atk_component",
                                                  "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkComponent;");
 
   jobject jatk_component = (*jniEnv)->CallStaticObjectMethod (jniEnv, classComponent, jmid, ac);

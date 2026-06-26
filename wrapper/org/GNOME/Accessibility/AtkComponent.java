@@ -129,7 +129,7 @@ public class AtkComponent {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkComponent instance, or null if creation fails
      */
-    private static AtkComponent createAtkComponent(AccessibleContext ac) {
+    private static AtkComponent create_atk_component(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkComponent(ac);
         }, null);
