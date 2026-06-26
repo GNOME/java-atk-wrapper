@@ -62,7 +62,7 @@ extern "C"
   {
     JAW_DEBUG_C ("%p, %p, %p", jniEnv, ac, jaw_impl);
     jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
-    jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
+    jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hash_code", "(Ljavax/accessibility/AccessibleContext;)I");
     jaw_impl->hash_key = (gint) (*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
     g_mutex_lock (&objectTableMutex);
     gboolean res = g_hash_table_insert (objectTable, GINT_TO_POINTER (jaw_impl->hash_key), jaw_impl);
@@ -75,7 +75,7 @@ extern "C"
   {
     JAW_DEBUG_C ("%p, %p", jniEnv, ac);
     jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
-    jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hashCode", "(Ljavax/accessibility/AccessibleContext;)I");
+    jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "hash_code", "(Ljavax/accessibility/AccessibleContext;)I");
     gint hash_key = (gint) (*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, ac);
     gpointer value = NULL;
     g_mutex_lock (&objectTableMutex);

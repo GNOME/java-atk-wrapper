@@ -102,7 +102,7 @@ public class AtkObject {
      * @param o the accessible object (AccessibleContext or Accessible)
      * @return bitwise OR of ATK interface flags from {@link AtkInterface}
      */
-    private static int getTFlagFromObj(Object o) {
+    private static int get_tflag_from_obj(Object o) {
         return AtkUtil.invokeInSwing(() -> {
             int flags = 0;
             AccessibleContext ac;
@@ -160,7 +160,7 @@ public class AtkObject {
      * @param ac the accessible context
      * @return the parent accessible context, or null if no parent exists
      */
-    private static AccessibleContext getAccessibleParent(AccessibleContext ac) {
+    private static AccessibleContext get_accessible_parent(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             Accessible accessibleParent = ac.getAccessibleParent();
             if (accessibleParent != null)
@@ -177,7 +177,7 @@ public class AtkObject {
      * @param ac                      the accessible context whose parent should be set
      * @param parentAccessibleContext the new parent accessible context (must be Accessible)
      */
-    private static void setAccessibleParent(
+    private static void set_accessible_parent(
             AccessibleContext ac, AccessibleContext parentAccessibleContext) {
         AtkUtil.invokeInSwing(() -> {
             if (parentAccessibleContext instanceof Accessible parentAccessible) {
@@ -193,7 +193,7 @@ public class AtkObject {
      * @param ac the accessible context
      * @return the accessible name, with accelerator text appended, or null if no name is set
      */
-    private static String getAccessibleName(AccessibleContext ac) {
+    private static String get_accessible_name(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             String accessibleName = ac.getAccessibleName();
             if (accessibleName == null) {
@@ -214,7 +214,7 @@ public class AtkObject {
      * @param ac   the accessible context
      * @param name the new accessible name
      */
-    private static void setAccessibleName(AccessibleContext ac, String name) {
+    private static void set_accessible_name(AccessibleContext ac, String name) {
         AtkUtil.invokeInSwing(() -> {
             ac.setAccessibleName(name);
         });
@@ -227,7 +227,7 @@ public class AtkObject {
      * @param ac the accessible context
      * @return the accessible description, or empty string if no description is set
      */
-    private static String getAccessibleDescription(AccessibleContext ac) {
+    private static String get_accessible_description(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleDescription();
         }, "");
@@ -240,7 +240,7 @@ public class AtkObject {
      * @param ac          the accessible context
      * @param description the new accessible description
      */
-    private static void setAccessibleDescription(AccessibleContext ac, String description) {
+    private static void set_accessible_description(AccessibleContext ac, String description) {
         AtkUtil.invokeInSwing(() -> {
             ac.setAccessibleDescription(description);
         });
@@ -253,7 +253,7 @@ public class AtkObject {
      * @param ac the accessible context
      * @return the number of accessible children, or 0 if there are no children
      */
-    private static int getAccessibleChildrenCount(AccessibleContext ac) {
+    private static int get_accessible_children_count(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleChildrenCount();
         }, 0);
@@ -266,7 +266,7 @@ public class AtkObject {
      * @param ac the accessible context
      * @return the zero-based index in parent, or -1 if no parent exists or index cannot be determined
      */
-    private static int getAccessibleIndexInParent(AccessibleContext ac) {
+    private static int get_accessible_index_in_parent(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleIndexInParent();
         }, -1);
@@ -279,13 +279,13 @@ public class AtkObject {
      * @param ac the accessible context
      * @return the accessible role, or null if the role cannot be determined
      */
-    private static AccessibleRole getAccessibleRole(AccessibleContext ac) {
+    private static AccessibleRole get_accessible_role(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.getAccessibleRole();
         }, AccessibleRole.UNKNOWN);
     }
 
-    private static boolean equalsIgnoreCaseLocaleWithRole(AccessibleRole role) {
+    private static boolean equals_ignore_case_locale_with_role(AccessibleRole role) {
         String displayString = role.toDisplayString(Locale.US);
         return displayString.equalsIgnoreCase("paragraph");
     }
@@ -297,7 +297,7 @@ public class AtkObject {
      * @param ac the accessible context
      * @return an array of accessible states, or null if no state set exists
      */
-    private static AccessibleState[] getArrayAccessibleState(AccessibleContext ac) {
+    private static AccessibleState[] get_array_accessible_state(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             AccessibleStateSet stateSet = ac.getAccessibleStateSet();
             if (stateSet == null)
@@ -314,7 +314,7 @@ public class AtkObject {
      * @param ac the accessible context
      * @return the locale string in the format "language_country@script@variant", or null if locale cannot be determined
      */
-    private static String getLocale(AccessibleContext ac) {
+    private static String get_locale(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             Locale l = ac.getLocale();
             String locale = l.getLanguage();
@@ -342,7 +342,7 @@ public class AtkObject {
      * @return an array of WrapKeyAndTarget records containing relation keys and targets,
      * or an empty array if no relations exist
      */
-    private static WrapKeyAndTarget[] getArrayAccessibleRelation(AccessibleContext ac) {
+    private static WrapKeyAndTarget[] get_array_accessible_relation(AccessibleContext ac) {
         WrapKeyAndTarget[] d = new WrapKeyAndTarget[0];
         return AtkUtil.invokeInSwing(() -> {
             AccessibleRelationSet relationSet = ac.getAccessibleRelationSet();
@@ -376,7 +376,7 @@ public class AtkObject {
      * @param i  the zero-based index of the child
      * @return the child accessible context at the given index, or null if no child exists at that index
      */
-    private static AccessibleContext getAccessibleChild(AccessibleContext ac, int i) {
+    private static AccessibleContext get_accessible_child(AccessibleContext ac, int i) {
         return AtkUtil.invokeInSwing(() -> {
             Accessible child = ac.getAccessibleChild(i);
             if (child == null)
@@ -386,7 +386,7 @@ public class AtkObject {
         }, null);
     }
 
-    private static int hashCode(AccessibleContext ac) {
+    private static int hash_code(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return ac.hashCode();
         }, 0);

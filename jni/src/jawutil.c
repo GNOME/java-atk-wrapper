@@ -287,7 +287,7 @@ extern "C"
   {
     JAW_DEBUG_C ("%p, %p", jniEnv, jObj);
     jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
-    jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getTFlagFromObj", "(Ljava/lang/Object;)I");
+    jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "get_tflag_from_obj", "(Ljava/lang/Object;)I");
     return (guint) (*jniEnv)->CallStaticIntMethod (jniEnv, atkObject, jmid, jObj);
   }
 
@@ -428,7 +428,7 @@ extern "C"
     JAW_DEBUG_C ("%p", jAccessibleContext);
     JNIEnv *jniEnv = jaw_util_get_jni_env ();
     jclass atkObject = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkObject");
-    jmethodID jmidgar = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleRole", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleRole;");
+    jmethodID jmidgar = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "get_accessible_role", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleRole;");
     jobject ac_role = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmidgar, jAccessibleContext);
     jclass classAccessibleRole = (*jniEnv)->FindClass (jniEnv, "javax/accessibility/AccessibleRole");
 
@@ -560,7 +560,7 @@ extern "C"
 
     if (jaw_util_is_java_acc_role (jniEnv, ac_role, "RADIO_BUTTON"))
       {
-        jmethodID jmidgap = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleParent", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleContext;");
+        jmethodID jmidgap = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "get_accessible_parent", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleContext;");
         jobject jparent = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmidgap, jAccessibleContext);
         if (!jparent)
           return ATK_ROLE_RADIO_BUTTON;
@@ -625,7 +625,7 @@ extern "C"
 
     if (jaw_util_is_java_acc_role (jniEnv, ac_role, "UNKNOWN"))
       {
-        jmethodID jmidgap = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "getAccessibleParent", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleContext;");
+        jmethodID jmidgap = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "get_accessible_parent", "(Ljavax/accessibility/AccessibleContext;)Ljavax/accessibility/AccessibleContext;");
         jobject jparent = (*jniEnv)->CallStaticObjectMethod (jniEnv, atkObject, jmidgap, jAccessibleContext);
 
         if (jparent == NULL)
@@ -640,7 +640,7 @@ extern "C"
     if (jaw_util_is_java_acc_role (jniEnv, ac_role, "WINDOW"))
       return ATK_ROLE_WINDOW;
 
-    jmethodID jmideic = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "equalsIgnoreCaseLocaleWithRole", "(Ljavax/accessibility/AccessibleRole;)Z");
+    jmethodID jmideic = (*jniEnv)->GetStaticMethodID (jniEnv, atkObject, "equals_ignore_case_locale_with_role", "(Ljavax/accessibility/AccessibleRole;)Z");
     if ((*jniEnv)->CallStaticBooleanMethod (jniEnv, atkObject, jmideic, ac_role))
       return ATK_ROLE_PARAGRAPH;
 
