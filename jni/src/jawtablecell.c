@@ -116,7 +116,7 @@ jaw_table_cell_data_init (jobject ac)
 
   JNIEnv *jniEnv = jaw_util_get_jni_env ();
   jclass classTableCell = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkTableCell");
-  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, classTableCell, "createAtkTableCell", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkTableCell;");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, classTableCell, "create_atk_table_cell", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkTableCell;");
   jobject jatk_table_cell = (*jniEnv)->CallStaticObjectMethod (jniEnv, classTableCell, jmid, ac);
   data->atk_table_cell = (*jniEnv)->NewGlobalRef (jniEnv, jatk_table_cell);
 
@@ -175,7 +175,7 @@ jaw_table_cell_get_table (AtkTableCell *cell)
                                                    "org/GNOME/Accessibility/AtkTableCell");
   jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv,
                                            classAtkTableCell,
-                                           "getTable",
+                                           "get_table",
                                            "()Ljavax/accessibility/AccessibleTable;");
   jobject jac = (*jniEnv)->CallObjectMethod (jniEnv, jatk_table_cell, jmid);
   (*jniEnv)->DeleteGlobalRef (jniEnv, jatk_table_cell);
@@ -403,7 +403,7 @@ jaw_table_cell_get_column_header_cells (AtkTableCell *cell)
   JAW_GET_TABLECELL (cell, NULL);
 
   jclass classAtkTableCell = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkTableCell");
-  jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv, classAtkTableCell, "getAccessibleColumnHeader", "()[Ljavax/accessibility/AccessibleContext;");
+  jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv, classAtkTableCell, "get_accessible_column_header", "()[Ljavax/accessibility/AccessibleContext;");
   jobjectArray ja_ac = (jobjectArray) (*jniEnv)->CallObjectMethod (jniEnv, jatk_table_cell, jmid);
   (*jniEnv)->DeleteGlobalRef (jniEnv, jatk_table_cell);
   if (!ja_ac)
@@ -438,7 +438,7 @@ jaw_table_cell_get_row_header_cells (AtkTableCell *cell)
   JAW_GET_TABLECELL (cell, NULL);
 
   jclass classAtkTableCell = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkTableCell");
-  jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv, classAtkTableCell, "getAccessibleRowHeader", "()[Ljavax/accessibility/AccessibleContext;");
+  jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv, classAtkTableCell, "get_accessible_row_header", "()[Ljavax/accessibility/AccessibleContext;");
   jobjectArray ja_ac = (jobjectArray) (*jniEnv)->CallObjectMethod (jniEnv, jatk_table_cell, jmid);
   (*jniEnv)->DeleteGlobalRef (jniEnv, jatk_table_cell);
   if (!ja_ac)
