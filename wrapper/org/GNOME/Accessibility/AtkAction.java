@@ -33,11 +33,11 @@ import java.lang.ref.WeakReference;
  */
 public class AtkAction {
 
-    WeakReference<AccessibleContext> accessibleContextWeakRef;
-    WeakReference<AccessibleAction> accessibleActionWeakRef;
-    WeakReference<AccessibleExtendedComponent> _acc_ext_component;
-    String[] descriptions;
-    int nactions;
+    private final WeakReference<AccessibleContext> accessibleContextWeakRef;
+    private final WeakReference<AccessibleAction> accessibleActionWeakRef;
+    private final WeakReference<AccessibleExtendedComponent> _acc_ext_component;
+    private final String[] descriptions;
+    private final int nactions;
 
     public AtkAction(AccessibleContext ac) {
         super();
@@ -51,6 +51,8 @@ public class AtkAction {
             this._acc_ext_component =
                     new WeakReference<AccessibleExtendedComponent>(
                             (AccessibleExtendedComponent) accessibleComponent);
+        } else {
+            this._acc_ext_component = null;
         }
     }
 

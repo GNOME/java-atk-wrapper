@@ -33,7 +33,7 @@ import java.lang.ref.WeakReference;
  */
 public class AtkValue {
 
-    WeakReference<AccessibleValue> accessibleValueWeakRef;
+    private final WeakReference<AccessibleValue> accessibleValueWeakRef;
 
     public AtkValue(AccessibleContext ac) {
         super();

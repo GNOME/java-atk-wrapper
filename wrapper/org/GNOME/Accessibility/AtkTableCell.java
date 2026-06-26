@@ -34,18 +34,16 @@ import java.lang.ref.WeakReference;
  */
 public class AtkTableCell {
 
-    public int row, rowSpan, column, columnSpan;
-    WeakReference<AccessibleContext> _ac;
-    WeakReference<AccessibleTable> accessibleTableWeakRef;
+    private final int row;
+    private final int rowSpan;
+    private final int column;
+    private final int columnSpan;
+    private final WeakReference<AccessibleContext> _ac;
+    private final WeakReference<AccessibleTable> accessibleTableWeakRef;
 
     public AtkTableCell(AccessibleContext ac) {
         this._ac = new WeakReference<AccessibleContext>(ac);
         Accessible accessibleParent = ac.getAccessibleParent();
-        accessibleTableWeakRef = null;
-        row = -1;
-        rowSpan = -1;
-        column = -1;
-        columnSpan = -1;
         if (accessibleParent == null) {
             return;
         }
@@ -58,14 +56,19 @@ public class AtkTableCell {
             return;
         }
         accessibleTableWeakRef = new WeakReference<AccessibleTable>(accessibleTable);
-        int index = ac.getAccessibleIndexInParent();
-        if (!(accessibleTable instanceof AccessibleExtendedTable accessibleExtendedTable)) {
-            return;
+
+        if (accessibleTable instanceof AccessibleExtendedTable accessibleExtendedTable) {
+            int index = ac.getAccessibleIndexInParent();
+            row = accessibleExtendedTable.getAccessibleRow(index);
+            column = accessibleExtendedTable.getAccessibleColumn(index);
+            rowSpan = accessibleTable.getAccessibleRowExtentAt(row, column);
+            columnSpan = accessibleTable.getAccessibleColumnExtentAt(row, column);
+        } else {
+            row = -1;
+            column = -1;
+            rowSpan = -1;
+            columnSpan = -1;
         }
-        row = accessibleExtendedTable.getAccessibleRow(index);
-        column = accessibleExtendedTable.getAccessibleColumn(index);
-        rowSpan = accessibleTable.getAccessibleRowExtentAt(row, column);
-        columnSpan = accessibleTable.getAccessibleColumnExtentAt(row, column);
     }
 
     // JNI upcalls section

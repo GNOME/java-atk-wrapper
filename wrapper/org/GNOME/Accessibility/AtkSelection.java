@@ -30,8 +30,8 @@ import java.lang.ref.WeakReference;
  */
 public class AtkSelection {
 
-    WeakReference<AccessibleContext> accessibleContextWeakRef;
-    WeakReference<AccessibleSelection> accessibleSelectionWeakRef;
+    private final WeakReference<AccessibleContext> accessibleContextWeakRef;
+    private final WeakReference<AccessibleSelection> accessibleSelectionWeakRef;
 
     public AtkSelection(AccessibleContext ac) {
         super();

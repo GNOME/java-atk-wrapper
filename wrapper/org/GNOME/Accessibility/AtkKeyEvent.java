@@ -39,9 +39,9 @@ import java.util.HashMap;
  */
 public class AtkKeyEvent {
 
-    public static final int ATK_KEY_EVENT_PRESSED = 0;
-    public static final int ATK_KEY_EVENT_RELEASED = 1;
-    private static HashMap<String, String> nonAlphaNumericMap = null;
+    private static final int ATK_KEY_EVENT_PRESSED = 0;
+    private static final int ATK_KEY_EVENT_RELEASED = 1;
+    private static final HashMap<String, String> nonAlphaNumericMap;
 
     static {
         // Non-alphanumeric symbols that need to be mapped to X11 keysym names
@@ -80,16 +80,16 @@ public class AtkKeyEvent {
         nonAlphaNumericMap.put("?", "question");
     }
 
-    public int type;
-    public boolean isShiftKeyDown = false;
-    public boolean isCtrlKeyDown = false;
-    public boolean isAltKeyDown = false;
-    public boolean isMetaKeyDown = false;
-    public boolean isAltGrKeyDown = false;
-    public int keyval = 0;
-    public String string;
-    public int keycode;
-    public int timestamp;
+    private final int type;
+    private final boolean isShiftKeyDown;
+    private final boolean isCtrlKeyDown;
+    private final boolean isAltKeyDown;
+    private final boolean isMetaKeyDown;
+    private final boolean isAltGrKeyDown;
+    private final int keyval;
+    private final String string;
+    private final int keycode;
+    private final int timestamp;
 
     public AtkKeyEvent(KeyEvent e) {
         //type
@@ -107,43 +107,36 @@ public class AtkKeyEvent {
 
         //modifiers
         int modifierMask = e.getModifiersEx();
-        if ((modifierMask & InputEvent.SHIFT_DOWN_MASK) != 0) {
-            isShiftKeyDown = true;
-        }
-        if ((modifierMask & InputEvent.CTRL_DOWN_MASK) != 0) {
-            isCtrlKeyDown = true;
-        }
-        if ((modifierMask & InputEvent.ALT_DOWN_MASK) != 0) {
-            isAltKeyDown = true;
-        }
-        if ((modifierMask & InputEvent.META_DOWN_MASK) != 0) {
-            isMetaKeyDown = true;
-        }
-        if ((modifierMask & InputEvent.ALT_GRAPH_DOWN_MASK) != 0) {
-            isAltGrKeyDown = true;
-        }
+        isShiftKeyDown = (modifierMask & InputEvent.SHIFT_DOWN_MASK) != 0;
+        isCtrlKeyDown = (modifierMask & InputEvent.CTRL_DOWN_MASK) != 0;
+        isAltKeyDown = (modifierMask & InputEvent.ALT_DOWN_MASK) != 0;
+        isMetaKeyDown = (modifierMask & InputEvent.META_DOWN_MASK) != 0;
+        isAltGrKeyDown = (modifierMask & InputEvent.ALT_GRAPH_DOWN_MASK) != 0;
 
         GNOMEKeyMapping.GNOMEKeyInfo keyInfo = GNOMEKeyMapping.getKey(e);
+        int tempKeyval;
+        String tempString;
         switch (e.getKeyChar()) {
             case KeyEvent.CHAR_UNDEFINED: {
                 if (keyInfo != null) {
-                    keyval = keyInfo.gdkKeyCode();
-                    string = keyInfo.gdkKeyString();
+                    tempKeyval = keyInfo.gdkKeyCode();
+                    tempString = keyInfo.gdkKeyString();
                 } else {
-                    string = KeyEvent.getKeyText(e.getKeyCode());
-                    if (string == null) string = "";
+                    tempKeyval = 0;
+                    tempString = KeyEvent.getKeyText(e.getKeyCode());
+                    if (tempString == null) tempString = "";
                 }
                 break;
             }
             default: {
                 char[] chars = new char[1];
                 if (keyInfo == null) {
-                    keyval = e.getKeyChar();
-                    chars[0] = (char) keyval;
-                    string = new String(chars);
+                    tempKeyval = e.getKeyChar();
+                    chars[0] = (char) tempKeyval;
+                    tempString = new String(chars);
                 } else {
-                    keyval = keyInfo.gdkKeyCode();
-                    string = keyInfo.gdkKeyString();
+                    tempKeyval = keyInfo.gdkKeyCode();
+                    tempString = keyInfo.gdkKeyString();
                 }
             }
         }
@@ -157,9 +150,12 @@ public class AtkKeyEvent {
         keycode = Integer.valueOf(rawcode_s);
         timestamp = (int) e.getWhen();
 
-        String nonAlphaNumericString = nonAlphaNumericMap.get(string);
+        String nonAlphaNumericString = nonAlphaNumericMap.get(tempString);
         if (nonAlphaNumericString != null)
-            string = nonAlphaNumericString;
+            tempString = nonAlphaNumericString;
+
+        keyval = tempKeyval;
+        string = tempString;
     }
 }
 
@@ -168,9 +164,9 @@ class GNOMEKeyMapping {
     // Used to offset VK for NUMPAD keys that don't have a VK_KP_* equivalent.
     // // At present max VK_* value is 0x0000FFFF
     // // Also need to support Left/Right variations
-    private final static int NUMPAD_OFFSET = 0xFEFE0000;
-    private final static int LEFT_OFFSET = 0xFEFD0000;
-    private final static int RIGHT_OFFSET = 0xFEFC0000;
+    private static final int NUMPAD_OFFSET = 0xFEFE0000;
+    private static final int LEFT_OFFSET = 0xFEFD0000;
+    private static final int RIGHT_OFFSET = 0xFEFC0000;
     private static HashMap<Integer, Object> keyMap = null;
 
     static {
@@ -330,4 +326,3 @@ class GNOMEKeyMapping {
     public record GNOMEKeyInfo(int gdkKeyCode, String gdkKeyString) {
     }
 }
-

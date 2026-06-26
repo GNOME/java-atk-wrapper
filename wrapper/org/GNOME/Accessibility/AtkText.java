@@ -40,9 +40,9 @@ import java.text.BreakIterator;
  */
 public class AtkText {
 
-    WeakReference<AccessibleContext> accessibleContextWeakRef;
-    WeakReference<AccessibleText> accessibleTextWeakRef;
-    WeakReference<AccessibleEditableText> accessibleEditableTextWeakRef;
+    private final WeakReference<AccessibleContext> accessibleContextWeakRef;
+    private final WeakReference<AccessibleText> accessibleTextWeakRef;
+    private final WeakReference<AccessibleEditableText> accessibleEditableTextWeakRef;
 
     public AtkText(AccessibleContext ac) {
         super();
@@ -400,8 +400,8 @@ public class AtkText {
      */
     public class StringSequence {
 
-        public String str;
-        public int start_offset, end_offset;
+        public final String str;
+        public final int start_offset, end_offset;
 
         public StringSequence(String str, int start_offset, int end_offset) {
             this.str = str;

@@ -390,8 +390,8 @@ public class AtkObject {
     }
 
     public static class WrapKeyAndTarget {
-        public String key;
-        public AccessibleContext[] relations;
+        public final String key;
+        public final AccessibleContext[] relations;
 
         /**
          * A record that wraps an accessible relation key with its target accessible contexts.

@@ -34,8 +34,8 @@ import java.lang.ref.WeakReference;
  */
 public class AtkTable {
 
-    WeakReference<AccessibleContext> accessibleContextWeakRef;
-    WeakReference<AccessibleTable> accessibleTableWeakRef;
+    private final WeakReference<AccessibleContext> accessibleContextWeakRef;
+    private final WeakReference<AccessibleTable> accessibleTableWeakRef;
 
     public AtkTable(AccessibleContext ac) {
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);

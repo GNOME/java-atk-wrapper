@@ -35,11 +35,11 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 
 public class AtkWrapper {
-    static boolean accessibilityEnabled = false;
-    static AccessibleContext oldSourceContext = null;
-    static AccessibleContext savedSourceContext = null;
-    static AccessibleContext oldPaneContext = null;
-    static PropertyChangeListener propertyChangeListener =
+    private static boolean accessibilityEnabled = false;
+    private static AccessibleContext oldSourceContext = null;
+    private static AccessibleContext savedSourceContext = null;
+    private static AccessibleContext oldPaneContext = null;
+    private static final PropertyChangeListener propertyChangeListener =
             new PropertyChangeListener() {
 
                 /**
@@ -367,7 +367,7 @@ public class AtkWrapper {
      * <p><http://docs.oracle.com/javase/8/docs/api/java/awt/event/WindowAdapter.html>
      * <http://docs.oracle.com/javase/8/docs/api/java/awt/event/WindowEvent.html>
      */
-    final WindowAdapter winAdapter =
+    private final WindowAdapter winAdapter =
             new WindowAdapter() {
 
                 /**
@@ -502,7 +502,7 @@ public class AtkWrapper {
                 }
             }; // Close WindowAdapter brace
 
-    final ComponentAdapter componentAdapter =
+    private final ComponentAdapter componentAdapter =
             new ComponentAdapter() {
 
                 /**
@@ -559,7 +559,7 @@ public class AtkWrapper {
                     }
                 }
             };
-    final AWTEventListener globalListener =
+    private final AWTEventListener globalListener =
             new AWTEventListener() {
                 private boolean firstEvent = true;
 
@@ -614,7 +614,7 @@ public class AtkWrapper {
                     }
                 }
             };
-    final Toolkit toolkit = Toolkit.getDefaultToolkit();
+    private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     public AtkWrapper() {
         if (!accessibilityEnabled) return;

@@ -40,8 +40,8 @@ import java.lang.ref.WeakReference;
  */
 public class AtkImage {
 
-    WeakReference<AccessibleContext> accessibleContextWeakRef;
-    WeakReference<AccessibleIcon[]> accessibleIcons;
+    private final WeakReference<AccessibleContext> accessibleContextWeakRef;
+    private final WeakReference<AccessibleIcon[]> accessibleIcons;
 
     public AtkImage(AccessibleContext ac) {
         super();

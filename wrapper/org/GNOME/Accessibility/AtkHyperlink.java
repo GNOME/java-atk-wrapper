@@ -32,7 +32,7 @@ import java.lang.ref.WeakReference;
  */
 public class AtkHyperlink {
 
-    WeakReference<AccessibleHyperlink> accessibleHyperlinkWeakRef;
+    private final WeakReference<AccessibleHyperlink> accessibleHyperlinkWeakRef;
 
     public AtkHyperlink(AccessibleHyperlink accessibleHyperlink) {
         super();
