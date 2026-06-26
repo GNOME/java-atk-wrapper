@@ -51,7 +51,7 @@ public class AtkTable {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkTable instance, or null if creation fails
      */
-    private static AtkTable createAtkTable(AccessibleContext ac) {
+    private static AtkTable create_atk_table(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkTable(ac);
         }, null);
@@ -237,7 +237,7 @@ public class AtkTable {
      *
      * @param a the Accessible to use as the table caption
      */
-    private void setCaption(Accessible a) {
+    private void set_caption(Accessible a) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
@@ -279,7 +279,7 @@ public class AtkTable {
      * @param description a String object representing the description text to set for the
      *                    specified column of the table
      */
-    private void setColumnDescription(int column, String description) {
+    private void set_column_description(int column, String description) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
@@ -323,7 +323,7 @@ public class AtkTable {
      * @param description a String object representing the description text to set for the
      *                    specified row of the table
      */
-    private void setRowDescription(int row, String description) {
+    private void set_row_description(int row, String description) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
@@ -406,7 +406,7 @@ public class AtkTable {
      *
      * @param a the Accessible to use as the table summary
      */
-    private void setSummary(Accessible a) {
+    private void set_summary(Accessible a) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
