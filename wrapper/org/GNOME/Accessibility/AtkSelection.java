@@ -49,7 +49,7 @@ public class AtkSelection {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkSelection instance, or null if creation fails
      */
-    private static AtkSelection createAtkSelection(AccessibleContext ac) {
+    private static AtkSelection create_atk_selection(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkSelection(ac);
         }, null);

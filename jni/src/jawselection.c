@@ -109,7 +109,7 @@ jaw_selection_data_init (jobject ac)
 
   JNIEnv *jniEnv = jaw_util_get_jni_env ();
   jclass classSelection = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkSelection");
-  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, classSelection, "createAtkSelection", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkSelection;");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, classSelection, "create_atk_selection", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkSelection;");
   jobject jatk_selection = (*jniEnv)->CallStaticObjectMethod (jniEnv, classSelection, jmid, ac);
   data->atk_selection = (*jniEnv)->NewGlobalRef (jniEnv, jatk_selection);
 
