@@ -122,7 +122,7 @@ jaw_action_data_init (jobject ac)
                                              "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv,
                                                  classAction,
-                                                 "createAtkAction",
+                                                 "create_atk_action",
                                                  "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkAction;");
   jobject jatk_action = (*jniEnv)->CallStaticObjectMethod (jniEnv, classAction, jmid, ac);
   data->atk_action = (*jniEnv)->NewGlobalRef (jniEnv, jatk_action);
@@ -317,7 +317,7 @@ jaw_action_set_description (AtkAction *action, gint i, const gchar *description)
                                                 "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv,
                                            classAtkAction,
-                                           "setDescription",
+                                           "set_description",
                                            "(ILjava/lang/String;)Z");
   jboolean jisset = (*jniEnv)->CallBooleanMethod (jniEnv,
                                                   atk_action,
@@ -348,7 +348,7 @@ jaw_action_get_localized_name (AtkAction *action, gint i)
   jclass classAtkAction = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkAction");
   jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv,
                                            classAtkAction,
-                                           "getLocalizedName",
+                                           "get_localized_name",
                                            "(I)Ljava/lang/String;");
   jstring jstr = (*jniEnv)->CallObjectMethod (jniEnv, atk_action, jmid, (jint) i);
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_action);

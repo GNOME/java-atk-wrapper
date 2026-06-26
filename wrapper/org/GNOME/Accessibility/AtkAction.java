@@ -79,7 +79,7 @@ public class AtkAction {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkAction instance, or null if creation fails
      */
-    private static AtkAction createAtkAction(AccessibleContext ac) {
+    private static AtkAction create_atk_action(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkAction(ac);
         }, null);
@@ -145,7 +145,7 @@ public class AtkAction {
      * @param description the description to be assigned to this action
      * @return true if the description was successfully set, false otherwise
      */
-    private boolean setDescription(int index, String description) {
+    private boolean set_description(int index, String description) {
         if (index >= nactions) {
             return false;
         }
@@ -160,7 +160,7 @@ public class AtkAction {
      * @param index the action index corresponding to the action
      * @return a localized name string, or null if the action does not exist
      */
-    private String getLocalizedName(int index) {
+    private String get_localized_name(int index) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return null;
