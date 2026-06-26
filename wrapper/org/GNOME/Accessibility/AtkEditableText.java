@@ -58,7 +58,7 @@ public class AtkEditableText extends AtkText {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkEditableText instance, or null if creation fails
      */
-    private static AtkEditableText createAtkEditableText(AccessibleContext ac) {
+    private static AtkEditableText create_atk_editable_text(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkEditableText(ac);
         }, null);
