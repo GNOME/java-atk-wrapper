@@ -58,7 +58,7 @@ public class AtkHypertext extends AtkText {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkHypertext instance, or null if creation fails
      */
-    private static AtkHypertext createAtkHypertext(AccessibleContext ac) {
+    private static AtkHypertext create_atk_hypertext(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkHypertext(ac);
         }, null);

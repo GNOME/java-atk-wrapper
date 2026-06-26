@@ -104,7 +104,7 @@ jaw_hypertext_data_init (jobject ac)
 
   JNIEnv *jniEnv = jaw_util_get_jni_env ();
   jclass classHypertext = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkHypertext");
-  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, classHypertext, "createAtkHypertext", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkHypertext;");
+  jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv, classHypertext, "create_atk_hypertext", "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkHypertext;");
   jobject jatk_hypertext = (*jniEnv)->CallStaticObjectMethod (jniEnv, classHypertext, jmid, ac);
   data->atk_hypertext = (*jniEnv)->NewGlobalRef (jniEnv, jatk_hypertext);
 
