@@ -188,11 +188,11 @@ public class AtkEditableText extends AtkText {
      * @param as    the AttributeSet for the text
      * @param start the start index of the text as an int
      * @param end   the end index for the text as an int
-     * @return whether setRunAttributes was called
+     * @return whether set_run_attributes was called
      * TODO return is a bit presumptious. This should ideally include a check for whether
      *      attributes were set.
      */
-    private boolean setRunAttributes(AttributeSet as, int start, int end) {
+    private boolean set_run_attributes(AttributeSet as, int start, int end) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return false;

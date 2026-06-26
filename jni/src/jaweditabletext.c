@@ -368,7 +368,7 @@ jaw_editable_text_set_run_attributes (AtkEditableText *text,
   jclass classAtkEditableText = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkEditableText");
   jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv,
                                            classAtkEditableText,
-                                           "setRunAttributes",
+                                           "set_run_attributes",
                                            "(Ljavax/swing/text/AttributeSet;II)Z");
   jboolean jresult = (*jniEnv)->CallBooleanMethod (jniEnv,
                                                    atk_editable_text,
