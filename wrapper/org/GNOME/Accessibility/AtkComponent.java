@@ -38,7 +38,7 @@ public class AtkComponent {
     private final WeakReference<AccessibleContext> accessibleContextWeakRef;
     private final WeakReference<AccessibleComponent> accessibleComponentWeakRef;
 
-    public AtkComponent(AccessibleContext ac) {
+    private AtkComponent(AccessibleContext ac) {
         super();
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         this.accessibleComponentWeakRef =

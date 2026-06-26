@@ -41,6 +41,9 @@ import java.util.concurrent.RunnableFuture;
  */
 public class AtkUtil {
 
+    private AtkUtil() {
+    }
+
     /**
      * invokeInSwing:
      * Invoked when we need to make an asynchronous callback on

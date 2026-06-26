@@ -33,7 +33,7 @@ public class AtkSelection {
     private final WeakReference<AccessibleContext> accessibleContextWeakRef;
     private final WeakReference<AccessibleSelection> accessibleSelectionWeakRef;
 
-    public AtkSelection(AccessibleContext ac) {
+    private AtkSelection(AccessibleContext ac) {
         super();
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         this.accessibleSelectionWeakRef =

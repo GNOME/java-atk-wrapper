@@ -58,6 +58,9 @@ public class AtkObject {
     public static final int INTERFACE_TEXT = 0x00000800;
     public static final int INTERFACE_VALUE = 0x00001000;
 
+    private AtkObject() {
+    }
+
     /**
      * Returns the JMenuItem accelerator. Similar implementation is used on
      * macOS, see CAccessibility.getAcceleratorText(AccessibleContext) in OpenJDK, and

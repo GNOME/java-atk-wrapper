@@ -37,7 +37,7 @@ public class AtkHypertext extends AtkText {
 
     private final WeakReference<AccessibleHypertext> accessibleHypertextRef;
 
-    public AtkHypertext(AccessibleContext ac) {
+    private AtkHypertext(AccessibleContext ac) {
         super(ac);
 
         AccessibleText accessibleText = ac.getAccessibleText();
@@ -81,7 +81,7 @@ public class AtkHypertext extends AtkText {
         return AtkUtil.invokeInSwing(() -> {
             AccessibleHyperlink link = accessibleHypertext.getLink(linkIndex);
             if (link != null)
-                return new AtkHyperlink(link);
+                return AtkHyperlink.createAtkHyperlink(link);
             return null;
         }, null);
     }

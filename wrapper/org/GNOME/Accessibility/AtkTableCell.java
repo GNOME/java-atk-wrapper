@@ -41,7 +41,7 @@ public class AtkTableCell {
     private final WeakReference<AccessibleContext> _ac;
     private final WeakReference<AccessibleTable> accessibleTableWeakRef;
 
-    public AtkTableCell(AccessibleContext ac) {
+    private AtkTableCell(AccessibleContext ac) {
         this._ac = new WeakReference<AccessibleContext>(ac);
         Accessible accessibleParent = ac.getAccessibleParent();
         if (accessibleParent == null) {
