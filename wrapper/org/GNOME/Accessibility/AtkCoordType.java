@@ -19,9 +19,11 @@
 
 package org.GNOME.Accessibility;
 
-public interface AtkCoordType {
-    int SCREEN = 0;
-    int WINDOW = 1;
-    int PARENT = 2;
-}
+public final class AtkCoordType {
+    public static final int SCREEN = 0;
+    public static final int WINDOW = 1;
+    public static final int PARENT = 2;
 
+    private AtkCoordType() {
+    }
+}
