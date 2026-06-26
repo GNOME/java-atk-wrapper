@@ -58,7 +58,7 @@ public class AtkImage {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkImage instance, or null if creation fails
      */
-    private static AtkImage createAtkImage(AccessibleContext ac) {
+    private static AtkImage create_atk_image(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkImage(ac);
         }, null);
