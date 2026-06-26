@@ -419,7 +419,7 @@ public class AtkText {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkText instance, or null if creation fails
      */
-    public static AtkText createAtkText(AccessibleContext ac) {
+    private static AtkText createAtkText(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkText(ac);
         }, null);
@@ -435,7 +435,7 @@ public class AtkText {
      * @param endCodePointIndex   an ending code point offset within the text, or -1 for the end of the string
      * @return a string containing the text from start up to, but not including end, or null if retrieval fails
      */
-    public String get_text(int startCodePointIndex, int endCodePointIndex) {
+    private String get_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return null;
@@ -467,7 +467,7 @@ public class AtkText {
      * @param codePointOffset a code point offset within the text
      * @return the Unicode code point at the specified offset, or 0 in case of failure
      */
-    public char get_character_at_offset(int codePointOffset) {
+    private char get_character_at_offset(int codePointOffset) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return ' ';
@@ -480,7 +480,7 @@ public class AtkText {
         }, ' ');
     }
 
-    public StringSequence get_text_at_offset(int codePointOffset, int boundaryType) {
+    private StringSequence get_text_at_offset(int codePointOffset, int boundaryType) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return null;
@@ -502,7 +502,7 @@ public class AtkText {
         }, null);
     }
 
-    public StringSequence get_text_before_offset(int offset, int boundary_type) {
+    private StringSequence get_text_before_offset(int offset, int boundary_type) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return null;
@@ -527,7 +527,7 @@ public class AtkText {
         }, null);
     }
 
-    public StringSequence get_text_after_offset(int offset, int boundary_type) {
+    private StringSequence get_text_after_offset(int offset, int boundary_type) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return null;
@@ -559,7 +559,7 @@ public class AtkText {
      * @return the character offset of the position of the caret, or -1 if the caret is not located
      * inside the element or in the case of any other failure
      */
-    public int get_caret_offset() {
+    private int get_caret_offset() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return 0;
@@ -578,7 +578,7 @@ public class AtkText {
      * @return a Rectangle containing the bounding box (x, y, width, height), or null if the extent
      * cannot be obtained. Returns null if all coordinates are set to -1.
      */
-    public Rectangle get_character_extents(int codePointOffset, int coordType) {
+    private Rectangle get_character_extents(int codePointOffset, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return null;
@@ -606,7 +606,7 @@ public class AtkText {
      *
      * @return the number of characters, or -1 in case of failure
      */
-    public int get_character_count() {
+    private int get_character_count() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return 0;
@@ -628,7 +628,7 @@ public class AtkText {
      * @return the offset to the character which is located at the specified
      * @x and @y coordinates or -1 in case of failure.
      */
-    public int get_offset_at_point(int x, int y, int coordType) {
+    private int get_offset_at_point(int x, int y, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return -1;
@@ -655,7 +655,7 @@ public class AtkText {
      * @return a Rectangle filled in with the bounding box, or null if the extents cannot be obtained.
      * Returns null if all rectangle fields are set to -1.
      */
-    public Rectangle get_range_extents(
+    private Rectangle get_range_extents(
             int startCodePointIndex, int endCodePointIndex, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
@@ -694,7 +694,7 @@ public class AtkText {
      *
      * @return The number of selected regions, or -1 in the case of failure.
      */
-    public int get_n_selections() {
+    private int get_n_selections() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return 0;
@@ -714,7 +714,7 @@ public class AtkText {
      * @return a StringSequence containing the selected text and its start and end code point offsets,
      * or null if there is no selection or retrieval fails
      */
-    public StringSequence get_selection() {
+    private StringSequence get_selection() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return null;
@@ -738,7 +738,7 @@ public class AtkText {
      * @return true if successful, false otherwise. Note that Java AccessibleText only supports
      * a single selection, so this will return false if a selection already exists.
      */
-    public boolean add_selection(int startCodePointIndex, int endCodePointIndex) {
+    private boolean add_selection(int startCodePointIndex, int endCodePointIndex) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return false;
@@ -770,7 +770,7 @@ public class AtkText {
      *                     Since Java only supports a single selection, only 0 is valid.
      * @return true if successful, false otherwise
      */
-    public boolean remove_selection(int selectionNum) {
+    private boolean remove_selection(int selectionNum) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return false;
@@ -794,7 +794,7 @@ public class AtkText {
      * @param endCodePointIndex   the new end code point offset (offset immediately past) of the selection
      * @return true if successful, false otherwise
      */
-    public boolean set_selection(
+    private boolean set_selection(
             int selectionNum, int startCodePointIndex, int endCodePointIndex) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
@@ -826,7 +826,7 @@ public class AtkText {
      * @param codePointOffset the code point offset of the new caret position
      * @return true if successful, false otherwise
      */
-    public boolean set_caret_offset(int codePointOffset) {
+    private boolean set_caret_offset(int codePointOffset) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
             return false;

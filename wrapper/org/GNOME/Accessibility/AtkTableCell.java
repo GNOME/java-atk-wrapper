@@ -80,7 +80,7 @@ public class AtkTableCell {
      * @param ac the AccessibleContext representing a table cell
      * @return a new AtkTableCell instance, or null if creation fails
      */
-    public static AtkTableCell createAtkTableCell(AccessibleContext ac) {
+    private static AtkTableCell createAtkTableCell(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkTableCell(ac);
         }, null);
@@ -92,7 +92,7 @@ public class AtkTableCell {
      *
      * @return the AccessibleTable containing this cell, or null if unavailable
      */
-    public AccessibleTable getTable() {
+    private AccessibleTable getTable() {
         if (accessibleTableWeakRef == null)
             return null;
         return accessibleTableWeakRef.get();
@@ -105,7 +105,7 @@ public class AtkTableCell {
      * @return an array of AccessibleContext objects representing the column headers,
      * or null if column headers are not available
      */
-    public AccessibleContext[] getAccessibleColumnHeader() {
+    private AccessibleContext[] getAccessibleColumnHeader() {
         if (accessibleTableWeakRef == null)
             return null;
         return AtkUtil.invokeInSwing(() -> {
@@ -129,7 +129,7 @@ public class AtkTableCell {
      * @return an array of AccessibleContext objects representing the row headers,
      * or null if row headers are not available
      */
-    public AccessibleContext[] getAccessibleRowHeader() {
+    private AccessibleContext[] getAccessibleRowHeader() {
         if (accessibleTableWeakRef == null)
             return null;
         return AtkUtil.invokeInSwing(() -> {

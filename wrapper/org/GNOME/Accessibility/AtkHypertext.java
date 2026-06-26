@@ -58,7 +58,7 @@ public class AtkHypertext extends AtkText {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkHypertext instance, or null if creation fails
      */
-    public static AtkHypertext createAtkHypertext(AccessibleContext ac) {
+    private static AtkHypertext createAtkHypertext(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkHypertext(ac);
         }, null);
@@ -71,7 +71,7 @@ public class AtkHypertext extends AtkText {
      * @param linkIndex an integer specifying the desired link (zero-based)
      * @return the AtkHyperlink at the specified index, or null if not available
      */
-    public AtkHyperlink get_link(int linkIndex) {
+    private AtkHyperlink get_link(int linkIndex) {
         if (accessibleHypertextRef == null)
             return null;
         AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
@@ -92,7 +92,7 @@ public class AtkHypertext extends AtkText {
      *
      * @return the number of links within this hypertext document
      */
-    public int get_n_links() {
+    private int get_n_links() {
         if (accessibleHypertextRef == null)
             return 0;
         AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
@@ -113,7 +113,7 @@ public class AtkHypertext extends AtkText {
      * @return an index into the array of hyperlinks in this hypertext,
      * or -1 if there is no hyperlink associated with this character
      */
-    public int get_link_index(int charIndex) {
+    private int get_link_index(int charIndex) {
         if (accessibleHypertextRef == null)
             return 0;
         AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();

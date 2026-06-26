@@ -45,7 +45,7 @@ public class AtkComponent {
                 new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
     }
 
-    static public Point getWindowLocation(AccessibleContext ac) {
+    private static Point getWindowLocation(AccessibleContext ac) {
         while (ac != null) {
             AccessibleRole role = ac.getAccessibleRole();
             if (role == AccessibleRole.DIALOG ||
@@ -129,7 +129,7 @@ public class AtkComponent {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkComponent instance, or null if creation fails
      */
-    public static AtkComponent createAtkComponent(AccessibleContext ac) {
+    private static AtkComponent createAtkComponent(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkComponent(ac);
         }, null);
@@ -145,7 +145,7 @@ public class AtkComponent {
      *                  the component's toplevel window, or the component's parent
      * @return true if the specified point is within the extent of the component
      */
-    public boolean contains(int x, int y, int coordType) {
+    private boolean contains(int x, int y, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return false;
@@ -176,7 +176,7 @@ public class AtkComponent {
      *                  the component's toplevel window, or the component's parent
      * @return the AccessibleContext of the child at the specified point, or null if none exists
      */
-    public AccessibleContext get_accessible_at_point(int x, int y, int coordType) {
+    private AccessibleContext get_accessible_at_point(int x, int y, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return null;
@@ -206,7 +206,7 @@ public class AtkComponent {
      *
      * @return true if successful, false otherwise
      */
-    public boolean grab_focus() {
+    private boolean grab_focus() {
         AccessibleComponent accessibleComponent = accessibleComponentWeakRef.get();
         if (accessibleComponent == null)
             return false;
@@ -231,7 +231,7 @@ public class AtkComponent {
      *                  the component's toplevel window, or the component's parent
      * @return true if the extents were set successfully, false otherwise
      */
-    public boolean set_extents(int x, int y, int width, int height, int coordType) {
+    private boolean set_extents(int x, int y, int width, int height, int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return false;
@@ -260,7 +260,7 @@ public class AtkComponent {
      *                  the component's toplevel window, or the component's parent
      * @return the Rectangle representing the component's extent, or null if it cannot be obtained
      */
-    public Rectangle get_extents(int coordType) {
+    private Rectangle get_extents(int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return null;
@@ -291,7 +291,7 @@ public class AtkComponent {
      *
      * @return an int representing the AtkLayer of the component, or AtkLayer.INVALID if an error occurs
      */
-    public int get_layer() {
+    private int get_layer() {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return AtkLayer.INVALID;

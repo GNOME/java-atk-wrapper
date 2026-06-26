@@ -51,7 +51,7 @@ public class AtkTable {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkTable instance, or null if creation fails
      */
-    public static AtkTable createAtkTable(AccessibleContext ac) {
+    private static AtkTable createAtkTable(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkTable(ac);
         }, null);
@@ -65,7 +65,7 @@ public class AtkTable {
      * @param column the column index
      * @return the AccessibleContext of the cell at the specified position, or null if none
      */
-    public AccessibleContext ref_at(int row, int column) {
+    private AccessibleContext ref_at(int row, int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return null;
@@ -86,7 +86,7 @@ public class AtkTable {
      * @param column the column index
      * @return the child index, or -1 if no child exists at that position
      */
-    public int get_index_at(int row, int column) {
+    private int get_index_at(int row, int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return -1;
@@ -111,7 +111,7 @@ public class AtkTable {
      * @param index the child index
      * @return the column index, or -1 if not available
      */
-    public int get_column_at_index(int index) {
+    private int get_column_at_index(int index) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return -1;
@@ -131,7 +131,7 @@ public class AtkTable {
      * @param index the child index
      * @return the row index, or -1 if not available
      */
-    public int get_row_at_index(int index) {
+    private int get_row_at_index(int index) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return -1;
@@ -150,7 +150,7 @@ public class AtkTable {
      *
      * @return the number of columns, or 0 if the table is not available
      */
-    public int get_n_columns() {
+    private int get_n_columns() {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return 0;
@@ -166,7 +166,7 @@ public class AtkTable {
      *
      * @return the number of rows, or 0 if the table is not available
      */
-    public int get_n_rows() {
+    private int get_n_rows() {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return 0;
@@ -184,7 +184,7 @@ public class AtkTable {
      * @param column the column index
      * @return the column extent (colspan), or 0 if not available
      */
-    public int get_column_extent_at(int row, int column) {
+    private int get_column_extent_at(int row, int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return 0;
@@ -202,7 +202,7 @@ public class AtkTable {
      * @param column the column index
      * @return the row extent (rowspan), or 0 if not available
      */
-    public int get_row_extent_at(int row, int column) {
+    private int get_row_extent_at(int row, int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return 0;
@@ -218,7 +218,7 @@ public class AtkTable {
      *
      * @return the AccessibleContext of the table caption, or null if none
      */
-    public AccessibleContext get_caption() {
+    private AccessibleContext get_caption() {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return null;
@@ -237,7 +237,7 @@ public class AtkTable {
      *
      * @param a the Accessible to use as the table caption
      */
-    public void setCaption(Accessible a) {
+    private void setCaption(Accessible a) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
@@ -255,7 +255,7 @@ public class AtkTable {
      * @return a String representing the column description, or null if the table doesn't implement
      * this interface or if no description is available for the specified column
      */
-    public String get_column_description(int column) {
+    private String get_column_description(int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return "";
@@ -279,7 +279,7 @@ public class AtkTable {
      * @param description a String object representing the description text to set for the
      *                    specified column of the table
      */
-    public void setColumnDescription(int column, String description) {
+    private void setColumnDescription(int column, String description) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
@@ -299,7 +299,7 @@ public class AtkTable {
      * @return a String representing the row description, or null if the table doesn't implement
      * this interface or if no description is available for the specified row
      */
-    public String get_row_description(int row) {
+    private String get_row_description(int row) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return "";
@@ -323,7 +323,7 @@ public class AtkTable {
      * @param description a String object representing the description text to set for the
      *                    specified row of the table
      */
-    public void setRowDescription(int row, String description) {
+    private void setRowDescription(int row, String description) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
@@ -342,7 +342,7 @@ public class AtkTable {
      * @param column the column index
      * @return the AccessibleContext of the column header, or null if none
      */
-    public AccessibleContext get_column_header(int column) {
+    private AccessibleContext get_column_header(int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return null;
@@ -365,7 +365,7 @@ public class AtkTable {
      * @param row the row index
      * @return the AccessibleContext of the row header, or null if none
      */
-    public AccessibleContext get_row_header(int row) {
+    private AccessibleContext get_row_header(int row) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return null;
@@ -387,7 +387,7 @@ public class AtkTable {
      *
      * @return the AccessibleContext of the table summary, or null if none
      */
-    public AccessibleContext get_summary() {
+    private AccessibleContext get_summary() {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return null;
@@ -406,7 +406,7 @@ public class AtkTable {
      *
      * @param a the Accessible to use as the table summary
      */
-    public void setSummary(Accessible a) {
+    private void setSummary(Accessible a) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return;
@@ -422,7 +422,7 @@ public class AtkTable {
      *
      * @return an array of column indices that are selected, or null if none are selected
      */
-    public int[] get_selected_columns() {
+    private int[] get_selected_columns() {
         int[] d = new int[0];
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
@@ -439,7 +439,7 @@ public class AtkTable {
      *
      * @return an array of row indices that are selected, or null if none are selected
      */
-    public int[] get_selected_rows() {
+    private int[] get_selected_rows() {
         int[] d = new int[0];
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
@@ -457,7 +457,7 @@ public class AtkTable {
      * @param column the column index
      * @return true if the column is selected, false otherwise
      */
-    public boolean is_column_selected(int column) {
+    private boolean is_column_selected(int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return false;
@@ -474,7 +474,7 @@ public class AtkTable {
      * @param row the row index
      * @return true if the row is selected, false otherwise
      */
-    public boolean is_row_selected(int row) {
+    private boolean is_row_selected(int row) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return false;
@@ -492,7 +492,7 @@ public class AtkTable {
      * @param column the column index
      * @return true if the cell at the specified position is selected, false otherwise
      */
-    public boolean is_selected(int row, int column) {
+    private boolean is_selected(int row, int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
             return false;

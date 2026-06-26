@@ -49,7 +49,7 @@ public class AtkValue {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkValue instance, or null if creation fails
      */
-    public static AtkValue createAtkValue(AccessibleContext ac) {
+    private static AtkValue createAtkValue(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkValue(ac);
         }, null);
@@ -62,7 +62,7 @@ public class AtkValue {
      * @return a Number representing the current accessible value, or null if the value
      * is unavailable or the object doesn't implement this interface
      */
-    public Number get_current_value() {
+    private Number get_current_value() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
             return 0.0;
@@ -79,7 +79,7 @@ public class AtkValue {
      * @return a Double representing the maximum accessible value, or null if the value
      * is unavailable or the object doesn't implement this interface
      */
-    public double getMaximumValue() {
+    private double getMaximumValue() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
             return 0.0;
@@ -96,7 +96,7 @@ public class AtkValue {
      * @return a Double representing the minimum accessible value, or null if the value
      * is unavailable or the object doesn't implement this interface
      */
-    public double getMinimumValue() {
+    private double getMinimumValue() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
             return 0.0;
@@ -112,7 +112,7 @@ public class AtkValue {
      *
      * @param n the Number value to set as the current accessible value
      */
-    public void setValue(Number n) {
+    private void setValue(Number n) {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
             return;
@@ -128,7 +128,7 @@ public class AtkValue {
      *
      * @return the minimum increment value, returns Double.MIN_VALUE
      */
-    public double getIncrement() {
+    private double getIncrement() {
         return Double.MIN_VALUE;
     }
 }

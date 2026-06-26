@@ -79,7 +79,7 @@ public class AtkAction {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkAction instance, or null if creation fails
      */
-    public static AtkAction createAtkAction(AccessibleContext ac) {
+    private static AtkAction createAtkAction(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkAction(ac);
         }, null);
@@ -92,7 +92,7 @@ public class AtkAction {
      * @param index the action index corresponding to the action to be performed
      * @return true if the action was successfully performed, false otherwise
      */
-    public boolean do_action(int index) {
+    private boolean do_action(int index) {
         AccessibleAction accessibleAction = accessibleActionWeakRef.get();
         if (accessibleAction == null)
             return false;
@@ -109,7 +109,7 @@ public class AtkAction {
      *
      * @return the number of actions, or 0 if this object does not implement actions
      */
-    public int get_n_actions() {
+    private int get_n_actions() {
         return this.nactions;
     }
 
@@ -120,7 +120,7 @@ public class AtkAction {
      * @param index the action index corresponding to the action
      * @return a description string, or null if the action does not exist
      */
-    public String get_description(int index) {
+    private String get_description(int index) {
         AccessibleAction accessibleAction = accessibleActionWeakRef.get();
         if (accessibleAction == null)
             return null;
@@ -145,7 +145,7 @@ public class AtkAction {
      * @param description the description to be assigned to this action
      * @return true if the description was successfully set, false otherwise
      */
-    public boolean setDescription(int index, String description) {
+    private boolean setDescription(int index, String description) {
         if (index >= nactions) {
             return false;
         }
@@ -160,7 +160,7 @@ public class AtkAction {
      * @param index the action index corresponding to the action
      * @return a localized name string, or null if the action does not exist
      */
-    public String getLocalizedName(int index) {
+    private String getLocalizedName(int index) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return null;
@@ -186,7 +186,7 @@ public class AtkAction {
         }, null);
     }
 
-    public String get_keybinding(int index) {
+    private String get_keybinding(int index) {
         AccessibleExtendedComponent acc_ext_component;
         if (_acc_ext_component == null)
             return "";

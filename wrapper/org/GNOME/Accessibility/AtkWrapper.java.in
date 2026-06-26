@@ -672,7 +672,7 @@ public class AtkWrapper {
      * @param o an instance
      * @return true if instance is of a window, frame or dialogue object false otherwise.
      */
-    public static boolean isToplevel(Object o) {
+    private static boolean isToplevel(Object o) {
         boolean isToplevel = o instanceof Window || o instanceof Frame || o instanceof Dialog;
         return isToplevel;
     }
@@ -682,7 +682,7 @@ public class AtkWrapper {
      *
      * @param eventSource An instance of the event source object.
      */
-    static void dispatchFocusEvent(Object eventSource) {
+    private static void dispatchFocusEvent(Object eventSource) {
         if (eventSource == null) {
             oldSourceContext = null;
             return;
@@ -743,7 +743,7 @@ public class AtkWrapper {
         }
     }
 
-    public static void registerPropertyChangeListener(AccessibleContext ac) {
+    private static void registerPropertyChangeListener(AccessibleContext ac) {
         if (ac != null) {
             AtkUtil.invokeInSwing(
                     () -> {
@@ -752,49 +752,49 @@ public class AtkWrapper {
         }
     }
 
-    public static native boolean initNativeLibrary();
+    private static native boolean initNativeLibrary();
 
-    public static native void loadAtkBridge();
+    private static native void loadAtkBridge();
 
-    public static native void GC();
+    private static native void GC();
 
-    public static native void focusNotify(AccessibleContext ac);
+    private static native void focusNotify(AccessibleContext ac);
 
-    public static native void windowOpen(AccessibleContext ac, boolean isToplevel);
+    private static native void windowOpen(AccessibleContext ac, boolean isToplevel);
 
-    public static native void windowClose(AccessibleContext ac, boolean isToplevel);
+    private static native void windowClose(AccessibleContext ac, boolean isToplevel);
 
-    public static native void windowMinimize(AccessibleContext ac);
+    private static native void windowMinimize(AccessibleContext ac);
 
-    public static native void windowMaximize(AccessibleContext ac);
+    private static native void windowMaximize(AccessibleContext ac);
 
-    public static native void windowRestore(AccessibleContext ac);
+    private static native void windowRestore(AccessibleContext ac);
 
-    public static native void windowActivate(AccessibleContext ac);
+    private static native void windowActivate(AccessibleContext ac);
 
-    public static native void windowDeactivate(AccessibleContext ac);
+    private static native void windowDeactivate(AccessibleContext ac);
 
-    public static native void windowStateChange(AccessibleContext ac);
+    private static native void windowStateChange(AccessibleContext ac);
 
-    public static native void emitSignal(AccessibleContext ac, int id, Object[] args);
+    private static native void emitSignal(AccessibleContext ac, int id, Object[] args);
 
-    public static native void objectStateChange(AccessibleContext ac, Object state, boolean value);
+    private static native void objectStateChange(AccessibleContext ac, Object state, boolean value);
 
-    public static native void componentAdded(AccessibleContext ac);
+    private static native void componentAdded(AccessibleContext ac);
 
-    public static native void componentRemoved(AccessibleContext ac);
+    private static native void componentRemoved(AccessibleContext ac);
 
-    public static native void boundsChanged(AccessibleContext ac);
+    private static native void boundsChanged(AccessibleContext ac);
 
-    public static native boolean dispatchKeyEvent(AtkKeyEvent e);
+    private static native boolean dispatchKeyEvent(AtkKeyEvent e);
 
-    public static native long getInstance(AccessibleContext ac);
+    private static native long getInstance(AccessibleContext ac);
 
     public static void printLog(String str) {
         System.out.println(str);
     }
 
-    public static long getInstanceFromSwing(AccessibleContext ac) {
+    private static long getInstanceFromSwing(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(
                 () -> {
                     return getInstance(ac);

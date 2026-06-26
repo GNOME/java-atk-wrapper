@@ -54,7 +54,7 @@ public class AtkHyperlink {
      * @param index the zero-based index specifying the desired anchor
      * @return a string specifying the URI, or null if not available
      */
-    public String get_uri(int index) {
+    private String get_uri(int index) {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
             return "";
@@ -75,7 +75,7 @@ public class AtkHyperlink {
      * @return the AccessibleContext associated with this hyperlink's index-th anchor,
      * or null if not available
      */
-    public AccessibleContext get_object(int index) {
+    private AccessibleContext get_object(int index) {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
             return null;
@@ -95,7 +95,7 @@ public class AtkHyperlink {
      * @return the index with the hypertext document at which this link ends,
      * or 0 if an error happened.
      */
-    public int get_end_index() {
+    private int get_end_index() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
             return 0;
@@ -112,7 +112,7 @@ public class AtkHyperlink {
      * @return the index with the hypertext document at which this link begins,
      * or 0 if an error happened
      */
-    public int get_start_index() {
+    private int get_start_index() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
             return 0;
@@ -132,7 +132,7 @@ public class AtkHyperlink {
      *
      * @return true if the link is still valid, false otherwise
      */
-    public boolean is_valid() {
+    private boolean is_valid() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
             return false;
@@ -148,7 +148,7 @@ public class AtkHyperlink {
      *
      * @return the number of anchors associated with this hyperlink
      */
-    public int get_n_anchors() {
+    private int get_n_anchors() {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
         if (accessibleHyperlink == null)
             return 0;

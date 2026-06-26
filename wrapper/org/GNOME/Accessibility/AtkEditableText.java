@@ -58,7 +58,7 @@ public class AtkEditableText extends AtkText {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkEditableText instance, or null if creation fails
      */
-    public static AtkEditableText createAtkEditableText(AccessibleContext ac) {
+    private static AtkEditableText createAtkEditableText(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkEditableText(ac);
         }, null);
@@ -70,7 +70,7 @@ public class AtkEditableText extends AtkText {
      *
      * @param textContent the string to set as the text contents
      */
-    public void set_text_contents(String textContent) {
+    private void set_text_contents(String textContent) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return;
@@ -87,7 +87,7 @@ public class AtkEditableText extends AtkText {
      * @param textToInsert   the string to insert
      * @param codePointIndex the code point offset at which to insert the text
      */
-    public void insert_text(String textToInsert, int codePointIndex) {
+    private void insert_text(String textToInsert, int codePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return;
@@ -107,7 +107,7 @@ public class AtkEditableText extends AtkText {
      * @param startCodePointIndex the start code point offset
      * @param endCodePointIndex   the end code point offset (or -1 for end-of-text)
      */
-    public void copy_text(int startCodePointIndex, int endCodePointIndex) {
+    private void copy_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return;
@@ -139,7 +139,7 @@ public class AtkEditableText extends AtkText {
      * @param startCodePointIndex the start code point offset
      * @param endCodePointIndex   the end code point offset (or -1 for end-of-text)
      */
-    public void cut_text(int startCodePointIndex, int endCodePointIndex) {
+    private void cut_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return;
@@ -156,7 +156,7 @@ public class AtkEditableText extends AtkText {
      * @param startCodePointIndex the start code point offset
      * @param endCodePointIndex   the end code point offset (or -1 for end-of-text)
      */
-    public void delete_text(int startCodePointIndex, int endCodePointIndex) {
+    private void delete_text(int startCodePointIndex, int endCodePointIndex) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return;
@@ -172,7 +172,7 @@ public class AtkEditableText extends AtkText {
      *
      * @param codePointOffset the code point offset at which to paste the text
      */
-    public void paste_text(int codePointOffset) {
+    private void paste_text(int codePointOffset) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return;
@@ -192,7 +192,7 @@ public class AtkEditableText extends AtkText {
      * TODO return is a bit presumptious. This should ideally include a check for whether
      *      attributes were set.
      */
-    public boolean setRunAttributes(AttributeSet as, int start, int end) {
+    private boolean setRunAttributes(AttributeSet as, int start, int end) {
         AccessibleEditableText accessibleEditableText = accessibleEditableTextWeakRef.get();
         if (accessibleEditableText == null)
             return false;

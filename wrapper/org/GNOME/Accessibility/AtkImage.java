@@ -58,7 +58,7 @@ public class AtkImage {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkImage instance, or null if creation fails
      */
-    public static AtkImage createAtkImage(AccessibleContext ac) {
+    private static AtkImage createAtkImage(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkImage(ac);
         }, null);
@@ -74,7 +74,7 @@ public class AtkImage {
      * @return a Point representing the image position (x, y coordinates), or null
      * if the position cannot be obtained (e.g., missing support).
      */
-    public Point get_image_position(int coordType) {
+    private Point get_image_position(int coordType) {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return null;
@@ -95,7 +95,7 @@ public class AtkImage {
      * @return a string representing the image description, or null if there is
      * no description available or an error occurs
      */
-    public String get_image_description() {
+    private String get_image_description() {
         AccessibleIcon[] accessibleIcons = this.accessibleIcons.get();
         if (accessibleIcons == null)
             return "";
@@ -121,7 +121,7 @@ public class AtkImage {
      * If AccessibleIcon information is available, uses that; otherwise,
      * falls back to the component's bounds.
      */
-    public Dimension get_image_size() {
+    private Dimension get_image_size() {
         Dimension d = new Dimension(0, 0);
 
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();

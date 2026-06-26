@@ -49,7 +49,7 @@ public class AtkSelection {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkSelection instance, or null if creation fails
      */
-    public static AtkSelection createAtkSelection(AccessibleContext ac) {
+    private static AtkSelection createAtkSelection(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkSelection(ac);
         }, null);
@@ -62,7 +62,7 @@ public class AtkSelection {
      * @param index the index of the child in the object's list of children
      * @return true if the child was successfully selected, false otherwise
      */
-    public boolean add_selection(int index) {
+    private boolean add_selection(int index) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
             return false;
@@ -79,7 +79,7 @@ public class AtkSelection {
      *
      * @return true if the selection was successfully cleared, false otherwise
      */
-    public boolean clear_selection() {
+    private boolean clear_selection() {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
             return false;
@@ -97,7 +97,7 @@ public class AtkSelection {
      * @param index the index of the selected child in the selection
      * @return the AccessibleContext of the selected child, or null if none
      */
-    public AccessibleContext ref_selection(int index) {
+    private AccessibleContext ref_selection(int index) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
             return null;
@@ -116,7 +116,7 @@ public class AtkSelection {
      *
      * @return the number of currently selected children, or 0 if none are selected
      */
-    public int get_selection_count() {
+    private int get_selection_count() {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return 0;
@@ -143,7 +143,7 @@ public class AtkSelection {
      * @param i the index of the child in the object's list of children
      * @return true if the child is selected, false otherwise
      */
-    public boolean is_child_selected(int i) {
+    private boolean is_child_selected(int i) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
             return false;
@@ -160,7 +160,7 @@ public class AtkSelection {
      * @param i the index of the selected child in the selection
      * @return true if the child was successfully removed from the selection, false otherwise
      */
-    public boolean remove_selection(int i) {
+    private boolean remove_selection(int i) {
         AccessibleSelection accessibleSelection = accessibleSelectionWeakRef.get();
         if (accessibleSelection == null)
             return false;
@@ -177,7 +177,7 @@ public class AtkSelection {
      *
      * @return true if all children were successfully selected (object supports multiple selection), false otherwise
      */
-    public boolean select_all_selection() {
+    private boolean select_all_selection() {
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)
             return false;
