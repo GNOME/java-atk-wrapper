@@ -54,6 +54,22 @@ public class AtkAction {
         }
     }
 
+    private String convertModString(String mods) {
+        if (mods == null || mods.length() == 0) {
+            return "";
+        }
+
+        String[] modStrs = mods.split("\\+");
+        String newModString = "";
+        for (int i = 0; i < modStrs.length; i++) {
+            newModString += "<" + modStrs[i] + ">";
+        }
+
+        return newModString;
+    }
+
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkAction instance from an AccessibleContext.
      * Called from native code via JNI.
@@ -166,20 +182,6 @@ public class AtkAction {
             descriptions[index] = "";
             return descriptions[index];
         }, null);
-    }
-
-    private String convertModString(String mods) {
-        if (mods == null || mods.length() == 0) {
-            return "";
-        }
-
-        String[] modStrs = mods.split("\\+");
-        String newModString = "";
-        for (int i = 0; i < modStrs.length; i++) {
-            newModString += "<" + modStrs[i] + ">";
-        }
-
-        return newModString;
     }
 
     public String get_keybinding(int index) {

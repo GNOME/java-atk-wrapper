@@ -68,6 +68,8 @@ public class AtkTableCell {
         columnSpan = accessibleTable.getAccessibleColumnExtentAt(row, column);
     }
 
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkTableCell instance from an AccessibleContext.
      * Called from native code via JNI.

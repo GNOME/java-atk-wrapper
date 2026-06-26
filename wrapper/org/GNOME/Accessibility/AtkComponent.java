@@ -45,19 +45,6 @@ public class AtkComponent {
                 new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
     }
 
-    /**
-     * Factory method to create an AtkComponent instance from an AccessibleContext.
-     * Called from native code via JNI.
-     *
-     * @param ac the AccessibleContext to wrap
-     * @return a new AtkComponent instance, or null if creation fails
-     */
-    public static AtkComponent createAtkComponent(AccessibleContext ac) {
-        return AtkUtil.invokeInSwing(() -> {
-            return new AtkComponent(ac);
-        }, null);
-    }
-
     static public Point getWindowLocation(AccessibleContext ac) {
         while (ac != null) {
             AccessibleRole role = ac.getAccessibleRole();
@@ -131,6 +118,21 @@ public class AtkComponent {
             return parent_origin;
         }
         return null;
+    }
+
+    // JNI upcalls section
+
+    /**
+     * Factory method to create an AtkComponent instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkComponent instance, or null if creation fails
+     */
+    public static AtkComponent createAtkComponent(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return new AtkComponent(ac);
+        }, null);
     }
 
     /**

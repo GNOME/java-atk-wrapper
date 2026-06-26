@@ -40,6 +40,8 @@ public class AtkSelection {
                 new WeakReference<AccessibleSelection>(ac.getAccessibleSelection());
     }
 
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkSelection instance from an AccessibleContext.
      * Called from native code via JNI.

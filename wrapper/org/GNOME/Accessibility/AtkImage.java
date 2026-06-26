@@ -49,6 +49,8 @@ public class AtkImage {
         this.accessibleIcons = new WeakReference<AccessibleIcon[]>(ac.getAccessibleIcon());
     }
 
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkImage instance from an AccessibleContext.
      * Called from native code via JNI.

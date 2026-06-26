@@ -52,19 +52,6 @@ public class AtkText {
                 new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
     }
 
-    /**
-     * Factory method to create an AtkText instance from an AccessibleContext.
-     * Called from native code via JNI.
-     *
-     * @param ac the AccessibleContext to wrap
-     * @return a new AtkText instance, or null if creation fails
-     */
-    public static AtkText createAtkText(AccessibleContext ac) {
-        return AtkUtil.invokeInSwing(() -> {
-            return new AtkText(ac);
-        }, null);
-    }
-
     public static int getRightStart(int start) {
         if (start < 0)
             return 0;
@@ -78,6 +65,364 @@ public class AtkText {
             return count;
         else
             return end;
+    }
+
+    private int getPartTypeFromBoundary(int boundary_type) {
+        switch (boundary_type) {
+            case AtkTextBoundary.CHAR:
+                return AccessibleText.CHARACTER;
+            case AtkTextBoundary.WORD_START:
+            case AtkTextBoundary.WORD_END:
+                return AccessibleText.WORD;
+            case AtkTextBoundary.SENTENCE_START:
+            case AtkTextBoundary.SENTENCE_END:
+                return AccessibleText.SENTENCE;
+            case AtkTextBoundary.LINE_START:
+            case AtkTextBoundary.LINE_END:
+                return AccessibleExtendedText.LINE;
+            default:
+                return -1;
+        }
+    }
+
+    private int getNextWordStart(int offset, String str) {
+        BreakIterator words = BreakIterator.getWordInstance();
+        words.setText(str);
+        int start = words.following(offset);
+        int end = words.next();
+
+        while (end != BreakIterator.DONE) {
+            for (int i = start; i < end; i++) {
+                if (Character.isLetter(str.codePointAt(i))) {
+                    return start;
+                }
+            }
+
+            start = end;
+            end = words.next();
+        }
+
+        return BreakIterator.DONE;
+    }
+
+    private int getNextWordEnd(int offset, String str) {
+        int start = getNextWordStart(offset, str);
+
+        BreakIterator words = BreakIterator.getWordInstance();
+        words.setText(str);
+        int next = words.following(offset);
+
+        if (start == next) {
+            return words.following(start);
+        } else {
+            return next;
+        }
+    }
+
+    /**
+     * Gets the start position of the previous word before the given UTF-16 index.
+     *
+     * @param utf16Index The UTF-16 character index within the text
+     * @param text       The full text to search within
+     * @return The UTF-16 start position of the previous word, or {@link BreakIterator#DONE}
+     * if no previous word is found or if no word segments contain letters or digits
+     */
+    private int getPreviousWordStart(int utf16Index, String text) {
+        BreakIterator words = BreakIterator.getWordInstance();
+        words.setText(text);
+        int start = words.preceding(utf16Index);
+        int end = words.next();
+
+        while (start != BreakIterator.DONE) {
+            for (int i = start; i < end; i++) {
+                if (Character.isLetter(text.codePointAt(i))) {
+                    return start;
+                }
+            }
+
+            end = start;
+            start = words.preceding(end);
+        }
+
+        return BreakIterator.DONE;
+    }
+
+    private int getPreviousWordEnd(int offset, String str) {
+        int start = getPreviousWordStart(offset, str);
+
+        BreakIterator words = BreakIterator.getWordInstance();
+        words.setText(str);
+        int pre = words.preceding(offset);
+
+        if (start == pre) {
+            return words.preceding(start);
+        } else {
+            return pre;
+        }
+    }
+
+    private int getNextSentenceStart(int offset, String str) {
+        BreakIterator sentences = BreakIterator.getSentenceInstance();
+        sentences.setText(str);
+        int start = sentences.following(offset);
+
+        return start;
+    }
+
+    private int getNextSentenceEnd(int offset, String str) {
+        int start = getNextSentenceStart(offset, str);
+        if (start == BreakIterator.DONE) {
+            return str.length();
+        }
+
+        int index = start;
+        do {
+            index--;
+        } while (index >= 0 && Character.isWhitespace(str.charAt(index)));
+
+        index++;
+        if (index < offset) {
+            start = getNextSentenceStart(start, str);
+            if (start == BreakIterator.DONE) {
+                return str.length();
+            }
+
+            index = start;
+            do {
+                index--;
+            } while (index >= 0 && Character.isWhitespace(str.charAt(index)));
+
+            index++;
+        }
+
+        return index;
+    }
+
+    /**
+     * Gets the start position of the previous sentence before the given offset.
+     *
+     * @param utf16Index The UTF-16 character index within the text
+     * @param text       The full text to search within
+     * @return The start position of the previous sentence, or BreakIterator.DONE if not found
+     */
+    private int getPreviousSentenceStart(int utf16Index, String text) {
+        BreakIterator sentences = BreakIterator.getSentenceInstance();
+        sentences.setText(text);
+        int start = sentences.preceding(utf16Index);
+
+        return start;
+    }
+
+    private int getPreviousSentenceEnd(int offset, String str) {
+        int start = getPreviousSentenceStart(offset, str);
+        if (start == BreakIterator.DONE) {
+            return 0;
+        }
+
+        int end = getNextSentenceEnd(start, str);
+        if (offset < end) {
+            start = getPreviousSentenceStart(start, str);
+            if (start == BreakIterator.DONE) {
+                return 0;
+            }
+
+            end = getNextSentenceEnd(start, str);
+        }
+
+        return end;
+    }
+
+    private int getNextLineStart(int offset, String str) {
+        int max = str.length();
+        while (offset < max) {
+            if (str.charAt(offset) == '\n')
+                return offset + 1;
+            offset += 1;
+        }
+        return offset;
+    }
+
+    private int getPreviousLineStart(int offset, String str) {
+        offset -= 2;
+        while (offset >= 0) {
+            if (str.charAt(offset) == '\n')
+                return offset + 1;
+            offset -= 1;
+        }
+        return 0;
+    }
+
+    private int getNextLineEnd(int offset, String str) {
+        int max = str.length();
+        offset += 1;
+        while (offset < max) {
+            if (str.charAt(offset) == '\n')
+                return offset;
+            offset += 1;
+        }
+        return offset;
+    }
+
+    private int getPreviousLineEnd(int offset, String str) {
+        offset -= 1;
+        while (offset >= 0) {
+            if (str.charAt(offset) == '\n')
+                return offset;
+            offset -= 1;
+        }
+        return 0;
+    }
+
+    private StringSequence private_get_text_at_offset(int offset,
+                                                      int boundary_type) {
+        int char_count = get_character_count();
+        if (offset < 0 || offset > char_count) {
+            return null;
+        }
+
+        switch (boundary_type) {
+            case AtkTextBoundary.CHAR: {
+                if (offset == char_count)
+                    return null;
+                String str = get_text(offset, offset + 1);
+                return new StringSequence(str, offset, offset + 1);
+            }
+            case AtkTextBoundary.WORD_START: {
+                if (offset == char_count)
+                    return new StringSequence("", char_count, char_count);
+
+                String s = get_text(0, char_count);
+                int start = getPreviousWordStart(offset + 1, s);
+                if (start == BreakIterator.DONE) {
+                    start = 0;
+                }
+
+                int end = getNextWordStart(offset, s);
+                if (end == BreakIterator.DONE) {
+                    end = s.length();
+                }
+
+                String str = get_text(start, end);
+                return new StringSequence(str, start, end);
+            }
+            case AtkTextBoundary.WORD_END: {
+                if (offset == 0)
+                    return new StringSequence("", 0, 0);
+
+                String s = get_text(0, char_count);
+                int start = getPreviousWordEnd(offset, s);
+                if (start == BreakIterator.DONE) {
+                    start = 0;
+                }
+
+                int end = getNextWordEnd(offset - 1, s);
+                if (end == BreakIterator.DONE) {
+                    end = s.length();
+                }
+
+                String str = get_text(start, end);
+                return new StringSequence(str, start, end);
+            }
+            case AtkTextBoundary.SENTENCE_START: {
+                if (offset == char_count)
+                    return new StringSequence("", char_count, char_count);
+
+                String s = get_text(0, char_count);
+                int start = getPreviousSentenceStart(offset + 1, s);
+                if (start == BreakIterator.DONE) {
+                    start = 0;
+                }
+
+                int end = getNextSentenceStart(offset, s);
+                if (end == BreakIterator.DONE) {
+                    end = s.length();
+                }
+
+                String str = get_text(start, end);
+                return new StringSequence(str, start, end);
+            }
+            case AtkTextBoundary.SENTENCE_END: {
+                if (offset == 0)
+                    return new StringSequence("", 0, 0);
+
+                String s = get_text(0, char_count);
+                int start = getPreviousSentenceEnd(offset, s);
+                if (start == BreakIterator.DONE) {
+                    start = 0;
+                }
+
+                int end = getNextSentenceEnd(offset - 1, s);
+                if (end == BreakIterator.DONE) {
+                    end = s.length();
+                }
+
+                String str = get_text(start, end);
+                return new StringSequence(str, start, end);
+            }
+            case AtkTextBoundary.LINE_START: {
+                if (offset == char_count)
+                    return new StringSequence("", char_count, char_count);
+
+                String s = get_text(0, char_count);
+                int start = getPreviousLineStart(offset + 1, s);
+                int end = getNextLineStart(offset, s);
+
+                String str = get_text(start, end);
+                return new StringSequence(str, start, end);
+            }
+            case AtkTextBoundary.LINE_END: {
+                String s = get_text(0, char_count);
+                int start = getPreviousLineEnd(offset, s);
+                int end = getNextLineEnd(offset - 1, s);
+
+                String str = get_text(start, end);
+                return new StringSequence(str, start, end);
+            }
+            default: {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * The ATK Text interface implementation for Java accessibility.
+     * <p>
+     * This class provides a bridge between Java's {@link AccessibleText}
+     * interface and the ATK (Accessibility Toolkit) text interface used by
+     * assistive technologies.
+     * <p>
+     * <strong>Offset conventions:</strong> ATK uses "character offsets" in the
+     * exposed UTF-8 text stream. Across the JNI boundary we standardize on Unicode
+     * code point offsets. Java Swing text component indices, however, are typically
+     * UTF-16 indices. Therefore, all offsets received from native code are treated
+     * as code point offsets and converted to UTF-16 indices before calling into
+     * {@link AccessibleText}.
+     */
+    public class StringSequence {
+
+        public String str;
+        public int start_offset, end_offset;
+
+        public StringSequence(String str, int start_offset, int end_offset) {
+            this.str = str;
+            this.start_offset = start_offset;
+            this.end_offset = end_offset;
+        }
+    }
+
+    // JNI upcalls section
+
+    /**
+     * Factory method to create an AtkText instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkText instance, or null if creation fails
+     */
+    public static AtkText createAtkText(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return new AtkText(ac);
+        }, null);
     }
 
     /* Return string from start, up to, but not including end */
@@ -500,346 +845,5 @@ public class AtkText {
         }, false);
     }
 
-    private int getPartTypeFromBoundary(int boundary_type) {
-        switch (boundary_type) {
-            case AtkTextBoundary.CHAR:
-                return AccessibleText.CHARACTER;
-            case AtkTextBoundary.WORD_START:
-            case AtkTextBoundary.WORD_END:
-                return AccessibleText.WORD;
-            case AtkTextBoundary.SENTENCE_START:
-            case AtkTextBoundary.SENTENCE_END:
-                return AccessibleText.SENTENCE;
-            case AtkTextBoundary.LINE_START:
-            case AtkTextBoundary.LINE_END:
-                return AccessibleExtendedText.LINE;
-            default:
-                return -1;
-        }
-    }
 
-    private int getNextWordStart(int offset, String str) {
-        BreakIterator words = BreakIterator.getWordInstance();
-        words.setText(str);
-        int start = words.following(offset);
-        int end = words.next();
-
-        while (end != BreakIterator.DONE) {
-            for (int i = start; i < end; i++) {
-                if (Character.isLetter(str.codePointAt(i))) {
-                    return start;
-                }
-            }
-
-            start = end;
-            end = words.next();
-        }
-
-        return BreakIterator.DONE;
-    }
-
-    private int getNextWordEnd(int offset, String str) {
-        int start = getNextWordStart(offset, str);
-
-        BreakIterator words = BreakIterator.getWordInstance();
-        words.setText(str);
-        int next = words.following(offset);
-
-        if (start == next) {
-            return words.following(start);
-        } else {
-            return next;
-        }
-    }
-
-    /**
-     * Gets the start position of the previous word before the given UTF-16 index.
-     *
-     * @param utf16Index The UTF-16 character index within the text
-     * @param text       The full text to search within
-     * @return The UTF-16 start position of the previous word, or {@link BreakIterator#DONE}
-     * if no previous word is found or if no word segments contain letters or digits
-     */
-    private int getPreviousWordStart(int utf16Index, String text) {
-        BreakIterator words = BreakIterator.getWordInstance();
-        words.setText(text);
-        int start = words.preceding(utf16Index);
-        int end = words.next();
-
-        while (start != BreakIterator.DONE) {
-            for (int i = start; i < end; i++) {
-                if (Character.isLetter(text.codePointAt(i))) {
-                    return start;
-                }
-            }
-
-            end = start;
-            start = words.preceding(end);
-        }
-
-        return BreakIterator.DONE;
-    }
-
-    private int getPreviousWordEnd(int offset, String str) {
-        int start = getPreviousWordStart(offset, str);
-
-        BreakIterator words = BreakIterator.getWordInstance();
-        words.setText(str);
-        int pre = words.preceding(offset);
-
-        if (start == pre) {
-            return words.preceding(start);
-        } else {
-            return pre;
-        }
-    }
-
-    private int getNextSentenceStart(int offset, String str) {
-        BreakIterator sentences = BreakIterator.getSentenceInstance();
-        sentences.setText(str);
-        int start = sentences.following(offset);
-
-        return start;
-    }
-
-    private int getNextSentenceEnd(int offset, String str) {
-        int start = getNextSentenceStart(offset, str);
-        if (start == BreakIterator.DONE) {
-            return str.length();
-        }
-
-        int index = start;
-        do {
-            index--;
-        } while (index >= 0 && Character.isWhitespace(str.charAt(index)));
-
-        index++;
-        if (index < offset) {
-            start = getNextSentenceStart(start, str);
-            if (start == BreakIterator.DONE) {
-                return str.length();
-            }
-
-            index = start;
-            do {
-                index--;
-            } while (index >= 0 && Character.isWhitespace(str.charAt(index)));
-
-            index++;
-        }
-
-        return index;
-    }
-
-    /**
-     * Gets the start position of the previous sentence before the given offset.
-     *
-     * @param utf16Index The UTF-16 character index within the text
-     * @param text       The full text to search within
-     * @return The start position of the previous sentence, or BreakIterator.DONE if not found
-     */
-    private int getPreviousSentenceStart(int utf16Index, String text) {
-        BreakIterator sentences = BreakIterator.getSentenceInstance();
-        sentences.setText(text);
-        int start = sentences.preceding(utf16Index);
-
-        return start;
-    }
-
-    private int getPreviousSentenceEnd(int offset, String str) {
-        int start = getPreviousSentenceStart(offset, str);
-        if (start == BreakIterator.DONE) {
-            return 0;
-        }
-
-        int end = getNextSentenceEnd(start, str);
-        if (offset < end) {
-            start = getPreviousSentenceStart(start, str);
-            if (start == BreakIterator.DONE) {
-                return 0;
-            }
-
-            end = getNextSentenceEnd(start, str);
-        }
-
-        return end;
-    }
-
-    private int getNextLineStart(int offset, String str) {
-        int max = str.length();
-        while (offset < max) {
-            if (str.charAt(offset) == '\n')
-                return offset + 1;
-            offset += 1;
-        }
-        return offset;
-    }
-
-    private int getPreviousLineStart(int offset, String str) {
-        offset -= 2;
-        while (offset >= 0) {
-            if (str.charAt(offset) == '\n')
-                return offset + 1;
-            offset -= 1;
-        }
-        return 0;
-    }
-
-    private int getNextLineEnd(int offset, String str) {
-        int max = str.length();
-        offset += 1;
-        while (offset < max) {
-            if (str.charAt(offset) == '\n')
-                return offset;
-            offset += 1;
-        }
-        return offset;
-    }
-
-    private int getPreviousLineEnd(int offset, String str) {
-        offset -= 1;
-        while (offset >= 0) {
-            if (str.charAt(offset) == '\n')
-                return offset;
-            offset -= 1;
-        }
-        return 0;
-    }
-
-    private StringSequence private_get_text_at_offset(int offset,
-                                                      int boundary_type) {
-        int char_count = get_character_count();
-        if (offset < 0 || offset > char_count) {
-            return null;
-        }
-
-        switch (boundary_type) {
-            case AtkTextBoundary.CHAR: {
-                if (offset == char_count)
-                    return null;
-                String str = get_text(offset, offset + 1);
-                return new StringSequence(str, offset, offset + 1);
-            }
-            case AtkTextBoundary.WORD_START: {
-                if (offset == char_count)
-                    return new StringSequence("", char_count, char_count);
-
-                String s = get_text(0, char_count);
-                int start = getPreviousWordStart(offset + 1, s);
-                if (start == BreakIterator.DONE) {
-                    start = 0;
-                }
-
-                int end = getNextWordStart(offset, s);
-                if (end == BreakIterator.DONE) {
-                    end = s.length();
-                }
-
-                String str = get_text(start, end);
-                return new StringSequence(str, start, end);
-            }
-            case AtkTextBoundary.WORD_END: {
-                if (offset == 0)
-                    return new StringSequence("", 0, 0);
-
-                String s = get_text(0, char_count);
-                int start = getPreviousWordEnd(offset, s);
-                if (start == BreakIterator.DONE) {
-                    start = 0;
-                }
-
-                int end = getNextWordEnd(offset - 1, s);
-                if (end == BreakIterator.DONE) {
-                    end = s.length();
-                }
-
-                String str = get_text(start, end);
-                return new StringSequence(str, start, end);
-            }
-            case AtkTextBoundary.SENTENCE_START: {
-                if (offset == char_count)
-                    return new StringSequence("", char_count, char_count);
-
-                String s = get_text(0, char_count);
-                int start = getPreviousSentenceStart(offset + 1, s);
-                if (start == BreakIterator.DONE) {
-                    start = 0;
-                }
-
-                int end = getNextSentenceStart(offset, s);
-                if (end == BreakIterator.DONE) {
-                    end = s.length();
-                }
-
-                String str = get_text(start, end);
-                return new StringSequence(str, start, end);
-            }
-            case AtkTextBoundary.SENTENCE_END: {
-                if (offset == 0)
-                    return new StringSequence("", 0, 0);
-
-                String s = get_text(0, char_count);
-                int start = getPreviousSentenceEnd(offset, s);
-                if (start == BreakIterator.DONE) {
-                    start = 0;
-                }
-
-                int end = getNextSentenceEnd(offset - 1, s);
-                if (end == BreakIterator.DONE) {
-                    end = s.length();
-                }
-
-                String str = get_text(start, end);
-                return new StringSequence(str, start, end);
-            }
-            case AtkTextBoundary.LINE_START: {
-                if (offset == char_count)
-                    return new StringSequence("", char_count, char_count);
-
-                String s = get_text(0, char_count);
-                int start = getPreviousLineStart(offset + 1, s);
-                int end = getNextLineStart(offset, s);
-
-                String str = get_text(start, end);
-                return new StringSequence(str, start, end);
-            }
-            case AtkTextBoundary.LINE_END: {
-                String s = get_text(0, char_count);
-                int start = getPreviousLineEnd(offset, s);
-                int end = getNextLineEnd(offset - 1, s);
-
-                String str = get_text(start, end);
-                return new StringSequence(str, start, end);
-            }
-            default: {
-                return null;
-            }
-        }
-    }
-
-    /**
-     * The ATK Text interface implementation for Java accessibility.
-     * <p>
-     * This class provides a bridge between Java's {@link AccessibleText}
-     * interface and the ATK (Accessibility Toolkit) text interface used by
-     * assistive technologies.
-     * <p>
-     * <strong>Offset conventions:</strong> ATK uses "character offsets" in the
-     * exposed UTF-8 text stream. Across the JNI boundary we standardize on Unicode
-     * code point offsets. Java Swing text component indices, however, are typically
-     * UTF-16 indices. Therefore, all offsets received from native code are treated
-     * as code point offsets and converted to UTF-16 indices before calling into
-     * {@link AccessibleText}.
-     */
-    public class StringSequence {
-
-        public String str;
-        public int start_offset, end_offset;
-
-        public StringSequence(String str, int start_offset, int end_offset) {
-            this.str = str;
-            this.start_offset = start_offset;
-            this.end_offset = end_offset;
-        }
-    }
 }

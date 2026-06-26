@@ -59,6 +59,40 @@ public class AtkObject {
     public static final int INTERFACE_VALUE = 0x00001000;
 
     /**
+     * Returns the JMenuItem accelerator. Similar implementation is used on
+     * macOS, see CAccessibility.getAcceleratorText(AccessibleContext) in OpenJDK, and
+     * on Windows, see AccessBridge.getAccelerator(AccessibleContext) in OpenJDK.
+     */
+    private static String getAcceleratorText(AccessibleContext ac) {
+        String acceleratorText = "";
+        Accessible parent = ac.getAccessibleParent();
+        if (parent != null) {
+            int indexInParent = ac.getAccessibleIndexInParent();
+            Accessible child = parent.getAccessibleContext()
+                    .getAccessibleChild(indexInParent);
+            if (child instanceof JMenuItem menuItem) {
+                KeyStroke keyStroke = menuItem.getAccelerator();
+                if (keyStroke != null) {
+                    int modifiers = keyStroke.getModifiers();
+                    String modifiersText = modifiers > 0 ? InputEvent.getModifiersExText(modifiers) : "";
+
+                    int keyCode = keyStroke.getKeyCode();
+                    String keyCodeText = keyCode != 0 ? KeyEvent.getKeyText(keyCode) : String.valueOf(keyStroke.getKeyChar());
+
+                    acceleratorText += modifiersText;
+                    if (!modifiersText.isEmpty() && !keyCodeText.isEmpty()) {
+                        acceleratorText += "+";
+                    }
+                    acceleratorText += keyCodeText;
+                }
+            }
+        }
+        return acceleratorText;
+    }
+
+    // JNI upcalls section
+
+    /**
      * Gets the ATK interface flags for the given accessible object.
      * Called from native code via JNI.
      *
@@ -168,38 +202,6 @@ public class AtkObject {
             }
             return accessibleName;
         }, "");
-    }
-
-    /**
-     * Returns the JMenuItem accelerator. Similar implementation is used on
-     * macOS, see CAccessibility.getAcceleratorText(AccessibleContext) in OpenJDK, and
-     * on Windows, see AccessBridge.getAccelerator(AccessibleContext) in OpenJDK.
-     */
-    private static String getAcceleratorText(AccessibleContext ac) {
-        String acceleratorText = "";
-        Accessible parent = ac.getAccessibleParent();
-        if (parent != null) {
-            int indexInParent = ac.getAccessibleIndexInParent();
-            Accessible child = parent.getAccessibleContext()
-                    .getAccessibleChild(indexInParent);
-            if (child instanceof JMenuItem menuItem) {
-                KeyStroke keyStroke = menuItem.getAccelerator();
-                if (keyStroke != null) {
-                    int modifiers = keyStroke.getModifiers();
-                    String modifiersText = modifiers > 0 ? InputEvent.getModifiersExText(modifiers) : "";
-
-                    int keyCode = keyStroke.getKeyCode();
-                    String keyCodeText = keyCode != 0 ? KeyEvent.getKeyText(keyCode) : String.valueOf(keyStroke.getKeyChar());
-
-                    acceleratorText += modifiersText;
-                    if (!modifiersText.isEmpty() && !keyCodeText.isEmpty()) {
-                        acceleratorText += "+";
-                    }
-                    acceleratorText += keyCodeText;
-                }
-            }
-        }
-        return acceleratorText;
     }
 
     /**

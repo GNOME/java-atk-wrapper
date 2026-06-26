@@ -49,6 +49,8 @@ public class AtkHypertext extends AtkText {
         }
     }
 
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkHypertext instance from an AccessibleContext.
      * Called from native code via JNI.

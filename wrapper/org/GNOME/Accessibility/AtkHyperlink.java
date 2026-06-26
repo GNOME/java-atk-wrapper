@@ -45,6 +45,8 @@ public class AtkHyperlink {
         }, null);
     }
 
+    // JNI upcalls section
+
     /**
      * Gets the URI associated with the anchor specified by the index.
      * Called from native code via JNI.

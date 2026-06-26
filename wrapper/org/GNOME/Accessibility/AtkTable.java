@@ -42,6 +42,8 @@ public class AtkTable {
         this.accessibleTableWeakRef = new WeakReference<AccessibleTable>(ac.getAccessibleTable());
     }
 
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkTable instance from an AccessibleContext.
      * Called from native code via JNI.

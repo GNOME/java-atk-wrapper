@@ -49,6 +49,8 @@ public class AtkEditableText extends AtkText {
                 new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
     }
 
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkEditableText instance from an AccessibleContext.
      * Called from native code via JNI.

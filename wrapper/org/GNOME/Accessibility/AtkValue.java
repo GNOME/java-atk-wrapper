@@ -40,6 +40,8 @@ public class AtkValue {
         this.accessibleValueWeakRef = new WeakReference<AccessibleValue>(ac.getAccessibleValue());
     }
 
+    // JNI upcalls section
+
     /**
      * Factory method to create an AtkValue instance from an AccessibleContext.
      * Called from native code via JNI.
