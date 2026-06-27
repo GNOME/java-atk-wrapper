@@ -22,6 +22,7 @@ package org.GNOME.Accessibility;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleHyperlink;
+import java.awt.EventQueue;
 import java.lang.ref.WeakReference;
 
 /**
@@ -35,6 +36,8 @@ public class AtkHyperlink {
     private final WeakReference<AccessibleHyperlink> accessibleHyperlinkWeakRef;
 
     private AtkHyperlink(AccessibleHyperlink accessibleHyperlink) {
+        assert EventQueue.isDispatchThread();
+
         accessibleHyperlinkWeakRef = new WeakReference<AccessibleHyperlink>(accessibleHyperlink);
     }
 

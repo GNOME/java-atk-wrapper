@@ -21,6 +21,7 @@ package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
 import javax.swing.*;
+import java.awt.EventQueue;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.lang.ref.WeakReference;
@@ -40,6 +41,8 @@ public class AtkAction {
     private final int nactions;
 
     private AtkAction(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
+
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         AccessibleAction accessibleAction = ac.getAccessibleAction();
         this.accessibleActionWeakRef = new WeakReference<AccessibleAction>(accessibleAction);

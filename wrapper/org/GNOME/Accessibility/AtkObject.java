@@ -28,6 +28,7 @@ package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
 import javax.swing.*;
+import java.awt.EventQueue;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
@@ -67,6 +68,8 @@ public class AtkObject {
      * on Windows, see AccessBridge.getAccelerator(AccessibleContext) in OpenJDK.
      */
     private static String getAcceleratorText(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
+
         String acceleratorText = "";
         Accessible parent = ac.getAccessibleParent();
         if (parent != null) {

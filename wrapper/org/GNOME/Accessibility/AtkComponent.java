@@ -39,12 +39,16 @@ public class AtkComponent {
     private final WeakReference<AccessibleComponent> accessibleComponentWeakRef;
 
     private AtkComponent(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
+
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         this.accessibleComponentWeakRef =
                 new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
     }
 
     private static Point getWindowLocation(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
+
         while (ac != null) {
             AccessibleRole role = ac.getAccessibleRole();
             if (role == AccessibleRole.DIALOG ||
@@ -66,6 +70,8 @@ public class AtkComponent {
     // Return the position of the object relative to the coordinate type
     public static Point getComponentOrigin(
             AccessibleContext ac, AccessibleComponent accessibleComponent, int coordType) {
+        assert EventQueue.isDispatchThread();
+
         if (coordType == AtkCoordType.SCREEN)
             return accessibleComponent.getLocationOnScreen();
 

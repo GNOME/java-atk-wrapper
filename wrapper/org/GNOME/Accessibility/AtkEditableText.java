@@ -45,6 +45,9 @@ public class AtkEditableText extends AtkText {
 
     private AtkEditableText(AccessibleContext ac) {
         super(ac);
+
+        assert EventQueue.isDispatchThread();
+
         accessibleEditableTextWeakRef =
                 new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
     }

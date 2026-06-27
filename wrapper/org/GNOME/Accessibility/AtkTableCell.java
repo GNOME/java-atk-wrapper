@@ -23,6 +23,7 @@ import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleExtendedTable;
 import javax.accessibility.AccessibleTable;
+import java.awt.EventQueue;
 import java.lang.ref.WeakReference;
 
 /**
@@ -42,6 +43,8 @@ public class AtkTableCell {
     private final WeakReference<AccessibleTable> accessibleTableWeakRef;
 
     private AtkTableCell(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
+
         this._ac = new WeakReference<AccessibleContext>(ac);
         Accessible accessibleParent = ac.getAccessibleParent();
         if (accessibleParent == null) {

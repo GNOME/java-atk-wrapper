@@ -23,6 +23,7 @@ import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleHyperlink;
 import javax.accessibility.AccessibleHypertext;
 import javax.accessibility.AccessibleText;
+import java.awt.EventQueue;
 import java.lang.ref.WeakReference;
 
 /**
@@ -39,6 +40,8 @@ public class AtkHypertext extends AtkText {
 
     private AtkHypertext(AccessibleContext ac) {
         super(ac);
+
+        assert EventQueue.isDispatchThread();
 
         AccessibleText accessibleText = ac.getAccessibleText();
         if (accessibleText instanceof AccessibleHypertext) {
