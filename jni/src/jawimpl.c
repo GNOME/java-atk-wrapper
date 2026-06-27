@@ -589,18 +589,18 @@ extern "C"
     return NULL;
   }
 
-/**
- * jaw_impl_initialize:
- * @atk_obj: the AtkObject to initialize
- * @data: initialization data
- *
- * Initializes the AtkObject by calling the parent class initialize method
- * and registering a property change listener for the accessible context.
- *
- * Explicitly manages a JNI local reference frame using
- * PushLocalFrame/PopLocalFrame; all local references are released
- * before the function returns.
- */
+  /**
+   * jaw_impl_initialize:
+   * @atk_obj: the AtkObject to initialize
+   * @data: initialization data
+   *
+   * Initializes the AtkObject by calling the parent class initialize method
+   * and registering a property change listener for the accessible context.
+   *
+   * Explicitly manages a JNI local reference frame using
+   * PushLocalFrame/PopLocalFrame; all local references are released
+   * before the function returns.
+   */
 
   static void
   jaw_impl_initialize (AtkObject *atk_obj, gpointer data)
@@ -622,20 +622,20 @@ extern "C"
     (*jniEnv)->DeleteGlobalRef (jniEnv, ac);
   }
 
-/**
- * Checks if the given jKey (name of the relation) matches the value of static
- * field in AccessibleRelation identified by fieldID.
- *
- * @param jniEnv JNI environment pointer
- * @param jKey   key of AccessibleRelation, the name of the relation
- * @param fieldID cached field ID for the relation field
- * @return       TRUE if jKey equals the corresponding static field, FALSE
- * otherwise
- *
- * Explicitly manages a JNI local reference frame using
- * PushLocalFrame/PopLocalFrame; all local references are released
- * before the function returns.
- */
+  /**
+   * Checks if the given jKey (name of the relation) matches the value of static
+   * field in AccessibleRelation identified by fieldID.
+   *
+   * @param jniEnv JNI environment pointer
+   * @param jKey   key of AccessibleRelation, the name of the relation
+   * @param fieldID cached field ID for the relation field
+   * @return       TRUE if jKey equals the corresponding static field, FALSE
+   * otherwise
+   *
+   * Explicitly manages a JNI local reference frame using
+   * PushLocalFrame/PopLocalFrame; all local references are released
+   * before the function returns.
+   */
 
   static gboolean
   is_java_relation_key (JNIEnv *jniEnv, jstring jKey, const gchar *strKey)
@@ -647,15 +647,15 @@ extern "C"
     return (*jniEnv)->IsSameObject (jniEnv, jKey, jConstKey);
   }
 
-/**
- * Compares the given key of Java AccessibleRelation (jrel_key) with some of
- * AccessibleRelation fields. If a match is found, returns the
- * corresponding AtkRelationType; otherwise, returns ATK_RELATION_NULL.
- *
- * @param jniEnv   JNI environment pointer
- * @param jrel_key key of AccessibleRelation, the name of the relation
- * @return         Corresponding AtkRelationType or ATK_RELATION_NULL
- */
+  /**
+   * Compares the given key of Java AccessibleRelation (jrel_key) with some of
+   * AccessibleRelation fields. If a match is found, returns the
+   * corresponding AtkRelationType; otherwise, returns ATK_RELATION_NULL.
+   *
+   * @param jniEnv   JNI environment pointer
+   * @param jrel_key key of AccessibleRelation, the name of the relation
+   * @return         Corresponding AtkRelationType or ATK_RELATION_NULL
+   */
 
   AtkRelationType
   jaw_impl_get_atk_relation_type (JNIEnv *jniEnv, jstring jrel_key)

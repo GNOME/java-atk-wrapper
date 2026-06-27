@@ -681,11 +681,11 @@ extern "C"
   static pthread_mutex_t jaw_vdc_dup_mutex = PTHREAD_MUTEX_INITIALIZER;
   static jobject jaw_vdc_last_ac = NULL;
 
-/**
- * Handler for emitting ATK signals in response to Java accessibility events.
- *
- * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
- */
+  /**
+   * Handler for emitting ATK signals in response to Java accessibility events.
+   *
+   * Invoked from GLib main loop; no Push/PopLocalFrame/DeleteLocalRef needed.
+   */
 
   static gboolean
   signal_emit_handler (gpointer p)
@@ -1139,9 +1139,9 @@ extern "C"
     jni_main_idle_add (component_removed_handler, para);
   }
 
-/**
- * Signal is emitted when the position or size of the component changes.
- */
+  /**
+   * Signal is emitted when the position or size of the component changes.
+   */
 
   static gboolean
   bounds_changed_handler (gpointer p)
