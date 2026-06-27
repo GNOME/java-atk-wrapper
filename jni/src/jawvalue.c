@@ -83,7 +83,7 @@ extern "C"
                                               "org/GNOME/Accessibility/AtkValue");
     jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv,
                                                    classValue,
-                                                   "createAtkValue",
+                                                   "create_atk_value",
                                                    "(Ljavax/accessibility/AccessibleContext;)Lorg/GNOME/Accessibility/AtkValue;");
     jobject jatk_value = (*jniEnv)->CallStaticObjectMethod (jniEnv, classValue, jmid, ac);
     data->atk_value = (*jniEnv)->NewGlobalRef (jniEnv, jatk_value);
@@ -247,7 +247,7 @@ extern "C"
     jclass classAtkValue = (*env)->FindClass (env, "org/GNOME/Accessibility/AtkValue");
     jmethodID jmid = (*env)->GetMethodID (env,
                                           classAtkValue,
-                                          "setValue",
+                                          "set_value",
                                           "(Ljava/lang/Number;)V");
     (*env)->CallVoidMethod (env, atk_value, jmid, (jdouble) value);
     (*env)->DeleteGlobalRef (env, atk_value);
@@ -275,8 +275,8 @@ extern "C"
     JAW_GET_VALUE (obj, NULL);
 
     jclass classAtkValue = (*env)->FindClass (env, "org/GNOME/Accessibility/AtkValue");
-    jmethodID jmidMin = (*env)->GetMethodID (env, classAtkValue, "getMinimumValue", "()D");
-    jmethodID jmidMax = (*env)->GetMethodID (env, classAtkValue, "getMaximumValue", "()D");
+    jmethodID jmidMin = (*env)->GetMethodID (env, classAtkValue, "get_minimum_value", "()D");
+    jmethodID jmidMax = (*env)->GetMethodID (env, classAtkValue, "get_maximum_value", "()D");
     AtkRange *ret = atk_range_new ((gdouble) (*env)->CallDoubleMethod (env, atk_value, jmidMin),
                                    (gdouble) (*env)->CallDoubleMethod (env, atk_value, jmidMax),
                                    NULL); // NULL description
@@ -308,7 +308,7 @@ extern "C"
     JAW_GET_VALUE (obj, 0.);
 
     jclass classAtkValue = (*env)->FindClass (env, "org/GNOME/Accessibility/AtkValue");
-    jmethodID jmid = (*env)->GetMethodID (env, classAtkValue, "getIncrement", "()D");
+    jmethodID jmid = (*env)->GetMethodID (env, classAtkValue, "get_increment", "()D");
     gdouble ret = (*env)->CallDoubleMethod (env, atk_value, jmid);
     (*env)->DeleteGlobalRef (env, atk_value);
     return ret;

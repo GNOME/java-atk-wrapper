@@ -49,7 +49,7 @@ public class AtkValue {
      * @param ac the AccessibleContext to wrap
      * @return a new AtkValue instance, or null if creation fails
      */
-    private static AtkValue createAtkValue(AccessibleContext ac) {
+    private static AtkValue create_atk_value(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             return new AtkValue(ac);
         }, null);
@@ -79,7 +79,7 @@ public class AtkValue {
      * @return a Double representing the maximum accessible value, or null if the value
      * is unavailable or the object doesn't implement this interface
      */
-    private double getMaximumValue() {
+    private double get_maximum_value() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
             return 0.0;
@@ -96,7 +96,7 @@ public class AtkValue {
      * @return a Double representing the minimum accessible value, or null if the value
      * is unavailable or the object doesn't implement this interface
      */
-    private double getMinimumValue() {
+    private double get_minimum_value() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
             return 0.0;
@@ -112,7 +112,7 @@ public class AtkValue {
      *
      * @param n the Number value to set as the current accessible value
      */
-    private void setValue(Number n) {
+    private void set_value(Number n) {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
             return;
@@ -128,7 +128,7 @@ public class AtkValue {
      *
      * @return the minimum increment value, returns Double.MIN_VALUE
      */
-    private double getIncrement() {
+    private double get_increment() {
         return Double.MIN_VALUE;
     }
 }
