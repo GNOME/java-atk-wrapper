@@ -34,7 +34,6 @@ public class AtkSelection {
     private final WeakReference<AccessibleSelection> accessibleSelectionWeakRef;
 
     private AtkSelection(AccessibleContext ac) {
-        super();
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         this.accessibleSelectionWeakRef =
                 new WeakReference<AccessibleSelection>(ac.getAccessibleSelection());

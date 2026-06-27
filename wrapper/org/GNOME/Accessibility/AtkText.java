@@ -45,7 +45,6 @@ public class AtkText {
     private final WeakReference<AccessibleEditableText> accessibleEditableTextWeakRef;
 
     protected AtkText(AccessibleContext ac) {
-        super();
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         this.accessibleTextWeakRef = new WeakReference<AccessibleText>(ac.getAccessibleText());
         this.accessibleEditableTextWeakRef =

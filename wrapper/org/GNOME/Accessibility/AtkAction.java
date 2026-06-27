@@ -40,7 +40,6 @@ public class AtkAction {
     private final int nactions;
 
     private AtkAction(AccessibleContext ac) {
-        super();
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         AccessibleAction accessibleAction = ac.getAccessibleAction();
         this.accessibleActionWeakRef = new WeakReference<AccessibleAction>(accessibleAction);

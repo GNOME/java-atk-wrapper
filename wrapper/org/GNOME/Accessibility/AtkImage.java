@@ -44,7 +44,6 @@ public class AtkImage {
     private final WeakReference<AccessibleIcon[]> accessibleIcons;
 
     private AtkImage(AccessibleContext ac) {
-        super();
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         this.accessibleIcons = new WeakReference<AccessibleIcon[]>(ac.getAccessibleIcon());
     }

@@ -35,7 +35,6 @@ public class AtkHyperlink {
     private final WeakReference<AccessibleHyperlink> accessibleHyperlinkWeakRef;
 
     private AtkHyperlink(AccessibleHyperlink accessibleHyperlink) {
-        super();
         accessibleHyperlinkWeakRef = new WeakReference<AccessibleHyperlink>(accessibleHyperlink);
     }
 
