@@ -299,11 +299,11 @@ jaw_text_get_character_at_offset (AtkText *text, gint offset)
                                               "org/GNOME/Accessibility/AtkText");
   jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv,
                                            classAtkText,
-                                           "get_character_at_offset", "(I)C");
-  jchar jcharacter = (*jniEnv)->CallCharMethod (jniEnv,
-                                                atk_text,
-                                                jmid,
-                                                (jint) offset);
+                                           "get_character_at_offset", "(I)I");
+  jint jcharacter = (*jniEnv)->CallIntMethod (jniEnv,
+                                              atk_text,
+                                              jmid,
+                                              (jint) offset);
   (*jniEnv)->DeleteGlobalRef (jniEnv, atk_text);
 
   return (gunichar) jcharacter;
@@ -469,7 +469,7 @@ static gint
 jaw_text_get_caret_offset (AtkText *text)
 {
   JAW_DEBUG_C ("%p", text);
-  JAW_GET_TEXT (text, 0);
+  JAW_GET_TEXT (text, -1);
 
   jclass classAtkText = (*jniEnv)->FindClass (jniEnv,
                                               "org/GNOME/Accessibility/AtkText");
@@ -558,7 +558,7 @@ static gint
 jaw_text_get_character_count (AtkText *text)
 {
   JAW_DEBUG_C ("%p", text);
-  JAW_GET_TEXT (text, 0);
+  JAW_GET_TEXT (text, -1);
 
   jclass classAtkText = (*jniEnv)->FindClass (jniEnv,
                                               "org/GNOME/Accessibility/AtkText");
@@ -690,7 +690,7 @@ static gint
 jaw_text_get_n_selections (AtkText *text)
 {
   JAW_DEBUG_C ("%p", text);
-  JAW_GET_TEXT (text, 0);
+  JAW_GET_TEXT (text, -1);
 
   jclass classAtkText = (*jniEnv)->FindClass (jniEnv,
                                               "org/GNOME/Accessibility/AtkText");

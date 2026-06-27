@@ -270,7 +270,7 @@ public class AtkTable {
     private String get_column_description(int column) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
-            return "";
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
             Accessible accessible = accessibleTable.getAccessibleColumnDescription(column);
@@ -279,8 +279,8 @@ public class AtkTable {
                 if (accessibleContext != null)
                     return accessibleContext.getAccessibleDescription();
             }
-            return "";
-        }, "");
+            return null;
+        }, null);
     }
 
     /**
@@ -314,7 +314,7 @@ public class AtkTable {
     private String get_row_description(int row) {
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
-            return "";
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
             Accessible accessible = accessibleTable.getAccessibleRowDescription(row);
@@ -323,8 +323,8 @@ public class AtkTable {
                 if (accessibleContext != null)
                     return accessibleContext.getAccessibleDescription();
             }
-            return "";
-        }, "");
+            return null;
+        }, null);
     }
 
     /**
@@ -435,14 +435,13 @@ public class AtkTable {
      * @return an array of column indices that are selected, or null if none are selected
      */
     private int[] get_selected_columns() {
-        int[] d = new int[0];
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
-            return d;
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
             return accessibleTable.getSelectedAccessibleColumns();
-        }, d);
+        }, null);
     }
 
     /**
@@ -452,14 +451,13 @@ public class AtkTable {
      * @return an array of row indices that are selected, or null if none are selected
      */
     private int[] get_selected_rows() {
-        int[] d = new int[0];
         AccessibleTable accessibleTable = accessibleTableWeakRef.get();
         if (accessibleTable == null)
-            return d;
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
             return accessibleTable.getSelectedAccessibleRows();
-        }, d);
+        }, null);
     }
 
     /**

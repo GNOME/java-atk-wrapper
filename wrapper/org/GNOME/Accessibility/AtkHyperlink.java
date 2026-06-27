@@ -62,15 +62,15 @@ public class AtkHyperlink {
      */
     private String get_uri(int index) {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
-        if (accessibleHyperlink == null)
-            return "";
+        if (accessibleHyperlink == null || index < 0)
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
             Object o = accessibleHyperlink.getAccessibleActionObject(index);
             if (o != null)
                 return o.toString();
-            return "";
-        }, "");
+            return null;
+        }, null);
     }
 
     /**
@@ -83,7 +83,7 @@ public class AtkHyperlink {
      */
     private AccessibleContext get_object(int index) {
         AccessibleHyperlink accessibleHyperlink = accessibleHyperlinkWeakRef.get();
-        if (accessibleHyperlink == null)
+        if (accessibleHyperlink == null || index < 0)
             return null;
 
         return AtkUtil.invokeInSwing(() -> {

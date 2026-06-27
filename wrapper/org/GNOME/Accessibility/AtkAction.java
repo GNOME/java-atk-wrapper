@@ -120,6 +120,9 @@ public class AtkAction {
      * @return the number of actions, or 0 if this object does not implement actions
      */
     private int get_n_actions() {
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
+            return 0;
         return this.nactions;
     }
 
@@ -143,7 +146,7 @@ public class AtkAction {
         }
         descriptions[index] = AtkUtil.invokeInSwing(() -> {
             return accessibleAction.getAccessibleActionDescription(index);
-        }, "");
+        }, null);
         return descriptions[index];
     }
 

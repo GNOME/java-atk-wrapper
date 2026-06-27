@@ -108,17 +108,15 @@ public class AtkImage {
     private String get_image_description() {
         AccessibleIcon[] accessibleIcons = this.accessibleIcons.get();
         if (accessibleIcons == null)
-            return "";
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            String description = "";
+            String description = null;
             if (accessibleIcons != null && accessibleIcons.length > 0) {
                 description = accessibleIcons[0].getAccessibleIconDescription();
-                if (description == null)
-                    description = "";
             }
             return description;
-        }, "");
+        }, null);
     }
 
     /**
@@ -132,7 +130,7 @@ public class AtkImage {
      * falls back to the component's bounds.
      */
     private Dimension get_image_size() {
-        Dimension d = new Dimension(0, 0);
+        Dimension d = new Dimension(-1, -1);
 
         AccessibleContext accessibleContext = accessibleContextWeakRef.get();
         if (accessibleContext == null)

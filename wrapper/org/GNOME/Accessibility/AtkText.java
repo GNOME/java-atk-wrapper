@@ -477,17 +477,17 @@ public class AtkText {
      * @param codePointOffset a code point offset within the text
      * @return the Unicode code point at the specified offset, or 0 in case of failure
      */
-    private char get_character_at_offset(int codePointOffset) {
+    private int get_character_at_offset(int codePointOffset) {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
-            return ' ';
+            return 0;
 
         return AtkUtil.invokeInSwing(() -> {
             String str = accessibleText.getAtIndex(AccessibleText.CHARACTER, codePointOffset);
             if (str == null || str.length() == 0)
-                return ' ';
-            return str.charAt(0);
-        }, ' ');
+                return 0;
+            return (int) str.charAt(0);
+        }, 0);
     }
 
     private StringSequence get_text_at_offset(int codePointOffset, int boundaryType) {
@@ -572,11 +572,11 @@ public class AtkText {
     private int get_caret_offset() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
-            return 0;
+            return -1;
 
         return AtkUtil.invokeInSwing(() -> {
             return accessibleText.getCaretPosition();
-        }, 0);
+        }, -1);
     }
 
     /**
@@ -619,11 +619,11 @@ public class AtkText {
     private int get_character_count() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
-            return 0;
+            return -1;
 
         return AtkUtil.invokeInSwing(() -> {
             return accessibleText.getCharCount();
-        }, 0);
+        }, -1);
     }
 
     /**
@@ -707,14 +707,14 @@ public class AtkText {
     private int get_n_selections() {
         AccessibleText accessibleText = accessibleTextWeakRef.get();
         if (accessibleText == null)
-            return 0;
+            return -1;
 
         return AtkUtil.invokeInSwing(() -> {
             String str = accessibleText.getSelectedText();
             if (str != null && str.length() > 0)
                 return 1;
             return 0;
-        }, 0);
+        }, -1);
     }
 
     /**

@@ -217,7 +217,7 @@ static gint
 jaw_hypertext_get_link_index (AtkHypertext *hypertext, gint char_index)
 {
   JAW_DEBUG_C ("%p, %d", hypertext, char_index);
-  JAW_GET_HYPERTEXT (hypertext, 0);
+  JAW_GET_HYPERTEXT (hypertext, -1);
 
   jclass classAtkHypertext = (*jniEnv)->FindClass (jniEnv, "org/GNOME/Accessibility/AtkHypertext");
   jmethodID jmid = (*jniEnv)->GetMethodID (jniEnv, classAtkHypertext, "get_link_index", "(I)I");

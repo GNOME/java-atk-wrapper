@@ -224,6 +224,13 @@ jaw_image_get_image_description (AtkImage *image)
       (*jniEnv)->DeleteGlobalRef (jniEnv, data->jstrImageDescription);
     }
 
+  if (jstr == NULL)
+    {
+      data->jstrImageDescription = NULL;
+      data->image_description = NULL;
+      return NULL;
+    }
+
   data->jstrImageDescription = (*jniEnv)->NewGlobalRef (jniEnv, jstr);
   data->image_description = (gchar *) (*jniEnv)->GetStringUTFChars (jniEnv, data->jstrImageDescription, NULL);
 

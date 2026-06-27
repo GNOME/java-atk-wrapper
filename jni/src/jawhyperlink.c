@@ -163,6 +163,13 @@ jaw_hyperlink_get_uri (AtkHyperlink *atk_hyperlink,
       (*jniEnv)->DeleteGlobalRef (jniEnv, jaw_hyperlink->jstrUri);
     }
 
+  if (jstr == NULL)
+    {
+      jaw_hyperlink->jstrUri = NULL;
+      jaw_hyperlink->uri = NULL;
+      return NULL;
+    }
+
   jaw_hyperlink->jstrUri = (*jniEnv)->NewGlobalRef (jniEnv, jstr);
   jaw_hyperlink->uri = (gchar *) (*jniEnv)->GetStringUTFChars (jniEnv, jaw_hyperlink->jstrUri, NULL);
 

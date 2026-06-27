@@ -271,17 +271,27 @@ extern "C"
   static AtkRange *
   jaw_value_get_range (AtkValue *obj)
   {
-    JAW_DEBUG_C ("%p", obj);
-    JAW_GET_VALUE (obj, NULL);
+  JAW_DEBUG_C ("%p", obj);
+  JAW_GET_VALUE (obj, NULL);
 
-    jclass classAtkValue = (*env)->FindClass (env, "org/GNOME/Accessibility/AtkValue");
-    jmethodID jmidMin = (*env)->GetMethodID (env, classAtkValue, "get_minimum_value", "()D");
-    jmethodID jmidMax = (*env)->GetMethodID (env, classAtkValue, "get_maximum_value", "()D");
-    AtkRange *ret = atk_range_new ((gdouble) (*env)->CallDoubleMethod (env, atk_value, jmidMin),
-                                   (gdouble) (*env)->CallDoubleMethod (env, atk_value, jmidMax),
-                                   NULL); // NULL description
-    (*env)->DeleteGlobalRef (env, atk_value);
-    return ret;
+  jclass classAtkValue = (*env)->FindClass (env, "org/GNOME/Accessibility/AtkValue");
+  jmethodID jmidMin = (*env)->GetMethodID (env, classAtkValue, "get_minimum_value", "()Ljava/lang/Double;");
+  jmethodID jmidMax = (*env)->GetMethodID (env, classAtkValue, "get_maximum_value", "()Ljava/lang/Double;");
+  jobject jmin = (*env)->CallObjectMethod (env, atk_value, jmidMin);
+  jobject jmax = (*env)->CallObjectMethod (env, atk_value, jmidMax);
+  if (!jmin || !jmax)
+    {
+      (*env)->DeleteGlobalRef (env, atk_value);
+      return NULL;
+    }
+
+  jclass classDouble = (*env)->FindClass (env, "java/lang/Double");
+  jmethodID jmidDoubleValue = (*env)->GetMethodID (env, classDouble, "doubleValue", "()D");
+  AtkRange *ret = atk_range_new ((gdouble) (*env)->CallDoubleMethod (env, jmin, jmidDoubleValue),
+                                 (gdouble) (*env)->CallDoubleMethod (env, jmax, jmidDoubleValue),
+                                 NULL); // NULL description
+  (*env)->DeleteGlobalRef (env, atk_value);
+  return ret;
   }
 
 /**

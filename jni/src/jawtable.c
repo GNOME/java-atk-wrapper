@@ -523,6 +523,13 @@ jaw_table_get_column_description (AtkTable *table, gint column)
       (*env)->DeleteGlobalRef (env, data->jstrDescription);
     }
 
+  if (jstr == NULL)
+    {
+      data->jstrDescription = NULL;
+      data->description = NULL;
+      return NULL;
+    }
+
   data->jstrDescription = (*env)->NewGlobalRef (env, jstr);
   data->description = (gchar *) (*env)->GetStringUTFChars (env, data->jstrDescription, NULL);
 
@@ -557,6 +564,13 @@ jaw_table_get_row_description (AtkTable *table, gint row)
     {
       (*env)->ReleaseStringUTFChars (env, data->jstrDescription, data->description);
       (*env)->DeleteGlobalRef (env, data->jstrDescription);
+    }
+
+  if (jstr == NULL)
+    {
+      data->jstrDescription = NULL;
+      data->description = NULL;
+      return NULL;
     }
 
   data->jstrDescription = (*env)->NewGlobalRef (env, jstr);

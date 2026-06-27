@@ -76,11 +76,11 @@ public class AtkValue {
     private Number get_current_value() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
-            return 0.0;
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
             return accessibleValue.getCurrentAccessibleValue();
-        }, 0.0);
+        }, null);
     }
 
     /**
@@ -90,14 +90,17 @@ public class AtkValue {
      * @return a Double representing the maximum accessible value, or null if the value
      * is unavailable or the object doesn't implement this interface
      */
-    private double get_maximum_value() {
+    private Double get_maximum_value() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
-            return 0.0;
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            return accessibleValue.getMaximumAccessibleValue().doubleValue();
-        }, 0.0);
+            Number max = accessibleValue.getMaximumAccessibleValue();
+            if (max == null)
+                return null;
+            return Double.valueOf(max.doubleValue());
+        }, null);
     }
 
     /**
@@ -107,14 +110,17 @@ public class AtkValue {
      * @return a Double representing the minimum accessible value, or null if the value
      * is unavailable or the object doesn't implement this interface
      */
-    private double get_minimum_value() {
+    private Double get_minimum_value() {
         AccessibleValue accessibleValue = accessibleValueWeakRef.get();
         if (accessibleValue == null)
-            return 0.0;
+            return null;
 
         return AtkUtil.invokeInSwing(() -> {
-            return accessibleValue.getMinimumAccessibleValue().doubleValue();
-        }, 0.0);
+            Number min = accessibleValue.getMinimumAccessibleValue();
+            if (min == null)
+                return null;
+            return Double.valueOf(min.doubleValue());
+        }, null);
     }
 
     /**

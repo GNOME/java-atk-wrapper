@@ -122,13 +122,13 @@ public class AtkHypertext extends AtkText {
      */
     private int get_link_index(int charIndex) {
         if (accessibleHypertextRef == null)
-            return 0;
+            return -1;
         AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
         if (accessibleHypertext == null)
-            return 0;
+            return -1;
 
         return AtkUtil.invokeInSwing(() -> {
             return accessibleHypertext.getLinkIndex(charIndex);
-        }, 0);
+        }, -1);
     }
 }
