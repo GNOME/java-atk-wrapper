@@ -743,7 +743,7 @@ public class AtkWrapper {
         }
     }
 
-    private static void registerPropertyChangeListener(AccessibleContext ac) {
+    private static void register_property_change_listener(AccessibleContext ac) {
         if (ac != null) {
             AtkUtil.invokeInSwing(
                     () -> {

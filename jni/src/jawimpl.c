@@ -616,7 +616,7 @@ extern "C"
                                                    "org/GNOME/Accessibility/AtkWrapper");
     jmethodID jmid = (*jniEnv)->GetStaticMethodID (jniEnv,
                                                    classAtkWrapper,
-                                                   "registerPropertyChangeListener",
+                                                   "register_property_change_listener",
                                                    "(Ljavax/accessibility/AccessibleContext;)V");
     (*jniEnv)->CallStaticVoidMethod (jniEnv, classAtkWrapper, jmid, ac);
     (*jniEnv)->DeleteGlobalRef (jniEnv, ac);
