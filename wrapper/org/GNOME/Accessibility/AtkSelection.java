@@ -37,9 +37,17 @@ public class AtkSelection {
     private AtkSelection(AccessibleContext ac) {
         assert EventQueue.isDispatchThread();
 
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
+        AccessibleSelection accessibleSelection = ac.getAccessibleSelection();
+        if (accessibleSelection == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleSelection");
+        }
+
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
-        this.accessibleSelectionWeakRef =
-                new WeakReference<AccessibleSelection>(ac.getAccessibleSelection());
+        this.accessibleSelectionWeakRef = new WeakReference<AccessibleSelection>(accessibleSelection);
     }
 
     // JNI upcalls section

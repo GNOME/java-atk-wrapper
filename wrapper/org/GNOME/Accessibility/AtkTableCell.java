@@ -45,18 +45,24 @@ public class AtkTableCell {
     private AtkTableCell(AccessibleContext ac) {
         assert EventQueue.isDispatchThread();
 
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
         this._ac = new WeakReference<AccessibleContext>(ac);
         Accessible accessibleParent = ac.getAccessibleParent();
         if (accessibleParent == null) {
-            return;
+            throw new IllegalArgumentException("AccessibleContext must have accessibleParent");
         }
+
         AccessibleContext parentAccessibleContext = accessibleParent.getAccessibleContext();
         if (parentAccessibleContext == null) {
-            return;
+            throw new IllegalArgumentException("AccessibleContext must have accessibleParent with AccessibleContext");
         }
+
         AccessibleTable accessibleTable = parentAccessibleContext.getAccessibleTable();
         if (accessibleTable == null) {
-            return;
+            throw new IllegalArgumentException("AccessibleContext must have accessibleParent with AccessibleTable");
         }
         accessibleTableWeakRef = new WeakReference<AccessibleTable>(accessibleTable);
 

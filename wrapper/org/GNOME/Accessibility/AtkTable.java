@@ -41,8 +41,17 @@ public class AtkTable {
     private AtkTable(AccessibleContext ac) {
         assert EventQueue.isDispatchThread();
 
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
+        AccessibleTable accessibleTable = ac.getAccessibleTable();
+        if (accessibleTable == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleTable");
+        }
+
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
-        this.accessibleTableWeakRef = new WeakReference<AccessibleTable>(ac.getAccessibleTable());
+        this.accessibleTableWeakRef = new WeakReference<AccessibleTable>(accessibleTable);
     }
 
     // JNI upcalls section

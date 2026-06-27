@@ -43,8 +43,16 @@ public class AtkAction {
     private AtkAction(AccessibleContext ac) {
         assert EventQueue.isDispatchThread();
 
-        this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
         AccessibleAction accessibleAction = ac.getAccessibleAction();
+        if (accessibleAction == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleAction");
+        }
+
+        this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
         this.accessibleActionWeakRef = new WeakReference<AccessibleAction>(accessibleAction);
         this.nactions = accessibleAction.getAccessibleActionCount();
         this.descriptions = new String[nactions];

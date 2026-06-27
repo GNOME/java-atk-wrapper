@@ -39,7 +39,16 @@ public class AtkValue {
     private AtkValue(AccessibleContext ac) {
         assert EventQueue.isDispatchThread();
 
-        this.accessibleValueWeakRef = new WeakReference<AccessibleValue>(ac.getAccessibleValue());
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
+        AccessibleValue accessibleValue = ac.getAccessibleValue();
+        if (accessibleValue == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleValue");
+        }
+
+        this.accessibleValueWeakRef = new WeakReference<AccessibleValue>(accessibleValue);
     }
 
     // JNI upcalls section

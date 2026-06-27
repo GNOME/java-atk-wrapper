@@ -47,8 +47,17 @@ public class AtkText {
     protected AtkText(AccessibleContext ac) {
         assert EventQueue.isDispatchThread();
 
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
+        AccessibleText accessibleText = ac.getAccessibleText();
+        if (accessibleText == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleText");
+        }
+
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
-        this.accessibleTextWeakRef = new WeakReference<AccessibleText>(ac.getAccessibleText());
+        this.accessibleTextWeakRef = new WeakReference<AccessibleText>(accessibleText);
         this.accessibleEditableTextWeakRef =
                 new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
     }

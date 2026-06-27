@@ -41,9 +41,17 @@ public class AtkComponent {
     private AtkComponent(AccessibleContext ac) {
         assert EventQueue.isDispatchThread();
 
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
+        AccessibleComponent accessibleComponent = ac.getAccessibleComponent();
+        if (accessibleComponent == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleComponent");
+        }
+
         this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
-        this.accessibleComponentWeakRef =
-                new WeakReference<AccessibleComponent>(ac.getAccessibleComponent());
+        this.accessibleComponentWeakRef = new WeakReference<AccessibleComponent>(accessibleComponent);
     }
 
     private static Point getWindowLocation(AccessibleContext ac) {

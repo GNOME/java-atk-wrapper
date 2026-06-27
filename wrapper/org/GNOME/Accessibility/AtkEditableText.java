@@ -48,8 +48,17 @@ public class AtkEditableText extends AtkText {
 
         assert EventQueue.isDispatchThread();
 
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
+
+        AccessibleEditableText accessibleEditableText = ac.getAccessibleEditableText();
+        if (accessibleEditableText == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleEditableText");
+        }
+
         accessibleEditableTextWeakRef =
-                new WeakReference<AccessibleEditableText>(ac.getAccessibleEditableText());
+                new WeakReference<AccessibleEditableText>(accessibleEditableText);
     }
 
     // JNI upcalls section
