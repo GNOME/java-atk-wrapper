@@ -39,7 +39,6 @@ public class AtkTableCell {
     private final int rowSpan; // the number of rows occupied by this table cell, used by native code
     private final int column; // the column index of this table cell, used by native code
     private final int columnSpan; // the number of columns occupied by this table cell, used by native code
-    private final WeakReference<AccessibleContext> _ac;
     private final WeakReference<AccessibleTable> parentAccessibleTableWeakRef;
 
     private AtkTableCell(AccessibleContext ac) {
@@ -49,7 +48,6 @@ public class AtkTableCell {
             throw new IllegalArgumentException("AccessibleContext must be not null");
         }
 
-        this._ac = new WeakReference<AccessibleContext>(ac);
         Accessible accessibleParent = ac.getAccessibleParent();
         if (accessibleParent == null) {
             throw new IllegalArgumentException("AccessibleContext must have accessibleParent");
