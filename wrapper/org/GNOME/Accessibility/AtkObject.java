@@ -27,19 +27,23 @@
 package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
-import java.util.Locale;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-import java.awt.event.KeyEvent;
+import javax.swing.*;
+import java.awt.EventQueue;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.util.Locale;
 
 /**
-* AtkObject:
-*   That class is used to wrap AccessibleContext Java object
-*   to avoid the concurrency of AWT objects.
-* @autor Giuseppe Capaldo
-*/
-public class AtkObject{
+ * AtkObject:
+ * <p>
+ * Java-side utility class used by the GNOME Accessibility Bridge.
+ * <p>
+ * That class is used to wrap AccessibleContext Java object
+ * to avoid the concurrency of AWT objects.
+ *
+ * @autor Giuseppe Capaldo
+ */
+public class AtkObject {
 
     public static final int INTERFACE_ACTION = 0x00000001;
     public static final int INTERFACE_COMPONENT = 0x00000002;
@@ -55,77 +59,144 @@ public class AtkObject{
     public static final int INTERFACE_TEXT = 0x00000800;
     public static final int INTERFACE_VALUE = 0x00001000;
 
-    public static int getTFlagFromObj(Object o){
-      return AtkUtil.invokeInSwing( () -> {
-        int flags = 0;
-        AccessibleContext ac;
+    private AtkObject() {
+    }
 
-        if (o instanceof AccessibleContext)
-            ac = (AccessibleContext) o;
-        else if (o instanceof Accessible)
-            ac = ( (Accessible) o).getAccessibleContext();
-        else
-            return flags;
+    /**
+     * Returns the JMenuItem accelerator. Similar implementation is used on
+     * macOS, see CAccessibility.getAcceleratorText(AccessibleContext) in OpenJDK, and
+     * on Windows, see AccessBridge.getAccelerator(AccessibleContext) in OpenJDK.
+     */
+    private static String getAcceleratorText(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
 
-        if (ac.getAccessibleAction() != null)
-            flags |= AtkObject.INTERFACE_ACTION;
-        if (ac.getAccessibleComponent() != null)
-            flags |= AtkObject.INTERFACE_COMPONENT;
-        AccessibleText text = ac.getAccessibleText();
-        if (text != null){
-            flags |= AtkObject.INTERFACE_TEXT;
-            if (text instanceof AccessibleHypertext)
-                flags |= AtkObject.INTERFACE_HYPERTEXT;
-	    if (ac.getAccessibleEditableText() != null)
-		flags |= AtkObject.INTERFACE_EDITABLE_TEXT;
-        }
-        if (ac.getAccessibleIcon() != null)
-            flags |= AtkObject.INTERFACE_IMAGE;
-        if (ac.getAccessibleSelection() != null)
-            flags |= AtkObject.INTERFACE_SELECTION;
-        AccessibleTable table = ac.getAccessibleTable();
-        if (table != null){
-            flags |= AtkObject.INTERFACE_TABLE;
-        }
+        String acceleratorText = "";
         Accessible parent = ac.getAccessibleParent();
-        if (parent != null){
-            AccessibleContext pc = parent.getAccessibleContext();
-            if (pc != null){
-                table = pc.getAccessibleTable();
-                // Unfortunately without the AccessibleExtendedTable interface
-                // we can't determine the column/row of this accessible in the
-                // table
-                if (table != null && table instanceof AccessibleExtendedTable){
-                    flags |= AtkObject.INTERFACE_TABLE_CELL;
+        if (parent != null) {
+            int indexInParent = ac.getAccessibleIndexInParent();
+            Accessible child = parent.getAccessibleContext()
+                    .getAccessibleChild(indexInParent);
+            if (child instanceof JMenuItem menuItem) {
+                KeyStroke keyStroke = menuItem.getAccelerator();
+                if (keyStroke != null) {
+                    int modifiers = keyStroke.getModifiers();
+                    String modifiersText = modifiers > 0 ? InputEvent.getModifiersExText(modifiers) : "";
+
+                    int keyCode = keyStroke.getKeyCode();
+                    String keyCodeText = keyCode != 0 ? KeyEvent.getKeyText(keyCode) : String.valueOf(keyStroke.getKeyChar());
+
+                    acceleratorText += modifiersText;
+                    if (!modifiersText.isEmpty() && !keyCodeText.isEmpty()) {
+                        acceleratorText += "+";
+                    }
+                    acceleratorText += keyCodeText;
                 }
             }
         }
-        if (ac.getAccessibleValue() != null)
-            flags |= AtkObject.INTERFACE_VALUE;
-        return flags;
-      }, 0);
+        return acceleratorText;
     }
 
-    public static AccessibleContext getAccessibleParent(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> {
-            Accessible father = ac.getAccessibleParent();
-            if (father != null)
-                return father.getAccessibleContext();
+    // JNI upcalls section
+
+    /**
+     * Gets the ATK interface flags for the given accessible object.
+     * Called from native code via JNI.
+     *
+     * @param o the accessible object (AccessibleContext or Accessible)
+     * @return bitwise OR of ATK interface flags from {@link AtkInterface}
+     */
+    private static int get_tflag_from_obj(Object o) {
+        return AtkUtil.invokeInSwing(() -> {
+            int flags = 0;
+            AccessibleContext ac;
+
+            if (o instanceof AccessibleContext)
+                ac = (AccessibleContext) o;
+            else if (o instanceof Accessible)
+                ac = ((Accessible) o).getAccessibleContext();
+            else
+                return flags;
+
+            if (ac.getAccessibleAction() != null)
+                flags |= AtkObject.INTERFACE_ACTION;
+            if (ac.getAccessibleComponent() != null)
+                flags |= AtkObject.INTERFACE_COMPONENT;
+            AccessibleText text = ac.getAccessibleText();
+            if (text != null) {
+                flags |= AtkObject.INTERFACE_TEXT;
+                if (text instanceof AccessibleHypertext)
+                    flags |= AtkObject.INTERFACE_HYPERTEXT;
+                if (ac.getAccessibleEditableText() != null)
+                    flags |= AtkObject.INTERFACE_EDITABLE_TEXT;
+            }
+            if (ac.getAccessibleIcon() != null)
+                flags |= AtkObject.INTERFACE_IMAGE;
+            if (ac.getAccessibleSelection() != null)
+                flags |= AtkObject.INTERFACE_SELECTION;
+            AccessibleTable table = ac.getAccessibleTable();
+            if (table != null) {
+                flags |= AtkObject.INTERFACE_TABLE;
+            }
+            Accessible parent = ac.getAccessibleParent();
+            if (parent != null) {
+                AccessibleContext parentAccessibleContext = parent.getAccessibleContext();
+                if (parentAccessibleContext != null) {
+                    table = parentAccessibleContext.getAccessibleTable();
+                    // Unfortunately without the AccessibleExtendedTable interface
+                    // we can't determine the column/row of this accessible in the
+                    // table
+                    if (table != null && table instanceof AccessibleExtendedTable) {
+                        flags |= AtkObject.INTERFACE_TABLE_CELL;
+                    }
+                }
+            }
+            if (ac.getAccessibleValue() != null)
+                flags |= AtkObject.INTERFACE_VALUE;
+            return flags;
+        }, 0);
+    }
+
+    /**
+     * Gets the parent AccessibleContext of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the parent accessible context, or null if no parent exists
+     */
+    private static AccessibleContext get_accessible_parent(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            Accessible accessibleParent = ac.getAccessibleParent();
+            if (accessibleParent != null)
+                return accessibleParent.getAccessibleContext();
             else
                 return null;
         }, null);
     }
 
-    public static void setAccessibleParent(AccessibleContext ac, AccessibleContext pa){
-        AtkUtil.invokeInSwing( () -> {
-            if (pa instanceof Accessible){
-                Accessible father = (Accessible) pa;
-                ac.setAccessibleParent(father);
+    /**
+     * Sets the parent of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac                      the accessible context whose parent should be set
+     * @param parentAccessibleContext the new parent accessible context (must be Accessible)
+     */
+    private static void set_accessible_parent(
+            AccessibleContext ac, AccessibleContext parentAccessibleContext) {
+        AtkUtil.invokeInSwing(() -> {
+            if (parentAccessibleContext instanceof Accessible parentAccessible) {
+                ac.setAccessibleParent(parentAccessible);
             }
-        } );
+        });
     }
 
-    public static String getAccessibleName(AccessibleContext ac) {
+    /**
+     * Gets the accessible name of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the accessible name, with accelerator text appended, or null if no name is set
+     */
+    private static String get_accessible_name(AccessibleContext ac) {
         return AtkUtil.invokeInSwing(() -> {
             String accessibleName = ac.getAccessibleName();
             if (accessibleName == null) {
@@ -140,69 +211,97 @@ public class AtkObject{
     }
 
     /**
-     * Returns the JMenuItem accelerator. Similar implementation is used on
-     * macOS, see CAccessibility.getAcceleratorText(AccessibleContext) in OpenJDK, and
-     * on Windows, see AccessBridge.getAccelerator(AccessibleContext) in OpenJDK.
+     * Sets the accessible name of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac   the accessible context
+     * @param name the new accessible name
      */
-    private static String getAcceleratorText(AccessibleContext ac) {
-        String accText = "";
-        Accessible parent = ac.getAccessibleParent();
-        if (parent != null) {
-            int indexInParent = ac.getAccessibleIndexInParent();
-            Accessible child = parent.getAccessibleContext()
-                    .getAccessibleChild(indexInParent);
-            if (child instanceof JMenuItem) {
-                JMenuItem menuItem = (JMenuItem)child;
-                KeyStroke keyStroke = menuItem.getAccelerator();
-                if (keyStroke != null) {
-                    int modifiers = keyStroke.getModifiers();
-                    String modifiersText = modifiers > 0 ? InputEvent.getModifiersExText(modifiers) : "";
-
-                    int keyCode = keyStroke.getKeyCode();
-                    String keyCodeText = keyCode != 0 ? KeyEvent.getKeyText(keyCode) : String.valueOf(keyStroke.getKeyChar());
-
-                    accText += modifiersText;
-                    if (!modifiersText.isEmpty() && !keyCodeText.isEmpty()) {
-                        accText += "+";
-                    }
-                    accText += keyCodeText;
-                }
-            }
-        }
-        return accText;
+    private static void set_accessible_name(AccessibleContext ac, String name) {
+        AtkUtil.invokeInSwing(() -> {
+            ac.setAccessibleName(name);
+        });
     }
 
-    public static void setAccessibleName(AccessibleContext ac, String name){
-        AtkUtil.invokeInSwing( () -> { ac.setAccessibleName(name); } );
+    /**
+     * Gets the accessible description of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the accessible description, or empty string if no description is set
+     */
+    private static String get_accessible_description(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleDescription();
+        }, "");
     }
 
-    public static String getAccessibleDescription(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleDescription(); }, "");
+    /**
+     * Sets the accessible description of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac          the accessible context
+     * @param description the new accessible description
+     */
+    private static void set_accessible_description(AccessibleContext ac, String description) {
+        AtkUtil.invokeInSwing(() -> {
+            ac.setAccessibleDescription(description);
+        });
     }
 
-    public static void setAccessibleDescription(AccessibleContext ac, String description){
-        AtkUtil.invokeInSwing( () -> { ac.setAccessibleDescription(description); } );
+    /**
+     * Gets the number of accessible children of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the number of accessible children, or 0 if there are no children
+     */
+    private static int get_accessible_children_count(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleChildrenCount();
+        }, 0);
     }
 
-    public static int getAccessibleChildrenCount(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleChildrenCount(); }, 0);
+    /**
+     * Gets the index of this accessible context within its parent's children.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the zero-based index in parent, or -1 if no parent exists or index cannot be determined
+     */
+    private static int get_accessible_index_in_parent(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleIndexInParent();
+        }, -1);
     }
 
-    public static int getAccessibleIndexInParent(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleIndexInParent(); }, -1);
+    /**
+     * Gets the accessible role of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the accessible role, or null if the role cannot be determined
+     */
+    private static AccessibleRole get_accessible_role(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.getAccessibleRole();
+        }, AccessibleRole.UNKNOWN);
     }
 
-    public static AccessibleRole getAccessibleRole(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.getAccessibleRole(); }, AccessibleRole.UNKNOWN);
-    }
-
-    public static boolean equalsIgnoreCaseLocaleWithRole(AccessibleRole role){
+    private static boolean equals_ignore_case_locale_with_role(AccessibleRole role) {
         String displayString = role.toDisplayString(Locale.US);
         return displayString.equalsIgnoreCase("paragraph");
     }
 
-    public static AccessibleState[] getArrayAccessibleState(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> {
+    /**
+     * Gets an array of accessible states for the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return an array of accessible states, or null if no state set exists
+     */
+    private static AccessibleState[] get_array_accessible_state(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
             AccessibleStateSet stateSet = ac.getAccessibleStateSet();
             if (stateSet == null)
                 return null;
@@ -211,8 +310,15 @@ public class AtkObject{
         }, null);
     }
 
-    public static String getLocale(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> {
+    /**
+     * Gets the locale of the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return the locale string in the format "language_country@script@variant", or null if locale cannot be determined
+     */
+    private static String get_locale(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
             Locale l = ac.getLocale();
             String locale = l.getLanguage();
             String country = l.getCountry();
@@ -231,32 +337,30 @@ public class AtkObject{
         }, null);
     }
 
-    public static class WrapKeyAndTarget{
-        public String key;
-        public AccessibleContext[] relations;
-
-        public WrapKeyAndTarget(String key, AccessibleContext[] relations){
-            this.key = key;
-            this.relations = relations;
-        }
-    }
-
-    public static WrapKeyAndTarget[] getArrayAccessibleRelation(AccessibleContext ac){
+    /**
+     * Gets an array of accessible relations for the given accessible context.
+     * Called from native code via JNI.
+     *
+     * @param ac the accessible context
+     * @return an array of WrapKeyAndTarget records containing relation keys and targets,
+     * or an empty array if no relations exist
+     */
+    private static WrapKeyAndTarget[] get_array_accessible_relation(AccessibleContext ac) {
         WrapKeyAndTarget[] d = new WrapKeyAndTarget[0];
-        return AtkUtil.invokeInSwing( () -> {
+        return AtkUtil.invokeInSwing(() -> {
             AccessibleRelationSet relationSet = ac.getAccessibleRelationSet();
             if (relationSet == null)
                 return d;
             else {
                 AccessibleRelation[] array = relationSet.toArray();
                 WrapKeyAndTarget[] result = new WrapKeyAndTarget[array.length];
-                for(int i = 0; i < array.length; i++) {
+                for (int i = 0; i < array.length; i++) {
                     String key = array[i].getKey();
                     Object[] objs = array[i].getTarget();
                     AccessibleContext[] contexts = new AccessibleContext[objs.length];
-                    for(int j = 0; j < objs.length; j++) {
+                    for (int j = 0; j < objs.length; j++) {
                         if (objs[i] instanceof Accessible)
-                            contexts[i] = ( (Accessible) objs[i]).getAccessibleContext();
+                            contexts[i] = ((Accessible) objs[i]).getAccessibleContext();
                         else
                             contexts[i] = null;
                     }
@@ -267,8 +371,16 @@ public class AtkObject{
         }, d);
     }
 
-    public static AccessibleContext getAccessibleChild(AccessibleContext ac, int i){
-        return AtkUtil.invokeInSwing( () -> {
+    /**
+     * Gets the accessible child at the specified index.
+     * Called from native code via JNI.
+     *
+     * @param ac the parent accessible context
+     * @param i  the zero-based index of the child
+     * @return the child accessible context at the given index, or null if no child exists at that index
+     */
+    private static AccessibleContext get_accessible_child(AccessibleContext ac, int i) {
+        return AtkUtil.invokeInSwing(() -> {
             Accessible child = ac.getAccessibleChild(i);
             if (child == null)
                 return null;
@@ -277,8 +389,24 @@ public class AtkObject{
         }, null);
     }
 
-    public static int hashCode(AccessibleContext ac){
-        return AtkUtil.invokeInSwing( () -> { return ac.hashCode(); }, 0);
+    private static int hash_code(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return ac.hashCode();
+        }, 0);
+    }
+
+    public static class WrapKeyAndTarget {
+        public final String key;
+        public final AccessibleContext[] relations;
+
+        /**
+         * A record that wraps an accessible relation key with its target accessible contexts.
+         * Used to pass relation information from Java to native code.
+         */
+        public WrapKeyAndTarget(String key, AccessibleContext[] relations) {
+            this.key = key;
+            this.relations = relations;
+        }
     }
 
 }

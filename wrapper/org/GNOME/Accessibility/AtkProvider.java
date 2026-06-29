@@ -23,9 +23,10 @@ package org.GNOME.Accessibility;
 import javax.accessibility.AccessibilityProvider;
 
 public final class AtkProvider extends AccessibilityProvider {
-    private final String name = "org.GNOME.Accessibility.AtkWrapper";
+    private static final String name = "org.GNOME.Accessibility.AtkWrapper";
 
-    public AtkProvider() {}
+    public AtkProvider() {
+    }
 
     public String getName() {
         return name;

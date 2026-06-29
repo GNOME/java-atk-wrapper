@@ -21,212 +21,273 @@ package org.GNOME.Accessibility;
 
 import javax.accessibility.*;
 import javax.swing.*;
-import java.lang.ref.WeakReference;
-
+import java.awt.EventQueue;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Action interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleAction interface
+ * and the ATK (Accessibility Toolkit) action interface.
+ */
 public class AtkAction {
 
-	WeakReference<AccessibleContext> _ac;
-	WeakReference<AccessibleAction> _acc_action;
-	WeakReference<AccessibleExtendedComponent> _acc_ext_component;
-	String[] descriptions;
-	int nactions;
+    private final WeakReference<AccessibleContext> accessibleContextWeakRef;
+    private final WeakReference<AccessibleAction> accessibleActionWeakRef;
+    private final WeakReference<AccessibleExtendedComponent> _acc_ext_component;
+    private final String[] descriptions;
+    private final int nactions;
 
-	public AtkAction (AccessibleContext ac) {
-		super();
-		this._ac = new WeakReference<AccessibleContext>(ac);
-		AccessibleAction acc_action = ac.getAccessibleAction();
-		this._acc_action = new WeakReference<AccessibleAction>(acc_action);
-		this.nactions = acc_action.getAccessibleActionCount();
-		this.descriptions = new String[nactions];
-		AccessibleComponent acc_component = ac.getAccessibleComponent();
-		if (acc_component instanceof AccessibleExtendedComponent) {
-			this._acc_ext_component = new WeakReference<AccessibleExtendedComponent>((AccessibleExtendedComponent)acc_component);
-		}
-	}
+    private AtkAction(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
 
-	public static AtkAction createAtkAction(AccessibleContext ac){
-		return AtkUtil.invokeInSwing ( () -> { return new AtkAction(ac); }, null);
-	}
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
 
-	public boolean do_action (int i) {
-		AccessibleAction acc_action = _acc_action.get();
-		if (acc_action == null)
-			return false;
+        AccessibleAction accessibleAction = ac.getAccessibleAction();
+        if (accessibleAction == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleAction");
+        }
 
-		AtkUtil.invokeInSwing( () -> { acc_action.doAccessibleAction(i); });
-		return true;
-	}
+        this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
+        this.accessibleActionWeakRef = new WeakReference<AccessibleAction>(accessibleAction);
+        this.nactions = accessibleAction.getAccessibleActionCount();
+        this.descriptions = new String[nactions];
+        AccessibleComponent accessibleComponent = ac.getAccessibleComponent();
+        if (accessibleComponent instanceof AccessibleExtendedComponent) {
+            this._acc_ext_component =
+                    new WeakReference<AccessibleExtendedComponent>(
+                            (AccessibleExtendedComponent) accessibleComponent);
+        } else {
+            this._acc_ext_component = null;
+        }
+    }
 
-	public int get_n_actions () { return this.nactions; }
+    private String convertModString(String mods) {
+        if (mods == null || mods.length() == 0) {
+            return "";
+        }
 
-	public String get_description (int i) {
-		AccessibleAction acc_action = _acc_action.get();
-		if (acc_action == null)
-			return null;
+        String[] modStrs = mods.split("\\+");
+        String newModString = "";
+        for (int i = 0; i < modStrs.length; i++) {
+            newModString += "<" + modStrs[i] + ">";
+        }
 
-		if (i >= nactions){
-			return null;
-		}
-		if(descriptions[i] != null){
-			return descriptions[i];
-		}
-		descriptions[i] = AtkUtil.invokeInSwing( () -> { return acc_action.getAccessibleActionDescription(i); }, "");
-		return descriptions[i];
-	}
-	
-	public boolean setDescription(int i, String description) {
-		if (i >= nactions){
-			return false;
-		}
-		descriptions[i] = description;
-		return true;
-	}
+        return newModString;
+    }
 
- /**
-  * @param i an integer holding the index of the name of
-  *          the accessible.
-  * @return  the localized name of the object or otherwise,
-  *          null if the "action" object does not have a
-  *          name (really, java's AccessibleAction class
-  *          does not provide
-  *          a getter for an AccessibleAction
-  *          name so a getter from the AcccessibleContext
-  *          class is one way to work around that)
-  */
-  	public String getLocalizedName (int i) {
-		AccessibleContext ac = _ac.get();
-		if (ac == null)
-			return null;
-		AccessibleAction acc_action = _acc_action.get();
-		if (acc_action == null)
-			return null;
+    // JNI upcalls section
 
-		if (i >= nactions){
-			return null;
-		}
-		if (descriptions[i] != null){
-			return descriptions[i];
-		}
-		return AtkUtil.invokeInSwing ( () -> {
-			descriptions[i] = acc_action.getAccessibleActionDescription(i);
-			if (descriptions[i] != null)
-				return descriptions[i];
-			String name = ac.getAccessibleName();
-			if (name != null)
-				return name;
-			descriptions[i] = "";
-			return descriptions[i];
-		}, null);
-	}
+    /**
+     * Factory method to create an AtkAction instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkAction instance, or null if creation fails
+     */
+    private static AtkAction create_atk_action(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return new AtkAction(ac);
+        }, null);
+    }
 
-	private String convertModString (String mods) {
-		if (mods == null || mods.length() == 0) {
-			return "";
-		}
+    /**
+     * Performs the specified action on the object.
+     * Called from native code via JNI.
+     *
+     * @param index the action index corresponding to the action to be performed
+     * @return true if the action was successfully performed, false otherwise
+     */
+    private boolean do_action(int index) {
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
+            return false;
 
-		String modStrs[] = mods.split("\\+");
-		String newModString = "";
-		for (int i = 0; i < modStrs.length; i++) {
-			newModString += "<" + modStrs[i] + ">";
-		}
+        AtkUtil.invokeInSwing(() -> {
+            accessibleAction.doAccessibleAction(index);
+        });
+        return true;
+    }
 
-		return newModString;
-	}
+    /**
+     * Gets the number of accessible actions available on the object.
+     * Called from native code via JNI.
+     *
+     * @return the number of actions, or 0 if this object does not implement actions
+     */
+    private int get_n_actions() {
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
+            return 0;
+        return this.nactions;
+    }
 
-	public String get_keybinding (int index) {
-		AccessibleExtendedComponent acc_ext_component;
-		if (_acc_ext_component == null)
-			return "";
+    /**
+     * Returns a description of the specified action of the object.
+     * Called from native code via JNI.
+     *
+     * @param index the action index corresponding to the action
+     * @return a description string, or null if the action does not exist
+     */
+    private String get_description(int index) {
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
+            return null;
 
-		acc_ext_component = _acc_ext_component.get();
+        if (index >= nactions) {
+            return null;
+        }
+        if (descriptions[index] != null) {
+            return descriptions[index];
+        }
+        descriptions[index] = AtkUtil.invokeInSwing(() -> {
+            return accessibleAction.getAccessibleActionDescription(index);
+        }, null);
+        return descriptions[index];
+    }
 
-		// TODO: improve/fix conversion to strings, concatenate,
-		//       and follow our formatting convention for the role of
-		//       various keybindings (i.e. global, transient, etc.)
+    /**
+     * Sets a description of the specified action of the object.
+     * Called from native code via JNI.
+     *
+     * @param index       the action index corresponding to the action
+     * @param description the description to be assigned to this action
+     * @return true if the description was successfully set, false otherwise
+     */
+    private boolean set_description(int index, String description) {
+        if (index >= nactions) {
+            return false;
+        }
+        descriptions[index] = description;
+        return true;
+    }
 
-		//
-		// Presently, JAA doesn't define a relationship between the index used
-		// and the action associated. As such, all keybindings are only
-		// associated with the default (index 0 in GNOME) action.
-		//
-		if (index > 0) {
-			return "";
-		}
+    /**
+     * Returns the localized name of the specified action of the object.
+     * Called from native code via JNI.
+     *
+     * @param index the action index corresponding to the action
+     * @return a localized name string, or null if the action does not exist
+     */
+    private String get_localized_name(int index) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
+            return null;
+        AccessibleAction accessibleAction = accessibleActionWeakRef.get();
+        if (accessibleAction == null)
+            return null;
 
-		if(acc_ext_component != null) {
-			AccessibleKeyBinding akb = acc_ext_component.getAccessibleKeyBinding();
+        if (index >= nactions) {
+            return null;
+        }
+        if (descriptions[index] != null) {
+            return descriptions[index];
+        }
+        return AtkUtil.invokeInSwing(() -> {
+            descriptions[index] = accessibleAction.getAccessibleActionDescription(index);
+            if (descriptions[index] != null)
+                return descriptions[index];
+            String name = accessibleContext.getAccessibleName();
+            if (name != null)
+                return name;
+            descriptions[index] = "";
+            return descriptions[index];
+        }, null);
+    }
 
-			if (akb != null && akb.getAccessibleKeyBindingCount() > 0) {
-				String  rVal = "";
-				int     i;
+    private String get_keybinding(int index) {
+        AccessibleExtendedComponent acc_ext_component;
+        if (_acc_ext_component == null)
+            return "";
 
-				// Privately Agreed interface with StarOffice to workaround
-				// deficiency in JAA.
-				//
-				// The aim is to use an array of keystrokes, if there is more
-				// than one keypress involved meaning that we would have:
-				//
-				//	KeyBinding(0)    -> nmeumonic       KeyStroke
-				//	KeyBinding(1)    -> full key path   KeyStroke[]
-				//	KeyBinding(2)    -> accelerator     KeyStroke
-				//
-				// GNOME Expects a string in the format:
-				//
-				//	<nmemonic>;<full-path>;<accelerator>
-				//
-				// The keybindings in <full-path> should be separated by ":"
-				//
-				// Since only the first three are relevant, ignore others
-				for (i = 0;( i < akb.getAccessibleKeyBindingCount() && i < 3); i++) {
-					Object o = akb.getAccessibleKeyBinding(i);
+        acc_ext_component = _acc_ext_component.get();
 
-					if ( i > 0 ) {
-						rVal += ";";
-					}
+        // TODO: improve/fix conversion to strings, concatenate,
+        //       and follow our formatting convention for the role of
+        //       various keybindings (i.e. global, transient, etc.)
 
-					if (o instanceof KeyStroke) {
-						KeyStroke keyStroke = (KeyStroke)o;
-						String modString = InputEvent.getModifiersExText(keyStroke.getModifiers());
-						String keyString = KeyEvent.getKeyText(keyStroke.getKeyCode());
+        //
+        // Presently, JAA doesn't define a relationship between the index used
+        // and the action associated. As such, all keybindings are only
+        // associated with the default (index 0 in GNOME) action.
+        //
+        if (index > 0) {
+            return "";
+        }
 
-						if ( keyString != null ) {
-							if ( modString != null && modString.length() > 0 ) {
-								rVal += convertModString(modString) + keyString;
-							} else {
-								rVal += keyString;
-							}
-						}
-					} else if (o instanceof KeyStroke[]) {
-						KeyStroke[] keyStroke = (KeyStroke[])o;
-						for ( int j = 0; j < keyStroke.length; j++ ) {
-							String modString = InputEvent.getModifiersExText(keyStroke[j].getModifiers());
-							String keyString = KeyEvent.getKeyText(keyStroke[j].getKeyCode());
+        if (acc_ext_component != null) {
+            AccessibleKeyBinding akb = acc_ext_component.getAccessibleKeyBinding();
 
-							if (j > 0) {
-								rVal += ":";
-							}
+            if (akb != null && akb.getAccessibleKeyBindingCount() > 0) {
+                String rVal = "";
+                int i;
 
-							if ( keyString != null ) {
-								if (modString != null && modString.length() > 0) {
-									rVal += convertModString(modString) + keyString;
-								} else {
-									rVal += keyString;
-								}
-							}
-						}
-					}
-				}
+                // Privately Agreed interface with StarOffice to workaround
+                // deficiency in JAA.
+                //
+                // The aim is to use an array of keystrokes, if there is more
+                // than one keypress involved meaning that we would have:
+                //
+                //	KeyBinding(0)    -> nmeumonic       KeyStroke
+                //	KeyBinding(1)    -> full key path   KeyStroke[]
+                //	KeyBinding(2)    -> accelerator     KeyStroke
+                //
+                // GNOME Expects a string in the format:
+                //
+                //	<nmemonic>;<full-path>;<accelerator>
+                //
+                // The keybindings in <full-path> should be separated by ":"
+                //
+                // Since only the first three are relevant, ignore others
+                for (i = 0; (i < akb.getAccessibleKeyBindingCount() && i < 3); i++) {
+                    Object o = akb.getAccessibleKeyBinding(i);
 
-				if ( i < 2 ) rVal += ";";
-				if ( i < 3 ) rVal += ";";
+                    if (i > 0) {
+                        rVal += ";";
+                    }
 
-				return rVal;
-			}
-		}
+                    if (o instanceof KeyStroke keyStroke) {
+                        String modString = InputEvent.getModifiersExText(keyStroke.getModifiers());
+                        String keyString = KeyEvent.getKeyText(keyStroke.getKeyCode());
 
-		return "";
-	}
+                        if (keyString != null) {
+                            if (modString != null && modString.length() > 0) {
+                                rVal += convertModString(modString) + keyString;
+                            } else {
+                                rVal += keyString;
+                            }
+                        }
+                    } else if (o instanceof KeyStroke[] keyStroke) {
+                        for (int j = 0; j < keyStroke.length; j++) {
+                            String modString = InputEvent.getModifiersExText(keyStroke[j].getModifiers());
+                            String keyString = KeyEvent.getKeyText(keyStroke[j].getKeyCode());
+
+                            if (j > 0) {
+                                rVal += ":";
+                            }
+
+                            if (keyString != null) {
+                                if (modString != null && modString.length() > 0) {
+                                    rVal += convertModString(modString) + keyString;
+                                } else {
+                                    rVal += keyString;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (i < 2) rVal += ";";
+                if (i < 3) rVal += ";";
+
+                return rVal;
+            }
+        }
+
+        return "";
+    }
 }

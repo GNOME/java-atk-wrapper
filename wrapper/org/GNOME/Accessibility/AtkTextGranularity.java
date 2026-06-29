@@ -16,13 +16,16 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 package org.GNOME.Accessibility;
 
-public interface AtkTextGranularity {
-  public int CHAR = 0;
-  public int  WORD = 1;
-  public int SENTENCE = 2;
-  public int LINE = 3; /* The LINE constant field value is in AccessibleExtendedText */
-  public int PARAGRAPH = 4;  /*  FThere is no constant field value, PARAGRAPH in AccessibleText */
+public final class AtkTextGranularity {
+    public static final int CHAR = 0;
+    public static final int WORD = 1;
+    public static final int SENTENCE = 2;
+    public static final int LINE = 3; /* The LINE constant field value is in AccessibleExtendedText */
+    public static final int PARAGRAPH = 4;  /*  FThere is no constant field value, PARAGRAPH in AccessibleText */
+
+    private AtkTextGranularity() {
+    }
 }

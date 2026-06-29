@@ -19,64 +19,116 @@
 
 package org.GNOME.Accessibility;
 
-import javax.accessibility.*;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleHyperlink;
+import javax.accessibility.AccessibleHypertext;
+import javax.accessibility.AccessibleText;
+import java.awt.EventQueue;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Hypertext interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleHypertext interface
+ * and the ATK (Accessibility Toolkit) hypertext interface.
+ * Hypertext allows navigation through documents containing
+ * embedded links or hyperlinks.
+ */
 public class AtkHypertext extends AtkText {
 
-	WeakReference<AccessibleHypertext> _acc_hyper_text;
+    private final WeakReference<AccessibleHypertext> accessibleHypertextRef;
 
-	public AtkHypertext (AccessibleContext ac) {
-		super(ac);
+    private AtkHypertext(AccessibleContext ac) {
+        super(ac);
 
-		AccessibleText ac_text = ac.getAccessibleText();
-		if (ac_text instanceof AccessibleHypertext) {
-			_acc_hyper_text = new WeakReference<AccessibleHypertext>((AccessibleHypertext)ac_text);
-		} else {
-			_acc_hyper_text = null;
-		}
-	}
+        assert EventQueue.isDispatchThread();
 
-	public static AtkHypertext createAtkHypertext(AccessibleContext ac){
-		return AtkUtil.invokeInSwing ( () -> { return new AtkHypertext(ac); }, null);
-	}
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
 
-	public AtkHyperlink get_link (int link_index) {
-		if (_acc_hyper_text == null)
-			return null;
-		AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
-		if (acc_hyper_text == null)
-			return null;
+        AccessibleText accessibleText = ac.getAccessibleText();
+        if (accessibleText instanceof AccessibleHypertext) {
+            accessibleHypertextRef =
+                    new WeakReference<AccessibleHypertext>((AccessibleHypertext) accessibleText);
+        } else {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleHypertext");
+        }
+    }
 
-		return AtkUtil.invokeInSwing ( () -> {
-			AccessibleHyperlink link = acc_hyper_text.getLink(link_index);
-			if (link != null)
-				return new AtkHyperlink(link);
-			return null;
-		}, null);
-	}
+    // JNI upcalls section
 
-	public int get_n_links () {
-		if (_acc_hyper_text == null)
-			return 0;
-		AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
-		if (acc_hyper_text == null)
-			return 0;
+    /**
+     * Factory method to create an AtkHypertext instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkHypertext instance, or null if creation fails
+     */
+    private static AtkHypertext create_atk_hypertext(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return new AtkHypertext(ac);
+        }, null);
+    }
 
-		return AtkUtil.invokeInSwing ( () -> {
-			return acc_hyper_text.getLinkCount();
-		}, 0);
-	}
+    /**
+     * Gets the link in this hypertext document at the specified index.
+     * Called from native code via JNI.
+     *
+     * @param linkIndex an integer specifying the desired link (zero-based)
+     * @return the AtkHyperlink at the specified index, or null if not available
+     */
+    private AtkHyperlink get_link(int linkIndex) {
+        if (accessibleHypertextRef == null)
+            return null;
+        AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
+        if (accessibleHypertext == null)
+            return null;
 
-	public int get_link_index (int char_index) {
-		if (_acc_hyper_text == null)
-			return 0;
-		AccessibleHypertext acc_hyper_text = _acc_hyper_text.get();
-		if (acc_hyper_text == null)
-			return 0;
+        return AtkUtil.invokeInSwing(() -> {
+            AccessibleHyperlink link = accessibleHypertext.getLink(linkIndex);
+            if (link != null)
+                return AtkHyperlink.createAtkHyperlink(link);
+            return null;
+        }, null);
+    }
 
-		return AtkUtil.invokeInSwing ( () -> {
-			return acc_hyper_text.getLinkIndex(char_index);
-		}, 0);
-	}
+    /**
+     * Gets the number of links within this hypertext document.
+     * Called from native code via JNI.
+     *
+     * @return the number of links within this hypertext document
+     */
+    private int get_n_links() {
+        if (accessibleHypertextRef == null)
+            return 0;
+        AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
+        if (accessibleHypertext == null)
+            return 0;
+
+        return AtkUtil.invokeInSwing(() -> {
+            return accessibleHypertext.getLinkCount();
+        }, 0);
+    }
+
+    /**
+     * Gets the index into the array of hyperlinks that is associated with
+     * the character specified by charIndex.
+     * Called from native code via JNI.
+     *
+     * @param charIndex a character index
+     * @return an index into the array of hyperlinks in this hypertext,
+     * or -1 if there is no hyperlink associated with this character
+     */
+    private int get_link_index(int charIndex) {
+        if (accessibleHypertextRef == null)
+            return -1;
+        AccessibleHypertext accessibleHypertext = accessibleHypertextRef.get();
+        if (accessibleHypertext == null)
+            return -1;
+
+        return AtkUtil.invokeInSwing(() -> {
+            return accessibleHypertext.getLinkIndex(charIndex);
+        }, -1);
+    }
 }

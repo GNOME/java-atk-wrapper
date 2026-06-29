@@ -19,80 +19,140 @@
 
 package org.GNOME.Accessibility;
 
-import javax.accessibility.*;
-import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import javax.accessibility.AccessibleComponent;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleIcon;
+import java.awt.*;
 import java.lang.ref.WeakReference;
 
+/**
+ * The ATK Image interface implementation for Java accessibility.
+ * <p>
+ * This class provides a bridge between Java's AccessibleIcon interface
+ * and the ATK (Accessibility Toolkit) image interface.
+ * AtkImage should be implemented by components which display
+ * image/pixmap content on-screen, such as icons, buttons with icons,
+ * toolbar elements, and image viewing panes.
+ * <p>
+ * This interface provides two types of information: coordinate information
+ * (useful for screen review mode and onscreen magnifiers) and descriptive
+ * information (for alternative text-only presentation).
+ */
 public class AtkImage {
 
-	WeakReference<AccessibleContext> _ac;
-	WeakReference<AccessibleIcon[]> _acc_icons;
+    private final WeakReference<AccessibleContext> accessibleContextWeakRef;
+    private final WeakReference<AccessibleIcon[]> accessibleIcons;
 
-	public AtkImage (AccessibleContext ac) {
-		super();
-		this._ac = new WeakReference<AccessibleContext>(ac);
-		this._acc_icons = new WeakReference<AccessibleIcon[]>(ac.getAccessibleIcon());
-	}
+    private AtkImage(AccessibleContext ac) {
+        assert EventQueue.isDispatchThread();
 
-	public static AtkImage createAtkImage(AccessibleContext ac){
-		return AtkUtil.invokeInSwing ( () -> { return new AtkImage(ac); }, null);
-	}
+        if (ac == null) {
+            throw new IllegalArgumentException("AccessibleContext must be not null");
+        }
 
-	public Point get_image_position (int coord_type) {
-		AccessibleContext ac = _ac.get();
-		if (ac == null)
-			return null;
+        AccessibleIcon[] icons = ac.getAccessibleIcon();
+        if (icons == null) {
+            throw new IllegalArgumentException("AccessibleContext must have AccessibleIcon");
+        }
 
-		return AtkUtil.invokeInSwing ( () -> {
-			AccessibleComponent acc_component = ac.getAccessibleComponent();
-			if (acc_component == null)
-				return null;
-			return AtkComponent.getComponentOrigin(ac, acc_component, coord_type);
-		}, null);
-	}
+        this.accessibleContextWeakRef = new WeakReference<AccessibleContext>(ac);
+        this.accessibleIcons = new WeakReference<AccessibleIcon[]>(icons);
+    }
 
-	public String get_image_description () {
-		AccessibleIcon[] acc_icons = _acc_icons.get();
-		if (acc_icons == null)
-			return "";
+    // JNI upcalls section
 
-		return AtkUtil.invokeInSwing ( () -> {
-			String desc = "";
-			if (acc_icons != null && acc_icons.length > 0) {
-				desc = acc_icons[0].getAccessibleIconDescription();
-				if (desc == null)
-					desc = "";
-			}
-			return desc;
-		}, "");
-	}
+    /**
+     * Factory method to create an AtkImage instance from an AccessibleContext.
+     * Called from native code via JNI.
+     *
+     * @param ac the AccessibleContext to wrap
+     * @return a new AtkImage instance, or null if creation fails
+     */
+    private static AtkImage create_atk_image(AccessibleContext ac) {
+        return AtkUtil.invokeInSwing(() -> {
+            return new AtkImage(ac);
+        }, null);
+    }
 
-	public Dimension get_image_size () {
-		Dimension d = new Dimension(0, 0);
+    /**
+     * Gets the position of the image in the form of a point specifying the
+     * image's top-left corner.
+     * Called from native code via JNI.
+     *
+     * @param coordType specifies whether the coordinates are relative to the screen
+     *                  or to the component's top level window
+     * @return a Point representing the image position (x, y coordinates), or null
+     * if the position cannot be obtained (e.g., missing support).
+     */
+    private Point get_image_position(int coordType) {
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
+            return null;
 
-		AccessibleContext ac = _ac.get();
-		if (ac == null)
-			return d;
+        return AtkUtil.invokeInSwing(() -> {
+            AccessibleComponent accessibleComponent = accessibleContext.getAccessibleComponent();
+            if (accessibleComponent == null)
+                return null;
+            return AtkComponent.getComponentOrigin(
+                    accessibleContext, accessibleComponent, coordType);
+        }, null);
+    }
 
-		AccessibleIcon[] acc_icons = _acc_icons.get();
+    /**
+     * Gets a textual description of this image.
+     * Called from native code via JNI.
+     *
+     * @return a string representing the image description, or null if there is
+     * no description available or an error occurs
+     */
+    private String get_image_description() {
+        AccessibleIcon[] accessibleIcons = this.accessibleIcons.get();
+        if (accessibleIcons == null)
+            return null;
 
-		return AtkUtil.invokeInSwing ( () -> {
-			if (acc_icons != null && acc_icons.length > 0) {
-				d.height = acc_icons[0].getAccessibleIconHeight();
-				d.width = acc_icons[0].getAccessibleIconWidth();
-			} else {
-				AccessibleComponent acc_component = ac.getAccessibleComponent();
-				if (acc_component != null) {
-					Rectangle rect = acc_component.getBounds();
-					if (rect != null) {
-						d.height = rect.height;
-						d.width = rect.width;
-					}
-				}
-			}
-			return d;
-		},d);
-	}
+        return AtkUtil.invokeInSwing(() -> {
+            String description = null;
+            if (accessibleIcons != null && accessibleIcons.length > 0) {
+                description = accessibleIcons[0].getAccessibleIconDescription();
+            }
+            return description;
+        }, null);
+    }
+
+    /**
+     * Gets the width and height in pixels for the specified image.
+     * Called from native code via JNI.
+     *
+     * @return a Dimension containing the width and height of the image.
+     * Returns a Dimension with width and height set to -1 if the values
+     * cannot be obtained (for instance, if the object is not onscreen).
+     * If AccessibleIcon information is available, uses that; otherwise,
+     * falls back to the component's bounds.
+     */
+    private Dimension get_image_size() {
+        Dimension d = new Dimension(-1, -1);
+
+        AccessibleContext accessibleContext = accessibleContextWeakRef.get();
+        if (accessibleContext == null)
+            return d;
+
+        AccessibleIcon[] accessibleIcons = this.accessibleIcons.get();
+
+        return AtkUtil.invokeInSwing(() -> {
+            if (accessibleIcons != null && accessibleIcons.length > 0) {
+                d.height = accessibleIcons[0].getAccessibleIconHeight();
+                d.width = accessibleIcons[0].getAccessibleIconWidth();
+            } else {
+                AccessibleComponent accessibleComponent = accessibleContext.getAccessibleComponent();
+                if (accessibleComponent != null) {
+                    Rectangle rect = accessibleComponent.getBounds();
+                    if (rect != null) {
+                        d.height = rect.height;
+                        d.width = rect.width;
+                    }
+                }
+            }
+            return d;
+        }, d);
+    }
 }
