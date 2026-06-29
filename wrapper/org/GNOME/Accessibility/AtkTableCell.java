@@ -35,10 +35,10 @@ import java.lang.ref.WeakReference;
  */
 public class AtkTableCell {
 
-    private final int row;
-    private final int rowSpan;
-    private final int column;
-    private final int columnSpan;
+    private final int row; // the row index of this table cell, used by native code
+    private final int rowSpan; // the number of rows occupied by this table cell, used by native code
+    private final int column; // the column index of this table cell, used by native code
+    private final int columnSpan; // the number of columns occupied by this table cell, used by native code
     private final WeakReference<AccessibleContext> _ac;
     private final WeakReference<AccessibleTable> parentAccessibleTableWeakRef;
 
